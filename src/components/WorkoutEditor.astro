@@ -1,0 +1,82 @@
+---
+const STORAGE_KEY = 'bb-workouts'
+---
+<div data-workout-editor class="p-4 border rounded">
+  <h2 class="font-medium mb-2">Scheda allenamento — Registra</h2>
+
+  <div class="mb-4">
+    <label class="block text-sm mb-1">Nome scheda</label>
+    <input id="workout-name" class="w-full p-2 border rounded" placeholder="Esempio: Petto" />
+  </div>
+
+  <div id="exercises" class="space-y-4"></div>
+
+  <div class="flex gap-2">
+    <button id="add-exercise" class="px-3 py-1 rounded bg-blue-600 text-white">+ Aggiungi esercizio</button>
+    <button id="save-workout" class="px-3 py-1 rounded bg-green-600 text-white">💾 Salva</button>
+  </div>
+
+  <script type="module">
+    const STORAGE_KEY = 'bb-workouts'
+    const root = document.querySelector('[data-workout-editor]')
+    const list = root.querySelector('#exercises')
+
+    document.querySelector('#add-exercise').addEventListener('click', () => addExercise())
+
+    document.querySelector('#save-workout').addEventListener('click', () => {
+      const name = document.querySelector('#workout-name').value.trim()
+      if (!name) return alert('Inserisci un nome scheda')
+
+      const exercises = [...list.querySelectorAll('.exercise')].map(exDiv => {
+        const exName = exDiv.querySelector('.ex-name').value.trim()
+        const sets = [...exDiv.querySelectorAll('.set-row')].map(row => ({
+          reps: parseInt(row.querySelector('.set-reps').value || '0', 10),
+          weight: parseFloat(row.querySelector('.set-weight').value || '0')
+        }))
+        return { name: exName, sets }
+      })
+
+      const data = { id: Date.now(), name, exercises, date: new Date().toISOString() }
+
+      const old = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+      old.unshift(data)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(old))
+
+      alert('Allenamento salvato')
+      window.dispatchEvent(new CustomEvent('bb:updated'))
+    })
+
+    function addExercise() {
+      const ex = document.createElement('div')
+      ex.className = 'exercise border p-3 rounded'
+      ex.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <input class="ex-name border rounded p-1 flex-1 mr-2" placeholder="Esercizio">
+          <button class="remove-ex text-red-500">✕</button>
+        </div>
+        <table class="w-full text-sm mb-2">
+          <thead><tr><th>Serie</th><th>Ripetizioni</th><th>Peso (kg)</th></tr></thead>
+          <tbody class="sets"></tbody>
+        </table>
+        <button class="add-set text-blue-600 text-sm">+ Aggiungi serie</button>
+      `
+      list.appendChild(ex)
+
+      ex.querySelector('.remove-ex').addEventListener('click', () => ex.remove())
+      ex.querySelector('.add-set').addEventListener('click', () => addSet(ex))
+    }
+
+    function addSet(exDiv) {
+      const tbody = exDiv.querySelector('.sets')
+      const i = tbody.children.length + 1
+      const row = document.createElement('tr')
+      row.className = 'set-row'
+      row.innerHTML = `
+        <td>${i}</td>
+        <td><input type="number" min="1" class="set-reps w-16 border rounded p-1" /></td>
+        <td><input type="number" min="0" step="0.5" class="set-weight w-20 border rounded p-1" /></td>
+      `
+      tbody.appendChild(row)
+    }
+  </script>
+</div>

@@ -1,0 +1,58 @@
+---
+const STORAGE_KEY = 'bb-calendar'
+---
+<div data-calendar-config class="p-4 border rounded">
+    <h2 class="font-medium mb-2">Calendario allenamenti (settimana)</h2>
+    <p class="text-sm text-slate-500 mb-3">Assegna per ogni giorno la scheda (nome) da eseguire.</p>
+
+
+    <form class="space-y-2" onsubmit="return false;">
+        <!-- giorni della settimana -->
+        {['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'].map(day => (
+            <div class="flex items-center gap-2">
+                <label class="w-20 text-sm">{day}</label>
+                <input class="flex-1 input" data-day={day} placeholder="es. Petto" />
+            </div>
+        ))}
+
+
+        <div class="flex gap-2 mt-3">
+            <button id="save-cal" class="px-3 py-1 rounded bg-slate-800 text-white text-sm">Salva</button>
+            <button id="reset-cal" class="px-3 py-1 rounded border text-sm">Reset</button>
+        </div>
+    </form>
+
+    <script type="module">
+        const STORAGE_KEY = 'bb-calendar'
+        const root = document.querySelector('[data-calendar-config]')
+
+
+        function load() {
+            const saved = localStorage.getItem(STORAGE_KEY)
+            const data = saved ? JSON.parse(saved) : {}
+            root.querySelectorAll('input[data-day]').forEach(i => {
+                i.value = data[i.dataset.day] || ''
+            })
+        }
+
+
+        function save() {
+            const obj = {}
+            root.querySelectorAll('input[data-day]').forEach(i => {
+                if (i.value) obj[i.dataset.day] = i.value
+            })
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj))
+            alert('Calendario salvato nel browser')
+        }
+
+
+        root.querySelector('#save-cal').addEventListener('click', save)
+        root.querySelector('#reset-cal').addEventListener('click', () => {
+            if (!confirm('Resettare il calendario?')) return
+            localStorage.removeItem(STORAGE_KEY)
+            load()
+        })
+
+        load()
+    </script>
+</div>
