@@ -1,0 +1,104 @@
+# AGENTS.md
+
+Guida per agenti di codice che lavorano su questo repository.
+
+## Panoramica
+
+BodyTracker è un diario di allenamento in palestra, con interfaccia in **italiano**.
+Il repository contiene due cose distinte:
+
+| Percorso | Cosa è | Stato |
+| --- | --- | --- |
+| `src/`, `public/`, config in radice | App **Astro 5 + Tailwind CSS 4** (package `astro-bodytracker-starter`) | In sviluppo attivo, è il target principale |
+| `BodyTracker/` | Versione precedente: pacchetto statico HTML/CSS/JS senza build (`palestra/`) più documentazione di prodotto e design (`documentazione/`) | Riferimento. Non viene importato né compilato da Astro |
+
+Tutti i dati dell'utente restano nel browser (`localStorage`): nessun backend, database, account o chiamata API. Mantieni questo vincolo, a meno che non venga chiesto esplicitamente di cambiarlo.
+
+## Comandi
+
+```sh
+npm install        # oppure npm ci
+npm run dev        # dev server su http://localhost:4321
+npm run build      # sito statico in dist/
+npm run preview
+npm run astro -- <comando>
+```
+
+Non ci sono test, linter né formatter configurati, e `@astrojs/check` non è tra le dipendenze. Per il type-check usa `npm i --no-save @astrojs/check typescript && npx astro check` (non modifica `package.json`). Per verificare una modifica esegui `npm run build`, poi controlla le pagine con `npm run dev` o `npm run preview` nel browser (Chromium/Playwright è disponibile). Verifica anche il layout a larghezza telefono, perché l'uso principale è da mobile in palestra.
+
+## Struttura dell'app Astro
+
+```
+astro.config.mjs        site francescoperagine.com, output statico (default), integrazioni mdx + sitemap, plugin Vite di Tailwind
+tailwind.config.mjs     palette "brand-*" e animazioni (fade-in, slide-up, float), caricato da global.css con @config
+src/styles/global.css   @import "tailwindcss", @config, regole globali e classe .input
+src/layouts/Layout.astro  <html lang="it">, Header + <main class="container"> + Footer. Props: title, description, showBackButton
+src/scripts/
+  bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson
+  exercise-list.ts      Editor condiviso della lista esercizi/serie (mountExerciseList, promptNewExercise)
+src/pages/
+  index.astro           Home: WeeklyCalendar, CalendarConfig, WorkoutEditor, HistoryView
+  about.astro           Pagina informativa statica (sezione #privacy)
+  workout.astro         Editor dell'allenamento di un giorno: /workout?date=YYYY-MM-DD (data letta lato client)
+src/components/
+  Header.astro          Navigazione sticky + menu mobile (script bundlato da Astro)
+  Footer.astro
+  WeeklyCalendar.astro  Settimana corrente/precedente/successiva; ogni giorno linka a /workout/<data>
+  CalendarConfig.astro  Assegna un nome di scheda a ciascun giorno della settimana
+  WorkoutEditor.astro   Editor "allenamento del giorno" in home
+  HistoryView.astro     Elenco storico, esporta/importa JSON, cancella tutto
+```
+
+### Modello di rendering
+
+- Il sito è **completamente statico** (nessun adapter, nessun rendering lato server). Non introdurre route dinamiche lato server: un parametro variabile va passato in query string e letto nel client, come fa `workout.astro`.
+- I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi.
+- Accedi al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
+- Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …). **Ogni testo dell'utente inserito in un template HTML deve passare da `escapeHtml`**; altrimenti usa `textContent`.
+- I componenti comunicano tramite l'evento `window` `bb:updated` (`UPDATED_EVENT`) e l'evento `storage` per altre schede. `putWorkout`, `mergeWorkouts` e `clearWorkouts` lo emettono già; dopo `saveCalendar` va emesso a mano. Un editor che salva a ogni modifica deve ignorare l'evento generato dal proprio salvataggio, altrimenti il re-render fa perdere il focus (vedi il flag `saving` in `WorkoutEditor`).
+- Ogni componente cerca la propria radice con un attributo (`[data-weekly-calendar]`, `[data-calendar-config]`, `[data-workout-editor]`, `[data-history-view]`, `[data-workout-page]`) e poi usa `root.querySelector('#id')`. Gli ID sono duplicati tra componenti e pagine (`#exercise-list`, `#add-exercise`, `#list`), quindi limita sempre le query alla radice del componente.
+
+### Chiavi di localStorage
+
+| Chiave | Forma | Note |
+| --- | --- | --- |
+| `bb-calendar` | `{ "Lunedì": "Petto", ... }`: nomi completi dei giorni in italiano, con accento | Scritta da CalendarConfig, letta da WeeklyCalendar e `workout.astro` |
+| `bb-workouts` | `[{ date: "YYYY-MM-DD", exercises: [{ name, sets: [{ reps, weight }] }] }]` | Un solo elemento per data, ordinato per data crescente. Un allenamento senza esercizi viene rimosso. Usata da tutti gli editor, dal calendario e dallo storico |
+| `workout` | Legacy | Vecchia chiave di WorkoutEditor: alla prima lettura viene migrata in `bb-workouts` e poi cancellata |
+
+- I tipi (`Workout`, `Exercise`, `WorkoutSet`, `CalendarConfig`) sono in `bodytracker.ts`. Se cambi la forma dei dati, aggiorna anche `isWorkout`/`parseWorkouts` e prevedi una migrazione dei dati esistenti.
+- Le date sono stringhe `YYYY-MM-DD` in **ora locale**: usa `toDateKey(date)` e `parseDateKey(key)`, mai `toISOString()` o `new Date('YYYY-MM-DD')` (che usano UTC).
+- I nomi dei giorni vengono da `DAY_NAMES` (indicizzato da `getDay()`), `DAY_NAMES_SHORT` e `WEEK_DAYS` (ordine lunedì–domenica) di `bodytracker.ts`. Non riscriverli altrove.
+- Formato di import/export: un array di `Workout`. "Esporta JSON" in home produce un array di un solo elemento, quindi è reimportabile. L'importazione valida l'intero file e lo unisce allo storico: le date già presenti vengono sostituite.
+
+## Convenzioni
+
+- Testo dell'interfaccia, `title`/`description` e messaggi utente in **italiano**; date formattate con `toLocaleDateString('it-IT', …)`.
+- Ogni pagina usa `Layout`; le sottopagine passano `showBackButton={true}`.
+- Lo stile è fatto con classi di utilità Tailwind direttamente nel markup: card `bg-white rounded-2xl shadow-lg p-6/p-8`, azioni primarie `bg-blue-600 … hover:bg-blue-700`, azioni di salvataggio `bg-green-600`, azioni distruttive in rosso. Tailwind 4 usa la sintassi `bg-linear-to-r`/`bg-linear-to-br` (non `bg-gradient-to-*`).
+- Le azioni distruttive chiedono conferma con `confirm(...)`; il feedback oggi usa `alert(...)`.
+- I colori personalizzati (`bg-brand-primary`, …) e le animazioni (`animate-fade-in`, …) si definiscono in `tailwind.config.mjs`. Per gli input di form semplici usa la classe `.input` di `global.css`.
+- Link alle sezioni della home sempre assoluti (`/#allenamenti`, `/#storico`), perché Header e Footer compaiono su tutte le pagine; link alla pagina di un giorno tramite `workoutUrl(dateKey)`.
+- Il codice segue lo stile dei file vicini: alcuni file usano punto e virgola, altri no. Non riformattare interi file.
+- I commenti nel codice sono un misto di italiano e inglese; preferisci l'italiano per i testi rivolti all'utente.
+
+## Limiti noti
+
+- Nessun test automatico: verifica a mano o con uno script Playwright temporaneo (fuori dal repository).
+- `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; se li sostituisci, fallo in modo coerente su tutti i componenti.
+- Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.
+
+## Riferimento: `BodyTracker/`
+
+- `BodyTracker/LEGGIMI.md`: funzionalità e vincoli di privacy della versione statica (salvataggio a ogni modifica con stato visibile, esportazione e importazione con unione e deduplicazione, protezione da sovrascritture tra schede, gestione dell'errore di quota, schede A/B, varianti, catalogo esercizi con ID stabili).
+- `BodyTracker/documentazione/PRODUCT.md`: principi di prodotto (uso con una mano, salvataggio visibile, nessuna sovrascrittura silenziosa, carichi distinti per variante).
+- `BodyTracker/documentazione/DESIGN.md` e `design.json`: design system "verde scuro" (token per colori, tipografia, raggi e spaziature).
+- `BodyTracker/palestra/esercizi.js`: catalogo esercizi (`window.catalogoEsercizi`) e schede iniziali (`window.schedeIniziali`).
+
+Quando porti una funzionalità dalla versione statica all'app Astro, usa questi file come specifica. Non modificare `BodyTracker/palestra/` se non richiesto: è un pacchetto pubblicabile a sé stante, con un formato dati proprio (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) che non è compatibile con le chiavi `bb-*` dell'app Astro.
+
+## Note varie
+
+- `.vscode/settings.json` contiene un percorso specifico di Windows: non dipenderne.
+- `dist/`, `.astro/` e `node_modules/` sono ignorati da git.
+- `README.md` è ancora quello del template minimo di Astro.

@@ -31,165 +31,66 @@
     </button>
   </div>
 
-  <script type="module">
-    // Otteniamo l’elemento principale in modo sicuro
-    const root = document.querySelector('[data-workout-editor]')
-    if (!root) {
-      console.error('Workout editor root not found')
-    }
+  <script>
+    import { getWorkout, putWorkout, parseDateKey, toDateKey, downloadJson, UPDATED_EVENT, type Workout } from '../scripts/bodytracker'
+    import { mountExerciseList, promptNewExercise } from '../scripts/exercise-list'
 
-    const dateInput = root.querySelector('#workout-date')
-    const list = root.querySelector('#exercise-list')
-    const addExerciseBtn = root.querySelector('#add-exercise')
-    const exportBtn = root.querySelector('#export-json')
+    const root = document.querySelector<HTMLElement>('[data-workout-editor]')
+    if (!root) throw new Error('Workout editor root not found')
 
-    let workout = JSON.parse(localStorage.getItem('workout') || 'null') || {
-      date: new Date().toISOString().split('T')[0],
-      exercises: [],
-    }
+    const dateInput = root.querySelector<HTMLInputElement>('#workout-date')!
+    const list = root.querySelector<HTMLElement>('#exercise-list')!
+    const addExerciseBtn = root.querySelector<HTMLButtonElement>('#add-exercise')!
+    const exportBtn = root.querySelector<HTMLButtonElement>('#export-json')!
 
+    let workout: Workout = getWorkout(toDateKey(new Date()))
     dateInput.value = workout.date
 
+    // Evita di ricaricare l'editor per l'evento emesso dal proprio salvataggio
+    let saving = false
     function save() {
-      localStorage.setItem('workout', JSON.stringify(workout))
-    }
-
-    function render() {
-      list.innerHTML = ''
-
-      if (workout.exercises.length === 0) {
-        list.innerHTML = `
-          <div class="text-center py-12 px-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-            <div class="text-6xl mb-4">💪</div>
-            <h3 class="text-xl font-semibold text-gray-700 mb-2">Nessun esercizio ancora</h3>
-            <p class="text-gray-500 mb-4">Inizia ad aggiungere esercizi per tracciare il tuo allenamento</p>
-            <button id="empty-state-add" class="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition font-medium">
-              + Aggiungi il primo esercizio
-            </button>
-          </div>
-        `
-        const emptyBtn = list.querySelector('#empty-state-add')
-        emptyBtn?.addEventListener('click', addExercise)
-        return
+      saving = true
+      try {
+        putWorkout(workout)
+      } finally {
+        saving = false
       }
-
-      workout.exercises.forEach((ex, i) => {
-        const exDiv = document.createElement('div')
-        exDiv.className = 'p-5 border-2 border-gray-200 rounded-xl bg-linear-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition'
-
-        const setsHTML = ex.sets
-          .map(
-            (set, j) => `
-            <div class="grid grid-cols-4 gap-2 mb-2">
-              <div class="flex items-center justify-center font-medium text-gray-700">${j + 1}</div>
-              <input type="number" class="rounded-lg border-gray-300 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="${set.reps}" min="1" data-reps="${i}-${j}" />
-              <input type="number" class="rounded-lg border-gray-300 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="${set.weight}" min="0" step="0.5" data-weight="${i}-${j}" />
-              <button class="text-red-500 hover:text-red-700 transition text-sm" data-deleteset="${i}-${j}" ${ex.sets.length === 1 ? 'disabled class="text-gray-300 cursor-not-allowed"' : ''}>
-                ✕
-              </button>
-            </div>`
-          )
-          .join('')
-
-        exDiv.innerHTML = `
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-semibold text-lg text-gray-800">${ex.name}</h3>
-            <div class="flex gap-2">
-              <button class="text-sm text-blue-600 hover:text-blue-800 transition" data-addset="${i}">
-                + Aggiungi serie
-              </button>
-              <button class="text-sm text-red-600 hover:text-red-800 transition" data-deleteex="${i}">
-                🗑️ Elimina
-              </button>
-            </div>
-          </div>
-          <div class="grid grid-cols-4 gap-2 text-sm font-medium text-gray-600 mb-2">
-            <div>Serie</div><div>Ripetizioni</div><div>Peso (kg)</div><div></div>
-          </div>
-          ${setsHTML}
-        `
-        list.appendChild(exDiv)
-      })
     }
 
     function addExercise() {
-      const name = prompt('Nome esercizio?')
-      if (!name) return
-      workout.exercises.push({ name, sets: [{ reps: 10, weight: 0 }] })
+      if (!promptNewExercise(workout)) return
       save()
       render()
     }
 
-    list.addEventListener('input', (e) => {
-      const target = e.target
-      if (!(target instanceof HTMLInputElement)) return
-      const repsAttr = target.getAttribute('data-reps')
-      const weightAttr = target.getAttribute('data-weight')
-      if (repsAttr) {
-        const [i, j] = repsAttr.split('-').map(Number)
-        workout.exercises[i].sets[j].reps = Number(target.value)
-      } else if (weightAttr) {
-        const [i, j] = weightAttr.split('-').map(Number)
-        workout.exercises[i].sets[j].weight = Number(target.value)
-      }
-      save()
+    const render = mountExerciseList(list, {
+      getWorkout: () => workout,
+      onChange: save,
+      emptyText: 'Inizia ad aggiungere esercizi per tracciare il tuo allenamento',
+      onAddFirst: addExercise,
     })
 
-    list.addEventListener('click', (e) => {
-      const target = e.target
-      if (!(target instanceof HTMLElement)) return
-
-      const addset = target.getAttribute('data-addset')
-      if (addset) {
-        const i = Number(addset)
-        workout.exercises[i].sets.push({ reps: 10, weight: 0 })
-        save()
-        render()
-        return
-      }
-
-      const deleteset = target.getAttribute('data-deleteset')
-      if (deleteset) {
-        const [i, j] = deleteset.split('-').map(Number)
-        if (workout.exercises[i].sets.length > 1) {
-          if (confirm('Rimuovere questa serie?')) {
-            workout.exercises[i].sets.splice(j, 1)
-            save()
-            render()
-          }
-        }
-        return
-      }
-
-      const deleteex = target.getAttribute('data-deleteex')
-      if (deleteex) {
-        const i = Number(deleteex)
-        if (confirm(`Eliminare l'esercizio "${workout.exercises[i].name}"?`)) {
-          workout.exercises.splice(i, 1)
-          save()
-          render()
-        }
-        return
-      }
-    })
+    function reload() {
+      if (saving) return
+      workout = getWorkout(workout.date)
+      render()
+    }
 
     addExerciseBtn.addEventListener('click', addExercise)
 
     exportBtn.addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(workout, null, 2)], { type: 'application/json' })
-      const a = document.createElement('a')
-      a.href = URL.createObjectURL(blob)
-      a.download = `workout-${workout.date}.json`
-      a.click()
+      // Array di un elemento: lo stesso formato accettato da "Importa" nello storico
+      downloadJson([workout], `workout-${workout.date}.json`)
     })
 
-    dateInput.addEventListener('input', (e) => {
-      const target = e.target
-      if (target instanceof HTMLInputElement) {
-        workout.date = target.value
-        save()
-      }
+    dateInput.addEventListener('change', () => {
+      if (!parseDateKey(dateInput.value)) return
+      workout = getWorkout(dateInput.value)
+      render()
     })
+
+    window.addEventListener(UPDATED_EVENT, reload)
+    window.addEventListener('storage', reload)
 
     render()
   </script>

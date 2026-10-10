@@ -1,5 +1,5 @@
 ---
-const STORAGE_KEY = 'bb-calendar'
+import { WEEK_DAYS } from '../scripts/bodytracker'
 ---
 <div data-calendar-config class="p-4 border rounded">
     <h2 class="font-medium mb-2">Calendario allenamenti (settimana)</h2>
@@ -8,48 +8,52 @@ const STORAGE_KEY = 'bb-calendar'
 
     <form class="space-y-2" onsubmit="return false;">
         <!-- giorni della settimana -->
-        {['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'].map(day => (
+        {WEEK_DAYS.map(day => (
             <div class="flex items-center gap-2">
-                <label class="w-20 text-sm">{day}</label>
-                <input class="flex-1 input" data-day={day} placeholder="es. Petto" />
+                <label class="w-20 text-sm" for={`cal-${day}`}>{day}</label>
+                <input class="flex-1 input" id={`cal-${day}`} data-day={day} placeholder="es. Petto" />
             </div>
         ))}
 
 
         <div class="flex gap-2 mt-3">
             <button id="save-cal" class="px-3 py-1 rounded bg-slate-800 text-white text-sm">Salva</button>
-            <button id="reset-cal" class="px-3 py-1 rounded border text-sm">Reset</button>
+            <button id="reset-cal" type="button" class="px-3 py-1 rounded border text-sm">Reset</button>
         </div>
     </form>
 
-    <script type="module">
-        const STORAGE_KEY = 'bb-calendar'
-        const root = document.querySelector('[data-calendar-config]')
+    <script>
+        import { loadCalendar, saveCalendar, resetCalendar, UPDATED_EVENT, type CalendarConfig } from '../scripts/bodytracker'
+
+        const root = document.querySelector<HTMLElement>('[data-calendar-config]')!
+        const inputs = root.querySelectorAll<HTMLInputElement>('input[data-day]')
 
 
         function load() {
-            const saved = localStorage.getItem(STORAGE_KEY)
-            const data = saved ? JSON.parse(saved) : {}
-            root.querySelectorAll('input[data-day]').forEach(i => {
-                i.value = data[i.dataset.day] || ''
+            const data = loadCalendar()
+            inputs.forEach(i => {
+                i.value = data[i.dataset.day!] || ''
             })
         }
 
 
         function save() {
-            const obj = {}
-            root.querySelectorAll('input[data-day]').forEach(i => {
-                if (i.value) obj[i.dataset.day] = i.value
+            const obj: CalendarConfig = {}
+            inputs.forEach(i => {
+                const value = i.value.trim()
+                if (value) obj[i.dataset.day!] = value
             })
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(obj))
+            saveCalendar(obj)
+            window.dispatchEvent(new CustomEvent(UPDATED_EVENT))
             alert('Calendario salvato nel browser')
         }
 
 
-        root.querySelector('#save-cal').addEventListener('click', save)
-        root.querySelector('#reset-cal').addEventListener('click', () => {
+        root.querySelector('#save-cal')!.addEventListener('click', save)
+        root.querySelector('#reset-cal')!.addEventListener('click', () => {
             if (!confirm('Resettare il calendario?')) return
-            localStorage.removeItem(STORAGE_KEY)
+            resetCalendar()
+            window.dispatchEvent(new CustomEvent(UPDATED_EVENT))
             load()
         })
 
