@@ -4,31 +4,31 @@
   import X from '@lucide/svelte/icons/x';
 
   interface Props {
-    messaggio: string | null;
-    azione?: string;
-    onazione?: () => void;
-    onchiudi?: () => void;
+    message: string | null;
+    action?: string;
+    onaction?: () => void;
+    onclose?: () => void;
     /** millisecondi prima della chiusura automatica */
-    durata?: number;
+    duration?: number;
   }
 
-  let { messaggio, azione, onazione, onchiudi, durata = 5000 }: Props = $props();
+  let { message, action, onaction, onclose, duration = 5000 }: Props = $props();
 
   $effect(() => {
-    if (!messaggio) return;
-    const t = setTimeout(() => onchiudi?.(), durata);
+    if (!message) return;
+    const t = setTimeout(() => onclose?.(), duration);
     return () => clearTimeout(t);
   });
 </script>
 
 <div class="area" role="status" aria-live="polite">
-  {#if messaggio}
-    <div class="guscio toast">
-      <span class="testo">{messaggio}</span>
-      {#if azione}
-        <button type="button" class="pulsante pulsante-testo" onclick={() => { onazione?.(); onchiudi?.(); }}>{azione}</button>
+  {#if message}
+    <div class="shell toast">
+      <span class="text">{message}</span>
+      {#if action}
+        <button type="button" class="btn btn-text" onclick={() => { onaction?.(); onclose?.(); }}>{action}</button>
       {/if}
-      <button type="button" class="pulsante pulsante-icona" aria-label="Chiudi avviso" onclick={() => onchiudi?.()}>
+      <button type="button" class="btn btn-icon" aria-label="Chiudi avviso" onclick={() => onclose?.()}>
         <X size={20} aria-hidden="true" />
       </button>
     </div>
@@ -38,8 +38,8 @@
 <style>
   .area {
     position: fixed;
-    /* sopra le barre in basso della pagina, che ne dichiara l'altezza in --altezza-barre-basse */
-    inset: auto 0 calc(var(--altezza-barre-basse) + 0.75rem + env(safe-area-inset-bottom)) 0;
+    /* sopra le barre in basso della pagina, che ne dichiara l'altezza in --bottom-bars-height */
+    inset: auto 0 calc(var(--bottom-bars-height) + 0.75rem + env(safe-area-inset-bottom)) 0;
     z-index: 40;
     display: flex;
     justify-content: center;
@@ -54,16 +54,16 @@
     width: min(100%, 32rem);
     min-height: 56px;
     padding: 0.25rem 0.25rem 0.25rem 1rem;
-    border: 1px solid var(--color-guscio-linea-forte);
-    border-radius: var(--radius-pannello);
-    box-shadow: 0 8px 24px var(--color-ombra);
-    animation: entra 0.24s var(--ease-uscita);
+    border: 1px solid var(--color-shell-line-strong);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 8px 24px var(--color-shadow);
+    animation: enter 0.24s var(--ease-out-expo);
   }
-  .testo {
+  .text {
     flex: 1;
     min-width: 0;
   }
-  @keyframes entra {
+  @keyframes enter {
     from {
       opacity: 0;
       transform: translateY(8px);

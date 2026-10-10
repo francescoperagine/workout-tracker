@@ -5,37 +5,37 @@ import CalendarDays from '@lucide/astro/icons/calendar-days';
 import ClipboardList from '@lucide/astro/icons/clipboard-list';
 import History from '@lucide/astro/icons/rotate-ccw-clock';
 
-export type VoceTab = 'oggi' | 'calendario' | 'schede' | 'storico';
+export type TabId = 'today' | 'calendar' | 'routines' | 'history';
 
 interface Props {
-  attiva?: VoceTab;
+  active?: TabId;
 }
 
-const { attiva } = Astro.props;
+const { active } = Astro.props;
 
-const voci = [
-  { id: 'oggi', etichetta: 'Oggi', href: '/', Icona: House },
-  { id: 'calendario', etichetta: 'Calendario', href: '/calendario', Icona: CalendarDays },
-  { id: 'schede', etichetta: 'Schede', href: '/schede', Icona: ClipboardList },
-  { id: 'storico', etichetta: 'Storico', href: '/storico', Icona: History },
+const tabs = [
+  { id: 'today', label: 'Oggi', href: '/', Icon: House },
+  { id: 'calendar', label: 'Calendario', href: '/calendar', Icon: CalendarDays },
+  { id: 'routines', label: 'Schede', href: '/routines', Icon: ClipboardList },
+  { id: 'history', label: 'Storico', href: '/history', Icon: History },
 ] as const;
 ---
 
-<nav class="guscio border-t border-guscio-linea pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
+<nav class="shell border-t border-shell-line pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
   <ul class="mx-auto grid max-w-2xl grid-cols-4">
     {
-      voci.map(({ id, etichetta, href, Icona }) => (
+      tabs.map(({ id, label, href, Icon }) => (
         <li>
           <a
             href={href}
-            aria-current={attiva === id ? 'page' : undefined}
+            aria-current={active === id ? 'page' : undefined}
             class:list={[
               'flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs no-underline',
-              attiva === id ? 'font-bold text-guscio-accento' : 'text-guscio-secondario hover:text-guscio-testo',
+              active === id ? 'font-bold text-shell-accent' : 'text-shell-muted hover:text-shell-foreground',
             ]}
           >
-            <Icona size={22} aria-hidden="true" />
-            {etichetta}
+            <Icon size={22} aria-hidden="true" />
+            {label}
           </a>
         </li>
       ))

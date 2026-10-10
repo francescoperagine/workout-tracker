@@ -9,13 +9,13 @@ Indice dei brief scritti con il metodo `shape` di Impeccable. I brief veri e pro
 | Superficie | Percorso | Brief | Storie | Principi |
 | --- | --- | --- | --- | --- |
 | Oggi | `/` | [route.md](../../.impeccable/surfaces/route.md) | US-11, 17, 05, 03 | P2, P7, P8, P10 |
-| Primo avvio | `/benvenuto` | [route-benvenuto.md](../../.impeccable/surfaces/route-benvenuto.md) | US-01, 02, 11 | P4, P6, P8, P10 |
-| Allenamento attivo (con riepilogo e mini-barra) | `/allenamento` | [route-allenamento.md](../../.impeccable/surfaces/route-allenamento.md) | US-12…20, 08, 29, 33 | P1, P2, P3, P4, P5, P7, P8, P10 |
-| Timer di recupero | overlay in `/allenamento` (`TimerRecupero.svelte`) | [src-components-allenamento-timerrecupero-svelte.md](../../.impeccable/surfaces/src-components-allenamento-timerrecupero-svelte.md) | US-21…26 | P2, P3, P5, P8, P9 |
-| Schede (elenco ed editor) | `/schede`, `/scheda?id=` | [route-schede.md](../../.impeccable/surfaces/route-schede.md) | US-07, 08, 09, 10 | P2, P4, P8, P10 |
-| Calendario | `/calendario` | [route-calendario.md](../../.impeccable/surfaces/route-calendario.md) | US-04, 05, 06, 27 | P2, P3, P7, P10 |
-| Storico e progressi | `/storico`, `/sessione?id=`, `/esercizio?id=` | [route-storico.md](../../.impeccable/surfaces/route-storico.md) | US-27, 28, 29, 18, 20 | P3, P4, P9, P10 |
-| Impostazioni e Dati | `/impostazioni` | [route-impostazioni.md](../../.impeccable/surfaces/route-impostazioni.md) | US-30…33, 02, 03, 24 | P4, P6, P9, P10 |
+| Primo avvio | `/welcome` | [route-welcome.md](../../.impeccable/surfaces/route-welcome.md) | US-01, 02, 11 | P4, P6, P8, P10 |
+| Allenamento attivo (con riepilogo e mini-barra) | `/workout` | [route-workout.md](../../.impeccable/surfaces/route-workout.md) | US-12…20, 08, 29, 33 | P1, P2, P3, P4, P5, P7, P8, P10 |
+| Timer di recupero | overlay in `/workout` (`RestTimer.svelte`) | [src-components-workout-resttimer-svelte.md](../../.impeccable/surfaces/src-components-workout-resttimer-svelte.md) | US-21…26 | P2, P3, P5, P8, P9 |
+| Schede (elenco ed editor) | `/routines`, `/routine?id=` | [route-routines.md](../../.impeccable/surfaces/route-routines.md) | US-07, 08, 09, 10 | P2, P4, P8, P10 |
+| Calendario | `/calendar` | [route-calendar.md](../../.impeccable/surfaces/route-calendar.md) | US-04, 05, 06, 27 | P2, P3, P7, P10 |
+| Storico e progressi | `/history`, `/session?id=`, `/exercise?id=` | [route-history.md](../../.impeccable/surfaces/route-history.md) | US-27, 28, 29, 18, 20 | P3, P4, P9, P10 |
+| Impostazioni e Dati | `/settings` | [route-settings.md](../../.impeccable/surfaces/route-settings.md) | US-30…33, 02, 03, 24 | P4, P6, P9, P10 |
 
 Navigazione: tab bar in basso con **Oggi, Calendario, Schede, Storico**; Impostazioni da un'icona nell'intestazione (confermato). Le pagine con un parametro lo leggono dalla query string, perché il sito è statico.
 
@@ -78,7 +78,7 @@ Proposte emerse scrivendo i brief, confermate dall'utente e riportate in [USER-S
 1. **Spunta su una riga vuota:** conferma i valori "precedente", come in Strong (**1 tocco** per ripetere la volta scorsa). Il rischio di registrare valori non fatti è mitigato dall'annullamento della spunta. Senza precedente, una riga vuota non si spunta. P1 e US-12 sono aggiornati.
 2. **Priorità:** confermate le proposte 1 e 2 della sezione 3 (superserie, note sul carico, approfondimento e più sessioni al giorno diventano M), i criteri aggiunti (punti 3 e 4) e le esclusioni (punto 5).
 3. **Struttura:** confermate tutte le proposte assunte nei brief:
-   - primo avvio come schermata dedicata `/benvenuto`;
+   - primo avvio come schermata dedicata `/welcome`;
    - riepilogo come schermata dopo "Termina";
    - Impostazioni da un'icona nell'intestazione, non come quinta tab;
    - Progressi dentro Storico;

@@ -16,13 +16,13 @@ test('/kit: la spunta su una riga vuota conferma il precedente e apre il recuper
 test('/kit: la variante si può scrivere a mano al posto di quella prevista', async ({ page }) => {
   await page.goto('/kit');
   await page.getByRole('button', { name: 'Cambia variante' }).click();
-  const foglio = page.locator('dialog[open]');
-  const usa = foglio.getByRole('button', { name: 'Usa questa variante' });
-  await foglio.getByRole('radio', { name: 'Altro esercizio…' }).check();
-  await expect(usa).toBeDisabled();
-  const campo = foglio.getByRole('textbox', { name: 'Che esercizio hai fatto al posto di quello previsto?' });
-  await expect(campo).toBeFocused();
-  await campo.fill('Panca inclinata con kettlebell');
-  await usa.click();
+  const sheet = page.locator('dialog[open]');
+  const useButton = sheet.getByRole('button', { name: 'Usa questa variante' });
+  await sheet.getByRole('radio', { name: 'Altro esercizio…' }).check();
+  await expect(useButton).toBeDisabled();
+  const input = sheet.getByRole('textbox', { name: 'Che esercizio hai fatto al posto di quello previsto?' });
+  await expect(input).toBeFocused();
+  await input.fill('Panca inclinata con kettlebell');
+  await useButton.click();
   await expect(page.getByText('Variante scelta: Panca inclinata con kettlebell')).toBeVisible();
 });

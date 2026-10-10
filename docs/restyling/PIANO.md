@@ -42,7 +42,7 @@ Nome: **BodyTracker**.
   - service worker generato con **`workbox-build`** in un hook `astro:build:done`, che fa il precache di tutto `dist/`. Si usa questa via perché `@vite-pwa/astro` dichiara compatibilità solo fino ad Astro 5;
   - registrazione con scope pari al percorso base.
 - **Percorso base:** `base` e `site` di Astro da variabili d'ambiente (`BT_BASE`, `BT_SITE`). Tutti i link passano da un helper che usa `import.meta.env.BASE_URL`.
-- **Archivio:** `localStorage`, chiave `bodytracker.archivio.v2`, dietro un modulo repository che gestisce validazione, revisioni e conflitti tra schede, sul modello del PoC.
+- **Archivio:** `localStorage`, chiave `bodytracker.archive.v2`, dietro un modulo repository che gestisce validazione, revisioni e conflitti tra schede, sul modello del PoC.
   - All'avvio `navigator.storage.persist()`.
   - Avviso nel pannello Dati: su iOS i siti non installati possono perdere i dati dopo 7 giorni senza visite. Consigliati l'installazione e un backup periodico.
 - **Test:**
@@ -50,77 +50,79 @@ Nome: **BodyTracker**.
   - **Playwright** per i flussi end-to-end, con la Chromium preinstallata.
 - **Qualità UI:** Impeccable installato nel repository (`npx impeccable install`) con hook del detector, più `npx impeccable detect` sui file e sulle pagine renderizzate in CI e in locale.
 
-## Modello dati v2 (bozza)
+## Modello dati v2
+
+Implementato allo step 2 in `src/lib/archive/types.ts` (nomi in inglese come tutto il codice; i commenti dicono il termine della palestra).
 
 ```ts
-interface Archivio {
-  versione: 2;
-  revisione: number;                    // incrementata a ogni salvataggio, per i conflitti tra schede
-  catalogo: Record<string, Esercizio>;  // esercizi personalizzati; quelli di base arrivano dal codice
-  schede: Scheda[];
-  pianificazione: Record<GiornoSettimana, string | null>; // lun..dom -> id scheda
-  eccezioni: Record<string, string | null>;               // YYYY-MM-DD -> id scheda (o riposo)
-  sessioni: Sessione[];
-  impostazioni: {
-    // il tema non sta qui: è una preferenza del dispositivo, nella chiave `bodytracker.tema` (step 1)
-    unitaPeso: 'kg' | 'lb';
-    unitaDistanza: 'm' | 'ft';
-    recuperoPredefinito: number;          // secondi
-    suono: boolean; vibrazione: boolean;
+interface Archive {
+  version: 2;
+  revision: number;                     // incrementata a ogni salvataggio, per i conflitti tra schede
+  catalog: Record<string, CustomExercise>; // esercizi personalizzati; quelli di base arrivano dal codice
+  routines: Routine[];                  // schede
+  schedule: Partial<Record<Weekday, string | null>>; // mon..sun -> id scheda; null = riposo, assente = niente
+  overrides: Record<string, string | null>;          // eccezioni: YYYY-MM-DD -> id scheda (o riposo)
+  sessions: Session[];
+  settings: {
+    // il tema non sta qui: è una preferenza del dispositivo, nella chiave `bodytracker.theme` (step 1)
+    weightUnit: 'kg' | 'lb';
+    distanceUnit: 'm' | 'ft';
+    defaultRest: number;                // recupero predefinito, secondi
+    sound: boolean; vibration: boolean;
   };
 }
 
-interface Scheda {
-  id: string; nome: string; note: string; archiviata: boolean;
-  voci: VoceScheda[];
+interface Routine {                     // scheda
+  id: string; name: string; notes: string; archived: boolean;
+  exercises: RoutineExercise[];
 }
-interface VoceScheda {
+interface RoutineExercise {             // voce della scheda
   id: string;
-  esercizioId: string;
-  alternative: string[];          // id esercizi
-  gruppo: string | null;          // stessa stringa = superserie
-  serie: number;                  // serie target
-  ripetizioni: string;            // "6–8"
-  caricoMin: number | null;       // kg, convertito in visualizzazione
-  caricoMax: number | null;       // kg; uguale a caricoMin se non è un intervallo
-  notaCarico: string;             // "da tarare"
-  unita: string;                  // "per manubrio"
-  recupero: number;               // secondi
-  recuperoRiscaldamento: number;  // secondi
+  exerciseId: string;
+  alternatives: string[];         // id esercizi
+  group: string | null;           // stessa stringa = superserie
+  sets: number;                   // serie target
+  reps: string;                   // "6–8"
+  loadMin: number | null;         // kg, convertito in visualizzazione
+  loadMax: number | null;         // kg; uguale a loadMin se non è un intervallo
+  loadNote: string;               // "da tarare"
+  unit: string;                   // "per manubrio"
+  rest: number;                   // recupero, secondi
+  warmupRest: number;             // recupero di riscaldamento, secondi
 }
 
-interface Sessione {
-  id: string; data: string; schedaId: string | null; nome: string;
-  inizio: number; fine: number | null;   // timestamp
-  voci: VoceSessione[];
+interface Session {
+  id: string; date: string; routineId: string | null; name: string;
+  start: number; end: number | null;    // timestamp; end null = in corso
+  exercises: SessionExercise[];
 }
-interface VoceSessione {
-  id: string; esercizioId: string; varianteDi: string | null;
-  gruppo: string | null; recupero: number; recuperoRiscaldamento: number; note: string;
-  serie: Serie[];
+interface SessionExercise {
+  id: string; exerciseId: string; variantOf: string | null;
+  group: string | null; rest: number; warmupRest: number; notes: string;
+  sets: SessionSet[];
 }
-interface Serie {
+interface SessionSet {                  // serie
   id: string;
-  tipo: 'normale' | 'riscaldamento' | 'drop' | 'cedimento';
+  type: 'normal' | 'warmup' | 'drop' | 'failure'; // normale, riscaldamento, drop, cedimento
   kg: number | null;                     // sempre in kg, anche se l'utente usa lb
-  ripetizioni: number | null;
-  completata: number | null;             // timestamp della spunta
+  reps: number | null;
+  completedAt: number | null;            // timestamp della spunta
 }
 
-// Chiave separata, aggiornata spesso
-interface TimerRecupero { sessioneId: string; voceId: string; serieId: string; inizio: number; fine: number; durata: number }
+// Chiave separata, aggiornata spesso (step 7)
+interface RestTimerState { sessionId: string; exerciseId: string; setId: string; start: number; end: number; duration: number }
 ```
 
 **Dati iniziali**
-- Il catalogo e le schede A/B del PoC (`esercizi.js`) vengono convertiti una volta in `src/data/catalogo.ts` e `src/data/schede-iniziali.ts`. Gli ID degli esercizi restano identici, perché il tuo storico li usa. Le eventuali immagini degli esercizi vanno in `public/esercizi/`.
+- Il catalogo e le schede A/B del PoC (`esercizi.js`) vengono convertiti una volta in `src/data/catalog.ts` e `src/data/starter-routines.ts`. Gli ID degli esercizi restano identici, perché il tuo storico li usa. Le eventuali immagini degli esercizi vanno in `public/exercises/`.
 - I recuperi come "2′" o "60–75″" vengono convertiti in secondi: per un intervallo si usa il valore minimo (es. 60–75″ → 60 s), e la scheda resta modificabile.
 
-- Il carico di partenza del PoC (testo come "45–50 kg" o "40 kg, da tarare") viene diviso in `caricoMin`, `caricoMax` e `notaCarico`.
+- Il carico di partenza del PoC (testo come "45–50 kg" o "40 kg, da tarare") viene diviso in `loadMin`, `loadMax` e `loadNote`.
 
 ## Unità di misura
 
 Costo basso, perché la regola è unica: **i dati si salvano sempre in unità metriche** (kg, metri) e si convertono solo in ingresso e in uscita.
-- `src/lib/unita.ts`: `daKg`/`aKg` e `daMetri`/`aMetri`, più la formattazione (`formattaPeso(kg, impostazioni)` → "135 lb"), con test.
+- `src/lib/units.ts`: `fromKg`/`toKg` e `fromMeters`/`toMeters`, più la formattazione (`formatWeight(kg, settings)` → "135 lb"), con test.
 - **Peso (kg/lb):** campi serie, colonna "precedente", carichi delle schede, riepilogo, volume, record e grafici mostrano e accettano l'unità scelta.
   - Il valore digitato viene convertito in kg **senza arrotondare** il dato salvato: 135 lb restano 135 lb quando rilette.
   - L'arrotondamento è solo in visualizzazione: 0,25 kg / 0,5 lb.
@@ -152,7 +154,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 | Approfondimento esercizio (descrizione, immagine locale sicura, passaggi, attenzione, fonti) | Foglio dal basso; stessa regola sui percorsi delle immagini (niente domini esterni né SVG incorporati) | 6 |
 | Stato "Salvato su questo dispositivo", "Salva ora" per riprovare, errore di quota con dati tenuti in memoria | Uguale nella barra fissa | 2, 6 |
 | Avviso prima di chiudere con modifiche non salvate (`beforeunload`) | Uguale | 6 |
-| Protezione tra schede: se il diario cambia altrove, blocco e richiesta di ricaricare | Uguale, con `revisione` | 2 |
+| Protezione tra schede: se il diario cambia altrove, blocco e richiesta di ricaricare | Uguale, con `revision` | 2 |
 | Archivio illeggibile: niente sovrascrittura, download del contenuto originale | Uguale | 2, 3 |
 | Export JSON; import con validazione completa, limite 10 MB e 10.000 allenamenti, scelta tra mantenere o sostituire gli ID già presenti | Uguale per il formato v2; il formato v1 del PoC viene convertito | 2, 3 |
 | Limiti 100 esercizi per sessione e 100 serie per esercizio, lunghezze massime dei testi | Uguale | 2 |
@@ -198,24 +200,25 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - superfici del browser tematizzate (selezione, caret, focus, scrollbar).
 - Pagina interna `/kit` per vedere tutti i componenti nei due temi (esclusa dal precache e dalla navigazione). Non `/_kit`: Astro non genera le pagine il cui nome comincia con `_`.
 - **Verifica:** detector a 0 su `/kit` nei due temi, contrasti ≥ 4,5:1, target ≥ 44–48px.
-- **Stato (10 ottobre 2026):** fatto. Scelte dell'utente: tema chiaro "guscio verde" (intestazione, barre e timer restano verde scuro), font Atkinson Hyperlegible Next, timer a **livello che si svuota**. `DESIGN.md` riscritto, token in `@theme` con `light-dark()`, componenti base in `src/components/ui/`, `/kit`, test US-30. Il tema è salvato nella chiave `bodytracker.tema` e non nell'archivio: lo script inline lo applica prima del primo disegno senza leggere il diario.
+- **Stato (10 ottobre 2026):** fatto. Scelte dell'utente: tema chiaro "guscio verde" (intestazione, barre e timer restano verde scuro), font Atkinson Hyperlegible Next, timer a **livello che si svuota**. `DESIGN.md` riscritto, token in `@theme` con `light-dark()`, componenti base in `src/components/ui/`, `/kit`, test US-30. Il tema è salvato nella chiave `bodytracker.theme` e non nell'archivio: lo script inline lo applica prima del primo disegno senza leggere il diario.
 
 ### Step 2: Dati
 - **Storie:** US-02 (import PoC, logica), US-31 (unità, logica), US-33 (salvataggio, quota, conflitti).
-- `src/lib/archivio/`: tipi, validazione, repository (caricamento, salvataggio, revisione, quota, conflitto tra schede, evento di aggiornamento), seed dal PoC, conversione dei recuperi e dei carichi.
-- `src/lib/unita.ts` (conversioni e formattazione di peso e distanza).
+- `src/lib/archive/`: tipi, validazione, repository (caricamento, salvataggio, revisione, quota, conflitto tra schede, evento di aggiornamento), seed dal PoC, conversione dei recuperi e dei carichi.
+- `src/lib/units.ts` (conversioni e formattazione di peso e distanza).
 - Import ed export v2, import del backup del PoC e lettura diretta della sua chiave.
 - Conversione di `BodyTracker/palestra/esercizi.js` in `src/data/` (catalogo e schede iniziali, stessi ID).
 - Rimozione del codice `bb-*` attuale.
 - **Verifica:** test Vitest su validazione, import del PoC (con un tuo backup reale, se me lo fornisci, oppure uno sintetico), conflitti, quota e conversioni di unità (andata e ritorno senza perdita).
-- **Stato (10 ottobre 2026):** fatto, con 129 test Vitest nuovi (135 in tutto). `src/lib/archivio/`, `src/lib/unita.ts`, `src/data/` e il backup sintetico in `tests/fixtures/`. Decisioni prese nello step:
+- **Stato (10 ottobre 2026):** fatto, con 129 test Vitest nuovi (135 in tutto). `src/lib/archive/`, `src/lib/units.ts`, `src/data/` e il backup sintetico in `tests/fixtures/`. Dopo la chiusura dello step, su richiesta dell'utente, **tutto il codice è passato all'inglese** (file, route, identificatori, campi del modello dati, chiavi di storage, token e classi CSS); restano in italiano i testi per l'utente, i commenti, la documentazione e gli ID degli esercizi del PoC. Decisioni prese nello step:
   - **Pianificazione ed eccezioni:** id di scheda, `null` = riposo, chiave assente = nulla di pianificato (servono tre stati: US-04 "Riposo" e il caso "nessuna pianificazione" del brief di Oggi).
   - **Conflitto tra schede:** come nel PoC non si sovrascrive mai; in più, con la revisione, una scheda **senza modifiche in sospeso** adotta il diario più recente invece di bloccarsi. Il blocco con "ricarica" resta per il conflitto vero (modifiche in entrambe) e per chi salva su una revisione superata.
-  - **Schede iniziali:** il PoC non ha numero di serie né recupero di riscaldamento: **3 serie e 60 s**, modificabili. Id `scheda-a`/`scheda-b`, voci `a-1`, `a-2a`, …
-  - **Esercizi personalizzati (US-14):** id `pers-<parole-del-nome>`, stabile (stesso nome → stesso id anche su un altro dispositivo); confronto senza maiuscole, spazi, punteggiatura e accenti; vince l'esercizio di base.
+  - **Schede iniziali:** il PoC non ha numero di serie né recupero di riscaldamento: **3 serie e 60 s**, modificabili. Id `routine-a`/`routine-b`, voci `a-1`, `a-2a`, …
+  - **Esercizi personalizzati (US-14):** id `custom-<parole-del-nome>`, stabile (stesso nome → stesso id anche su un altro dispositivo); confronto senza maiuscole, spazi, punteggiatura e accenti; vince l'esercizio di base.
   - **Import del PoC:** il file con struttura sbagliata si rifiuta; un singolo allenamento o esercizio non valido si **scarta con il motivo** (US-02) invece di rifiutare tutto. Nomi liberi → esercizi personalizzati; un id sconosciuto resta lo stesso come personalizzato; un nome cambiato a mano nel PoC finisce nelle note (il modello v2 non ha il campo). Allenamento `A`/`B` → schede iniziali, aggiunte solo se mancano; gruppo e recuperi della voce dalla scheda. Inizio = mezzogiorno locale della data; le serie con valori di un allenamento concluso (o di un esercizio spuntato) sono completate; le serie vuote restano, non completate.
   - **Import v2:** validazione completa (un errore rifiuta il file). Unione per id con "mantieni"/"sostituisci" anche per schede, esercizi personalizzati, pianificazione ed eccezioni; impostazioni del backup solo con "sostituisci". Resta aperta una sola sessione in corso, la più recente.
   - **Unità:** campi di modifica al centesimo (135,3 lb restano 135,3), etichette al passo di 0,25 kg / 0,5 lb e 0,1 m / 0,5 ft, virgola decimale e spazio unificatore.
+  - **Route in inglese:** `/welcome`, `/workout`, `/routines` e `/routine?id=`, `/calendar`, `/history`, `/session?id=`, `/exercise?id=`, `/settings`. `/workout` è oggi la pagina vecchia del giorno (`workout.astro`): allo step 6 la sostituisce l'allenamento attivo.
   - **Codice `bb-*`:** non rimosso. Le pagine vecchie ne dipendono finché gli step 3–6 non le sostituiscono; si toglie con l'ultima di esse, insieme allo smoke test.
 
 ### Step 3: Guscio dell'app e PWA
@@ -240,7 +243,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - settimana scorrevole e vista mese compatta;
   - assegnazione di una scheda a ogni giorno della settimana, eccezione per una singola data (scheda diversa o riposo);
   - stati del giorno: pianificato, fatto, saltato, oggi.
-- Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo; decisione confermata il 10 ottobre 2026, logica in `avvioRapido` dallo step 2) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
+- Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo; decisione confermata il 10 ottobre 2026, logica in `quickStart` dallo step 2) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
 - **Verifica:** e2e "pianifico B il giovedì → giovedì Oggi propone B".
 
 ### Step 6: Allenamento attivo
@@ -259,12 +262,12 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - −15 s, +15 s, Salta, Riduci (diventa barra);
   - anteprima della prossima serie (esercizio, kg × rip attesi).
 - Motore:
-  - basato su `fine` (timestamp), persistito nella sua chiave, ricalcolato a `visibilitychange`;
+  - basato su `end` (timestamp), persistito nella sua chiave, ricalcolato a `visibilitychange`;
   - wake lock durante la sessione;
   - suono con `AudioContext` sbloccato dal tocco della spunta; `navigator.vibrate` dove disponibile;
   - `aria-live` a 30 s, 10 s e alla fine; `prefers-reduced-motion`.
 - **Predisposizione Web Push:**
-  - interfaccia `AvvisoRecupero { programma(timer): Promise<void>; annulla(id): Promise<void> }` con implementazione locale (in primo piano);
+  - interfaccia `RestNotifier { schedule(timer): Promise<void>; cancel(id): Promise<void> }` con implementazione locale (in primo piano);
   - handler `push` e `notificationclick` già presenti nel service worker;
   - documento con il contratto di un futuro endpoint (`POST {subscription, fine}`). Nessun server.
 - **Verifica:** Vitest con timer finti; e2e con `page.clock` (spunta → overlay → +15 s → fine → chiusura); prova manuale su iPhone e Android, con una checklist nel documento; **seconda prova reale in palestra** focalizzata su timer, interruzioni e leggibilità.

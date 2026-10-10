@@ -36,13 +36,13 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 ## States and ranges
 
 - Oggi con scheda pianificata; giorno di riposo (azione primaria diventa "Allenati comunque", con scelta della scheda); nessuna pianificazione (invito a pianificare, più avvio libero); sessione in corso (Riprendi); allenamento di oggi già concluso (riepilogo breve, "Riapri" o "Nuova sessione"); eccezione per oggi (scheda diversa dalla settimanale, segnalata).
-- Archivio vuoto: rimanda al primo avvio (`/benvenuto`) se non ancora visto.
+- Archivio vuoto: rimanda al primo avvio (`/welcome`) se non ancora visto.
 - Errore di archivio illeggibile o conflitto tra schede: messaggio in linea, mai un'azione che sovrascrive.
 
 ## Interaction and layout
 
 - Una colonna; l'azione primaria cade nella metà inferiore a 390×844 senza scorrere; tab bar in basso (Oggi, Calendario, Schede, Storico).
-- Le righe delle schede sono un gruppo a scelta singola (le righe di scelta del design system, `.scelta`), non pulsanti primari: l'unica azione primaria resta "Inizia allenamento". Le 4 righe e "Inizia" entrano senza scorrere a 390×844; a 320×568 "Inizia" resta fisso sopra la tab bar.
+- Le righe delle schede sono un gruppo a scelta singola (le righe di scelta del design system, `.choice`), non pulsanti primari: l'unica azione primaria resta "Inizia allenamento". Le 4 righe e "Inizia" entrano senza scorrere a 390×844; a 320×568 "Inizia" resta fisso sopra la tab bar.
 - La striscia della settimana è leggibile senza colore (icona o testo per lo stato), toccabile per giorno.
 
 ## Constraints and open decisions

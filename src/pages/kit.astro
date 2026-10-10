@@ -1,82 +1,83 @@
 ---
 // Pagina interna del design system: tutti i componenti base nei due temi.
-// Fuori dalla navigazione, noindex; da escludere dal precache allo step 3. ?tema=chiaro|scuro forza il tema.
+// Fuori dalla navigazione, noindex; da escludere dal precache allo step 3. ?theme=light|dark forza il tema.
 import Base from '../layouts/Base.astro';
-import Intestazione from '../components/ui/Intestazione.astro';
+import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar from '../components/ui/TabBar.astro';
-import StatoVuoto from '../components/ui/StatoVuoto.astro';
-import TimerRecupero from '../components/allenamento/TimerRecupero.svelte';
-import KitTema from '../components/kit/KitTema.svelte';
-import KitRighe from '../components/kit/KitRighe.svelte';
-import KitBarre from '../components/kit/KitBarre.svelte';
-import KitFinestre from '../components/kit/KitFinestre.svelte';
-import Segmentato from '../components/ui/Segmentato.svelte';
+import EmptyState from '../components/ui/EmptyState.astro';
+import RestTimer from '../components/workout/RestTimer.svelte';
+import KitTheme from '../components/kit/KitTheme.svelte';
+import KitSetRows from '../components/kit/KitSetRows.svelte';
+import KitSaveBars from '../components/kit/KitSaveBars.svelte';
+import KitOverlays from '../components/kit/KitOverlays.svelte';
+import SegmentedControl from '../components/ui/SegmentedControl.svelte';
 import Plus from '@lucide/astro/icons/plus';
 import Trash from '@lucide/astro/icons/trash';
 import Dumbbell from '@lucide/astro/icons/dumbbell';
 import Inbox from '@lucide/astro/icons/inbox';
 
-const contenuto = [
-  ['fondo', 'Fondo della pagina'],
-  ['superficie', 'Pannelli e fogli'],
-  ['campo', 'Campi'],
-  ['testo', 'Testo'],
-  ['secondario', 'Etichette, metadati, segnaposto'],
-  ['linea', 'Separatori'],
-  ['linea-forte', 'Bordi dei controlli'],
-  ['accento', 'Azione primaria, selezione'],
-  ['accento-testo', 'Link, icone attive'],
-  ['fatto', 'Serie fatta'],
-  ['pericolo', 'Azioni distruttive, errori'],
-  ['avviso-fondo', 'Avvisi'],
+// Token di colore mostrati nel kit, con il loro uso (testo per chi legge la pagina)
+const contentColors = [
+  ['background', 'Fondo della pagina'],
+  ['surface', 'Pannelli e fogli'],
+  ['field', 'Campi'],
+  ['foreground', 'Testo'],
+  ['muted', 'Etichette, metadati, segnaposto'],
+  ['line', 'Separatori'],
+  ['line-strong', 'Bordi dei controlli'],
+  ['accent', 'Azione primaria, selezione'],
+  ['accent-text', 'Link, icone attive'],
+  ['done', 'Serie fatta'],
+  ['danger', 'Azioni distruttive, errori'],
+  ['warning-bg', 'Avvisi'],
 ];
-const guscio = [
-  ['guscio', 'Intestazione, barre, timer'],
-  ['guscio-accento', 'Accento lime sul guscio'],
-  ['livello', 'Livello del timer'],
-  ['guscio-secondario', 'Testo secondario sul guscio'],
+const shellColors = [
+  ['shell', 'Intestazione, barre, timer'],
+  ['shell-accent', 'Accento lime sul guscio'],
+  ['level', 'Livello del timer'],
+  ['shell-muted', 'Testo secondario sul guscio'],
 ];
-const unita = [
-  { valore: 'kg', etichetta: 'kg' },
-  { valore: 'lb', etichetta: 'lb' },
+const weightUnits = [
+  { value: 'kg', label: 'kg' },
+  { value: 'lb', label: 'lb' },
 ] as const;
 ---
 
 <Base title="Kit · BodyTracker" description="Componenti base del design system di BodyTracker.">
-  <Intestazione titolo="Kit del design system" sottotitolo="Componenti base · pagina interna" />
+  <AppHeader title="Kit del design system" subtitle="Componenti base · pagina interna" />
 
   <main class="mx-auto flex max-w-2xl flex-col gap-12 px-4 pt-6 pb-40">
-    <section aria-labelledby="s-tema" class="flex flex-col gap-3">
-      <h2 id="s-tema" class="text-titolo-pagina font-bold">Tema</h2>
-      <p class="text-secondario">
+    <section aria-labelledby="s-theme" class="flex flex-col gap-3">
+      <h2 id="s-theme" class="text-page-title font-bold">Tema</h2>
+      <p class="text-muted">
         Il contenuto cambia con il tema; il guscio verde scuro resta uguale. La scelta vale per questo dispositivo.
       </p>
-      <KitTema client:load />
+      <KitTheme client:load />
     </section>
 
-    <section aria-labelledby="s-colori" class="flex flex-col gap-3">
-      <h2 id="s-colori" class="text-titolo-pagina font-bold">Colori</h2>
+    <section aria-labelledby="s-colors" class="flex flex-col gap-3">
+      <h2 id="s-colors" class="text-page-title font-bold">Colori</h2>
       <ul class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
         {
-          contenuto.map(([nome, uso]) => (
+          contentColors.map(([name, use]) => (
             <li class="flex items-center gap-3">
-              <span class="size-10 shrink-0 rounded-[var(--radius-campo)] border border-linea" style={`background: var(--color-${nome})`} />
+              <span class="size-10 shrink-0 rounded-[var(--radius-field)] border border-line" style={`background: var(--color-${name})`} />
               <span class="min-w-0 text-sm leading-tight">
-                <span class="font-semibold">{nome}</span>
-                <span class="block text-secondario">{uso}</span>
+                <span class="font-semibold">{name}</span>
+                <span class="block text-muted">{use}</span>
               </span>
             </li>
           ))
         }
       </ul>
-      <ul class="guscio grid grid-cols-2 gap-x-4 gap-y-3 rounded-[var(--radius-pannello)] p-4 sm:grid-cols-4">
+      <ul class="shell grid grid-cols-2 gap-x-4 gap-y-3 rounded-[var(--radius-panel)] p-4 sm:grid-cols-4">
         {
-          guscio.map(([nome, uso]) => (
+          shellColors.map(([name, use]) => (
             <li class="flex items-center gap-3">
-              <span class="size-10 shrink-0 rounded-[var(--radius-campo)] border border-guscio-linea-forte" style={`background: var(--color-${nome})`} />
+              <span class="size-10 shrink-0 rounded-[var(--radius-field)] border border-shell-line-strong" style={`background: var(--color-${name})`} />
               <span class="min-w-0 text-sm leading-tight">
-                <span class="font-semibold">{nome}</span>
-                <span class="block text-guscio-secondario">{uso}</span>
+                <span class="font-semibold">{name}</span>
+                <span class="block text-shell-muted">{use}</span>
               </span>
             </li>
           ))
@@ -84,100 +85,100 @@ const unita = [
       </ul>
     </section>
 
-    <section aria-labelledby="s-tipo" class="flex flex-col gap-3">
-      <h2 id="s-tipo" class="text-titolo-pagina font-bold">Tipografia</h2>
-      <div class="pannello flex flex-col gap-3">
-        <p class="text-titolo-pagina font-bold tracking-[-0.01em]">Scheda A · lunedì</p>
+    <section aria-labelledby="s-type" class="flex flex-col gap-3">
+      <h2 id="s-type" class="text-page-title font-bold">Tipografia</h2>
+      <div class="panel flex flex-col gap-3">
+        <p class="text-page-title font-bold tracking-[-0.01em]">Scheda A · lunedì</p>
         <p class="text-xl leading-snug font-bold">Rematore manubri, petto su panca inclinata</p>
         <p>Atkinson Hyperlegible Next, disegnato per distinguere ogni lettera a colpo d'occhio: Il1 O0 rn m.</p>
-        <p class="etichetta mb-0">Etichetta · recupero predefinito</p>
-        <p class="cifre">37,5 kg × 8 · 1:15 · 2.450 kg</p>
+        <p class="label mb-0">Etichetta · recupero predefinito</p>
+        <p class="digits">37,5 kg × 8 · 1:15 · 2.450 kg</p>
       </div>
     </section>
 
-    <section aria-labelledby="s-pulsanti" class="flex flex-col gap-4">
-      <h2 id="s-pulsanti" class="text-titolo-pagina font-bold">Pulsanti</h2>
+    <section aria-labelledby="s-buttons" class="flex flex-col gap-4">
+      <h2 id="s-buttons" class="text-page-title font-bold">Pulsanti</h2>
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" class="pulsante pulsante-primario">Inizia allenamento</button>
-        <button type="button" class="pulsante pulsante-secondario">Altra scheda</button>
-        <button type="button" class="pulsante pulsante-pericolo"><Trash aria-hidden="true" />Elimina</button>
-        <button type="button" class="pulsante pulsante-testo"><Plus aria-hidden="true" />Aggiungi esercizio</button>
-        <button type="button" class="pulsante pulsante-icona" aria-label="Aggiungi"><Plus size={22} aria-hidden="true" /></button>
-        <button type="button" class="pulsante pulsante-primario" disabled>Termina</button>
+        <button type="button" class="btn btn-primary">Inizia allenamento</button>
+        <button type="button" class="btn btn-secondary">Altra scheda</button>
+        <button type="button" class="btn btn-danger"><Trash aria-hidden="true" />Elimina</button>
+        <button type="button" class="btn btn-text"><Plus aria-hidden="true" />Aggiungi esercizio</button>
+        <button type="button" class="btn btn-icon" aria-label="Aggiungi"><Plus size={22} aria-hidden="true" /></button>
+        <button type="button" class="btn btn-primary" disabled>Termina</button>
       </div>
-      <button type="button" class="pulsante pulsante-primario pulsante-ampio">Inizia allenamento</button>
-      <div class="guscio flex flex-wrap items-center gap-3 rounded-[var(--radius-pannello)] p-4">
-        <button type="button" class="pulsante pulsante-primario">Termina</button>
-        <button type="button" class="pulsante pulsante-secondario">Salva ora</button>
-        <button type="button" class="pulsante pulsante-testo">Riapri</button>
+      <button type="button" class="btn btn-primary btn-block">Inizia allenamento</button>
+      <div class="shell flex flex-wrap items-center gap-3 rounded-[var(--radius-panel)] p-4">
+        <button type="button" class="btn btn-primary">Termina</button>
+        <button type="button" class="btn btn-secondary">Salva ora</button>
+        <button type="button" class="btn btn-text">Riapri</button>
       </div>
     </section>
 
-    <section aria-labelledby="s-campi" class="flex flex-col gap-4">
-      <h2 id="s-campi" class="text-titolo-pagina font-bold">Campi e selettori</h2>
+    <section aria-labelledby="s-fields" class="flex flex-col gap-4">
+      <h2 id="s-fields" class="text-page-title font-bold">Campi e selettori</h2>
       <div>
-        <label class="etichetta" for="k-nome">Nome della sessione</label>
-        <input id="k-nome" class="campo" value="Scheda A" />
-        <p class="aiuto">Visibile nello storico e nel calendario.</p>
+        <label class="label" for="k-name">Nome della sessione</label>
+        <input id="k-name" class="field" value="Scheda A" />
+        <p class="hint">Visibile nello storico e nel calendario.</p>
       </div>
       <div>
-        <label class="etichetta" for="k-rec">Recupero predefinito</label>
-        <input id="k-rec" class="campo cifre" inputmode="numeric" value="1:3" aria-invalid="true" aria-describedby="k-rec-err" />
-        <p class="errore-campo" id="k-rec-err">Scrivi il recupero come minuti:secondi, ad esempio 1:30.</p>
+        <label class="label" for="k-rest">Recupero predefinito</label>
+        <input id="k-rest" class="field digits" inputmode="numeric" value="1:3" aria-invalid="true" aria-describedby="k-rest-error" />
+        <p class="field-error" id="k-rest-error">Scrivi il recupero come minuti:secondi, ad esempio 1:30.</p>
       </div>
       <div>
-        <label class="etichetta" for="k-scheda">Scheda di lunedì</label>
-        <select id="k-scheda" class="campo">
+        <label class="label" for="k-routine">Scheda di lunedì</label>
+        <select id="k-routine" class="field">
           <option>Scheda A</option>
           <option>Scheda B</option>
           <option>Riposo</option>
         </select>
       </div>
-      <Segmentato nome="unita" etichetta="Unità di peso" opzioni={unita} valore="kg" client:load />
+      <SegmentedControl name="weight-unit" label="Unità di peso" options={weightUnits} value="kg" client:load />
     </section>
 
-    <section aria-labelledby="s-serie" class="flex flex-col gap-3">
-      <h2 id="s-serie" class="text-titolo-pagina font-bold">Riga serie</h2>
-      <p class="text-secondario">
+    <section aria-labelledby="s-sets" class="flex flex-col gap-3">
+      <h2 id="s-sets" class="text-page-title font-bold">Riga serie</h2>
+      <p class="text-muted">
         Spunta su una riga vuota: conferma il precedente e parte il recupero. Tocco sul numero: cambia tipo (R, D, C).
       </p>
-      <KitRighe client:load />
+      <KitSetRows client:load />
     </section>
 
     <section aria-labelledby="s-timer" class="flex flex-col gap-3">
-      <h2 id="s-timer" class="text-titolo-pagina font-bold">Timer di recupero</h2>
-      <p class="text-secondario">Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo.</p>
+      <h2 id="s-timer" class="text-page-title font-bold">Timer di recupero</h2>
+      <p class="text-muted">Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo.</p>
       <div class="grid gap-4 sm:grid-cols-2">
-        <TimerRecupero durata={120} anteprima={84} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
-        <TimerRecupero durata={120} anteprima={7} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
-        <TimerRecupero durata={120} anteprima={0} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
-        <TimerRecupero durata={900} anteprima={725} prossima={null} />
+        <RestTimer duration={120} preview={84} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer duration={120} preview={7} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer duration={120} preview={0} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer duration={900} preview={725} next={null} />
       </div>
-      <TimerRecupero durata={120} anteprima={52} anteprimaRidotta prossima="Rematore manubri · serie 2 · 12 kg × 8–10" />
+      <RestTimer duration={120} preview={52} previewMinimized next="Rematore manubri · serie 2 · 12 kg × 8–10" />
     </section>
 
-    <section aria-labelledby="s-barra" class="flex flex-col gap-3">
-      <h2 id="s-barra" class="text-titolo-pagina font-bold">Barra di salvataggio</h2>
-      <KitBarre client:visible />
+    <section aria-labelledby="s-save-bar" class="flex flex-col gap-3">
+      <h2 id="s-save-bar" class="text-page-title font-bold">Barra di salvataggio</h2>
+      <KitSaveBars client:visible />
     </section>
 
-    <section aria-labelledby="s-finestre" class="flex flex-col gap-3">
-      <h2 id="s-finestre" class="text-titolo-pagina font-bold">Fogli, conferme e avvisi</h2>
-      <KitFinestre client:load />
+    <section aria-labelledby="s-overlays" class="flex flex-col gap-3">
+      <h2 id="s-overlays" class="text-page-title font-bold">Fogli, conferme e avvisi</h2>
+      <KitOverlays client:load />
     </section>
 
-    <section aria-labelledby="s-vuoto" class="flex flex-col gap-1">
-      <h2 id="s-vuoto" class="text-titolo-pagina font-bold">Stato vuoto</h2>
-      <div class="pannello">
-        <StatoVuoto titolo="Nessuna sessione ancora" testo="Le sessioni concluse compaiono qui, dalla più recente. Inizia dalla scheda di oggi.">
-          <Inbox slot="icona" size={28} />
-          <a href="/" class="pulsante pulsante-primario"><Dumbbell aria-hidden="true" />Vai a Oggi</a>
-        </StatoVuoto>
+    <section aria-labelledby="s-empty" class="flex flex-col gap-1">
+      <h2 id="s-empty" class="text-page-title font-bold">Stato vuoto</h2>
+      <div class="panel">
+        <EmptyState title="Nessuna sessione ancora" text="Le sessioni concluse compaiono qui, dalla più recente. Inizia dalla scheda di oggi.">
+          <Inbox slot="icon" size={28} />
+          <a href="/" class="btn btn-primary"><Dumbbell aria-hidden="true" />Vai a Oggi</a>
+        </EmptyState>
       </div>
     </section>
   </main>
 
   <div class="fixed inset-x-0 bottom-0 z-20">
-    <TabBar attiva="oggi" />
+    <TabBar active="today" />
   </div>
 </Base>

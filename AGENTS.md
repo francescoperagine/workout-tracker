@@ -42,23 +42,23 @@ astro.config.mjs        site francescoperagine.com, output statico (default), in
 svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
 playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322
-src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.guscio, .pulsante-*, .campo, .pannello, .cifre); in fondo la grafica vecchia (.container, .input) delle pagine pre-restyling
+src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits); in fondo la grafica vecchia (.container, .input) delle pagine pre-restyling
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, preload del font, script inline del tema. Props: title, description, bodyClass
 src/layouts/Layout.astro  grafica vecchia: Base + Header + <main class="container"> + Footer. Props: title, description, showBackButton
-src/lib/tema.ts         temi: REGISTRO_TEMI (unico elenco: Sistema, Chiaro, Scuro; i temi futuri si aggiungono qui e in src/styles/temi/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.tema, leggiTema, applicaTema, salvaTema, script inline (con test)
-src/lib/archivio/       archivio v2 (step 2), un modulo per tema, tutto esportato da index.ts:
-  tipi.ts               modello dati v2, chiavi, LIMITI, IMPOSTAZIONI_PREDEFINITE, archivioVuoto, ErroreArchivio
-  date.ts               chiaveData, daChiaveData, dataValida, giornoSettimana (ora locale)
-  validazione.ts        validaArchivio: ricostruzione campo per campo, messaggi in italiano
-  repository.ts         RepositoryArchivio (revisione, quota, illeggibile, conflitto tra schede, ascolta), archivioCondiviso, richiediPersistenza
-  catalogo.ts           catalogo base + personalizzati: chiaveNome, cercaPerNome, suggerisciEsercizi, assicuraEsercizio (US-14)
-  schede.ts             conSchedeIniziali, pianificazioneDel, sessioneInCorso, avvioRapido (US-11: ultime 4 schede e suggerita)
-  conversione.ts        testi del PoC → v2: recuperoInSecondi, dividiCarico, schedaDaPoc
-  import-poc.ts         convertiArchivioPoc (backup del PoC, con scarti e avvisi), leggiChiavePoc
-  backup.ts             esportaArchivio, leggiBackup (v2 o PoC), anteprimaImport, unisciImport (mantieni/sostituisci)
-src/lib/unita.ts        kg/lb e m/ft: daKg/aKg, daMetri/aMetri, leggiPeso, valoreCampoPeso, formattaPeso, formattaDistanza
-src/data/               catalogo.ts (CATALOGO_BASE, ID del PoC invariati) e schede-iniziali.ts (A/B convertite); test di parità con il PoC
-tests/fixtures/         backup-poc-sintetico.json (formato "Esporta" del PoC), usato da Vitest e utilizzabile negli e2e
+src/lib/theme.ts        temi: THEME_REGISTRY (unico elenco: system, light, dark, con etichette Sistema/Chiaro/Scuro; i temi futuri si aggiungono qui e in src/styles/themes/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.theme, readTheme, applyTheme, saveTheme, themeBootScript (con test)
+src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esportato da index.ts:
+  types.ts              modello dati v2, chiavi, LIMITS, DEFAULT_SETTINGS, emptyArchive, ArchiveError
+  dates.ts              toDateKey, fromDateKey, isValidDateKey, weekdayOf (ora locale)
+  validation.ts         validateArchive: ricostruzione campo per campo, messaggi in italiano
+  repository.ts         ArchiveRepository (revisione, quota, illeggibile, conflitto tra schede, subscribe), sharedArchive, requestPersistence
+  catalog.ts            catalogo base + personalizzati: nameKey, findByName, suggestExercises, ensureExercise (US-14)
+  routines.ts           withStarterRoutines, planFor, sessionInProgress, quickStart (US-11: ultime 4 schede e suggerita)
+  conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
+  poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
+  backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
+src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatDistance
+src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starter-routines.ts (A/B convertite); test di parità con il PoC in seed-data.test.ts
+tests/fixtures/         synthetic-poc-backup.json (formato "Esporta" del PoC), usato da Vitest e utilizzabile negli e2e
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 src/scripts/
   bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson
@@ -66,11 +66,11 @@ src/scripts/
 src/pages/
   index.astro           Home: WeeklyCalendar, CalendarConfig, WorkoutEditor, HistoryView
   about.astro           Pagina informativa statica (sezione #privacy)
-  workout.astro         Editor dell'allenamento di un giorno: /workout?date=YYYY-MM-DD (data letta lato client)
-src/pages/kit.astro     /kit: pagina interna del design system (?tema=chiaro|scuro forza il tema); fuori dalla navigazione
-src/components/ui/      componenti base: Intestazione, TabBar, StatoVuoto (.astro); CampoSerie, RigaSerie, Segmentato,
-                        BarraSalvataggio, Toast, Foglio, Dialogo (.svelte)
-src/components/allenamento/TimerRecupero.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
+  workout.astro         Editor dell'allenamento di un giorno: /workout?date=YYYY-MM-DD (data letta lato client); allo step 6 lo sostituisce l'allenamento attivo nella stessa route
+src/pages/kit.astro     /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione
+src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl,
+                        SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
+src/components/workout/RestTimer.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
 src/components/kit/     isole dimostrative usate solo da /kit
 src/components/  (grafica vecchia)
   Header.astro          Navigazione sticky + menu mobile (script bundlato da Astro)
@@ -84,9 +84,9 @@ src/components/  (grafica vecchia)
 ### Modello di rendering
 
 - Il sito è **completamente statico** (nessun adapter, nessun rendering lato server). Non introdurre route dinamiche lato server: un parametro variabile va passato in query string e letto nel client, come fa `workout.astro`.
-- **Svelte 5** (`@astrojs/svelte`): i componenti con stato del design system sono già Svelte (`src/components/ui/`, `TimerRecupero`); dal restyling le parti con stato (allenamento attivo, timer, editor delle schede, grafici) diventano isole Svelte (`client:load`), il resto resta `.astro`. Le regole qui sotto su `<script>`, `innerHTML` e `escapeHtml` valgono per il codice pre-restyling; nelle isole Svelte il testo passa dal templating di Svelte, che fa l'escape da solo.
+- **Svelte 5** (`@astrojs/svelte`): i componenti con stato del design system sono già Svelte (`src/components/ui/`, `RestTimer`); dal restyling le parti con stato (allenamento attivo, timer, editor delle schede, grafici) diventano isole Svelte (`client:load`), il resto resta `.astro`. Le regole qui sotto su `<script>`, `innerHTML` e `escapeHtml` valgono per il codice pre-restyling; nelle isole Svelte il testo passa dal templating di Svelte, che fa l'escape da solo.
 - I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi. Unica eccezione: lo script `is:inline` del tema in `Base.astro`, che deve girare prima del primo disegno.
-- Il codice nuovo accede al diario **solo tramite `src/lib/archivio/`** (`RepositoryArchivio`). Il codice vecchio accede al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
+- Il codice nuovo accede al diario **solo tramite `src/lib/archive/`** (`ArchiveRepository`). Il codice vecchio accede al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
 - Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …). **Ogni testo dell'utente inserito in un template HTML deve passare da `escapeHtml`**; altrimenti usa `textContent`.
 - I componenti comunicano tramite l'evento `window` `bb:updated` (`UPDATED_EVENT`) e l'evento `storage` per altre schede. `putWorkout`, `mergeWorkouts` e `clearWorkouts` lo emettono già; dopo `saveCalendar` va emesso a mano. Un editor che salva a ogni modifica deve ignorare l'evento generato dal proprio salvataggio, altrimenti il re-render fa perdere il focus (vedi il flag `saving` in `WorkoutEditor`).
 - Ogni componente cerca la propria radice con un attributo (`[data-weekly-calendar]`, `[data-calendar-config]`, `[data-workout-editor]`, `[data-history-view]`, `[data-workout-page]`) e poi usa `root.querySelector('#id')`. Gli ID sono duplicati tra componenti e pagine (`#exercise-list`, `#add-exercise`, `#list`), quindi limita sempre le query alla radice del componente.
@@ -98,16 +98,16 @@ src/components/  (grafica vecchia)
 | `bb-calendar` | `{ "Lunedì": "Petto", ... }`: nomi completi dei giorni in italiano, con accento | Scritta da CalendarConfig, letta da WeeklyCalendar e `workout.astro` |
 | `bb-workouts` | `[{ date: "YYYY-MM-DD", exercises: [{ name, sets: [{ reps, weight }] }] }]` | Un solo elemento per data, ordinato per data crescente. Un allenamento senza esercizi viene rimosso. Usata da tutti gli editor, dal calendario e dallo storico |
 | `workout` | Legacy | Vecchia chiave di WorkoutEditor: alla prima lettura viene migrata in `bb-workouts` e poi cancellata |
-| `bodytracker.archivio.v2` | `Archivio` di `src/lib/archivio/tipi.ts` (`versione: 2`, `revisione`, `catalogo`, `schede`, `pianificazione`, `eccezioni`, `sessioni`, `impostazioni`) | Archivio nuovo (step 2). Si legge e si scrive **solo** con `RepositoryArchivio` (`archivioCondiviso()` nel browser). Pesi in kg, distanze in metri |
-| `bodytracker.archivio.v1` | Archivio del PoC | Solo lettura, per l'import diretto sulla stessa origine (`leggiChiavePoc`) |
-| `bodytracker.tema` | `chiaro` \| `scuro` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/tema.ts`) |
+| `bodytracker.archive.v2` | `Archive` di `src/lib/archive/types.ts` (`version: 2`, `revision`, `catalog`, `routines`, `schedule`, `overrides`, `sessions`, `settings`) | Archivio nuovo (step 2). Si legge e si scrive **solo** con `ArchiveRepository` (`sharedArchive()` nel browser). Pesi in kg, distanze in metri |
+| `bodytracker.archivio.v1` | Archivio del PoC (campi in italiano) | Solo lettura, per l'import diretto sulla stessa origine (`readPocKey`). Nome e formato sono del PoC e non cambiano |
+| `bodytracker.theme` | `light` \| `dark` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/theme.ts`) |
 
 - **Archivio v2 (codice nuovo):**
-  - le modifiche passano da `repo.aggiorna(a => nuovoArchivio)` con funzioni pure che non mutano l'argomento; il repository incrementa `revisione`, salva e notifica (`ascolta`, con `origine`: `modifica`, `esterna`, `ricarica`, `importazione`). Con stato `illeggibile` o `conflitto` non scrive nulla;
+  - le modifiche passano da `repo.update(a => newArchive)` con funzioni pure che non mutano l'argomento; il repository incrementa `revision`, salva e notifica (`subscribe`, con `origin`: `edit`, `external`, `reload`, `import`). Con stato `unreadable` o `conflict` non scrive nulla;
   - pianificazione ed eccezioni: id di scheda, `null` = riposo, chiave assente = nulla di pianificato;
-  - una sola sessione con `fine: null` (in corso) alla volta; `unisciImport` lo garantisce anche negli import;
-  - esercizi: quelli di base sono in `src/data/catalogo.ts` (ID mai cambiati né rimossi), quelli personalizzati in `archivio.catalogo` con id `pers-<nome>`; un nome scritto a mano passa sempre da `assicuraEsercizio`;
-  - i riferimenti (scheda, esercizio) non sono vincolati dalla validazione: un id sconosciuto si mostra con `nomeEsercizio`, che ricade sull'id.
+  - una sola sessione con `end: null` (in corso) alla volta; `mergeImport` lo garantisce anche negli import;
+  - esercizi: quelli di base sono in `src/data/catalog.ts` (ID del PoC, in italiano perché sono dati dello storico: mai cambiati né rimossi), quelli personalizzati in `archive.catalog` con id `custom-<nome>`; un nome scritto a mano passa sempre da `ensureExercise`;
+  - i riferimenti (scheda, esercizio) non sono vincolati dalla validazione: un id sconosciuto si mostra con `exerciseName`, che ricade sull'id.
 - I tipi vecchi (`Workout`, `Exercise`, `WorkoutSet`, `CalendarConfig`) sono in `bodytracker.ts`. Se cambi la forma dei dati, aggiorna anche `isWorkout`/`parseWorkouts` e prevedi una migrazione dei dati esistenti.
 - Le date sono stringhe `YYYY-MM-DD` in **ora locale**: usa `toDateKey(date)` e `parseDateKey(key)`, mai `toISOString()` o `new Date('YYYY-MM-DD')` (che usano UTC).
 - I nomi dei giorni vengono da `DAY_NAMES` (indicizzato da `getDay()`), `DAY_NAMES_SHORT` e `WEEK_DAYS` (ordine lunedì–domenica) di `bodytracker.ts`. Non riscriverli altrove.
@@ -116,25 +116,26 @@ src/components/  (grafica vecchia)
 ## Convenzioni
 
 - **Si lavora sempre su `main`:** niente branch né pull request, anche se la sessione propone un branch di lavoro. Commit e push direttamente su `main` (`git push origin main`).
-- Testo dell'interfaccia, `title`/`description` e messaggi utente in **italiano**; date formattate con `toLocaleDateString('it-IT', …)`.
+- **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
+- Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
 - Ogni pagina usa `Layout`; le sottopagine passano `showBackButton={true}`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
-  - Colori di contenuto, che cambiano col tema: `bg-fondo`, `bg-superficie`, `bg-campo`, `text-testo`, `text-secondario`, `border-linea`, `border-linea-forte`, `bg-accento`/`text-su-accento`, `text-accento-testo`, `bg-fatto`, `text-pericolo`, `bg-avviso-fondo`. Sono `light-dark()`: niente varianti `dark:`.
-  - Guscio, uguale nei due temi (intestazione, barra di salvataggio, tab bar, timer): classe `.guscio` più i token `guscio-*` e `livello`. Dentro `.guscio` i token di contenuto si risolvono nella variante scura.
-  - Classi componente: `.pulsante` con `.pulsante-primario`, `-secondario`, `-pericolo`, `-testo`, `-icona`, `-ampio`; `.etichetta`, `.campo`, `.aiuto`, `.errore-campo`; `.pannello` (un solo livello, mai annidato); `.cifre` per pesi e ripetizioni.
-  - Scala tipografica: `text-xs` … `text-xl`, `text-titolo-pagina`, `text-cifre`; raggi `--radius-campo`/`-pannello`/`-finestra`. Tutti i numeri sono tabulari (`font-variant-numeric` sulla radice).
+  - Colori di contenuto, che cambiano col tema: `bg-background`, `bg-surface`, `bg-field`, `text-foreground`, `text-muted`, `border-line`, `border-line-strong`, `bg-accent`/`text-on-accent`, `text-accent-text`, `bg-done`, `text-danger`, `bg-warning-bg`. Sono `light-dark()`: niente varianti `dark:`.
+  - Guscio, uguale nei due temi (intestazione, barra di salvataggio, tab bar, timer): classe `.shell` più i token `shell-*` e `level`. Dentro `.shell` i token di contenuto si risolvono nella variante scura.
+  - Classi componente: `.btn` con `.btn-primary`, `-secondary`, `-danger`, `-text`, `-icon`, `-block`; `.label`, `.field`, `.hint`, `.field-error`; `.choice` e `.radio`; `.panel` (un solo livello, mai annidato); `.digits` per pesi e ripetizioni.
+  - Scala tipografica: `text-xs` … `text-xl`, `text-page-title`, `text-digits`; raggi `--radius-field`/`-panel`/`-dialog`; curva `--ease-out-expo`; altezza dello stack in basso `--bottom-bars-height`. Tutti i numeri sono tabulari (`font-variant-numeric` sulla radice).
   - Icone: Lucide da `@lucide/astro/icons/<nome>` e `@lucide/svelte/icons/<nome>`, tratto 2, 20–22px, `aria-hidden` con un'etichetta sul controllo. Nessuna emoji.
   - Prima di aggiungere un componente guarda `/kit`; un componente nuovo del design system va mostrato anche lì.
 - Le pagine vecchie (index, workout, about) usano ancora `Layout.astro`, la palette di default di Tailwind e `.input`: restano così finché gli step 3–6 non le sostituiscono.
-- Conferme e feedback: il codice nuovo usa `Dialogo` (azioni distruttive), `Toast` (esito, con "Annulla" dove possibile) e `BarraSalvataggio`, non `alert`/`confirm`. Il codice vecchio usa ancora quelli nativi.
+- Conferme e feedback: il codice nuovo usa `ConfirmDialog` (azioni distruttive), `Toast` (esito, con "Annulla" dove possibile) e `SaveBar`, non `alert`/`confirm`. Il codice vecchio usa ancora quelli nativi.
 - Link alle sezioni della home sempre assoluti (`/#allenamenti`, `/#storico`), perché Header e Footer compaiono su tutte le pagine; link alla pagina di un giorno tramite `workoutUrl(dateKey)`.
 - Il codice segue lo stile dei file vicini: alcuni file usano punto e virgola, altri no. Non riformattare interi file.
-- I commenti nel codice sono un misto di italiano e inglese; preferisci l'italiano per i testi rivolti all'utente.
+- I commenti nel codice sono in italiano (nel codice vecchio anche in inglese).
 
 ## Limiti noti
 
 - Il codice `bb-*` (`src/scripts/bodytracker.ts`, `exercise-list.ts` e le pagine vecchie) resta finché gli step 3–6 non sostituiscono le pagine: niente migrazione da `bb-*` (decisione 6 del piano).
-- Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`), US-30 sui temi (`tests/e2e/us-30-temi.spec.ts`) e i componenti di `/kit` (`tests/e2e/kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`), US-30 sui temi (`tests/e2e/us-30-themes.spec.ts`) e i componenti di `/kit` (`tests/e2e/kit.spec.ts`). Ogni nuova storia porta il suo test.
 - Nelle pagine vecchie `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; spariscono con la riscrittura delle pagine (step 3–6).
 - Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.
 
