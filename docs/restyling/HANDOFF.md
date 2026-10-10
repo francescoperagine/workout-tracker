@@ -4,7 +4,7 @@ Questo documento serve a riprendere il lavoro in una nuova conversazione. Contie
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md` e `DESIGN.md`. Esegui lo **step 2** del piano (dati: archivio v2, unità, import del PoC, catalogo e schede iniziali) con test Vitest. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati alla fine dello step per mostrarmi i test e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md` e `DESIGN.md`. Prima chiedimi la decisione aperta su US-11 (scheda suggerita già selezionata su Oggi, oppure nessuna preselezione, oppure tocco sulla scheda che avvia subito) e aggiorna storia e brief con la mia risposta. Poi esegui lo **step 2** del piano (dati: archivio v2 con revisione, quota e conflitti tra schede; unità kg/lb e m/ft; import ed export v2 e import del backup del PoC; catalogo e schede iniziali da `BodyTracker/palestra/esercizi.js` con gli stessi ID), compresi i due requisiti nuovi: esercizi personalizzati creati da un nome scritto a mano (US-14) e le ultime 4 schede fatte con la suggerita (US-11). Tutto con test Vitest. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati alla fine dello step per mostrarmi i test e le decisioni prese.
 
 ## Stato a fine step 1 (10 ottobre 2026)
 
