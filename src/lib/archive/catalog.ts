@@ -2,7 +2,7 @@
 // US-14: un nome scritto a mano si confronta senza maiuscole, spazi, punteggiatura e accenti;
 // se non corrisponde a nessun esercizio diventa un esercizio personalizzato, riusato le volte dopo.
 import { BASE_CATALOG } from '../../data/catalog';
-import { ArchiveError, LIMITS, type Archive, type CustomExercise } from './types';
+import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise } from './types';
 
 export const CUSTOM_PREFIX = 'custom-';
 
@@ -118,4 +118,30 @@ export function ensureExercise(archive: Archive, typedName: string): EnsureResul
     exercise: { id, name, custom: true },
     created: true,
   };
+}
+
+/** Approfondimento di un esercizio di base (US-19); null per i personalizzati, che non ne hanno. */
+export function exerciseDetails(id: string): CatalogExercise | null {
+  return BASE_CATALOG[id] ?? null;
+}
+
+/** true se l'approfondimento ha qualcosa da mostrare */
+export function hasDetails(details: CatalogExercise | null): details is CatalogExercise {
+  return !!details && !!(details.description || details.steps.length || details.caution || safeImagePath(details.image) || details.sources.length);
+}
+
+/**
+ * Immagine di un approfondimento, con la regola del PoC: solo un file del sito (percorso relativo a
+ * public/exercises/, senza "..") o un'immagine raster incorporata; niente domini esterni né SVG.
+ * Restituisce il percorso accettato, o null.
+ */
+export function safeImagePath(path: string): string | null {
+  if (/^data:image\/(png|jpeg|webp|avif|gif);base64,[a-z0-9+/=]+$/i.test(path)) return path;
+  if (/^(\.\/)?[a-z0-9_-][a-z0-9_./-]*\.(png|jpe?g|webp|avif|gif)$/i.test(path) && !path.includes('..') && !path.includes('//')) return path.replace(/^\.\//, '');
+  return null;
+}
+
+/** Fonti con un indirizzo web vero (http o https), come nel PoC */
+export function safeSources(details: CatalogExercise): { title: string; url: string }[] {
+  return details.sources.filter((s) => /^https?:\/\//i.test(s.url) && s.title.trim());
 }

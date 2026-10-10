@@ -14,6 +14,10 @@ class ArchiveStore {
     this.repo = sharedArchive();
     this.#sync();
     this.repo.subscribe(() => this.#sync());
+    // Come nel PoC: avviso prima di chiudere o ricaricare con modifiche rimaste solo in memoria (P4)
+    window.addEventListener('beforeunload', (event) => {
+      if (this.repo.pending) event.preventDefault();
+    });
   }
 
   #sync() {

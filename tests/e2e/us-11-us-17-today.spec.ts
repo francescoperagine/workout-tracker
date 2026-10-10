@@ -37,7 +37,7 @@ test.describe('US-11 avvio rapido', () => {
     expect(running).toMatchObject({ routineId: 'routine-b', name: 'Scheda B', date: '2026-10-08', start: NOW.getTime() });
     expect(running.exercises.map((e) => e.exerciseId)).toEqual(b.exercises.map((e) => e.exerciseId));
     expect(running.exercises.map((e) => e.sets.length)).toEqual(b.exercises.map((e) => e.sets));
-    await expect(page.getByRole('list', { name: 'Esercizi' }).getByRole('listitem')).toHaveCount(b.exercises.length);
+    await expect(page.getByRole('list', { name: 'Esercizi' }).getByRole('region')).toHaveCount(b.exercises.length);
   });
 
   test('US-11 toccare un’altra riga la seleziona e non avvia: 2 tocchi', async ({ page }) => {

@@ -11,3 +11,4 @@ export * from './poc-import';
 export * from './backup';
 export * from './calendar';
 export * from './sessions';
+export * from './workout';

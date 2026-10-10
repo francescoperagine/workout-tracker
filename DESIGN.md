@@ -492,6 +492,16 @@ L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · p
 - **Campi kg e rip:** campi serie da 48px, cifre serie centrate, tastiera numerica (decimale per il peso), il valore precedente come segnaposto.
 - **Spunta:** quadrato da 48px con bordo 1.5px `line-strong` e icona `muted`. Su una riga vuota conferma il precedente in un solo tocco; senza precedente porta al primo campo vuoto. Fatta, la spunta si riempie di `accent` con icona `on-accent` più spessa, la riga prende il fondo `done` e i campi perdono bordo e fondo.
 
+### Allenamento attivo
+La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (un esercizio, o una superserie intera con la riga "Superserie · 2 esercizi" in `accent-text` e un filo `line` tra 2a e 2b). Niente pannelli annidati: le righe serie stanno direttamente nel pannello.
+- **Testa dell'esercizio:** numero d'ordine (1, 2a) a 18px in `accent-text`, nome (700, 18px) come pulsante che apre l'approfondimento con l'icona `info` `muted`, a destra "⋯" da 48px (nota sul carico, come si esegue, cambia esercizio, togli). Sotto, in `muted` a 14px, i target della scheda ("3 × 6–8 · 40 kg per manubrio · rec. 1:00"), "Al posto di …" con una variante, "Nota del 6 ottobre: «…»" con la nota della volta scorsa; poi "Cambia esercizio" (testuale, icona `arrow-left-right`).
+- **Adesso:** l'esercizio della serie da fare ha il numero in una pastiglia piena `accent` con testo `on-accent` (raggio da campo). In superserie la pastiglia passa da 2a a 2b a ogni spunta.
+- **Fatto:** con tutte le serie spuntate l'esercizio si compatta in una riga (`circle-check` in `accent-text` e le serie fatte, "42,5 × 8 · 40 × 8") con "Mostra serie"; l'ultimo esercizio toccato resta aperto, per correggere l'ultima serie.
+- **Sotto le righe:** "Aggiungi serie" (testuale) e "Togli serie" in `muted` (toglie l'ultima; a 320px resta "Togli"), poi il campo "Nota sul carico" quando c'è una nota.
+- **Record:** una serie spuntata che batte il carico massimo ha l'icona `trophy` da 16px in `accent-text` nella colonna "precedente".
+- **Barra dell'allenamento:** la barra di salvataggio, sempre visibile sopra la tab bar: a sinistra la durata (700, 18px, `shell-foreground`) e sotto lo stato breve ("Salvato"), a destra "Termina" (primario lime).
+- **Riepilogo:** icona `circle-check`, titolo pagina "Allenamento concluso", poi righe termine/valore separate da `line` (Durata, Esercizi, Serie, Volume; valori in cifre 600 a 1.375rem allineati a destra), "Record battuto" con `trophy`, "Cosa hai fatto" per esercizio, l'eventuale invito all'installazione in un pannello, "Fatto" (primario) e "Riapri allenamento" (secondario). Nessuna tessera di statistiche.
+
 ### Cards / Containers
 - **Corner Style:** pannello (12px).
 - **Background:** `surface`.
@@ -501,6 +511,7 @@ L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · p
 
 ### Navigation
 - **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `shell-line`; titolo compatto troncato su una riga, riga di stato in `shell-muted` a 14px, a destra azioni facoltative e l'icona delle Impostazioni da 48px.
+- **Mini-barra dell'allenamento:** sulle altre pagine (non su Oggi né sull'allenamento), sopra la tab bar: guscio alto 56px con filo `shell-line`, icona `circle-play` lime, nome della sessione (650) e "da 25 min · esercizio" in `shell-muted`, "Riprendi" lime con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`).
 - **Tab bar:** guscio in basso con filo superiore `shell-line`, quattro voci uguali (Oggi, Calendario, Schede, Storico) alte 56px, icona da 22px sopra l'etichetta a 12px. A riposo `shell-muted`, al passaggio `shell-foreground`; la voce attiva è lime e in grassetto, con `aria-current="page"`.
 
 ### Barra di salvataggio

@@ -1,7 +1,7 @@
 <script lang="ts">
   // Esercizio dimostrativo con righe serie vere: la spunta avvia il recupero a tutto schermo.
   import Plus from '@lucide/svelte/icons/plus';
-  import SetRow, { type Previous, type SetType } from '../ui/SetRow.svelte';
+  import SetRow, { type CheckResult, type Previous, type SetType } from '../ui/SetRow.svelte';
   import RestTimer from '../workout/RestTimer.svelte';
 
   interface DemoSet {
@@ -18,6 +18,7 @@
     { type: 'normal', previous: { kg: '37,5', reps: '8' }, kg: '', reps: '', done: false },
     { type: 'normal', previous: null, kg: '', reps: '', done: false },
   ]);
+  const CYCLE: SetType[] = ['normal', 'warmup', 'drop', 'failure'];
   let resting = $state(false);
   let next: string | null = $state(null);
 
@@ -26,6 +27,21 @@
     let n = 0;
     return sets.map((s) => (s.type === 'warmup' ? 0 : ++n));
   });
+
+  // Come nell'allenamento: la spunta su una riga vuota conferma il precedente, altrimenti porta al campo vuoto
+  function check(index: number): CheckResult {
+    const s = sets[index];
+    if (s.done) {
+      s.done = false;
+      onCheck(index, false);
+      return;
+    }
+    if (!s.kg && s.previous) s.kg = s.previous.kg;
+    if (!s.reps && s.previous) s.reps = s.previous.reps;
+    if (!s.reps) return s.kg ? 'reps' : 'kg';
+    s.done = true;
+    onCheck(index, true);
+  }
 
   function onCheck(index: number, done: boolean) {
     if (!done) {
@@ -63,12 +79,17 @@
   {#each sets as s, i (i)}
     <SetRow
       number={numbers[i]}
-      bind:type={s.type}
+      type={s.type}
       previous={s.previous}
-      bind:kg={s.kg}
-      bind:reps={s.reps}
-      bind:done={s.done}
-      oncheck={(done) => onCheck(i, done)}
+      kg={s.kg}
+      reps={s.reps}
+      done={s.done}
+      record={i === 0}
+      ontype={() => (s.type = CYCLE[(CYCLE.indexOf(s.type) + 1) % CYCLE.length])}
+      oncopy={() => s.previous && ((s.kg = s.previous.kg), (s.reps = s.previous.reps))}
+      onkg={(text) => void (s.kg = text)}
+      onreps={(text) => void (s.reps = text)}
+      oncheck={() => check(i)}
     />
   {/each}
   <button type="button" class="btn btn-text mt-1" onclick={addSet}><Plus aria-hidden="true" />Aggiungi serie</button>

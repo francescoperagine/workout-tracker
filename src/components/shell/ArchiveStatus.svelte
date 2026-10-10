@@ -6,13 +6,7 @@
   import SaveBar, { type SaveBarStatus } from '../ui/SaveBar.svelte';
   import { archiveStore, askPersistenceOnce } from '../../lib/archive-store.svelte';
   import { appUrl, isCurrentPath } from '../../lib/paths';
-
-  interface Props {
-    /** altezza delle altre barre fisse in basso (la tab bar), in px */
-    barsBelow: number;
-  }
-
-  let { barsBelow }: Props = $props();
+  import { setBottomBar } from '../../lib/bottom-bars';
 
   const store = archiveStore();
   const SAVE_BAR_HEIGHT = 68;
@@ -23,9 +17,7 @@
   const onSettings = isCurrentPath(location.pathname, '/settings');
 
   // Gli avvisi brevi si posano sopra lo stack delle barre: la pagina ne dichiara l'altezza
-  $effect(() => {
-    document.body.style.setProperty('--bottom-bars-height', `${barsBelow + (status ? SAVE_BAR_HEIGHT : 0)}px`);
-  });
+  $effect(() => setBottomBar('save', status ? SAVE_BAR_HEIGHT : 0));
 
   onMount(() => askPersistenceOnce());
 </script>

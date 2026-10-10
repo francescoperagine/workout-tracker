@@ -205,9 +205,9 @@ export function orderLabels(exercises: readonly { group: string | null }[]): str
  * Gruppi coerenti: una stringa di gruppo che ricompare più avanti, separata, diventa un gruppo nuovo;
  * un gruppo di una sola voce torna a `null`. Restituisce lo stesso array se non cambia nulla.
  */
-export function normalizeGroups(exercises: readonly RoutineExercise[]): RoutineExercise[] {
+export function normalizeGroups<T extends { group: string | null }>(exercises: readonly T[]): T[] {
   const used = new Set<string>();
-  const result: RoutineExercise[] = [];
+  const result: T[] = [];
   let changed = false;
   for (const block of blocksOf(exercises)) {
     let group = block.entries.length > 1 ? block.group : null;
@@ -221,11 +221,11 @@ export function normalizeGroups(exercises: readonly RoutineExercise[]): RoutineE
       }
     }
   }
-  return changed ? result : (exercises as RoutineExercise[]);
+  return changed ? result : (exercises as T[]);
 }
 
 /** Il primo numero non usato come gruppo ("2", come nel PoC). */
-function freeGroup(exercises: readonly RoutineExercise[], also: Set<string> = new Set()): string {
+function freeGroup(exercises: readonly { group: string | null }[], also: Set<string> = new Set()): string {
   const taken = new Set([...exercises.map((e) => e.group), ...also]);
   for (let n = 1; ; n++) if (!taken.has(String(n))) return String(n);
 }
@@ -315,7 +315,7 @@ export function restoreEntry(archive: Archive, routineId: string, removed: Remov
  * stesso gruppo; altrimenti si sposta tutto il blocco (voce singola o superserie intera) oltre il blocco
  * vicino, senza entrare in un'altra superserie. `null` se non si può spostare.
  */
-export function moveKind(exercises: readonly RoutineExercise[], entryId: string, direction: -1 | 1): 'within' | 'block' | null {
+export function moveKind<T extends { id: string; group: string | null }>(exercises: readonly T[], entryId: string, direction: -1 | 1): 'within' | 'block' | null {
   const blocks = blocksOf(exercises);
   const b = blocks.findIndex((block) => block.entries.some((e) => e.id === entryId));
   if (b < 0) return null;
@@ -324,23 +324,30 @@ export function moveKind(exercises: readonly RoutineExercise[], entryId: string,
   return blocks[b + direction] ? 'block' : null;
 }
 
+/**
+ * Sposta una voce (della scheda o della sessione) secondo `moveKind`. Restituisce lo stesso array se
+ * non si può spostare.
+ */
+export function moveInList<T extends { id: string; group: string | null }>(exercises: readonly T[], entryId: string, direction: -1 | 1): T[] {
+  const kind = moveKind(exercises, entryId, direction);
+  if (!kind) return exercises as T[];
+  if (kind === 'within') {
+    const next = [...exercises];
+    const i = next.findIndex((e) => e.id === entryId);
+    [next[i], next[i + direction]] = [next[i + direction], next[i]];
+    return next;
+  }
+  const blocks = blocksOf(exercises);
+  const b = blocks.findIndex((block) => block.entries.some((e) => e.id === entryId));
+  [blocks[b], blocks[b + direction]] = [blocks[b + direction], blocks[b]];
+  return blocks.flatMap((block) => block.entries);
+}
+
 export function moveEntry(archive: Archive, routineId: string, entryId: string, direction: -1 | 1): Archive {
   const list = findRoutine(archive, routineId)?.exercises;
   if (!list) throw new ArchiveError('Questa scheda non esiste più.');
-  const kind = moveKind(list, entryId, direction);
-  if (!kind) return archive;
-  return withExercises(archive, routineId, (exercises) => {
-    if (kind === 'within') {
-      const next = [...exercises];
-      const i = next.findIndex((e) => e.id === entryId);
-      [next[i], next[i + direction]] = [next[i + direction], next[i]];
-      return next;
-    }
-    const blocks = blocksOf(exercises);
-    const b = blocks.findIndex((block) => block.entries.some((e) => e.id === entryId));
-    [blocks[b], blocks[b + direction]] = [blocks[b + direction], blocks[b]];
-    return blocks.flatMap((block) => block.entries);
-  });
+  if (!moveKind(list, entryId, direction)) return archive;
+  return withExercises(archive, routineId, (exercises) => moveInList(exercises, entryId, direction));
 }
 
 /** true se la voce è in superserie con quella che la precede */

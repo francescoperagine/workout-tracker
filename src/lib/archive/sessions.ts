@@ -1,9 +1,10 @@
 // Sessioni (step 5): avvio da una scheda o libero (US-11), una sola in corso alla volta (US-20),
 // riapertura, annullamento con "Annulla" e i dati che Oggi mostra (in corso, ultimo allenamento).
-// La registrazione delle serie arriva con l'allenamento attivo (step 6).
+// La registrazione delle serie è in workout.ts (step 6).
 import { toDateKey } from './dates';
 import { newId } from './routine-edit';
 import { sessionInProgress } from './routines';
+import { nextSet } from './workout';
 import { ArchiveError, LIMITS, type Archive, type Session, type SessionExercise } from './types';
 
 export const FREE_SESSION_NAME = 'Allenamento libero';
@@ -63,12 +64,16 @@ export function reopenSession(archive: Archive, id: string): Archive {
   return { ...archive, sessions: archive.sessions.map((s) => (s.id === id ? { ...s, end: null } : s)) };
 }
 
-/** Conclude la sessione in corso; come nel PoC serve almeno un esercizio. */
+/**
+ * Conclude la sessione in corso; come nel PoC serve almeno un esercizio, e (step 6) almeno un valore,
+ * così il calendario non mostra "fatto" per un allenamento vuoto.
+ */
 export function finishSession(archive: Archive, id: string, now: number): Archive {
   const session = archive.sessions.find((s) => s.id === id);
   if (!session) throw new ArchiveError('Questo allenamento non esiste più.');
   if (session.end !== null) return archive;
   if (!session.exercises.length) throw new ArchiveError('Aggiungi almeno un esercizio prima di concludere.');
+  if (!sessionHasData(session)) throw new ArchiveError('Registra almeno una serie prima di terminare, oppure annulla l’allenamento.');
   return { ...archive, sessions: archive.sessions.map((s) => (s.id === id ? { ...s, end: Math.max(now, s.start) } : s)) };
 }
 
@@ -113,9 +118,9 @@ export function summarizeSession(session: Session, now: number): SessionSummary 
   return { exercises: session.exercises.length, completedSets, duration: Math.max(0, (session.end ?? now) - session.start) };
 }
 
-/** Esercizio a cui si è arrivati: il primo con una serie non spuntata, altrimenti l'ultimo */
+/** Esercizio a cui si è arrivati: quello della serie da fare adesso (`nextSet`), altrimenti l'ultimo */
 export function currentExercise(session: Session): SessionExercise | null {
-  return session.exercises.find((e) => e.sets.some((s) => s.completedAt === null)) ?? session.exercises.at(-1) ?? null;
+  return nextSet(session)?.exercise ?? session.exercises.at(-1) ?? null;
 }
 
 /** L'ultima sessione conclusa (per data, poi per inizio) */

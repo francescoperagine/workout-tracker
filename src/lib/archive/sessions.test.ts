@@ -19,6 +19,18 @@ import { ArchiveError, emptyArchive, type Archive } from './types';
 const NOW = new Date(2026, 9, 10, 18, 0).getTime();
 const withAB = (): Archive => ({ ...emptyArchive(), routines: starterRoutines() });
 
+/** La prima serie della sessione fatta: 40 kg × 8 */
+function logFirstSet(archive: Archive, id: string): Archive {
+  return {
+    ...archive,
+    sessions: archive.sessions.map((s) =>
+      s.id !== id
+        ? s
+        : { ...s, exercises: s.exercises.map((e, i) => (i ? e : { ...e, sets: e.sets.map((set, j) => (j ? set : { ...set, kg: 40, reps: 8, completedAt: NOW + 1 })) })) },
+    ),
+  };
+}
+
 describe('US-11 avvio dell’allenamento', () => {
   it('da una scheda: una voce per esercizio con superserie, recuperi e serie vuote', () => {
     const a = withAB();
@@ -58,12 +70,13 @@ describe('US-11 avvio dell’allenamento', () => {
 });
 
 describe('riapri, concludi, annulla', () => {
-  it('concludere chiede almeno un esercizio; riaprire rimette la sessione in corso', () => {
+  it('concludere chiede almeno un esercizio e una serie; riaprire rimette la sessione in corso', () => {
     const free = startSession(withAB(), null, NOW);
     expect(() => finishSession(free.archive, free.session.id, NOW + 60_000)).toThrow(/almeno un esercizio/);
 
     const started = startSession(withAB(), 'routine-a', NOW);
-    const done = finishSession(started.archive, started.session.id, NOW + 3_600_000);
+    expect(() => finishSession(started.archive, started.session.id, NOW + 60_000)).toThrow(/almeno una serie/);
+    const done = finishSession(logFirstSet(started.archive, started.session.id), started.session.id, NOW + 3_600_000);
     expect(sessionInProgress(done)).toBeNull();
     expect(lastFinishedSession(done)?.end).toBe(NOW + 3_600_000);
     const reopened = reopenSession(done, started.session.id);
@@ -101,7 +114,7 @@ describe('riapri, concludi, annulla', () => {
 describe('US-20 seconda sessione nello stesso giorno', () => {
   it('la scheda già fatta oggi non è più la suggerita', () => {
     const started = startSession({ ...withAB(), schedule: { sat: 'routine-a' } }, 'routine-a', NOW);
-    const done = finishSession(started.archive, started.session.id, NOW + 3_600_000);
+    const done = finishSession(logFirstSet(started.archive, started.session.id), started.session.id, NOW + 3_600_000);
     const start = quickStart(done, '2026-10-10');
     expect(start.rows.find((r) => r.planned)?.lastDone).toBe('2026-10-10');
     expect(start.suggested).toBe('routine-b');

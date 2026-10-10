@@ -1,13 +1,15 @@
 ---
 // Guscio dell'app (step 3): intestazione con l'accesso alle Impostazioni, contenuto che scorre e,
-// nella zona del pollice, lo stack fisso in basso: barra di salvataggio (solo quando c'è un problema)
-// e tab bar. La navigazione tra le pagine passa dal ClientRouter, che tiene caricati i moduli
-// (archivio compreso) e scambia solo il contenuto.
+// nella zona del pollice, lo stack fisso in basso: mini-barra dell'allenamento in corso (step 6),
+// barra di salvataggio (solo quando c'è un problema) e tab bar. La navigazione tra le pagine passa dal
+// ClientRouter, che tiene caricati i moduli (archivio compreso) e scambia solo il contenuto.
+// L'altezza dello stack è in --bottom-bars-height (src/lib/bottom-bars.ts).
 import { ClientRouter } from 'astro:transitions';
 import Base from './Base.astro';
 import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar, { type TabId } from '../components/ui/TabBar.astro';
 import ArchiveStatus from '../components/shell/ArchiveStatus.svelte';
+import WorkoutMiniBar from '../components/shell/WorkoutMiniBar.svelte';
 
 interface Props {
   title: string;
@@ -21,16 +23,28 @@ interface Props {
   showTabs?: boolean;
   showHeader?: boolean;
   showSettings?: boolean;
+  /** false dove la pagina mostra da sé lo stato del salvataggio (allenamento attivo) */
+  showArchiveStatus?: boolean;
 }
 
-const { title, heading = title, subtitle, description, tab, showTabs = true, showHeader = true, showSettings = true } = Astro.props;
+const {
+  title,
+  heading = title,
+  subtitle,
+  description,
+  tab,
+  showTabs = true,
+  showHeader = true,
+  showSettings = true,
+  showArchiveStatus = true,
+} = Astro.props;
 
 // Altezza della tab bar (56px più il filo superiore), senza l'area sicura che la tab bar aggiunge da sé
 const TAB_BAR_HEIGHT = 57;
 const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
 ---
 
-<Base title={`${title} · BodyTracker`} description={description} bodyStyle={`--bottom-bars-height: ${barsBelow}px`}>
+<Base title={`${title} · BodyTracker`} description={description} bodyStyle={`--bottom-bars-base: ${barsBelow}px; --bottom-bars-height: ${barsBelow}px`}>
   <ClientRouter slot="head" />
   {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} />}
 
@@ -39,7 +53,9 @@ const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
   </main>
 
   <div class="fixed inset-x-0 bottom-0 z-20" transition:animate="none">
-    <ArchiveStatus barsBelow={barsBelow} client:only="svelte" />
+    <!-- persistente tra le pagine: niente lampo della barra a ogni cambio di pagina -->
+    <WorkoutMiniBar client:only="svelte" transition:persist="workout-mini-bar" />
+    {showArchiveStatus && <ArchiveStatus client:only="svelte" />}
     {showTabs && <TabBar active={tab} />}
   </div>
 </Base>

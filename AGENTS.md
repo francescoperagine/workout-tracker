@@ -52,7 +52,7 @@ scripts/make-icons.mjs  icone della PWA (public/icons/) dal disegno del favicon
 src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
-src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (ArchiveStatus + TabBar), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings
+src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus
 src/lib/paths.ts        appUrl(path) e BASE: ogni link e risorsa passa da qui (percorso base, barra finale delle pagine); joinBase, isCurrentPath (con test)
 src/lib/theme.ts        temi: THEME_REGISTRY (unico elenco: system, light, dark, con etichette Sistema/Chiaro/Scuro; i temi futuri si aggiungono qui e in src/styles/themes/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.theme, readTheme, applyTheme, saveTheme, themeBootScript (riapplica il tema anche a ogni navigazione del ClientRouter; con test)
 src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esportato da index.ts:
@@ -60,15 +60,17 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   dates.ts              toDateKey, fromDateKey, isValidDateKey, weekdayOf (ora locale)
   validation.ts         validateArchive: ricostruzione campo per campo, messaggi in italiano
   repository.ts         ArchiveRepository (revisione, quota, illeggibile, conflitto tra schede, subscribe), sharedArchive, requestPersistence
-  catalog.ts            catalogo base + personalizzati: nameKey, findByName, suggestExercises, ensureExercise (US-14)
+  catalog.ts            catalogo base + personalizzati: nameKey, findByName, suggestExercises, ensureExercise (US-14); exerciseDetails, safeImagePath, safeSources (approfondimento, US-19)
   routines.ts           withStarterRoutines, planFor, sessionInProgress, quickStart (US-11: ultime 4 schede e suggerita)
   routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry)
   calendar.ts           calendario (step 5): addDays, weekStart, weekDates, monthWeeks, dayInfo (stato del giorno: done, in-progress, skipped, planned, rest, empty), setWeeklyDay, setDateOverride, staleWeeklyDays
-  sessions.ts           sessioni (step 5): startSession (da scheda o libero, una sola in corso), reopenSession, finishSession, removeSession/restoreSession, summarizeSession, currentExercise, lastFinishedSession
+  sessions.ts           sessioni (step 5): startSession (da scheda o libero, una sola in corso), reopenSession, finishSession (almeno un esercizio e un valore), removeSession/restoreSession, summarizeSession, currentExercise, lastFinishedSession
+  workout.ts            allenamento attivo (step 6): previousExercise/previousSets (precedente per variante e per posizione tra riscaldamento e serie di lavoro), completedSet (spunta che conferma il precedente), nextSet (serie da fare, alternanza in superserie), plannedEntry (voce della scheda), serie ed esercizi in sessione con "Annulla", switchExercise (variante), note, nome e data, loadRecords, workoutSummary
   conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
   poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
-src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce()
+src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce(); avviso beforeunload con modifiche solo in memoria
+src/lib/bottom-bars.ts  setBottomBar(id, altezza, persistente): somma le barre in basso in --bottom-bars-height (base della pagina in --bottom-bars-base)
 src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatWeightRange, formatDistance
 src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration, formatWeekdays ("lun, gio"), formatDayMonth; dallo step 5 formatRelativeDay ("giovedì", "12 giorni fa"), formatOnDay ("l’8 settembre"), formatElapsed ("1 h 05 min"), formatClock, formatWeekRange, formatMonth, formatLongDay (con test)
 src/lib/device.ts       isIos, isStandalone, canVibrate, ultimo backup (bodytracker.lastBackup), downloadText
@@ -84,18 +86,19 @@ src/pages/
   routines.astro        Schede (/routines): elenco con crea, duplica, rinomina, riordina, archivia, elimina
   routine.astro         editor di una scheda (/routine?id=…)
   calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
-  workout.astro         allenamento in corso (/workout): allo step 5 segnaposto con il programma della sessione, sostituito dallo step 6
+  workout.astro         allenamento in corso (/workout, step 6); ?summary=<id> mostra il riepilogo di una sessione appena conclusa
   history.astro         segnaposto con stato vuoto, sostituito dallo step 8
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   kit.astro             /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione e dal precache
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
                         LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
+src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su Oggi né su /workout), transition:persist
 src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
 src/components/settings/  SettingsPage (tema, unità, allenamento), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
 src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
-src/components/workout/WorkoutPlaceholder.svelte  segnaposto di /workout (step 5)
+src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione)
 src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
 src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca e "Crea «…»" (esercizio personalizzato)
 src/components/workout/RestTimer.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
@@ -110,7 +113,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - **Svelte 5:** le parti con stato sono isole Svelte, il resto resta `.astro`. Le isole che leggono l'archivio sono `client:only="svelte"` (i dati sono solo nel browser, il rendering alla build non li vedrebbe); un'isola `client:load` deve leggere l'archivio solo in `onMount` o nei gestori (vedi `WelcomeActions` e lo store pigro di `ImportFlow`). Il testo passa dal templating di Svelte, che fa l'escape da solo: niente `innerHTML`.
 - `<script>` nei `.astro` solo semplici (TypeScript, elaborati e bundlati da Astro), mai `type="module"` o `define:vars`. Unica eccezione: lo script `is:inline` del tema in `Base.astro`, che deve girare prima del primo disegno.
 - Il codice accede al diario **solo tramite `src/lib/archive/`**: nelle isole con `archiveStore()` (`src/lib/archive-store.svelte.ts`), che espone `archive`, `state`, `isNew` reattivi e `repo` per `saveNow`, `reload`, `replace`.
-- **Guscio:** lo stack fisso in basso dichiara la sua altezza in `--bottom-bars-height` sul `<body>` (`AppLayout` per la tab bar, `ArchiveStatus` quando compare la barra di salvataggio); il `<main>` e gli avvisi brevi la usano.
+- **Guscio:** lo stack fisso in basso dichiara la sua altezza in `--bottom-bars-height` sul `<body>`: `AppLayout` scrive la base (tab bar) in `--bottom-bars-base`, le barre che compaiono (barra di salvataggio, barra dell'allenamento, mini-barra) si dichiarano con `setBottomBar` di `src/lib/bottom-bars.ts`; il `<main>`, gli avvisi brevi e i pulsanti appiccicati la usano.
 - **PWA:** il service worker esiste solo nella build (`npm run build`), non con `npm run dev`. Si aggiorna da solo (`skipWaiting` + `clientsClaim`); le copie vecchie si cancellano. `/kit` e i suoi chunk sono fuori dal precache.
 
 ### Chiavi di localStorage
@@ -155,10 +158,10 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Lo Storico è un segnaposto (stato vuoto) fino allo step 8; `/workout` è un segnaposto onesto fino allo step 6: "Inizia allenamento" crea già la sessione vera, ma le serie non si registrano ancora (si può annullare l'allenamento, o concluderlo se ha valori importati). Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Lo Storico è un segnaposto (stato vuoto) fino allo step 8. L'allenamento attivo è completo dallo step 6, senza timer di recupero (step 7): la spunta registra la serie ma non avvia ancora il recupero. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
-- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
 ## Riferimento: `BodyTracker/`
 

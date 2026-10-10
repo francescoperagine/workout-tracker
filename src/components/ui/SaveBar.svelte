@@ -16,9 +16,13 @@
     onreload?: () => void;
     /** azione principale a destra (es. "Termina"); con `unreadable` è il rimando al recupero dei dati */
     action?: Snippet;
+    /** riga sopra lo stato, a sinistra (es. la durata dell'allenamento) */
+    detail?: Snippet;
+    /** "Salvato" invece di "Salvato su questo dispositivo", dove lo spazio serve alla durata */
+    compact?: boolean;
   }
 
-  let { status, onsavenow, onreload, action }: Props = $props();
+  let { status, onsavenow, onreload, action, detail, compact = false }: Props = $props();
 
   const MESSAGES: Record<SaveBarStatus, string> = {
     saved: 'Salvato su questo dispositivo',
@@ -30,16 +34,21 @@
 </script>
 
 <div class="shell bar" class:problem={status === 'unsaved' || status === 'conflict' || status === 'unreadable'}>
-  <p class="status" role="status" aria-live="polite">
-    {#if status === 'saved'}
-      <Check size={18} aria-hidden="true" class="icon-ok" />
-    {:else if status === 'saving'}
-      <LoaderCircle size={18} aria-hidden="true" class="icon-wait" />
-    {:else}
-      <CircleAlert size={18} aria-hidden="true" class="icon-warning" />
+  <div class="lead">
+    {#if detail}
+      {@render detail()}
     {/if}
-    <span>{MESSAGES[status]}</span>
-  </p>
+    <p class="status" role="status" aria-live="polite">
+      {#if status === 'saved'}
+        <Check size={18} aria-hidden="true" class="icon-ok" />
+      {:else if status === 'saving'}
+        <LoaderCircle size={18} aria-hidden="true" class="icon-wait" />
+      {:else}
+        <CircleAlert size={18} aria-hidden="true" class="icon-warning" />
+      {/if}
+      <span>{compact && status === 'saved' ? 'Salvato' : MESSAGES[status]}</span>
+    </p>
+  </div>
   <div class="actions">
     {#if status === 'unsaved'}
       <button type="button" class="btn btn-secondary" onclick={onsavenow}>Salva ora</button>
@@ -63,6 +72,12 @@
   }
   .bar.problem {
     border-top-color: var(--color-shell-warning-line);
+  }
+  .lead {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
   }
   .status {
     display: flex;

@@ -1,19 +1,34 @@
 <script lang="ts" module>
   import type { SetType } from '../../lib/archive/types';
   export type { SetType };
+  /** Valori della volta scorsa, già nell'unità scelta; '' se mancano */
   export interface Previous {
     kg: string;
     reps: string;
+  }
+  /** Cosa fare dopo la spunta: niente, o portare il cursore al campo vuoto */
+  export type CheckResult = 'kg' | 'reps' | void;
+
+  /** "40 × 8", "12 rip" (senza peso), "40 kg" (senza ripetizioni) */
+  export function formatPrevious(previous: Previous, unit: string): string {
+    if (!previous.kg) return `${previous.reps} rip`;
+    if (!previous.reps) return `${previous.kg} ${unit}`;
+    // spazi sottili unificatori: il precedente sta nella colonna stretta anche a 320px
+    return `${previous.kg}\u202f×\u202f${previous.reps}`;
   }
 </script>
 
 <script lang="ts">
   // Riga serie, l'unità di lavoro dell'allenamento: tipo/n · precedente · peso · rip · spunta.
-  // La spunta su una riga vuota conferma il precedente (1 tocco, P1); senza precedente porta al primo campo vuoto.
+  // La riga mostra i valori e passa i gesti a chi la usa, che salva: tocco sull'indice (tipo successivo),
+  // tocco sul precedente (lo copia), battute nei campi, spunta. La spunta su una riga vuota conferma il
+  // precedente (1 tocco, P1); se manca un valore chi la usa risponde con il campo da compilare.
   import Check from '@lucide/svelte/icons/check';
+  import Trophy from '@lucide/svelte/icons/trophy';
   import SetInput from './SetInput.svelte';
 
   interface Props {
+    id?: string;
     /** numero della serie tra quelle che contano (le serie di riscaldamento non hanno numero) */
     number: number;
     type?: SetType;
@@ -22,21 +37,32 @@
     reps?: string;
     done?: boolean;
     unit?: 'kg' | 'lb';
-    oncheck?: (done: boolean) => void;
+    /** record di carico battuto con questa serie (US-29) */
+    record?: boolean;
+    ontype?: () => void;
+    oncopy?: () => void;
+    onkg?: (text: string) => boolean | void;
+    onreps?: (text: string) => boolean | void;
+    oncheck?: () => CheckResult;
   }
 
   let {
+    id,
     number,
-    type = $bindable('normal'),
+    type = 'normal',
     previous = null,
-    kg = $bindable(''),
-    reps = $bindable(''),
-    done = $bindable(false),
+    kg = '',
+    reps = '',
+    done = false,
     unit = 'kg',
+    record = false,
+    ontype,
+    oncopy,
+    onkg,
+    onreps,
     oncheck,
   }: Props = $props();
 
-  const CYCLE: SetType[] = ['normal', 'warmup', 'drop', 'failure'];
   // Testi per l'utente: sigla nel badge e nome nell'etichetta accessibile
   const BADGE: Record<SetType, string> = { normal: '', warmup: 'R', drop: 'D', failure: 'C' };
   const TYPE_NAME: Record<SetType, string> = { normal: 'normale', warmup: 'di riscaldamento', drop: 'drop', failure: 'a cedimento' };
@@ -47,54 +73,58 @@
   const badge = $derived(type === 'normal' ? String(number) : BADGE[type]);
   const setName = $derived(type === 'warmup' ? 'riscaldamento' : `serie ${number}`);
 
-  function cycleType() {
-    type = CYCLE[(CYCLE.indexOf(type) + 1) % CYCLE.length];
-  }
-
-  function copyPrevious() {
-    if (!previous) return;
-    kg = previous.kg;
-    reps = previous.reps;
-  }
-
   function check() {
-    if (done) {
-      done = false;
-      oncheck?.(false);
-      return;
-    }
-    if (previous) {
-      if (!kg) kg = previous.kg;
-      if (!reps) reps = previous.reps;
-    }
-    if (!kg) return kgInput?.focus();
-    if (!reps) return repsInput?.focus();
-    done = true;
-    oncheck?.(true);
+    const missing = oncheck?.();
+    if (missing === 'kg') kgInput?.focus();
+    else if (missing === 'reps') repsInput?.focus();
+  }
+
+  function onkeydown(event: KeyboardEvent, field: 'kg' | 'reps') {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    if (field === 'kg') repsInput?.focus();
+    else (event.currentTarget as HTMLElement).blur();
   }
 </script>
 
-<div class="row" class:done>
-  <button
-    type="button"
-    class="type"
-    class:special={type !== 'normal'}
-    onclick={cycleType}
-    aria-label={`Serie ${TYPE_NAME[type]}: tocca per cambiare tipo`}
-  >
+<div class="row" class:done {id}>
+  <button type="button" class="type" class:special={type !== 'normal'} onclick={ontype} aria-label={`Serie ${TYPE_NAME[type]}: tocca per cambiare tipo`}>
     {badge}
   </button>
 
   {#if previous}
-    <button type="button" class="previous" onclick={copyPrevious} aria-label={`Copia il precedente: ${previous.kg} ${unit} per ${previous.reps}`}>
-      {previous.kg} × {previous.reps}
+    <button type="button" class="previous" onclick={oncopy} aria-label={`Copia il precedente: ${formatPrevious(previous, unit)}${record ? '. Record di carico' : ''}`}>
+      {#if record}<Trophy size={16} aria-hidden="true" class="record" />{/if}
+      <span class="previous-text">{formatPrevious(previous, unit)}</span>
     </button>
   {:else}
-    <span class="previous empty" aria-label="Nessun precedente">—</span>
+    <span class="previous empty">
+      {#if record}<Trophy size={16} aria-hidden="true" class="record" /><span class="sr-only">Record di carico. </span>{/if}
+      <span aria-label="Nessun precedente">—</span>
+    </span>
   {/if}
 
-  <SetInput bind:value={kg} bind:this={kgInput} kind="decimal" label={`Peso ${setName}, ${unit}`} placeholder={previous?.kg} {done} />
-  <SetInput bind:value={reps} bind:this={repsInput} kind="integer" label={`Ripetizioni ${setName}`} placeholder={previous?.reps} {done} />
+  <SetInput
+    bind:this={kgInput}
+    value={kg}
+    kind="decimal"
+    label={`Peso ${setName}, ${unit}`}
+    placeholder={previous?.kg}
+    {done}
+    oninput={onkg}
+    onkeydown={(e) => onkeydown(e, 'kg')}
+  />
+  <SetInput
+    bind:this={repsInput}
+    value={reps}
+    kind="integer"
+    label={`Ripetizioni ${setName}`}
+    placeholder={previous?.reps}
+    enterkeyhint="done"
+    {done}
+    oninput={onreps}
+    onkeydown={(e) => onkeydown(e, 'reps')}
+  />
 
   <button type="button" class="check" onclick={check} aria-pressed={done} aria-label={done ? `Annulla ${setName}` : `Segna ${setName} come fatta`}>
     <Check size={22} strokeWidth={done ? 2.75 : 2} aria-hidden="true" />
@@ -111,6 +141,8 @@
     margin-inline: -0.375rem;
     padding-inline: 0.375rem;
     border-radius: var(--radius-field);
+    /* la tastiera e le barre fisse non coprono la riga che si sta compilando */
+    scroll-margin-block: 5rem calc(var(--bottom-bars-height) + 1rem);
     transition: background-color 0.2s var(--ease-out-expo);
   }
   .row.done {
@@ -131,21 +163,28 @@
     color: var(--color-accent-text);
   }
   .previous {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
     min-height: 48px;
     text-align: left;
     color: var(--color-muted);
     font-size: var(--text-base);
+    font-variant-numeric: tabular-nums;
+  }
+  .previous-text {
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-variant-numeric: tabular-nums;
+  }
+  .previous :global(.record) {
+    flex-shrink: 0;
+    color: var(--color-accent-text);
   }
   button.previous:hover {
     color: var(--color-foreground);
-  }
-  .previous.empty {
-    display: flex;
-    align-items: center;
   }
   .check {
     display: grid;
