@@ -153,7 +153,7 @@ export function nextSetText(
   // spazi unificatori: "40 kg × 8" va a capo tutto insieme
   const load = weight && reps !== null ? `${weight}\u00a0×\u00a0${reps}` : weight || (reps !== null ? `${reps}\u00a0rip` : '');
   // il separatore resta a fine riga: "· 40 kg × 8" non apre mai una riga
-  return [exerciseName(archive, exercise.exerciseId), number ? `serie\u00a0${number}` : 'riscaldamento', load].filter(Boolean).join(' ·\u00a0');
+  return [exerciseName(archive, exercise.exerciseId), number ? `serie\u00a0${number}` : 'riscaldamento', load].filter(Boolean).join('\u00a0· ');
 }
 
 /** Lettura tollerante della chiave: un contenuto rovinato vale come nessun timer. */
