@@ -112,7 +112,8 @@
 
 {#snippet schermo()}
   <div class="schermo" class:vai class:finale>
-    <div class="livello" style:height={`${vai ? 0 : frazione * 100}%`} aria-hidden="true"></div>
+    <!-- il livello pieno si ferma sotto l'intestazione, così la linea lime non la attraversa -->
+    <div class="livello" style:height={`calc(${vai ? 0 : frazione} * (100% - 4.5rem))`} aria-hidden="true"></div>
     <div class="testa">
       <span>Recupero · {formattaDurata(durata)}</span>
       <button type="button" class="pulsante pulsante-icona" aria-label="Riduci il timer" onclick={() => (ridotto = true)}>

@@ -87,8 +87,8 @@
     scrollbar-color: var(--color-linea-forte) var(--color-fondo);
   }
   :root {
-    /* altezza dello stack fisso in basso (tab bar, barra di salvataggio, timer ridotto): la imposta la pagina */
-    --altezza-barre-basse: 0px;
+    /* altezza dello stack fisso in basso: di base la tab bar; le pagine con altre barre la alzano */
+    --altezza-barre-basse: 57px;
   }
   :root[data-theme="chiaro"] {
     color-scheme: light;

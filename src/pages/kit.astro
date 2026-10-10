@@ -42,7 +42,7 @@ const unita = [
 ] as const;
 ---
 
-<Base title="Kit · BodyTracker" description="Componenti base del design system di BodyTracker." bodyClass="[--altezza-barre-basse:57px]">
+<Base title="Kit · BodyTracker" description="Componenti base del design system di BodyTracker.">
   <Intestazione titolo="Kit del design system" sottotitolo="Componenti base · pagina interna" />
 
   <main class="mx-auto flex max-w-2xl flex-col gap-12 px-4 pt-6 pb-40">
@@ -146,10 +146,12 @@ const unita = [
 
     <section aria-labelledby="s-timer" class="flex flex-col gap-3">
       <h2 id="s-timer" class="text-titolo-pagina font-bold">Timer di recupero</h2>
-      <p class="text-secondario">Il livello scende a ogni secondo; alla fine lo schermo diventa lime.</p>
+      <p class="text-secondario">Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo.</p>
       <div class="grid gap-4 sm:grid-cols-2">
         <TimerRecupero durata={120} anteprima={84} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
+        <TimerRecupero durata={120} anteprima={7} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
         <TimerRecupero durata={120} anteprima={0} prossima="Panca piana · serie 2 · 40 kg × 6–8" />
+        <TimerRecupero durata={900} anteprima={725} prossima={null} />
       </div>
       <TimerRecupero durata={120} anteprima={52} anteprimaRidotta prossima="Rematore manubri · serie 2 · 12 kg × 8–10" />
     </section>
