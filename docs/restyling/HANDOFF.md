@@ -4,7 +4,7 @@ Questo documento serve a riprendere il lavoro in una nuova conversazione. Contie
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/BRIEF.md`, `docs/restyling/USER-STORIES.md`, `docs/restyling/PIANO.md`, `PRODUCT.md` e `DESIGN.md`. Prima chiedimi le decisioni ancora aperte elencate nell'handoff e aggiorna storie e brief con le mie risposte; poi esegui lo **step 1** del piano (design system chiaro e scuro) con Impeccable. Lavora su un branch nuovo partendo da `main`. Fermati quando devo scegliere la direzione visiva (tema chiaro, font, mossa distintiva del timer), e di nuovo alla fine dello step per mostrarmi la pagina `/kit` nei due temi.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/BRIEF.md`, `docs/restyling/USER-STORIES.md`, `docs/restyling/PIANO.md`, `PRODUCT.md` e `DESIGN.md`. Prima chiedimi le decisioni ancora aperte elencate nell'handoff e aggiorna storie e brief con le mie risposte; poi esegui lo **step 1** del piano (design system chiaro e scuro) con Impeccable. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati quando devo scegliere la direzione visiva (tema chiaro, font, mossa distintiva del timer), e di nuovo alla fine dello step per mostrarmi la pagina `/kit` nei due temi.
 
 ## Stato a fine step 0 (10 ottobre 2026)
 
@@ -50,7 +50,7 @@ Con le risposte: aggiornare USER-STORIES.md (priorità, criteri, P1), i brief in
 
 Obiettivo: token, temi e componenti base pronti e visibili su `/kit`, senza ancora rifare le pagine. Principi P2, P3, P9; storia US-30 (temi).
 
-1. **Branch:** crearne uno nuovo da `main`.
+1. **Branch:** si lavora direttamente su `main` (scelta dell'utente). Niente branch nuovi: commit e push su `main`. Se la sessione indica un branch di sviluppo diverso, vale questa scelta dell'utente.
 2. **Contesto Impeccable:** `".claude/skills/impeccable/scripts/impeccable" context` una volta, se il launcher è consentito. Poi leggere `reference/new-work.md`, `reference/mode-operate.md` e, prima di ogni modifica alla UI, `reference/craft-floor.md`.
 3. **Tipo di lavoro:** il mondo del PoC è approvato. Va **ereditato ed esteso** ("established world" / "incomplete brand" in new-work §1), non sostituito: niente gara tra mondi nuovi. Le scelte da far fare all'utente sono tre:
    - **variante chiara** del mondo verde: la scena (luce variabile, sole vicino alla finestra) giustifica entrambi i temi;
@@ -73,7 +73,7 @@ Obiettivo: token, temi e componenti base pronti e visibili su `/kit`, senza anco
    - detector a 0 su `/kit` nei due temi (`npx impeccable detect` sull'URL, vedi insidie);
    - contrasti ≥ 4,5:1 (anche placeholder e testo secondario), target ≥ 48px per le azioni frequenti;
    - screenshot a 390×844 e 320×568 nei due temi.
-10. **Consegna:** aggiornare `AGENTS.md` (convenzioni di stile: token al posto di `bg-blue-600`, componenti base, `/kit`). Commit, push, merge su `main` se l'utente lo chiede. Mostrare `/kit` all'utente e fermarsi.
+10. **Consegna:** aggiornare `AGENTS.md` (convenzioni di stile: token al posto di `bg-blue-600`, componenti base, `/kit`). Commit e push su `main`. Mostrare `/kit` all'utente e fermarsi.
 
 ## Insidie dell'ambiente (container cloud)
 
