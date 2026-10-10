@@ -115,6 +115,7 @@ src/components/  (grafica vecchia)
 
 ## Convenzioni
 
+- **Si lavora sempre su `main`:** niente branch né pull request, anche se la sessione propone un branch di lavoro. Commit e push direttamente su `main` (`git push origin main`).
 - Testo dell'interfaccia, `title`/`description` e messaggi utente in **italiano**; date formattate con `toLocaleDateString('it-IT', …)`.
 - Ogni pagina usa `Layout`; le sottopagine passano `showBackButton={true}`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.

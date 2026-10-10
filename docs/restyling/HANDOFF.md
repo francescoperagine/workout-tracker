@@ -4,7 +4,7 @@ Questo documento serve a riprendere il lavoro in una nuova conversazione. Contie
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief delle superfici dello step 3. Esegui lo **step 3** del piano (guscio dell'app con tab bar e `ClientRouter`, PWA con manifest e service worker, percorso base `BT_BASE`, Impostazioni con tema, unità, recupero, suono e vibrazione, Dati e privacy con export, import v2 e del PoC, primo avvio `/benvenuto`), usando l'archivio v2 dello step 2, con test e2e nominati con l'ID della storia. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief delle superfici dello step 3. Esegui lo **step 3** del piano (guscio dell'app con tab bar e `ClientRouter`, PWA con manifest e service worker, percorso base `BT_BASE`, Impostazioni con tema, unità, recupero, suono e vibrazione, Dati e privacy con export, import v2 e del PoC, primo avvio `/benvenuto`), usando l'archivio v2 dello step 2, con test e2e nominati con l'ID della storia. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
 
 ## Stato a fine step 2 (10 ottobre 2026)
 
