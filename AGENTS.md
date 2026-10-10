@@ -97,6 +97,10 @@ src/components/
 
 Quando porti una funzionalità dalla versione statica all'app Astro, usa questi file come specifica. Non modificare `BodyTracker/palestra/` se non richiesto: è un pacchetto pubblicabile a sé stante, con un formato dati proprio (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) che non è compatibile con le chiavi `bb-*` dell'app Astro.
 
+## Restyling in corso
+
+È previsto un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi, ricerche e decisioni aperte sono in `docs/restyling/ANALISI.md`: leggilo prima di toccare la UI.
+
 ## Note varie
 
 - `.vscode/settings.json` contiene un percorso specifico di Windows: non dipenderne.
