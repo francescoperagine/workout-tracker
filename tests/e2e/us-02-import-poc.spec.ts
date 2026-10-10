@@ -69,3 +69,12 @@ test.describe('US-02 import del diario del PoC', () => {
     expect(await page.evaluate(() => localStorage.getItem('bodytracker.archivio.v1'))).toBe(POC_BACKUP);
   });
 });
+
+test('US-02 con le sole schede A/B già presenti non chiede di scegliere: il PoC non le sostituisce', async ({ page }) => {
+  await page.goto('welcome/');
+  await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
+  await page.getByRole('link', { name: 'Impostazioni', exact: true }).click();
+  await chooseFile(page, 'Importa backup', 'poc.json', POC_BACKUP);
+  await expect(sheet(page).getByText('4 nuovi, 0 già presenti su questo dispositivo')).toBeVisible();
+  await expect(sheet(page).getByRole('radio')).toHaveCount(0);
+});

@@ -17,7 +17,7 @@ Tutto è su `main`. Decisioni dello step 3 nello "Stato" dello step 3 in PIANO.m
 - **Componenti nuovi:** `Switch`, `Stepper` (valore a passi, da riusare per i recuperi della scheda), `SaveBar` con lo stato `unreadable`, `ImportFlow`. Formattazione dei testi in `src/lib/format.ts` (`formatDuration` "1:30", `plural`, `formatPeriod`).
 - **Segnaposto:** `/routines` (step 4), `/calendar` (step 5), `/history` (step 8) sono stati vuoti; Oggi (`/`) fa solo il rimando a `/welcome` e conferma il diario (step 5).
 - **App vecchia `bb-*` rimossa.**
-- Verifica: 82 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 147 Vitest, `astro check` pulito, detector a 0.
+- Verifica: 84 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 147 Vitest, `astro check` pulito, detector a 0.
 
 ## Step 4 in dettaglio: Schede
 

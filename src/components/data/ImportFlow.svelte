@@ -59,7 +59,11 @@
   let outcome: Outcome | null = $state.raw(null);
   let input: HTMLInputElement;
 
-  const hasDuplicates = $derived(!!preview && preview.existingSessions + preview.existingRoutines > 0);
+  // Le schede di un backup del PoC (A/B iniziali) si aggiungono solo se mancano: per il PoC la scelta
+  // riguarda soltanto gli allenamenti
+  const hasDuplicates = $derived(
+    !!preview && preview.existingSessions + (preview.format === 'v2' ? preview.existingRoutines : 0) > 0,
+  );
   const title = $derived(
     phase === 'done' ? 'Backup importato' : phase === 'error' ? 'Backup non importato' : data?.format === 'poc' ? 'Diario della versione precedente' : 'Importa backup',
   );
