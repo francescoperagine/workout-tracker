@@ -25,6 +25,8 @@ Tutto è su `main`.
 Obiettivo dal piano: `src/lib/archivio/` (tipi, validazione, repository con revisione, quota e conflitto tra schede, evento di aggiornamento), `src/lib/unita.ts`, import ed export v2, import del backup del PoC e lettura diretta della sua chiave, conversione di `BodyTracker/palestra/esercizi.js` in `src/data/` con gli **stessi ID**, rimozione del codice `bb-*` quando le pagine nuove non ne dipendono più. Storie: US-02 (logica), US-31 (logica), US-33.
 
 - Il modello dati v2 è in PIANO.md; `impostazioni.tema` è stato tolto (il tema vive in `bodytracker.tema`).
+- Due requisiti aggiunti dopo lo step 1 toccano i dati: la **variante scritta a mano** (US-14: un nome nuovo diventa un esercizio personalizzato in `catalogo`, riconosciuto senza maiuscole, spazi e accenti) e l'**avvio dalle ultime 4 schede** (US-11: serve una funzione che dia le schede distinte più recenti e quella suggerita). Prevederli nel repository e nei test.
+- Altri temi in futuro: il registro è in `src/lib/tema.ts`, la procedura in DESIGN.md, "Aggiungere un tema".
 - Limiti, messaggi e comportamenti del PoC (quota, archivio illeggibile, conflitto tra schede) sono la specifica: leggere `BodyTracker/palestra/app.js` e `BodyTracker/LEGGIMI.md`.
 - Recuperi come "2′" o "60–75″" → secondi, valore minimo dell'intervallo; carichi testuali → `caricoMin`, `caricoMax`, `notaCarico`.
 - Verifica: Vitest su validazione, import del PoC (backup sintetico finché l'utente non ne fornisce uno reale), conflitti, quota, conversioni di unità andata e ritorno.

@@ -110,7 +110,7 @@ src/components/  (grafica vecchia)
 
 ## Limiti noti
 
-- Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`) e US-30 sui temi (`tests/e2e/us-30-temi.spec.ts`, su `/kit`). Ogni nuova storia porta il suo test.
+- Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`), US-30 sui temi (`tests/e2e/us-30-temi.spec.ts`) e i componenti di `/kit` (`tests/e2e/kit.spec.ts`). Ogni nuova storia porta il suo test.
 - Nelle pagine vecchie `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; spariscono con la riscrittura delle pagine (step 3–6).
 - Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.
 
