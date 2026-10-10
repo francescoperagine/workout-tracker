@@ -6,7 +6,18 @@ Questo documento serve a riprendere il lavoro in una nuova conversazione. Contie
 
 > Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/USER-STORIES.md`, `docs/restyling/PIANO.md` e `docs/restyling/ANALISI.md`, poi esegui lo **step 0** del piano. Lavora su un branch nuovo partendo da `main`. Alla fine dello step fermati e mostrami storie e brief delle superfici da confermare, prima di toccare la grafica.
 
-## Stato a fine conversazione precedente (10 ottobre 2026)
+## Stato a fine step 0 (10 ottobre 2026, branch `claude/stoic-knuth-xd0bx6`)
+
+- **Fatto:**
+  - Astro 7.3 (Vite 8) con Svelte 5, Tailwind 4.3; MDX e sitemap rimossi; `noindex` nel layout;
+  - Vitest, Playwright, TypeScript 6, `@astrojs/check`; script `check`, `test`, `test:e2e`; smoke test e2e;
+  - Impeccable 4.5.2: skill in `.claude/skills/impeccable/`, `.impeccable/config.json`, blocco del `.gitignore`;
+  - `PRODUCT.md` e `DESIGN.md` in radice, `design.json` in `.impeccable/`; `PRODUCT.md` aggiornato;
+  - brief delle 8 superfici in `.impeccable/surfaces/`, indice con flussi, copertura, proposte sulle storie e domande in [BRIEF.md](BRIEF.md).
+- **In attesa:** conferma dell'utente su storie, priorità e brief (domande in BRIEF.md §4). Poi aggiornare USER-STORIES.md e i brief, e passare allo step 1.
+- **Non fatto:** hook del detector di Impeccable in Claude Code (vedi insidie).
+
+## Stato a inizio step 0
 
 Tutto è su `main`.
 
@@ -72,15 +83,21 @@ Obiettivo: fondamenta pronte, senza ancora cambiare la grafica.
 ## Insidie dell'ambiente (container cloud)
 
 - **Rete:** la policy blocca molti siti (es. `hevyapp.com`, `strongapp.io` → 403 dal proxy). Funzionano `npm`, GitHub e la ricerca web. Le informazioni sui concorrenti sono già in `ANALISI.md`.
+- **Installazione di Impeccable:** `npx impeccable install` scarica le skill da `impeccable.style`, bloccato dal proxy. La skill è stata copiata da `plugin/skills/impeccable` del repository GitHub (stesso commit della 4.5.2). Il motore del detector arriva da npm (`npx impeccable`) e funziona.
+- **Hook del detector:** non cablato. Va in `.claude/settings.local.json` (locale) o in `.claude/settings.json` (condiviso, vale anche per le sessioni cloud) ed esegue `.claude/skills/impeccable/scripts/impeccable hook`, che scarica il motore da GitHub al primo uso. Serve l'ok dell'utente.
+- **Upgrade di Astro:** `npx @astrojs/upgrade` non riesce a risolvere le versioni da questo container; l'aggiornamento è stato fatto con `npm install astro@^7 …`. `docs.astro.build` è bloccato dal proxy.
+- **`astro preview` in Astro 7:** sotto un agente parte in background. Fermarlo con `npx astro preview stop` (non serve più `pkill`); `--ignore-lock` lo tiene in primo piano.
+- **Pagine con `_`:** Astro non genera `src/pages/_qualcosa.astro`; per la pagina dei componenti usare `/kit`.
+- **TypeScript:** `@astrojs/svelte` e `@astrojs/check` accettano TypeScript 5 o 6, non il 7.
 - **Detector di Impeccable sulle pagine renderizzate:** Puppeteer non parte come root senza `--no-sandbox`. Soluzione:
   ```sh
   printf '#!/bin/sh\nexec /opt/pw-browsers/chromium --no-sandbox "$@"\n' > /tmp/chromium-nosandbox && chmod +x /tmp/chromium-nosandbox
   PUPPETEER_EXECUTABLE_PATH=/tmp/chromium-nosandbox npx impeccable detect http://localhost:4321/
   ```
   `npx impeccable detect src/` sui sorgenti funziona senza browser.
-- **Playwright:** è installato globalmente (`$(npm root -g)/playwright`), con Chromium in `/opt/pw-browsers`.
-- **Chiusura dei server:** non usare `pkill -f "astro preview"`. Il pattern corrisponde anche alla shell che esegue il comando e la termina. Usare `pkill -f "[a]stro preview"`.
-- **Type-check** prima che `@astrojs/check` sia tra le dipendenze: `npm i --no-save @astrojs/check typescript && npx astro check`.
+- **Playwright:** è installato globalmente (`$(npm root -g)/playwright`, 1.56), con Chromium in `/opt/pw-browsers`. Il progetto usa `@playwright/test` 1.64: lanciare gli e2e con `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e`.
+- **Chiusura dei server:** se serve `pkill`, non usare `pkill -f "astro preview"`: il pattern corrisponde anche alla shell che esegue il comando e la termina. Usare `pkill -f "[a]stro preview"`.
+- **Type-check:** `npm run check`.
 - **Avviso noto di `astro check`:** segnala un warning su `BodyTracker/palestra/app.js` (`returnValue` deprecato). Va ignorato: il file sparirà allo step 9.
 
 ## Da non dimenticare

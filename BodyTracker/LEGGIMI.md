@@ -12,7 +12,7 @@ Non serve eseguire npm, compilare, configurare un database o creare credenziali.
 
 Per un sito Vue/Vite, puoi copiare l'intera cartella in `public/palestra/`; verrà pubblicata come pagina autonoma. Assicurati che la regola SPA non riscriva le richieste ai file di questa cartella. Per WordPress, carica la cartella tramite FTP o il gestore file: non incollare gli script nell'editor dei post. Su un hosting con indice automatico, `index.html` deve essere il documento predefinito della cartella.
 
-`documentazione/` contiene il contesto del prodotto e il sistema visivo per gli sviluppi futuri: non è necessario pubblicarla. La cartella `palestra/` è l’unica da caricare sul sito.
+Il contesto del prodotto e il sistema visivo (`PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json`) sono stati spostati nella radice del repository, dove li legge Impeccable. La cartella `palestra/` è l’unica da caricare sul sito.
 
 ## Uso
 
