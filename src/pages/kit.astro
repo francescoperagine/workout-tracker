@@ -6,6 +6,7 @@ import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar from '../components/ui/TabBar.astro';
 import EmptyState from '../components/ui/EmptyState.astro';
 import RestTimer from '../components/workout/RestTimer.svelte';
+import RestTimerBar from '../components/workout/RestTimerBar.svelte';
 import KitTheme from '../components/kit/KitTheme.svelte';
 import KitSetRows from '../components/kit/KitSetRows.svelte';
 import KitSaveBars from '../components/kit/KitSaveBars.svelte';
@@ -144,21 +145,27 @@ const weightUnits = [
     <section aria-labelledby="s-sets" class="flex flex-col gap-3">
       <h2 id="s-sets" class="text-page-title font-bold">Riga serie</h2>
       <p class="text-muted">
-        Spunta su una riga vuota: conferma il precedente e parte il recupero. Tocco sul numero: cambia tipo (R, D, C).
+        Spunta su una riga vuota: conferma il precedente e parte il recupero. Tocco sul numero: cambia tipo (R, D, C); nell’allenamento apre il foglio della serie, con “Togli serie”.
       </p>
       <KitSetRows client:load />
     </section>
 
     <section aria-labelledby="s-timer" class="flex flex-col gap-3">
       <h2 id="s-timer" class="text-page-title font-bold">Timer di recupero</h2>
-      <p class="text-muted">Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo.</p>
+      <p class="text-muted">
+        Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo. Al rientro dopo lo
+        schermo bloccato dice da quanto il recupero è finito. Ridotto, è una barra sopra la barra dell’allenamento.
+      </p>
       <div class="grid gap-4 sm:grid-cols-2">
-        <RestTimer duration={120} preview={84} next="Panca piana · serie 2 · 40 kg × 6–8" />
-        <RestTimer duration={120} preview={7} next="Panca piana · serie 2 · 40 kg × 6–8" />
-        <RestTimer duration={120} preview={0} next="Panca piana · serie 2 · 40 kg × 6–8" />
-        <RestTimer duration={900} preview={725} next={null} />
+        <RestTimer preview duration={120} remaining={84} fraction={84 / 120} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer preview duration={120} remaining={7} fraction={7 / 120} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer preview duration={120} remaining={0} fraction={0} next="Panca piana · serie 2 · 40 kg × 6–8" />
+        <RestTimer preview duration={900} remaining={725} fraction={725 / 900} next={null} />
+        <RestTimer preview duration={60} remaining={41} fraction={41 / 60} warmup next="Panca piana · serie 1 · 40 kg × 6–8" />
+        <RestTimer preview duration={90} remaining={0} fraction={0} overFor={83} next="Rematore manubri · serie 3 · 12 kg × 8–10" />
       </div>
-      <RestTimer duration={120} preview={52} previewMinimized next="Rematore manubri · serie 2 · 12 kg × 8–10" />
+      <RestTimerBar preview remaining={52} fraction={52 / 120} next="Rematore manubri · serie 2 · 12 kg × 8–10" />
+      <RestTimerBar preview remaining={0} fraction={0} next="Rematore manubri · serie 2 · 12 kg × 8–10" />
     </section>
 
     <section aria-labelledby="s-days" class="flex flex-col gap-3">

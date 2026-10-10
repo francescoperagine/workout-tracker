@@ -11,6 +11,14 @@ import { archiveWith, expectPage, seedArchive, sheet, storedArchive } from './he
 
 const NOW = new Date('2026-10-08T18:30:00+02:00');
 const [A] = starterRoutines();
+
+/**
+ * Le schede di esempio senza recupero: qui si spuntano più serie di fila e il timer a tutto schermo
+ * (step 7) le coprirebbe. Il recupero ha la sua suite, us-21-us-26-rest-timer.spec.ts.
+ */
+function routines() {
+  return starterRoutines().map((r) => ({ ...r, exercises: r.exercises.map((e) => ({ ...e, rest: 0, warmupRest: 0 })) }));
+}
 const SQUAT = A.exercises[0];
 const BENCH = A.exercises[1];
 const ROW = A.exercises[2];
@@ -22,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
 /** Sessione conclusa di Scheda A in una data, con tutte le serie fatte a `kg` × `reps` */
 function pastSession(date: string, kg = 40, reps = 8, change: (s: Session) => void = () => {}): Session {
-  const { session } = startSession(archiveWith({ routines: starterRoutines() }), 'routine-a', new Date(`${date}T18:00:00+02:00`).getTime());
+  const { session } = startSession(archiveWith({ routines: routines() }), 'routine-a', new Date(`${date}T18:00:00+02:00`).getTime());
   session.end = session.start + 3_600_000;
   for (const e of session.exercises) for (const s of e.sets) Object.assign(s, { kg, reps, completedAt: session.start + 60_000 });
   change(session);
@@ -45,7 +53,7 @@ async function startFromToday(page: Page, archive: Archive) {
 
 test.describe('US-12 registrare le serie', () => {
   test('US-12 registra una serie copiando il precedente: 1 tocco per serie (P1)', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByRole('button', { name: 'Copia il precedente: 40 × 8' })).toHaveCount(SQUAT.sets);
     // il precedente è il segnaposto dei campi vuoti
@@ -65,7 +73,7 @@ test.describe('US-12 registrare le serie', () => {
   });
 
   test('US-12 valori diversi: al massimo 2 campi più la spunta; togliere la spunta annulla', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('42,5');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('6');
@@ -82,7 +90,7 @@ test.describe('US-12 registrare le serie', () => {
   });
 
   test('US-12 senza precedente la riga vuota non si spunta e il cursore va al primo campo vuoto', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByLabel('Nessun precedente')).toHaveCount(SQUAT.sets);
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
@@ -100,7 +108,7 @@ test.describe('US-12 registrare le serie', () => {
   });
 
   test('US-12 toccando il precedente i valori vengono copiati', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 37.5, 9)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 37.5, 9)] }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('button', { name: 'Copia il precedente: 37,5 × 9' }).first().click();
     await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveValue('37,5');
@@ -109,7 +117,7 @@ test.describe('US-12 registrare le serie', () => {
   });
 
   test('US-12 US-31 in libbre: intestazione, precedente e campi in lb, dati salvati in kg', async ({ page }) => {
-    const archive = archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] });
+    const archive = archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] });
     await startFromToday(page, { ...archive, settings: { ...archive.settings, weightUnit: 'lb' } });
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByText('lb', { exact: true })).toBeVisible();
@@ -124,24 +132,28 @@ test.describe('US-12 registrare le serie', () => {
 });
 
 test.describe('US-13 tipi di serie', () => {
-  test('US-13 il tocco sul numero cambia tipo (1 → R → D → C → 1); il riscaldamento non ha numero', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+  test('US-13 il tocco sul numero apre il foglio della serie e cambia tipo; il riscaldamento non ha numero', async ({ page }) => {
+    await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
-    const first = squat.getByRole('button', { name: /^Serie .*: tocca per cambiare tipo$/ }).first();
+    const first = squat.getByRole('button', { name: /: tipo e opzioni$/ }).first();
     await expect(first).toHaveText('1');
+    await expect(first).toHaveAccessibleName('Serie 1: tipo e opzioni');
     await first.click();
+    await expect(sheet(page).getByRole('heading', { name: 'Squat bilanciere · serie 1' })).toBeVisible();
+    await expect(sheet(page).getByRole('button', { name: 'Normale' })).toHaveAttribute('aria-pressed', 'true');
+    await sheet(page).getByRole('button', { name: 'Riscaldamento' }).click();
+    await expect(sheet(page)).toHaveCount(0);
     await expect(first).toHaveText('R');
-    await expect(first).toHaveAccessibleName('Serie di riscaldamento: tocca per cambiare tipo');
+    await expect(first).toHaveAccessibleName('Riscaldamento: tipo e opzioni');
     // le serie successive si rinumerano
-    await expect(squat.getByRole('button', { name: /tocca per cambiare tipo$/ }).nth(1)).toHaveText('1');
+    await expect(squat.getByRole('button', { name: /: tipo e opzioni$/ }).nth(1)).toHaveText('1');
     await expect(squat.getByRole('textbox', { name: 'Peso riscaldamento, kg' })).toBeVisible();
     expect((await running(page)).exercises[0].sets[0].type).toBe('warmup');
-    await first.click();
-    await expect(first).toHaveText('D');
-    await first.click();
-    await expect(first).toHaveText('C');
-    await first.click();
-    await expect(first).toHaveText('1');
+    for (const [label, badge] of [['Drop', 'D'], ['Cedimento', 'C'], ['Normale', '1']]) {
+      await first.click();
+      await sheet(page).getByRole('button', { name: label }).click();
+      await expect(first).toHaveText(badge);
+    }
     expect((await running(page)).exercises[0].sets[0].type).toBe('normal');
   });
 });
@@ -154,7 +166,7 @@ test.describe('US-14 varianti', () => {
       s.exercises[0].variantOf = SQUAT.exerciseId;
       for (const set of s.exercises[0].sets) set.kg = 100;
     });
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [past] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [past] }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('60');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('8');
@@ -186,7 +198,7 @@ test.describe('US-14 varianti', () => {
   });
 
   test('US-14 "Altro esercizio…" scritto a mano diventa un esercizio personalizzato', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Cambia esercizio' }).click();
     await sheet(page).getByRole('radio', { name: 'Altro esercizio…' }).check();
     const field = sheet(page).getByRole('textbox', { name: 'Che esercizio fai al posto di quello previsto?' });
@@ -202,7 +214,7 @@ test.describe('US-14 varianti', () => {
 
 test.describe('US-15 serie ed esercizi durante la sessione', () => {
   test('US-15 "Aggiungi serie" riprende il peso dell’ultima; togliere una serie con valori si annulla', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: `Peso serie ${SQUAT.sets}, kg` }).fill('55');
     await squat.getByRole('button', { name: 'Aggiungi serie' }).click();
@@ -210,21 +222,47 @@ test.describe('US-15 serie ed esercizi durante la sessione', () => {
     await expect(added).toHaveValue('55');
     await expect(squat.getByRole('textbox', { name: `Ripetizioni serie ${SQUAT.sets + 1}` })).toHaveValue('');
 
-    await squat.getByRole('button', { name: 'Togli serie: l’ultima' }).click();
+    await squat.getByRole('button', { name: `Serie ${SQUAT.sets + 1}: tipo e opzioni` }).click();
+    await sheet(page).getByRole('button', { name: 'Togli serie' }).click();
     await expect(added).toHaveCount(0);
     await page.getByRole('button', { name: 'Annulla', exact: true }).click();
     await expect(added).toHaveValue('55');
     expect((await running(page)).exercises[0].sets).toHaveLength(SQUAT.sets + 1);
   });
 
+  test('US-15 si toglie una serie in mezzo dal suo foglio, con "Annulla"; l’ultima serie rimasta non si toglie', async ({ page }) => {
+    await startFromToday(page, archiveWith({ routines: routines() }));
+    const squat = region(page, SQUAT.exerciseId);
+    await squat.getByRole('textbox', { name: 'Peso serie 2, kg' }).fill('47,5');
+    const ids = (await running(page)).exercises[0].sets.map((s) => s.id);
+    await squat.getByRole('button', { name: 'Serie 2: tipo e opzioni' }).click();
+    await sheet(page).getByRole('button', { name: 'Togli serie' }).click();
+    // la terza diventa la seconda
+    await expect(squat.getByRole('textbox', { name: /^Peso serie \d, kg$/ })).toHaveCount(SQUAT.sets - 1);
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 2, kg' })).toHaveValue('');
+    expect((await running(page)).exercises[0].sets.map((s) => s.id)).toEqual([ids[0], ...ids.slice(2)]);
+    await page.getByRole('button', { name: 'Annulla', exact: true }).click();
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 2, kg' })).toHaveValue('47,5');
+    expect((await running(page)).exercises[0].sets.map((s) => s.id)).toEqual(ids);
+
+    // con una serie sola il foglio lo dice e "Togli serie" è spento
+    for (let n = SQUAT.sets; n > 1; n--) {
+      await squat.getByRole('button', { name: `Serie ${n}: tipo e opzioni` }).click();
+      await sheet(page).getByRole('button', { name: 'Togli serie' }).click();
+    }
+    await squat.getByRole('button', { name: 'Serie 1: tipo e opzioni' }).click();
+    await expect(sheet(page).getByRole('button', { name: 'Togli serie' })).toBeDisabled();
+    await expect(sheet(page)).toContainText('Resta almeno una serie');
+  });
+
   test('US-15 aggiungi un esercizio dal catalogo, toglilo con "Annulla", riordina con le frecce', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await page.getByRole('button', { name: 'Aggiungi esercizio' }).click();
     await sheet(page).getByRole('searchbox').fill('leg press');
     await sheet(page).getByRole('button', { name: 'Leg press', exact: true }).click();
     const legPress = page.getByRole('region', { name: 'Leg press', exact: true });
     await expect(legPress).toBeVisible();
-    await expect(legPress.getByRole('button', { name: /tocca per cambiare tipo$/ })).toHaveCount(3);
+    await expect(legPress.getByRole('button', { name: /: tipo e opzioni$/ })).toHaveCount(3);
     expect((await running(page)).exercises.at(-1)?.exerciseId).toBe('leg-press');
 
     await legPress.getByRole('button', { name: 'Altre azioni: Leg press' }).click();
@@ -246,7 +284,7 @@ test.describe('US-15 serie ed esercizi durante la sessione', () => {
 test.describe('US-16 note sul carico', () => {
   test('US-16 la nota si scrive in sessione e si ritrova accanto al precedente la volta dopo', async ({ page }) => {
     const past = pastSession('2026-10-06', 40, 8, (s) => (s.exercises[1].notes = 'per manubrio, sedile 4'));
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [past] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [past] }));
     await expect(region(page, BENCH.exerciseId)).toContainText('Nota del 6 ottobre: «per manubrio, sedile 4»');
 
     const squat = region(page, SQUAT.exerciseId);
@@ -261,7 +299,7 @@ test.describe('US-16 note sul carico', () => {
 
 test.describe('US-17 ripresa e mini-barra', () => {
   test('US-17 sessione completa da scheda con ricaricamento a metà: tutto resta dov’era', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     for (let n = 1; n <= SQUAT.sets; n++) await squat.getByRole('button', { name: `Segna serie ${n} come fatta` }).click();
     await region(page, BENCH.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
@@ -277,7 +315,7 @@ test.describe('US-17 ripresa e mini-barra', () => {
   });
 
   test('US-17 dalle altre schermate una mini-barra riporta alla sessione; su Oggi c’è "Riprendi"', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await expect(page.getByRole('link', { name: /^Allenamento in corso/ })).toHaveCount(0);
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Calendario' }).click();
     await expectPage(page, 'calendar/');
@@ -303,7 +341,7 @@ test.describe('US-17 ripresa e mini-barra', () => {
   });
 
   test('US-17 in superserie, dopo una serie di 2a tocca a 2b', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     for (let n = 1; n <= SQUAT.sets; n++) await squat.getByRole('button', { name: `Segna serie ${n} come fatta` }).click();
     await expect(region(page, BENCH.exerciseId)).toContainText('Adesso');
@@ -317,7 +355,7 @@ test.describe('US-17 ripresa e mini-barra', () => {
 
 test.describe('US-18 fine dell’allenamento', () => {
   test('US-18 "Termina" porta al riepilogo con durata, serie, volume e record; "Riapri" lo rimette in corso', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('45');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
@@ -352,7 +390,7 @@ test.describe('US-18 fine dell’allenamento', () => {
   });
 
   test('US-18 senza serie registrate "Termina" lo dice e non conclude', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await page.getByRole('button', { name: 'Termina' }).click();
     await expect(page.getByText('Registra almeno una serie prima di terminare, oppure annulla l’allenamento.')).toBeVisible();
     await expectPage(page, 'workout/');
@@ -360,7 +398,7 @@ test.describe('US-18 fine dell’allenamento', () => {
   });
 
   test('US-03 dopo il primo allenamento concluso, l’invito discreto a installare l’app', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     // il browser permette l'installazione: un evento finto, trattenuto dall'app
     await page.evaluate(() => {
       const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), {
@@ -380,7 +418,7 @@ test.describe('US-18 fine dell’allenamento', () => {
   });
 
   test('US-03 dal secondo allenamento concluso l’invito non c’è più', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06')] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06')] }));
     await page.evaluate(() => {
       const event = Object.assign(new Event('beforeinstallprompt', { cancelable: true }), { prompt: async () => {}, userChoice: Promise.resolve({ outcome: 'dismissed' }) });
       window.dispatchEvent(event);
@@ -394,7 +432,7 @@ test.describe('US-18 fine dell’allenamento', () => {
 
 test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', () => {
   test('US-19 il nome dell’esercizio apre l’approfondimento in un foglio dal basso', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Squat bilanciere: come si esegue' }).click();
     const details = page.getByRole('dialog', { name: 'Squat bilanciere' });
     await expect(details).toContainText('L’approfondimento per questo esercizio non è ancora disponibile.');
@@ -405,7 +443,7 @@ test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', (
   });
 
   test('US-20 dopo un allenamento concluso se ne fa un altro nello stesso giorno', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('50');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('5');
@@ -425,7 +463,7 @@ test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', (
   });
 
   test('US-27 nome e data dell’allenamento si cambiano anche in corso', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await page.getByRole('button', { name: 'Nome e data' }).click();
     await page.getByRole('textbox', { name: 'Nome dell’allenamento' }).fill('Scheda A, mattina');
     await expect(page.getByRole('heading', { name: 'Scheda A, mattina' })).toBeVisible();
@@ -436,7 +474,7 @@ test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', (
   });
 
   test('US-11 allenamento libero: stato vuoto che insegna ad aggiungere un esercizio', async ({ page }) => {
-    await seedArchive(page, archiveWith({ routines: starterRoutines() }));
+    await seedArchive(page, archiveWith({ routines: routines() }));
     await page.goto('');
     await page.getByRole('button', { name: 'Allenamento libero' }).click();
     await expect(page.getByRole('heading', { name: 'Da quale esercizio inizi?' })).toBeVisible();
@@ -448,7 +486,7 @@ test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', (
 
 test.describe('US-33 P2 P3 barra fissa e misure', () => {
   test('US-33 la barra dell’allenamento mostra sempre durata e salvataggio, con "Termina"', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await startFromToday(page, archiveWith({ routines: routines() }));
     await page.clock.setFixedTime(new Date(NOW.getTime() + 25 * 60_000));
     await page.reload();
     const status = page.getByRole('status').filter({ hasText: 'Salvato' });
@@ -468,7 +506,7 @@ test.describe('US-33 P2 P3 barra fissa e misure', () => {
   ]) {
     test(`P2 P3 a ${width}×${height} la riga serie entra senza scorrere di lato, cifre ≥ 20px e bersagli ≥ 48px`, async ({ page }) => {
       await page.setViewportSize({ width, height });
-      await startFromToday(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('2026-10-06', 102.5, 12)] }));
+      await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 102.5, 12)] }));
       const squat = region(page, SQUAT.exerciseId);
       const check = squat.getByRole('button', { name: 'Segna serie 1 come fatta' });
       await expect(check).toBeInViewport();

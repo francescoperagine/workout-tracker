@@ -39,6 +39,8 @@
     unit?: 'kg' | 'lb';
     /** record di carico battuto con questa serie (US-29) */
     record?: boolean;
+    /** il tocco sull'indice apre un foglio con tipo e azioni della serie, invece di passare al tipo successivo */
+    typeMenu?: boolean;
     ontype?: () => void;
     oncopy?: () => void;
     onkg?: (text: string) => boolean | void;
@@ -56,6 +58,7 @@
     done = false,
     unit = 'kg',
     record = false,
+    typeMenu = false,
     ontype,
     oncopy,
     onkg,
@@ -72,6 +75,11 @@
 
   const badge = $derived(type === 'normal' ? String(number) : BADGE[type]);
   const setName = $derived(type === 'warmup' ? 'riscaldamento' : `serie ${number}`);
+  const typeLabel = $derived(
+    typeMenu
+      ? `${type === 'warmup' ? 'Riscaldamento' : `Serie ${number}`}${type === 'drop' || type === 'failure' ? `, ${TYPE_NAME[type]}` : ''}: tipo e opzioni`
+      : `Serie ${TYPE_NAME[type]}: tocca per cambiare tipo`,
+  );
 
   function check() {
     const missing = oncheck?.();
@@ -88,7 +96,14 @@
 </script>
 
 <div class="row" class:done {id}>
-  <button type="button" class="type" class:special={type !== 'normal'} onclick={ontype} aria-label={`Serie ${TYPE_NAME[type]}: tocca per cambiare tipo`}>
+  <button
+    type="button"
+    class="type"
+    class:special={type !== 'normal'}
+    onclick={ontype}
+    aria-label={typeLabel}
+    aria-haspopup={typeMenu ? 'dialog' : undefined}
+  >
     {badge}
   </button>
 

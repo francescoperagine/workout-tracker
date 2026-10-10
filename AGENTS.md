@@ -49,10 +49,10 @@ svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
 playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322, baseURL con BT_BASE
 scripts/make-icons.mjs  icone della PWA (public/icons/) dal disegno del favicon
-src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js
+src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js, con importScripts di public/sw-push.js (handler push e notificationclick, predisposizione Web Push)
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
-src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus
+src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), RestTimerHost persistente (timer di recupero), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus
 src/lib/paths.ts        appUrl(path) e BASE: ogni link e risorsa passa da qui (percorso base, barra finale delle pagine); joinBase, isCurrentPath (con test)
 src/lib/theme.ts        temi: THEME_REGISTRY (unico elenco: system, light, dark, con etichette Sistema/Chiaro/Scuro; i temi futuri si aggiungono qui e in src/styles/themes/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.theme, readTheme, applyTheme, saveTheme, themeBootScript (riapplica il tema anche a ogni navigazione del ClientRouter; con test)
 src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esportato da index.ts:
@@ -69,6 +69,11 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
   poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
+src/lib/rest-timer.ts   timer di recupero (step 7), logica pura: REST_TIMER_KEY, RestTimerState, startRest, shiftRest (±15 s), restRemaining/restFraction/restOverFor, restAfterCheck (quale recupero parte: riscaldamento, 0, superserie a fine giro), restIsStale (spunta tolta, sessione conclusa), crossedThreshold (annunci a 30, 10, 0), nextSetText, parseRestTimer (con test a orologio finto)
+src/lib/rest-timer.svelte.ts  restTimer(): store unico del timer (stato salvato a ogni cambiamento, scatti di 250 ms, visibilitychange, evento storage, avviso di fine una volta sola, "Vai" chiuso dopo 6 s in vista); afterCheck, shift, stop, minimize, expand
+src/lib/rest-alert.ts   unlockAudio (dentro la spunta), suono di fine con AudioContext, vibrazione, alertRestEnd(settings)
+src/lib/rest-notifier.ts  RestNotifier (schedule/cancel) e localRestNotifier: predisposizione Web Push (contratto in docs/restyling/WEB-PUSH.md)
+src/lib/wake-lock.ts    keepScreenOn(on): schermo acceso durante l'allenamento in corso
 src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce(); avviso beforeunload con modifiche solo in memoria
 src/lib/bottom-bars.ts  setBottomBar(id, altezza, persistente): somma le barre in basso in --bottom-bars-height (base della pagina in --bottom-bars-base)
 src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatWeightRange, formatDistance
@@ -79,6 +84,7 @@ src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starte
 tests/fixtures/         synthetic-poc-backup.json (formato "Esporta" del PoC), usato da Vitest e dagli e2e
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 public/icons/           icone della PWA (192, 512, maskable 512, apple-touch 180)
+public/sw-push.js       handler push e notificationclick del service worker (timer di recupero, nessun server)
 src/pages/
   index.astro           Oggi (/): primo avvio se non c'è un archivio; settimana, schede da scegliere con la suggerita, Inizia/Riprendi, ultimo allenamento
   welcome.astro         primo avvio (/welcome): cosa fa, dove sono i dati, schede di esempio, da zero, importa
@@ -93,7 +99,8 @@ src/pages/
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
                         LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
-src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su Oggi né su /workout), transition:persist
+src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento
+src/components/shell/RestTimerHost.svelte  timer di recupero nel guscio (transition:persist): finestra a tutto schermo su ogni pagina, annunci alle soglie, wake lock
 src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
 src/components/settings/  SettingsPage (tema, unità, allenamento), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
@@ -101,7 +108,8 @@ src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'e
 src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione)
 src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
 src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca e "Crea «…»" (esercizio personalizzato)
-src/components/workout/RestTimer.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
+src/components/workout/RestTimer.svelte  vista del timer a tutto schermo (livello che si svuota, "Vai", "finito da"), finestra modale o anteprima per /kit
+src/components/workout/RestTimerBar.svelte  vista del timer ridotto (sopra la barra dell'allenamento e nella mini-barra)
 src/components/kit/     isole dimostrative usate solo da /kit
 ```
 
@@ -114,6 +122,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - `<script>` nei `.astro` solo semplici (TypeScript, elaborati e bundlati da Astro), mai `type="module"` o `define:vars`. Unica eccezione: lo script `is:inline` del tema in `Base.astro`, che deve girare prima del primo disegno.
 - Il codice accede al diario **solo tramite `src/lib/archive/`**: nelle isole con `archiveStore()` (`src/lib/archive-store.svelte.ts`), che espone `archive`, `state`, `isNew` reattivi e `repo` per `saveNow`, `reload`, `replace`.
 - **Guscio:** lo stack fisso in basso dichiara la sua altezza in `--bottom-bars-height` sul `<body>`: `AppLayout` scrive la base (tab bar) in `--bottom-bars-base`, le barre che compaiono (barra di salvataggio, barra dell'allenamento, mini-barra) si dichiarano con `setBottomBar` di `src/lib/bottom-bars.ts`; il `<main>`, gli avvisi brevi e i pulsanti appiccicati la usano.
+- **Timer di recupero:** una sola istanza nel guscio (`RestTimerHost`), stato in `restTimer()`; la spunta lo avvia con `restTimer().afterCheck(...)` dentro il gesto (sblocca l'audio), tutto il resto (spunta tolta, serie tolta, sessione conclusa) lo annulla da sé guardando l'archivio. Le viste `RestTimer` e `RestTimerBar` non leggono nulla: ricevono i valori.
 - **PWA:** il service worker esiste solo nella build (`npm run build`), non con `npm run dev`. Si aggiorna da solo (`skipWaiting` + `clientsClaim`); le copie vecchie si cancellano. `/kit` e i suoi chunk sono fuori dal precache.
 
 ### Chiavi di localStorage
@@ -124,6 +133,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 | `bodytracker.archivio.v1` | Archivio del PoC (campi in italiano) | Solo lettura, per l'import diretto sulla stessa origine (`readPocKey`). Nome e formato sono del PoC e non cambiano |
 | `bodytracker.theme` | `light` \| `dark` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/theme.ts`) |
 | `bodytracker.lastBackup` | timestamp in ms | Ultimo backup esportato da questo browser (`src/lib/device.ts`), mostrato in Dati e privacy |
+| `bodytracker.restTimer` | `RestTimerState` di `src/lib/rest-timer.ts` (sessione, voce, serie, `start`, `end`, `duration`, `warmup`, `minimized`, `alerted`) | Il recupero in corso, fuori dall'archivio perché cambia spesso. Assente = nessun recupero. Si legge e si scrive solo con `restTimer()` |
 
 - **Archivio v2:**
   - le modifiche passano da `repo.update(a => newArchive)` (o `archiveStore().update`) con funzioni pure che non mutano l'argomento; il repository incrementa `revision`, salva e notifica (`subscribe`, con `origin`: `edit`, `external`, `reload`, `import`). Con stato `unreadable` o `conflict` non scrive nulla;
@@ -158,10 +168,12 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Lo Storico è un segnaposto (stato vuoto) fino allo step 8. L'allenamento attivo è completo dallo step 6, senza timer di recupero (step 7): la spunta registra la serie ma non avvia ancora il recupero. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Lo Storico è un segnaposto (stato vuoto) fino allo step 8. L'allenamento attivo è completo dallo step 6, il timer di recupero dallo step 7. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Gli avvisi di fine recupero arrivano solo con l'app aperta: il Web Push è solo predisposto (handler in `public/sw-push.js`, importato da `sw.js`), senza server né permessi (`docs/restyling/WEB-PUSH.md`).
+- Test dello step 6 (`us-12-us-20-workout`): le schede non hanno recupero (`rest: 0`), perché spuntano più serie di fila e il timer le coprirebbe. Nei test del timer l'orologio è fermo (`page.clock.install` più `pauseAt`) e scorre con `runFor`/`fastForward`.
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
-- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-21-us-26-rest-timer`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
 ## Riferimento: `BodyTracker/`
 

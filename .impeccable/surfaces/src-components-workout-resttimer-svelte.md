@@ -2,7 +2,7 @@
 version: 1
 slug: "src-components-workout-resttimer-svelte"
 primary_target: "src/components/workout/RestTimer.svelte"
-related_targets: ["route:/workout"]
+related_targets: ["route:/workout", "src/components/workout/RestTimerBar.svelte", "src/components/shell/RestTimerHost.svelte", "src/components/shell/WorkoutMiniBar.svelte"]
 ---
 
 ## Scope
@@ -52,6 +52,7 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 - Avvisi garantiti solo con l'app aperta; le Impostazioni lo spiegano. Predisposizione Web Push senza server.
 - **Deciso (step 1):** il progresso è il **livello che si svuota** (scelta dell'utente tra livello, anello e tacche); lo stato "Vai" porta tutto lo schermo sull'accento. Vedi il contratto di direzione.
 - Il builder non deve inventare suoni scaricati da fonti esterne: il suono si genera localmente (`AudioContext`) o è un file incluso nel sito.
+- **Deciso (step 7):** vista e motore separati: `RestTimer` (schermo intero) e `RestTimerBar` (ridotto) ricevono i valori, il motore è in `src/lib/rest-timer.ts` e `rest-timer.svelte.ts`, l'isola globale è `RestTimerHost` nel guscio. Al rientro a recupero finito l'intestazione dice "Recupero finito da …"; per il riscaldamento "Recupero di riscaldamento · 1:00". Decisioni dello step in PIANO.md, "Step 7".
 
 ## Direction contract
 

@@ -1,7 +1,8 @@
 ---
 // Guscio dell'app (step 3): intestazione con l'accesso alle Impostazioni, contenuto che scorre e,
 // nella zona del pollice, lo stack fisso in basso: mini-barra dell'allenamento in corso (step 6),
-// barra di salvataggio (solo quando c'è un problema) e tab bar. La navigazione tra le pagine passa dal
+// barra di salvataggio (solo quando c'è un problema) e tab bar; sopra a tutto, quando serve, il timer di
+// recupero a tutto schermo (step 7). La navigazione tra le pagine passa dal
 // ClientRouter, che tiene caricati i moduli (archivio compreso) e scambia solo il contenuto.
 // L'altezza dello stack è in --bottom-bars-height (src/lib/bottom-bars.ts).
 import { ClientRouter } from 'astro:transitions';
@@ -10,6 +11,7 @@ import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar, { type TabId } from '../components/ui/TabBar.astro';
 import ArchiveStatus from '../components/shell/ArchiveStatus.svelte';
 import WorkoutMiniBar from '../components/shell/WorkoutMiniBar.svelte';
+import RestTimerHost from '../components/shell/RestTimerHost.svelte';
 
 interface Props {
   title: string;
@@ -58,6 +60,9 @@ const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
     {showArchiveStatus && <ArchiveStatus client:only="svelte" />}
     {showTabs && <TabBar active={tab} />}
   </div>
+
+  <!-- il recupero continua tra le pagine: la finestra del timer resta la stessa -->
+  <RestTimerHost client:only="svelte" transition:persist="rest-timer" />
 </Base>
 
 <script>

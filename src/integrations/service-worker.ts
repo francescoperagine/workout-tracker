@@ -20,7 +20,9 @@ export function serviceWorker(): AstroIntegration {
           swDest: `${globDirectory}/sw.js`,
           globPatterns: ['**/*.{html,js,css,woff2,svg,png,webmanifest}'],
           // /kit è una pagina interna del design system: fuori dal precache
-          globIgnores: ['kit/**', '_astro/Kit*', 'sw.js', 'workbox-*.js'],
+          globIgnores: ['kit/**', '_astro/Kit*', 'sw.js', 'sw-push.js', 'workbox-*.js'],
+          // handler `push` e `notificationclick` del timer di recupero (predisposizione Web Push, step 7)
+          importScripts: ['sw-push.js'],
           // gli URL del precache partono dal percorso base (BT_BASE)
           modifyURLPrefix: { '': base },
           // le pagine sono cartelle con index.html; i parametri (es. ?id=) non cambiano il file

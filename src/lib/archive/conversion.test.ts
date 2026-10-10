@@ -89,3 +89,12 @@ describe('scheda del PoC → scheda v2', () => {
     });
   });
 });
+
+describe('recupero mancante nel PoC', () => {
+  it('US-21 un recupero illeggibile prende il predefinito, non "nessun timer"', () => {
+    const routine = routineFromPoc('A', [
+      { id: 'squat-bilanciere', ordine: '1', nome: 'Squat', ripetizioni: '6', partenza: '', recupero: 'a piacere', unita: '', alternative: [] },
+    ]);
+    expect(routine.exercises[0].rest).toBe(90);
+  });
+});

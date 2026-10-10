@@ -8,6 +8,7 @@
   import ArrowDown from '@lucide/svelte/icons/arrow-down';
   import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
   import ArrowUp from '@lucide/svelte/icons/arrow-up';
+  import Check from '@lucide/svelte/icons/check';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Dumbbell from '@lucide/svelte/icons/dumbbell';
   import Info from '@lucide/svelte/icons/info';
@@ -23,9 +24,12 @@
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
   import ExerciseDetailsSheet from './ExerciseDetailsSheet.svelte';
   import SessionSummary from './SessionSummary.svelte';
+  import RestTimerBar from './RestTimerBar.svelte';
   import VariantSheet, { type VariantChoice } from './VariantSheet.svelte';
   import WorkoutExercise from './WorkoutExercise.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
+  import { restTimer } from '../../lib/rest-timer.svelte';
+  import { nextSetText } from '../../lib/rest-timer';
   import {
     ArchiveError,
     LIMITS,
@@ -44,11 +48,16 @@
     previousExercise,
     removeSession,
     removeSessionExercise,
+    removeSet,
     renameSession,
     reopenSession,
     restoreSession,
     restoreSessionExercise,
+    restoreSet,
     sessionHasData,
+    setHasValues,
+    setNumbers,
+    updateSet,
     sessionInProgress,
     setSessionDate,
     summarizeSession,
@@ -57,12 +66,14 @@
     type Archive,
     type RemovedSession,
     type SessionExercise,
+    type SetType,
   } from '../../lib/archive';
   import { formatClock, formatElapsed, formatOnDay, plural } from '../../lib/format';
   import { appUrl } from '../../lib/paths';
   import { setBottomBar } from '../../lib/bottom-bars';
 
   const store = archiveStore();
+  const timer = restTimer();
   const summaryId = new URL(location.href).searchParams.get('summary');
   let now = $state(Date.now());
 
@@ -87,6 +98,7 @@
   const blocks = $derived(blocksOf(exercises));
   const labels = $derived(orderLabels(exercises));
   const next = $derived(session ? nextSet(session) : null);
+  const nextText = $derived(session ? nextSetText(store.archive, session, next) : null);
   const records = $derived(new Set(session ? loadRecords(store.archive, session).map((r) => r.setId) : []));
   const doneCount = $derived(exercises.filter((e) => e.sets.length && e.sets.every((s) => s.completedAt !== null)).length);
 
@@ -104,6 +116,8 @@
   let variantFor: string | null = $state(null);
   let detailsFor: string | null = $state(null);
   let optionsFor: string | null = $state(null);
+  let setFor: { exerciseId: string; setId: string } | null = $state(null);
+  let setOpen = $state(false);
   let variantOpen = $state(false);
   let detailsOpen = $state(false);
   let optionsOpen = $state(false);
@@ -146,8 +160,10 @@
 
   const find = (id: string | null) => (id ? exercises.find((e) => e.id === id) : undefined);
 
-  // --- serie spuntata: l'attenzione passa alla serie successiva (in superserie a 2b) ---------------
-  async function afterCheck() {
+  // --- serie spuntata: parte il recupero (US-21, US-25) e l'attenzione passa alla serie successiva ---
+  async function afterCheck(exerciseId: string, setId: string) {
+    // dentro il gesto della spunta: sblocca anche l'audio del suono di fine
+    if (session) timer.afterCheck(session.id, exerciseId, setId);
     await tick();
     if (!next) return;
     const row = document.getElementById(`set-${next.set.id}`);
@@ -233,6 +249,53 @@
       detailsOpen = true;
     } else if (action === 'variant') openVariant(id);
     else void removeExercise(id);
+  }
+
+  // --- foglio della serie: tipo (US-13) e "Togli serie" su ogni riga (US-15) -----------------------
+  const SET_TYPE_OPTIONS: { type: SetType; badge: string; label: string }[] = [
+    { type: 'normal', badge: '1', label: 'Normale' },
+    { type: 'warmup', badge: 'R', label: 'Riscaldamento' },
+    { type: 'drop', badge: 'D', label: 'Drop' },
+    { type: 'failure', badge: 'C', label: 'Cedimento' },
+  ];
+
+  const setTarget = $derived.by(() => {
+    const exercise = find(setFor?.exerciseId ?? null);
+    const index = exercise?.sets.findIndex((s) => s.id === setFor?.setId) ?? -1;
+    if (!exercise || index < 0) return null;
+    const number = setNumbers(exercise.sets)[index];
+    return { exercise, set: exercise.sets[index], title: `${exerciseName(store.archive, exercise.exerciseId)} · ${number ? `serie ${number}` : 'riscaldamento'}` };
+  });
+
+  function openSet(exerciseId: string, setId: string) {
+    setFor = { exerciseId, setId };
+    setOpen = true;
+  }
+
+  function pickSetType(type: SetType) {
+    const target = setTarget;
+    setOpen = false;
+    if (!session || !target || target.set.type === type) return;
+    const sessionId = session.id;
+    edit((a) => updateSet(a, sessionId, target.exercise.id, target.set.id, { type }));
+  }
+
+  function removeOneSet() {
+    const target = setTarget;
+    setOpen = false;
+    if (!session || !target || target.exercise.sets.length <= 1) return;
+    const sessionId = session.id;
+    const { exercise, set } = target;
+    let removed: ReturnType<typeof removeSet>['removed'] | null = null;
+    const ok = edit((a) => {
+      const result = removeSet(a, sessionId, exercise.id, set.id);
+      removed = result.removed;
+      return result.archive;
+    });
+    const undo = removed as ReturnType<typeof removeSet>['removed'] | null;
+    // una serie con valori si recupera con "Annulla" (P4)
+    if (ok && undo && (setHasValues(set) || set.completedAt !== null))
+      notify(`${exerciseName(store.archive, exercise.exerciseId)}: serie tolta.`, 'Annulla', () => edit((a) => restoreSet(a, sessionId, undo)));
   }
 
   // --- riordino ----------------------------------------------------------------------------------
@@ -388,10 +451,10 @@
                     {records}
                     {today}
                     {edit}
-                    {notify}
                     ontouch={() => (touched = exercise.id)}
                     ontoggle={() => toggle(exercise)}
-                    onchecked={afterCheck}
+                    onchecked={(setId) => afterCheck(exercise.id, setId)}
+                    onsetoptions={(setId) => openSet(exercise.id, setId)}
                     onvariant={() => openVariant(exercise.id)}
                     ondetails={() => {
                       detailsFor = exercise.id;
@@ -466,6 +529,10 @@
 
 {#if status}
   <div class="bar" bind:offsetHeight={barHeight}>
+    {#if session && timer.state?.minimized}
+      <!-- il recupero ridotto sta sopra la barra dell'allenamento (US-23) -->
+      <RestTimerBar remaining={timer.remaining} fraction={timer.fraction} next={nextText} onopen={() => timer.expand()} />
+    {/if}
     <SaveBar {status} compact onsavenow={() => store.repo.saveNow()} onreload={() => store.repo.reload()}>
       {#snippet detail()}
         {#if session}
@@ -513,6 +580,32 @@
     <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
     <li><button type="button" class="option danger" onclick={() => option('remove')}><Trash size={20} aria-hidden="true" />Togli dall’allenamento</button></li>
   </ul>
+</BottomSheet>
+
+<BottomSheet bind:open={setOpen} title={setTarget?.title ?? ''}>
+  {#if setTarget}
+    <ul class="options" aria-label="Tipo di serie">
+      {#each SET_TYPE_OPTIONS as option (option.type)}
+        {@const selected = setTarget.set.type === option.type}
+        <li>
+          <button type="button" class="option" aria-pressed={selected} onclick={() => pickSetType(option.type)}>
+            <span class="badge" class:special={option.type !== 'normal'} aria-hidden="true">{option.badge}</span>
+            <span class="grow">{option.label}</span>
+            {#if selected}<Check size={20} aria-hidden="true" class="selected" />{/if}
+          </button>
+        </li>
+      {/each}
+    </ul>
+    <p class="hint">Il riscaldamento non ha numero e non conta per volume e record.</p>
+    <div class="options">
+      <button type="button" class="option danger" disabled={setTarget.exercise.sets.length <= 1} onclick={removeOneSet}>
+        <Trash size={20} aria-hidden="true" />Togli serie
+      </button>
+      {#if setTarget.exercise.sets.length <= 1}
+        <p class="hint">Resta almeno una serie: per togliere l’esercizio usa “Altre azioni”.</p>
+      {/if}
+    </div>
+  {/if}
 </BottomSheet>
 
 <ConfirmDialog
@@ -658,5 +751,32 @@
   .option.danger,
   .option.danger :global(svg) {
     color: var(--color-danger);
+  }
+  .option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .options + .hint,
+  .hint + .options {
+    margin: 0.5rem 0;
+  }
+  .options + .hint + .options {
+    border-top: 1px solid var(--color-line);
+  }
+  .badge {
+    width: 2rem;
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+    font-weight: 650;
+    text-align: center;
+  }
+  .badge.special {
+    color: var(--color-accent-text);
+  }
+  .grow {
+    flex: 1;
+  }
+  .option :global(.selected) {
+    color: var(--color-accent-text);
   }
 </style>

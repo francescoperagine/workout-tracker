@@ -487,7 +487,7 @@ Le righe di scelta (`.choice`) alte 64px con il radio, il nome della scheda a 18
 
 ### Riga serie
 L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · precedente · kg · rip · spunta, alta 56px.
-- **Tipo/numero:** pulsante da 48px, peso 650 a 18px; il numero è `muted`, le sigle dei tipi speciali (R, D, C) sono `accent-text`. Un tocco passa al tipo successivo.
+- **Tipo/numero:** pulsante da 48px, peso 650 a 18px; il numero è `muted`, le sigle dei tipi speciali (R, D, C) sono `accent-text`. Nell'allenamento un tocco apre il foglio della serie (tipo: Normale, Riscaldamento, Drop, Cedimento, con la sigla e la spunta sulla scelta attuale; poi "Togli serie" in `danger`, spento se resta una serie sola).
 - **Precedente:** "40 × 8" in corpo `muted`, allineato a sinistra e troncato; un tocco copia i valori nei campi. Senza precedente, un trattino.
 - **Campi kg e rip:** campi serie da 48px, cifre serie centrate, tastiera numerica (decimale per il peso), il valore precedente come segnaposto.
 - **Spunta:** quadrato da 48px con bordo 1.5px `line-strong` e icona `muted`. Su una riga vuota conferma il precedente in un solo tocco; senza precedente porta al primo campo vuoto. Fatta, la spunta si riempie di `accent` con icona `on-accent` più spessa, la riga prende il fondo `done` e i campi perdono bordo e fondo.
@@ -497,7 +497,7 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 - **Testa dell'esercizio:** numero d'ordine (1, 2a) a 18px in `accent-text`, nome (700, 18px) come pulsante che apre l'approfondimento con l'icona `info` `muted`, a destra "⋯" da 48px (nota sul carico, come si esegue, cambia esercizio, togli). Sotto, in `muted` a 14px, i target della scheda ("3 × 6–8 · 40 kg per manubrio · rec. 1:00"), "Al posto di …" con una variante, "Nota del 6 ottobre: «…»" con la nota della volta scorsa; poi "Cambia esercizio" (testuale, icona `arrow-left-right`).
 - **Adesso:** l'esercizio della serie da fare ha il numero in una pastiglia piena `accent` con testo `on-accent` (raggio da campo). In superserie la pastiglia passa da 2a a 2b a ogni spunta.
 - **Fatto:** con tutte le serie spuntate l'esercizio si compatta in una riga (`circle-check` in `accent-text` e le serie fatte, "42,5 × 8 · 40 × 8") con "Mostra serie"; l'ultimo esercizio toccato resta aperto, per correggere l'ultima serie.
-- **Sotto le righe:** "Aggiungi serie" (testuale) e "Togli serie" in `muted` (toglie l'ultima; a 320px resta "Togli"), poi il campo "Nota sul carico" quando c'è una nota.
+- **Sotto le righe:** "Aggiungi serie" (testuale), poi il campo "Nota sul carico" quando c'è una nota. Una serie qualsiasi si toglie dal suo foglio (tocco sul numero), con "Annulla" se aveva valori.
 - **Record:** una serie spuntata che batte il carico massimo ha l'icona `trophy` da 16px in `accent-text` nella colonna "precedente".
 - **Barra dell'allenamento:** la barra di salvataggio, sempre visibile sopra la tab bar: a sinistra la durata (700, 18px, `shell-foreground`) e sotto lo stato breve ("Salvato"), a destra "Termina" (primario lime).
 - **Riepilogo:** icona `circle-check`, titolo pagina "Allenamento concluso", poi righe termine/valore separate da `line` (Durata, Esercizi, Serie, Volume; valori in cifre 600 a 1.375rem allineati a destra), "Record battuto" con `trophy`, "Cosa hai fatto" per esercizio, l'eventuale invito all'installazione in un pannello, "Fatto" (primario) e "Riapri allenamento" (secondario). Nessuna tessera di statistiche.
@@ -511,7 +511,7 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 
 ### Navigation
 - **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `shell-line`; titolo compatto troncato su una riga, riga di stato in `shell-muted` a 14px, a destra azioni facoltative e l'icona delle Impostazioni da 48px.
-- **Mini-barra dell'allenamento:** sulle altre pagine (non su Oggi né sull'allenamento), sopra la tab bar: guscio alto 56px con filo `shell-line`, icona `circle-play` lime, nome della sessione (650) e "da 25 min · esercizio" in `shell-muted`, "Riprendi" lime con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`).
+- **Mini-barra dell'allenamento:** sulle altre pagine (non sull'allenamento; su Oggi solo con un recupero in corso), sopra la tab bar: guscio alto 56px con filo `shell-line`, icona `circle-play` lime, nome della sessione (650) e "da 25 min · esercizio" in `shell-muted`, "Riprendi" lime con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`). Con un recupero in corso diventa il timer ridotto, con a destra una freccia da 56px (separata da un filo `shell-line`) che torna all'allenamento.
 - **Tab bar:** guscio in basso con filo superiore `shell-line`, quattro voci uguali (Oggi, Calendario, Schede, Storico) alte 56px, icona da 22px sopra l'etichetta a 12px. A riposo `shell-muted`, al passaggio `shell-foreground`; la voce attiva è lime e in grassetto, con `aria-current="page"`.
 
 ### Barra di salvataggio
@@ -530,8 +530,10 @@ Lo schermo è la clessidra.
 - **Schermo intero:** finestra modale a tutta altezza sul colore del guscio. Dietro a tutto, il livello `level` con filo superiore lime di 4px parte dal 100% dell'altezza e scende a scatti di un secondo, senza animazione continua. In testa "Recupero · 2:00" in `shell-muted` e l'icona Riduci da 48px; al centro le cifre timer in `shell-foreground` e sotto "Prossima" (etichetta a 14px) con esercizio, serie, peso × ripetizioni; in basso, nella zona del pollice, tre lastre da 64px (−15 s, +15 s, Salta) con 10px di stacco, e "Riduci" come pulsante testuale sotto. Esc riduce invece di chiudere.
 - **Ultimi 10 secondi:** le cifre diventano lime.
 - **Vai:** tutto lo schermo diventa lime, testo e icone in `shell-on-accent`, le cifre lasciano il posto alla parola "Vai", "Prossima" diventa "Adesso" e le lastre si fondono in un unico "Chiudi" verde inchiostro con testo lime. Si chiude da solo dopo 6 secondi.
-- **Ridotto:** barra del guscio alta 56px sopra la tab bar; il livello qui avanza in larghezza da sinistra (filo superiore lime di 3px), con icona timer, tempo in cifre e la prossima serie troncata in `shell-muted`. Un tocco riapre lo schermo intero; a fine recupero la barra diventa lime con "Vai".
-- **Annunci:** solo a 30 s, 10 s e alla fine; con `prefers-reduced-motion` nessuna transizione.
+- **Ridotto:** barra del guscio alta 56px, sull'allenamento sopra la barra dell'allenamento, sulle altre pagine al posto della mini-barra; il livello qui si accorcia da destra verso sinistra (filo superiore lime di 3px), con icona timer, tempo in cifre e la prossima serie troncata in `shell-muted`. Un tocco riapre lo schermo intero; a fine recupero la barra diventa lime con "Vai".
+- **Riscaldamento e rientro:** l'intestazione dice "Recupero di riscaldamento · 1:00" per una serie di riscaldamento; al rientro dopo lo schermo bloccato, a recupero già finito, dice "Recupero finito da 1:20". Tempo e "40 kg × 8" sono legati da spazi unificatori, così vanno a capo interi.
+- **Annunci:** solo a 30 s, 10 s e alla fine (anche con il timer ridotto); con `prefers-reduced-motion` nessuna transizione.
+- **Avvisi:** alla fine tre toni brevi generati in locale (`AudioContext`, 880 Hz e 1320 Hz) e una vibrazione, secondo le Impostazioni, una volta sola; oltre un minuto di ritardo (schermo bloccato) non suonano. Schermo acceso (wake lock) per tutto l'allenamento.
 
 ## Do's and Don'ts
 

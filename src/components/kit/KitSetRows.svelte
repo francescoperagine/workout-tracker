@@ -1,8 +1,11 @@
 <script lang="ts">
-  // Esercizio dimostrativo con righe serie vere: la spunta avvia il recupero a tutto schermo.
+  // Esercizio dimostrativo con righe serie vere: la spunta avvia il recupero a tutto schermo, con il
+  // motore vero (src/lib/rest-timer.ts) ma senza archivio né chiave salvata: è solo una demo.
   import Plus from '@lucide/svelte/icons/plus';
   import SetRow, { type CheckResult, type Previous, type SetType } from '../ui/SetRow.svelte';
   import RestTimer from '../workout/RestTimer.svelte';
+  import RestTimerBar from '../workout/RestTimerBar.svelte';
+  import { GO_VISIBLE_MS, isRestOver, restFraction, restRemaining, shiftRest, startRest, type RestTimerState } from '../../lib/rest-timer';
 
   interface DemoSet {
     type: SetType;
@@ -19,8 +22,18 @@
     { type: 'normal', previous: null, kg: '', reps: '', done: false },
   ]);
   const CYCLE: SetType[] = ['normal', 'warmup', 'drop', 'failure'];
-  let resting = $state(false);
+  let rest: RestTimerState | null = $state(null);
+  let now = $state(Date.now());
   let next: string | null = $state(null);
+
+  $effect(() => {
+    if (!rest) return;
+    const interval = setInterval(() => {
+      now = Date.now();
+      if (rest && isRestOver(rest, now) && now - rest.end >= GO_VISIBLE_MS) rest = null;
+    }, 250);
+    return () => clearInterval(interval);
+  });
 
   // Le serie di riscaldamento non hanno numero
   const numbers = $derived.by(() => {
@@ -45,7 +58,7 @@
 
   function onCheck(index: number, done: boolean) {
     if (!done) {
-      resting = false;
+      rest = null;
       return;
     }
     const following = sets.findIndex((s, i) => i > index && !s.done);
@@ -53,13 +66,13 @@
       following === -1
         ? null
         : `Panca piana · serie ${numbers[following]} · ${sets[following].previous?.kg ?? sets[index].kg} kg × 6–8`;
-    resting = false;
-    queueMicrotask(() => (resting = true));
+    now = Date.now();
+    rest = startRest({ sessionId: 'kit', exerciseId: 'kit', setId: String(index) }, { seconds: 20, warmup: sets[index].type === 'warmup' }, now);
   }
 
-  // Con il timer attivo lo stack in basso è tab bar (57px) più barra ridotta (56px): i toast salgono sopra
+  // Con il timer ridotto lo stack in basso è tab bar (57px) più barra ridotta (56px): i toast salgono sopra
   $effect(() => {
-    document.body.style.setProperty('--bottom-bars-height', resting ? '113px' : '57px');
+    document.body.style.setProperty('--bottom-bars-height', rest?.minimized ? '113px' : '57px');
   });
 
   function addSet() {
@@ -95,9 +108,30 @@
   <button type="button" class="btn btn-text mt-1" onclick={addSet}><Plus aria-hidden="true" />Aggiungi serie</button>
 </section>
 
-<div class="fixed inset-x-0 bottom-[calc(57px+env(safe-area-inset-bottom))] z-30">
-  <RestTimer duration={20} {next} bind:active={resting} />
-</div>
+<RestTimer
+  open={!!rest && !rest.minimized}
+  remaining={rest ? restRemaining(rest, now) : 0}
+  duration={rest?.duration ?? 0}
+  fraction={rest ? restFraction(rest, now) : 0}
+  warmup={rest?.warmup}
+  {next}
+  onshift={(seconds) => {
+    now = Date.now();
+    if (rest) rest = shiftRest(rest, seconds, now);
+  }}
+  onskip={() => (rest = null)}
+  onminimize={() => rest && (rest = { ...rest, minimized: true })}
+/>
+{#if rest?.minimized}
+  <div class="fixed inset-x-0 bottom-[calc(57px+env(safe-area-inset-bottom))] z-30">
+    <RestTimerBar
+      remaining={restRemaining(rest, now)}
+      fraction={restFraction(rest, now)}
+      {next}
+      onopen={() => rest && (rest = { ...rest, minimized: false })}
+    />
+  </div>
+{/if}
 
 <style>
   .column-heads {

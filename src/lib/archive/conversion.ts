@@ -1,7 +1,7 @@
 // Conversione dei testi delle schede del PoC (BodyTracker/palestra/esercizi.js) nel modello v2.
 // Recuperi: "2′" → 120, "60–75″" → 60 (per un intervallo il valore minimo).
 // Carichi: "45–50 kg" → 45..50; "40 kg, da tarare" → 40 con nota; "Da tarare" → solo nota.
-import type { Routine, RoutineExercise } from './types';
+import { DEFAULT_SETTINGS, type Routine, type RoutineExercise } from './types';
 
 /**
  * Voce di una scheda del PoC, come in `window.schedeIniziali`. I nomi dei campi sono quelli del
@@ -85,7 +85,8 @@ export function routineExerciseFromPoc(item: PocRoutineItem, idPrefix: string): 
     reps: item.ripetizioni.trim(),
     ...splitLoad(item.partenza),
     unit: item.unita.trim(),
-    rest: rest ?? 0,
+    // un recupero mancante o illeggibile non è "nessun timer" (0): vale quello predefinito (US-21)
+    rest: rest ?? DEFAULT_SETTINGS.defaultRest,
     warmupRest: DEFAULT_WARMUP_REST,
   };
 }

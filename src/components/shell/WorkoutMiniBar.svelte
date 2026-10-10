@@ -2,13 +2,17 @@
   // Mini-barra "allenamento in corso" (US-17, brief route-workout): sulle altre schermate riporta alla
   // sessione con un tocco. Vive nello stack in basso del guscio, sopra la tab bar, ed è persistente tra
   // le pagine (transition:persist in AppLayout): segue il cambio di pagina con `astro:page-load`.
-  // Non compare sull'allenamento stesso né su Oggi, che ha già "Riprendi allenamento" come azione
-  // principale. Allo step 7 ospiterà anche il timer di recupero ridotto.
+  // Non compare sull'allenamento stesso; su Oggi, che ha già "Riprendi allenamento", solo con un
+  // recupero in corso. Con il recupero (step 7, US-23) diventa il timer ridotto: un tocco riapre lo
+  // schermo intero, la freccia a destra riporta all'allenamento.
   import { onMount } from 'svelte';
   import CirclePlay from '@lucide/svelte/icons/circle-play';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
+  import RestTimerBar from '../workout/RestTimerBar.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
-  import { currentExercise, exerciseName, sessionInProgress, summarizeSession } from '../../lib/archive';
+  import { restTimer } from '../../lib/rest-timer.svelte';
+  import { nextSetText } from '../../lib/rest-timer';
+  import { currentExercise, exerciseName, nextSet, sessionInProgress, summarizeSession } from '../../lib/archive';
   import { appUrl, isCurrentPath } from '../../lib/paths';
   import { formatElapsed } from '../../lib/format';
   import { setBottomBar } from '../../lib/bottom-bars';
@@ -21,6 +25,7 @@
   let { preview = null }: Props = $props();
 
   const store = preview ? null : archiveStore();
+  const timer = preview ? null : restTimer();
   // anche nel rendering alla build (anteprima di /kit), dove location non c'è
   let path = $state(typeof location === 'undefined' ? '' : location.pathname);
   let now = $state(Date.now());
@@ -42,8 +47,10 @@
   });
 
   const session = $derived(!store || store.state === 'unreadable' ? null : sessionInProgress(store.archive));
-  const hidden = $derived(['/workout', '/', '/welcome'].some((p) => isCurrentPath(path, p)));
+  const resting = $derived(!!timer?.state);
+  const hidden = $derived(['/workout', '/welcome'].some((p) => isCurrentPath(path, p)) || (isCurrentPath(path, '/') && !resting));
   const visible = $derived(!!session && !hidden);
+  const nextText = $derived(session && store ? nextSetText(store.archive, session, nextSet(session)) : null);
 
   const meta = $derived.by(() => {
     if (!session) return '';
@@ -66,6 +73,16 @@
       <span class="meta">{preview.meta}</span>
     </span>
     <span class="go" aria-hidden="true">Riprendi<ChevronRight size={20} /></span>
+  </div>
+{:else if visible && session && timer?.state}
+  <div bind:offsetHeight={height}>
+    <RestTimerBar remaining={timer.remaining} fraction={timer.fraction} next={nextText} onopen={() => timer.expand()}>
+      {#snippet trailing()}
+        <a class="back" href={appUrl('/workout')} aria-label={`Torna all’allenamento: ${session.name}`}>
+          <ChevronRight size={22} aria-hidden="true" />
+        </a>
+      {/snippet}
+    </RestTimerBar>
   </div>
 {:else if visible && session}
   <a class="shell mini" href={appUrl('/workout')} bind:offsetHeight={height} aria-label={`Allenamento in corso: ${session.name}, ${meta}. Torna all’allenamento`}>
@@ -115,6 +132,17 @@
   .meta {
     color: var(--color-shell-muted);
     font-size: var(--text-sm);
+  }
+  .back {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 56px;
+    border-left: 1px solid var(--color-shell-line);
+    color: inherit;
+  }
+  .back:hover {
+    background: color-mix(in oklab, transparent 80%, var(--color-shell-panel));
   }
   .go {
     display: inline-flex;

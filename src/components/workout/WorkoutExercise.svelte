@@ -7,7 +7,6 @@
   import CircleCheck from '@lucide/svelte/icons/circle-check';
   import Ellipsis from '@lucide/svelte/icons/ellipsis';
   import Info from '@lucide/svelte/icons/info';
-  import Minus from '@lucide/svelte/icons/minus';
   import Plus from '@lucide/svelte/icons/plus';
   import LiveField from '../ui/LiveField.svelte';
   import SetRow, { formatPrevious, type CheckResult, type Previous } from '../ui/SetRow.svelte';
@@ -17,15 +16,11 @@
     completedSet,
     exerciseName,
     isValidSetValue,
-    nextSetType,
     plannedEntry,
     previousExercise,
     previousSets,
-    removeSet,
     replaceSet,
-    restoreSet,
     setExerciseNotes,
-    setHasValues,
     setNumbers,
     updateSet,
     type Archive,
@@ -51,12 +46,13 @@
     records: ReadonlySet<string>;
     today: string;
     edit: (change: (archive: Archive) => Archive) => boolean;
-    notify: (message: string, action?: string, onaction?: () => void) => void;
     /** l'utente ha toccato l'esercizio: resta aperto anche se fatto */
     ontouch: () => void;
     ontoggle: () => void;
-    /** dopo una spunta: chi gestisce l'elenco sposta l'attenzione alla serie successiva */
-    onchecked: () => void;
+    /** dopo una spunta: chi gestisce l'elenco avvia il recupero e sposta l'attenzione alla serie successiva */
+    onchecked: (setId: string) => void;
+    /** tocco sull'indice della serie: foglio con tipo e "Togli serie" */
+    onsetoptions: (setId: string) => void;
     onvariant: () => void;
     ondetails: () => void;
     onoptions: () => void;
@@ -72,10 +68,10 @@
     records,
     today,
     edit,
-    notify,
     ontouch,
     ontoggle,
     onchecked,
+    onsetoptions,
     onvariant,
     ondetails,
     onoptions,
@@ -154,29 +150,13 @@
     const completed = completedSet(set, previousSet, Date.now());
     // senza ripetizioni la riga non si spunta: il cursore va al primo campo vuoto (US-12)
     if (!completed) return set.kg === null && previousSet?.kg == null ? 'kg' : 'reps';
-    if (edit((a) => replaceSet(a, session.id, exercise.id, completed))) onchecked();
+    if (edit((a) => replaceSet(a, session.id, exercise.id, completed))) onchecked(set.id);
   }
 
   // --- serie ----------------------------------------------------------------------------------
   function add() {
     ontouch();
     edit((a) => addSet(a, session.id, exercise.id).archive);
-  }
-
-  function removeLast() {
-    const last = exercise.sets.at(-1);
-    if (!last || exercise.sets.length <= 1) return;
-    ontouch();
-    let removed: ReturnType<typeof removeSet>['removed'] | null = null;
-    const ok = edit((a) => {
-      const result = removeSet(a, session.id, exercise.id, last.id);
-      removed = result.removed;
-      return result.archive;
-    });
-    const undo = removed as ReturnType<typeof removeSet>['removed'] | null;
-    // una serie con valori si recupera con "Annulla" (P4)
-    if (ok && undo && (setHasValues(last) || last.completedAt !== null))
-      notify(`${name}: serie tolta.`, 'Annulla', () => edit((a) => restoreSet(a, session.id, undo)));
   }
 
   const compactSummary = $derived(
@@ -246,7 +226,11 @@
             done={set.completedAt !== null}
             {unit}
             record={records.has(set.id)}
-            ontype={() => patch(set, { type: nextSetType(set.type) })}
+            typeMenu
+            ontype={() => {
+              ontouch();
+              onsetoptions(set.id);
+            }}
             oncopy={() => previousSet && patch(set, { kg: previousSet.kg, reps: previousSet.reps })}
             onkg={(text) => onKg(set, text)}
             onreps={(text) => onReps(set, text)}
@@ -255,14 +239,9 @@
         {/each}
       </div>
 
-      <div class="set-actions">
-        <button type="button" class="btn btn-text" onclick={add} disabled={exercise.sets.length >= LIMITS.setsPerExercise}>
-          <Plus aria-hidden="true" />Aggiungi serie
-        </button>
-        <button type="button" class="btn btn-text remove" onclick={removeLast} disabled={exercise.sets.length <= 1} aria-label="Togli serie: l’ultima">
-          <Minus aria-hidden="true" /><span>Togli<span class="wide-only">&nbsp;serie</span></span>
-        </button>
-      </div>
+      <button type="button" class="btn btn-text add-set" onclick={add} disabled={exercise.sets.length >= LIMITS.setsPerExercise}>
+        <Plus aria-hidden="true" />Aggiungi serie
+      </button>
 
       {#if noteOpen || exercise.notes}
         <LiveField
@@ -375,22 +354,8 @@
     color: var(--color-muted);
     font-size: var(--text-sm);
   }
-  .set-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-  .set-actions .btn {
-    white-space: nowrap;
-  }
-  /* a 320px "Aggiungi serie" e "Togli serie" non stanno su una riga: resta "Togli" */
-  @media (max-width: 359px) {
-    .wide-only {
-      display: none;
-    }
-  }
-  .remove:not(:disabled) {
-    color: var(--color-muted);
+  .add-set {
+    align-self: flex-start;
   }
   .exercise :global(.live-field) {
     margin-top: 0.5rem;

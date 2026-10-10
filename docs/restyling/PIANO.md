@@ -109,8 +109,12 @@ interface SessionSet {                  // serie
   completedAt: number | null;            // timestamp della spunta
 }
 
-// Chiave separata, aggiornata spesso (step 7)
-interface RestTimerState { sessionId: string; exerciseId: string; setId: string; start: number; end: number; duration: number }
+// Chiave separata `bodytracker.restTimer`, aggiornata spesso (step 7, src/lib/rest-timer.ts)
+interface RestTimerState {
+  sessionId: string; exerciseId: string; setId: string; // exerciseId = voce della sessione
+  start: number; end: number; duration: number;          // end è la verità; duration in secondi, dopo ±15 s
+  warmup: boolean; minimized: boolean; alerted: boolean; // riscaldamento, ridotto, avviso di fine già dato
+}
 ```
 
 **Dati iniziali**
@@ -168,7 +172,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - toccando "precedente" il valore viene copiato nei campi;
   - una nuova sessione da scheda precompila il numero di serie della scheda, con campi vuoti e valori precedenti come suggerimento.
 - **Tipi di serie:**
-  - si cambiano toccando l'indice della serie (1 → R riscaldamento → D drop → C cedimento → 1);
+  - si cambiano toccando l'indice della serie, che apre il foglio della serie (Normale, Riscaldamento, Drop, Cedimento, "Togli serie"); fino allo step 6 il tocco passava al tipo successivo (1 → R → D → C → 1);
   - le serie di riscaldamento non hanno numero e non contano per volume, record e grafici.
 - **Recupero (come Strong):**
   - la spunta di una serie avvia il recupero dell'esercizio, o quello di riscaldamento se la serie è di riscaldamento;
@@ -293,7 +297,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - **Serie da fare adesso:** si resta sul blocco dell'ultima serie spuntata finché ha serie da fare, poi il blocco successivo, poi quelli saltati; in superserie tocca all'esercizio con meno serie fatte (2a, 2b, 2a…). Il numero dell'esercizio diventa una pastiglia piena e, dopo la spunta, la riga successiva scorre in vista solo se è fuori schermo. `currentExercise` (Oggi, mini-barra) usa la stessa regola.
   - **Esercizio fatto:** si compatta in una riga con le serie fatte e "Mostra serie"; l'ultimo toccato resta aperto per correggere.
   - **Varianti:** "Cambia esercizio" sempre visibile sotto i target (anche senza alternative, per "Altro esercizio…"); foglio con l'esercizio previsto, le alternative della voce e "Altro esercizio…" con i nomi simili. Con valori già inseriti conferma "Cambia e svuota": restano numero e tipo delle serie, si svuotano i valori; la nota resta. Con una variante i target mostrano serie, ripetizioni e recupero ma non il carico (era per l'esercizio previsto), più "Al posto di …". I target vengono dalla voce della scheda trovata per esercizio previsto (`plannedEntry`), quindi reggono riordini e varianti.
-  - **Serie:** "Aggiungi serie" riprende il peso dell'ultima; "Togli serie" toglie **l'ultima** (con "Annulla" se aveva valori; ne resta almeno una). Nessuna rimozione per riga: una sesta colonna non entra a 320px e lo swipe non può essere l'unico modo.
+  - **Serie:** "Aggiungi serie" riprende il peso dell'ultima; "Togli serie" toglie **l'ultima** (con "Annulla" se aveva valori; ne resta almeno una). Nessuna rimozione per riga: una sesta colonna non entra a 320px e lo swipe non può essere l'unico modo. *Cambiato allo step 7 su decisione dell'utente:* si toglie **qualsiasi serie** dal foglio della serie (vedi lo stato dello step 7).
   - **Esercizi:** aggiunti dal catalogo (o con un nome nuovo, personalizzato) con tante serie e dello stesso tipo dell'ultima volta e i suoi recuperi, altrimenti 3 serie e il recupero predefinito. "⋯" per esercizio: nota sul carico, come si esegue, cambia esercizio, togli dall'allenamento (con "Annulla", senza conferma). Riordino con "Riordina esercizi" e frecce, come nelle schede.
   - **Note sul carico:** campo sotto le serie quando c'è una nota (si apre dal "⋯"); la nota della volta scorsa compare sotto i target ("Nota del 6 ottobre: «…»").
   - **Nome, data, annullamento:** in fondo alla pagina, "Nome e data" apre i campi in linea (niente modali per inserire dati); "Annulla allenamento" con conferma se ci sono valori, con "Annulla".
@@ -320,6 +324,23 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - handler `push` e `notificationclick` già presenti nel service worker;
   - documento con il contratto di un futuro endpoint (`POST {subscription, fine}`). Nessun server.
 - **Verifica:** Vitest con timer finti; e2e con `page.clock` (spunta → overlay → +15 s → fine → chiusura); prova manuale su iPhone e Android, con una checklist nel documento; **seconda prova reale in palestra** focalizzata su timer, interruzioni e leggibilità.
+
+- **Stato (10 ottobre 2026):** fatto, in attesa delle prove reali (palestra dello step 6, rimandata dall'utente, più quella dello step 7, e prova manuale su iPhone e Android con la checklist di [WEB-PUSH.md](WEB-PUSH.md)). Motore in `src/lib/rest-timer.ts` (logica pura) e `src/lib/rest-timer.svelte.ts` (store), avvisi in `src/lib/rest-alert.ts`, schermo acceso in `src/lib/wake-lock.ts`, `RestNotifier` in `src/lib/rest-notifier.ts`, handler `push` e `notificationclick` in `public/sw-push.js`; viste `RestTimer` (schermo intero) e `RestTimerBar` (ridotto), isola globale `RestTimerHost` nel guscio. 19 test Vitest nuovi, a orologio finto (232 in tutto), 17 test e2e nuovi in `us-21-us-26-rest-timer.spec.ts` con `page.clock` più uno per togliere una serie in mezzo (234 esecuzioni in tutto, verdi nella radice e con `BT_BASE=/bodytracker/`), `astro check` pulito, detector a 0 su `src/`.
+  - **Esito della prova dello step 6 e decisioni aperte (risposte dell'utente del 10 ottobre 2026):** prova in palestra non ancora fatta (si farà insieme a quella del timer). Decisione 1 cambiata: **"Togli" su ogni riga**. Confermate le raccomandazioni sulle altre: "Termina" senza conferma, tab bar visibile durante l'allenamento, durata in minuti, "Cambia esercizio" sempre visibile, peso facoltativo alla spunta; mini-barra su Oggi **solo con un recupero in corso**.
+  - **Togli serie su ogni riga:** il tocco sul numero della serie apre un foglio dal basso con il tipo (Normale, Riscaldamento, Drop, Cedimento, con la sigla e la scelta attuale segnata) e "Togli serie" (con "Annulla" se aveva valori; spento con una serie sola, e il foglio dice perché). Il pulsante "Togli serie" sotto le righe non c'è più. Cambiare tipo costa ora 2 tocchi invece di 1–3, ma ogni tipo ha il suo nome e la rimozione sta dove sta la serie.
+  - **Quando parte:** alla spunta riuscita (non a quella che porta al campo vuoto). Recupero di riscaldamento per una serie di riscaldamento; 0 = nessun timer. **Superserie:** il giro continua (nessun recupero) se un altro esercizio del blocco ha meno serie fatte e ne ha ancora da fare; altrimenti parte il recupero dell'esercizio appena spuntato. Una spunta che non avvia un recupero chiude quello in corso (si è ripreso a lavorare); una nuova spunta sostituisce il recupero in corso.
+  - **Recupero predefinito:** ogni voce ha un recupero numerico; il predefinito delle Impostazioni si applica quando nasce una voce senza recupero (voce nuova di una scheda, esercizio aggiunto in sessione o nell'allenamento libero, e ora anche una voce del PoC con recupero mancante o illeggibile, che prima diventava 0 = nessun timer). Cambiare il predefinito non tocca le voci già create.
+  - **Annullamento:** il timer non vale più (e sparisce) quando la serie perde la spunta, viene tolta, cambia variante, o la sessione si conclude o si annulla, anche da un'altra scheda del browser: lo store lo verifica a ogni modifica dell'archivio.
+  - **Motore:** l'istante di fine è la verità, salvato nella chiave `bodytracker.restTimer` a ogni cambiamento (avvio, ±15 s, riduci, avviso dato); scatti di 250 ms e ricalcolo a `visibilitychange`; evento `storage` per le altre schede. −15 s non porta mai la fine nel passato: con meno di 15 s chiude il recupero. La durata nell'intestazione segue ±15 s ("Recupero · 2:15").
+  - **Fine:** "Vai" lime con "Adesso" e la serie; si chiude da solo dopo 6 s **in vista** (con la pagina nascosta aspetta il rientro). Al rientro a recupero finito l'intestazione dice "Recupero finito da 1:20". Suono e vibrazione una volta sola, solo se la fine arriva entro un minuto (niente suono fuori tempo dopo lo schermo bloccato).
+  - **Suono:** tre toni brevi (880, 880, 1320 Hz) generati con `AudioContext`, sbloccato dalla spunta; vibrazione `[200, 100, 200, 100, 400]` ms. Seguono gli interruttori delle Impostazioni.
+  - **Schermo acceso:** wake lock per tutto l'allenamento in corso (non solo durante il recupero, come dice US-24), richiesto di nuovo al rientro, rilasciato alla fine dell'allenamento.
+  - **Ridotto:** "Riduci", l'icona in alto o Esc. Sull'allenamento la barra sta sopra la barra dell'allenamento; sulle altre pagine sostituisce la mini-barra, con una freccia a destra per tornare all'allenamento (il tocco sulla barra riapre lo schermo intero lì dove si è). Ridotto resta ridotto tra le pagine e dopo una ricarica; una nuova spunta riapre lo schermo intero.
+  - **Prossima serie:** esercizio, "serie N" o "riscaldamento", peso × ripetizioni: i valori già scritti nella riga, altrimenti la volta scorsa, altrimenti i target della scheda (non il carico della scheda per una variante). All'ultima serie: "Ultimo esercizio · Quando hai finito, Termina".
+  - **Annunci:** a 30 s, 10 s e alla fine, anche con il timer ridotto; dopo un salto (rientro) solo l'ultima soglia superata.
+  - **Isola globale:** il timer vive nel guscio (`RestTimerHost`, `transition:persist`), così si apre su qualsiasi pagina; la finestra resta montata e chiudendola il focus torna alla spunta.
+  - **Web Push:** solo predisposizione (interfaccia, handler nel service worker, contratto e checklist in [WEB-PUSH.md](WEB-PUSH.md)); nessun permesso chiesto, nessun server.
+  - **Test dello step 6:** le schede di quei test non hanno recupero (`rest: 0`), perché spuntano più serie di fila; il recupero ha la sua suite.
 
 ### Step 8: Storico e progressi
 - **Storie:** US-27, US-28, US-29.

@@ -1,42 +1,43 @@
-# Handoff: restyling BodyTracker, partenza dallo step 7
+# Handoff: restyling BodyTracker, partenza dallo step 8
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 7 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 8 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief `.impeccable/surfaces/src-components-workout-resttimer-svelte.md` e `route-workout.md`. Prima di cominciare, chiedimi l'esito della prova in palestra dello step 6 (checklist di USER-STORIES.md §5) e le risposte alle decisioni aperte dello step 6 elencate in HANDOFF.md, e applica le correzioni. Poi esegui lo **step 7** del piano (timer di recupero: la spunta della serie avvia il recupero a tutto schermo con il livello che si svuota, −15 s, +15 s, Salta, Riduci in barra sopra la barra dell'allenamento e nella mini-barra delle altre pagine, prossima serie attesa, recupero di riscaldamento, superserie che recuperano solo a fine giro, 0 = nessun timer, recupero predefinito se la voce non ne ha, togliere la spunta annulla il timer; motore basato sull'istante di fine persistito nella sua chiave, ricalcolo a `visibilitychange`, wake lock, suono con `AudioContext` e vibrazione secondo le Impostazioni, annunci a 30 s, 10 s e fine; predisposizione Web Push senza server), usando l'allenamento attivo dello step 6, con test Vitest a orologio finto ed e2e con `page.clock` nominati con l'ID della storia (US-21…US-26). Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e il brief `.impeccable/surfaces/route-history.md`. Prima di cominciare, chiedimi l'esito delle prove in palestra degli step 6 e 7 (checklist di USER-STORIES.md §5 e di `docs/restyling/WEB-PUSH.md`, anche su iPhone e Android) e le risposte alle decisioni aperte dello step 7 elencate in HANDOFF.md, e applica le correzioni. Poi esegui lo **step 8** del piano (storico e progressi: `/history` con le sessioni per data e l'accesso dal calendario, dettaglio `/session?id=` modificabile con eliminazione confermata e "Riapri", pagina esercizio `/exercise?id=` con grafici in SVG scritto a mano di carico massimo, 1RM stimato con Epley solo su serie normali fino a 12 ripetizioni e volume per sessione, selettore di periodo, record personali e cronologia delle serie, varianti separate e riscaldamento escluso, nell'unità scelta e leggibili nei due temi; prima dei grafici carica la skill dataviz), usando lo storico registrato dall'allenamento attivo, con test Vitest sui calcoli ed e2e nominati con l'ID della storia (US-27…US-29). Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte.
 
-## Stato a fine step 6 (10 ottobre 2026)
+## Stato a fine step 7 (10 ottobre 2026)
 
-Tutto è su `main`. Decisioni dello step 6 nello "Stato" dello step 6 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
+Tutto è su `main`. Decisioni dello step 7 (e risposte dell'utente sulle decisioni dello step 6) nello "Stato" dello step 7 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
 
-- **Allenamento attivo** (`src/components/workout/Workout.svelte` e vicini): un pannello per blocco (esercizio o superserie), righe serie con il precedente, spunta che conferma il precedente, tipi di serie, varianti con "Altro esercizio…", note sul carico, approfondimento, riordino, nome e data, barra fissa con durata, "Salvato" e "Termina", riepilogo su `/workout?summary=<id>` con record di carico e invito all'installazione dopo il primo allenamento.
-- **Logica:** `src/lib/archive/workout.ts` (precedente, spunta, serie da fare con alternanza in superserie, voce della scheda, modifiche della sessione con "Annulla", varianti, record, riepilogo). `finishSession` chiede ora almeno un valore.
-- **Guscio:** mini-barra `WorkoutMiniBar` con `transition:persist` (nascosta su Oggi e `/workout`); lo stack in basso si somma con `setBottomBar` (`src/lib/bottom-bars.ts`); `beforeunload` nello store dell'archivio.
-- **Componenti base:** `SetRow` e `SetInput` sono ora controllati (valori dall'archivio, `ontype`, `oncopy`, `onkg`, `onreps`, `oncheck` che restituisce il campo da compilare); `SaveBar` ha `detail` e `compact`.
-- Verifica: 198 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 213 Vitest, `astro check` pulito, detector a 0 su `src/`.
+- **Timer di recupero:** motore puro in `src/lib/rest-timer.ts` (istante di fine, ±15 s, quale recupero parte, superserie a fine giro, timer non più valido, soglie degli annunci, prossima serie), store in `src/lib/rest-timer.svelte.ts` (chiave `bodytracker.restTimer`, scatti di 250 ms, `visibilitychange`, evento `storage`, avviso una volta sola, "Vai" chiuso dopo 6 s in vista), avvisi in `rest-alert.ts`, schermo acceso in `wake-lock.ts`, `RestNotifier` in `rest-notifier.ts`, handler `push`/`notificationclick` in `public/sw-push.js`.
+- **Componenti:** `RestTimer` (vista a tutto schermo, anche anteprima di `/kit`), `RestTimerBar` (ridotto, sopra la barra dell'allenamento e nella mini-barra con la freccia verso l'allenamento), `RestTimerHost` nel guscio (`transition:persist`). La mini-barra compare su Oggi solo con un recupero.
+- **Correzione dello step 6 (decisione 1 dell'utente):** il tocco sul numero della serie apre il foglio della serie (tipo e "Togli serie" per qualsiasi riga); il pulsante "Togli serie" sotto le righe non c'è più.
+- **Recupero predefinito:** una voce del PoC con recupero mancante o illeggibile prende il predefinito (prima 0 = nessun timer).
+- Verifica: 234 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 232 Vitest, `astro check` pulito, detector a 0 su `src/`. Revisione finale di Impeccable fatta in linea (nessun agente): nessun elemento del Refuse list.
 
-## Decisioni aperte dello step 6 (da chiedere all'utente)
+## Decisioni aperte dello step 7 (da chiedere all'utente)
 
-1. **Togliere una serie in mezzo:** oggi "Togli serie" toglie solo l'ultima. Raccomandazione: tenerlo così e, se in palestra serve, aggiungere lo swipe a sinistra sulla riga come scorciatoia allo step 9.
-2. **"Termina" senza conferma** anche con serie non spuntate: il riepilogo ha "Riapri". Raccomandazione: tenerlo, salvo tocchi accidentali in palestra.
-3. **Tab bar durante l'allenamento:** resta visibile (navigazione e mini-barra). A 320×568 lascia circa 380px al contenuto. Raccomandazione: tenerla; alternativa da provare se lo spazio pesa, nasconderla sull'allenamento.
-4. **Mini-barra su Oggi:** nascosta perché Oggi ha "Riprendi allenamento". Allo step 7 deve mostrare il timer ridotto: raccomandazione, su Oggi mostrarla solo con un recupero in corso.
-5. **Durata in minuti** nella barra (non un orologio che scorre ogni secondo). Raccomandazione: tenerla.
-6. **"Cambia esercizio" sempre visibile** su ogni esercizio aperto (anche senza alternative). Raccomandazione: tenerlo, è il flusso 3 (macchina occupata).
-7. **Peso facoltativo** alla spunta (corpo libero): una riga con le sole ripetizioni si spunta. Raccomandazione: tenerlo.
+1. **Schermo acceso per tutto l'allenamento** (non solo durante il recupero): consuma più batteria. Raccomandazione: tenerlo, è US-24 e il telefono resta in mano o appoggiato.
+2. **Tipo di serie dal foglio:** cambiare tipo costa 2 tocchi (prima 1–3 in ciclo), in cambio di nomi chiari e "Togli serie" sulla riga. Raccomandazione: tenerlo; se in palestra pesa, il ciclo con un tocco può tornare e il foglio aprirsi solo per "Togli" con un tocco lungo come scorciatoia.
+3. **"Vai" si chiude da solo dopo 6 s** (in vista) e la barra ridotta lime sparisce con lui. Raccomandazione: tenerlo; alternativa, la barra lime resta finché non si tocca.
+4. **Una spunta senza recupero chiude quello in corso** (es. 2a durante il recupero del giro precedente). Raccomandazione: tenerlo, vuol dire che si è ripreso a lavorare.
+5. **Ridotto resta ridotto** tra le pagine, ma ogni nuova spunta riapre lo schermo intero. Raccomandazione: tenerlo; alternativa, ricordare "preferisco ridotto" per la sessione.
+6. **Suono:** tre toni brevi generati in locale, senza scelta del volume né del suono. Raccomandazione: valutarlo in palestra (si sente nel rumore?) prima di aggiungere opzioni.
+7. **Recupero predefinito applicato quando nasce la voce**, non a ogni recupero: cambiarlo nelle Impostazioni non tocca le voci esistenti. Raccomandazione: tenerlo e dirlo nel suggerimento delle Impostazioni se crea dubbi.
+8. **Mini-barra con il timer:** il tocco riapre il timer sulla pagina dove si è, la freccia a destra torna all'allenamento. Raccomandazione: tenerlo.
 
-## Prova reale in palestra (dopo lo step 6)
+## Prove reali (dopo lo step 7)
 
-Con la checklist di USER-STORIES.md §5: tocchi per serie (1 se si ripete la volta scorsa), leggibilità di cifre e precedente al sole e in penombra, tastiera che non copre la riga, interruzioni (schermo bloccato, app chiusa e riaperta), variante con la macchina occupata, superserie 2a/2b, "Termina" e riepilogo.
+- **Palestra (step 6 e 7 insieme, la prova dello step 6 non è ancora stata fatta):** con la checklist di USER-STORIES.md §5: tocchi per serie, leggibilità di cifre, precedente e timer al sole e in penombra, tastiera che non copre la riga, interruzioni (schermo bloccato durante il recupero, app chiusa e riaperta), variante con la macchina occupata, superserie 2a/2b con il recupero a fine giro, suono nel rumore della sala, "Termina" e riepilogo.
+- **Telefoni:** checklist di `docs/restyling/WEB-PUSH.md` su iPhone (installata e in Safari: wake lock, audio, nessuna vibrazione) e Android.
 
-## Step 7 in dettaglio: timer di recupero
+## Step 8 in dettaglio: storico e progressi
 
-- Storie: US-21…US-26. Brief: `src-components-workout-resttimer-svelte` (contratto di direzione: livello che si svuota, schermo lime a fine recupero).
-- **Esistente:** `RestTimer.svelte` (schermo intero, barra ridotta, anteprime in `/kit`), basato già sull'istante di fine; `KitSetRows` lo usa come demo. Manca il motore persistito (`RestTimerState` nel modello dati del PIANO, chiave separata).
-- **Dove agganciarlo:** `WorkoutExercise` chiama `onchecked()` dopo una spunta riuscita: `Workout.afterCheck` conosce `nextSet` (la prossima serie, per la riga "Prossima") e il blocco (superserie: recupero solo dopo l'ultimo del giro; `nextSet` dice già a chi tocca). Togliere la spunta (`updateSet` con `completedAt: null`) deve annullare il timer di quella serie. Recupero: `exercise.rest` o `warmupRest` per le serie di riscaldamento; 0 = nessun timer; se manca, `settings.defaultRest`.
-- **Barre:** la barra ridotta va sopra la barra dell'allenamento (`setBottomBar` con un id suo) e nella mini-barra delle altre pagine (`WorkoutMiniBar`, persistente).
-- **Impostazioni:** suono e vibrazione sono già in `settings` (US-21…US-24 della pagina Impostazioni, test `us-21-us-24-training-settings`).
+- Storie: US-27, US-28, US-29. Brief: `route-history` (`/history`, `/session?id=`, `/exercise?id=`).
+- **Esistente:** `/history` è un segnaposto con stato vuoto; il calendario apre già il foglio del giorno con gli allenamenti; il riepilogo (`SessionSummary`) e `workoutSummary`/`loadRecords` in `src/lib/archive/workout.ts` calcolano durata, volume e record di carico; `ExerciseDetailsSheet` mostra l'ultima volta di un esercizio; nome e data della sessione si modificano già in corso (US-27).
+- **Da fare:** elenco per data (più sessioni nello stesso giorno, US-20), dettaglio con le stesse righe serie (riusare `WorkoutExercise`/`SetRow` dove possibile, ma una sessione conclusa non avvia il timer: `restTimer().afterCheck` va chiamato solo per la sessione in corso), eliminazione con conferma e "Annulla", "Riapri"; calcoli puri dei progressi (carico massimo, 1RM Epley, volume) con Vitest; grafici in SVG a mano (skill dataviz); record nella riga serie e nel riepilogo (US-29, già per il carico).
+- **Varianti e riscaldamento:** i progressi sono per esercizio fatto (variante); le serie di riscaldamento non contano.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -65,6 +66,8 @@ Con la checklist di USER-STORIES.md §5: tocchi per serie (1 se si ripete la vol
 - **Rumore del proxy:** durante i test Chromium prova a contattare `accounts.google.com` e `android.clients.google.com` (servizi del browser, non dell'app): il proxy li rifiuta, non c'entra con il controllo "nessuna richiesta esterna" di US-03, che guarda solo le richieste della pagina.
 - **Lucide 1.x:** alcune icone hanno cambiato nome; il pacchetto Astro non ha gli alias. Esempi: `trash-2` → `trash`, `history` → `rotate-ccw-clock`. Controllare in `node_modules/@lucide/astro/src/icons/`.
 - **`light-dark()` nei token:** il valore si risolve dove il token viene usato, secondo il `color-scheme` di quell'elemento. Per questo dentro `.shell` (che dichiara `color-scheme: dark`) i token di contenuto danno la variante scura. Tailwind lascia `light-dark()` nativo nel CSS generato.
+- **Orologio finto e timer:** `page.clock.install()` da solo lascia scorrere il tempo: nei test del timer segue `page.clock.pauseAt(NOW)`, poi `runFor`/`fastForward`. Con `setFixedTime` (test dello step 6) il timer non scende mai e la finestra coprirebbe le righe: quei test usano schede con `rest: 0`.
+- **Spazi unificatori:** `toContainText` e `toHaveText` di Playwright normalizzano anche lo spazio unificatore; in Vitest invece i testi con `\u00a0` (es. "40\u00a0kg\u00a0×\u00a08") vanno scritti uguali.
 - **Fuso orario nei test:** il browser di Playwright è in `Europe/Rome`, il container in UTC. Per `page.clock.setFixedTime` usare istanti con il fuso esplicito (`'2026-10-08T18:30:00+02:00'`); l'aiuto `session()` di `tests/e2e/helpers.ts` crea sessioni alle 18:00 UTC, cioè le 20:00 nel browser.
 - **Spazi in Svelte:** uno spazio tra `}` e `{#if}` può sparire ("da 25 min· Panca"): le righe di metadati si compongono nello script con `[…].filter(Boolean).join(' · ')`.
 - **Testo nascosto e `getByText`:** un `<span class="sr-only">Durata: </span>` perde lo spazio finale; scrivere lo spazio fuori dallo span. Per i testi composti meglio `getByRole('paragraph').filter({ hasText })`.
