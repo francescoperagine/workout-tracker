@@ -40,7 +40,7 @@ L'utente controlla se è in linea con il programma ("ho saltato giovedì?") e, o
 ## Interaction and layout
 
 - Una riga per giorno con nome breve del giorno e data, scheda, stato (icona più testo). Oggi evidenziato.
-- Nomi dei giorni da `WEEK_DAYS`/`DAY_NAMES`, date in ora locale.
+- Nomi dei giorni da `WEEKDAY_SHORT`/`WEEKDAY_LONG` (`src/lib/format.ts`), date in ora locale.
 
 ## Constraints and open decisions
 

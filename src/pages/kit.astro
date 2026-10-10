@@ -12,6 +12,7 @@ import KitSaveBars from '../components/kit/KitSaveBars.svelte';
 import KitOverlays from '../components/kit/KitOverlays.svelte';
 import SegmentedControl from '../components/ui/SegmentedControl.svelte';
 import KitControls from '../components/kit/KitControls.svelte';
+import KitDays from '../components/kit/KitDays.svelte';
 import { appUrl } from '../lib/paths';
 import Plus from '@lucide/astro/icons/plus';
 import Trash from '@lucide/astro/icons/trash';
@@ -158,6 +159,12 @@ const weightUnits = [
         <RestTimer duration={900} preview={725} next={null} />
       </div>
       <RestTimer duration={120} preview={52} previewMinimized next="Rematore manubri · serie 2 · 12 kg × 8–10" />
+    </section>
+
+    <section aria-labelledby="s-days" class="flex flex-col gap-3">
+      <h2 id="s-days" class="text-page-title font-bold">Giorni del calendario</h2>
+      <p class="text-muted">Ogni stato ha un’icona e un testo, mai il solo colore. Oggi ha il bordo; un tocco porta al giorno nel Calendario.</p>
+      <KitDays client:load />
     </section>
 
     <section aria-labelledby="s-save-bar" class="flex flex-col gap-3">

@@ -9,17 +9,17 @@ test.describe('US-03 app installabile e offline', () => {
   test('US-03 dopo la prima visita l’app si apre e naviga senza rete', async ({ page, context }) => {
     await seedArchive(page, archiveWith());
     await page.goto('');
-    await expect(page.getByText('Il diario è pronto')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Allenamento libero' })).toBeVisible();
     // il service worker è attivo (precache completato) e controlla la pagina
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
     await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
 
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByText('Il diario è pronto')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Allenamento libero' })).toBeVisible();
     const tabs = page.getByRole('navigation', { name: 'Sezioni' });
     await tabs.getByRole('link', { name: 'Calendario' }).click();
-    await expect(page.getByRole('heading', { name: 'In arrivo: il calendario' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Settimana tipo' })).toBeVisible();
     await page.goto('settings/');
     await expect(page.getByRole('heading', { name: 'Dati e privacy' })).toBeVisible();
     await page.goto('welcome/?da=offline');
@@ -52,8 +52,8 @@ test.describe('US-03 app installabile e offline', () => {
     });
     await page.goto('');
     await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
-    await expect(page.getByText('Il diario è pronto')).toBeVisible();
-    for (const name of ['Calendario', 'Schede', 'Storico']) await page.getByRole('link', { name }).click();
+    await expect(page.getByRole('button', { name: 'Inizia allenamento' })).toBeVisible();
+    for (const name of ['Calendario', 'Schede', 'Storico']) await page.getByRole('link', { name, exact: true }).click();
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Oggi' }).click();
     await page.getByRole('link', { name: 'Impostazioni', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Dati e privacy' })).toBeVisible();

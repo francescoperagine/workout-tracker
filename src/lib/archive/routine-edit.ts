@@ -176,15 +176,16 @@ export function restoreRoutine(archive: Archive, removed: RemovedRoutine): Archi
 // ---------------------------------------------------------------------------------------------
 
 /** Blocco della scheda: una voce singola o una superserie (voci consecutive con lo stesso gruppo). */
-export interface Block {
+export interface Block<T extends { group: string | null } = RoutineExercise> {
   group: string | null;
   /** indice della prima voce del blocco */
   start: number;
-  entries: RoutineExercise[];
+  entries: T[];
 }
 
-export function blocksOf(exercises: readonly RoutineExercise[]): Block[] {
-  const blocks: Block[] = [];
+/** Vale anche per le voci di una sessione, che hanno lo stesso campo `group`. */
+export function blocksOf<T extends { group: string | null }>(exercises: readonly T[]): Block<T>[] {
+  const blocks: Block<T>[] = [];
   exercises.forEach((entry, index) => {
     const last = blocks.at(-1);
     if (last && entry.group !== null && last.group === entry.group) last.entries.push(entry);
@@ -194,7 +195,7 @@ export function blocksOf(exercises: readonly RoutineExercise[]): Block[] {
 }
 
 /** Numerazione come sulla scheda di carta: 1, 2a, 2b, 3… */
-export function orderLabels(exercises: readonly RoutineExercise[]): string[] {
+export function orderLabels(exercises: readonly { group: string | null }[]): string[] {
   return blocksOf(exercises).flatMap((block, n) =>
     block.entries.length > 1 ? block.entries.map((_, i) => `${n + 1}${'abcdefghijklmnopqrstuvwxyz'[i] ?? i + 1}`) : [`${n + 1}`],
   );

@@ -64,7 +64,11 @@ test.describe('US-02 import del diario del PoC', () => {
     await sheet(page).getByRole('button', { name: 'Importa' }).click();
     await sheet(page).getByRole('button', { name: 'Fatto' }).click();
     await expectPage(page, '');
-    await expect(page.getByText('2 schede (Scheda A, Scheda B), 4 allenamenti')).toBeVisible();
+    // Oggi riprende l'allenamento rimasto aperto nel PoC e mostra l'ultimo concluso
+    await expect(page.getByText('iniziato l’8 settembre', { exact: false })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Riprendi allenamento' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ultimo allenamento' })).toBeVisible();
+    expect((await storedArchive(page))?.sessions).toHaveLength(4);
     // la chiave del PoC si legge soltanto
     expect(await page.evaluate(() => localStorage.getItem('bodytracker.archivio.v1'))).toBe(POC_BACKUP);
   });

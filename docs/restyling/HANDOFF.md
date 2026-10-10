@@ -1,30 +1,29 @@
-# Handoff: restyling BodyTracker, partenza dallo step 5
+# Handoff: restyling BodyTracker, partenza dallo step 6
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 5 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 6 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief `.impeccable/surfaces/route-calendar.md` e `.impeccable/surfaces/route.md`. Esegui lo **step 5** del piano (Calendario: settimana scorrevole e vista mese compatta, assegnazione di una scheda o del riposo a ogni giorno della settimana, eccezione per una singola data, stati del giorno pianificato/fatto/saltato/oggi; Oggi: le ultime 4 schede fatte più la pianificata come righe da toccare, con la suggerita già selezionata da `quickStart`, "Inizia allenamento" nella zona del pollice, "Altra scheda" in un foglio dal basso, "Allenamento libero", "Riprendi" con una sessione in corso, ultimo allenamento), usando l'archivio v2, il guscio dello step 3 e le schede dello step 4, con test e2e nominati con l'ID della storia. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e il brief `.impeccable/surfaces/route-workout.md` (più `src-components-workout-resttimer-svelte.md` per sapere cosa arriva allo step 7). Esegui lo **step 6** del piano (allenamento attivo su `/workout`, al posto del segnaposto dello step 5: elenco esercizi con i target della scheda e la superserie, righe serie `tipo/n · precedente · kg|lb · rip · ✓` con la spunta su una riga vuota che conferma il precedente (1 tocco), tipi di serie, aggiungi e togli serie ed esercizi con "Annulla", riordino con frecce, varianti con "Altro esercizio…", note sul carico, approfondimento dell'esercizio in un foglio, barra fissa con durata e salvataggio, "Termina" con riepilogo e invito all'installazione dopo il primo allenamento concluso, sessione riapribile, mini-barra persistente nelle altre pagine), usando l'archivio v2, Oggi e il Calendario dello step 5, con test e2e nominati con l'ID della storia (US-12…US-20, conteggio dei tocchi per P1). Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte.
 
-## Stato a fine step 4 (10 ottobre 2026)
+## Stato a fine step 5 (10 ottobre 2026)
 
-Tutto è su `main`. Decisioni dello step 4 nello "Stato" dello step 4 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
+Tutto è su `main`. Decisioni dello step 5 nello "Stato" dello step 5 in PIANO.md (alcune da confermare con l'utente); struttura, chiavi e convenzioni in `AGENTS.md`.
 
-- **Schede:** elenco `/routines` (`src/components/routines/RoutineList.svelte`) ed editor `/routine?id=` (`RoutineEditor`, `EntryEditor`). Logica pura in `src/lib/archive/routine-edit.ts` (crea, duplica, rinomina, riordina, archivia, elimina con `restoreRoutine` per l'"Annulla"; voci, alternative, superserie con `blocksOf`/`orderLabels`/`normalizeGroups`).
-- **Componenti nuovi:** `LiveField` (campo che salva a ogni battuta, in `src/components/ui/`) e `ExercisePicker` (foglio del catalogo con ricerca e "Crea «…»", in `src/components/exercises/`; servirà anche allo step 6 per "Altro esercizio…"). Entrambi in `/kit` e in DESIGN.md.
-- **Formattazione:** `formatWeightRange` ("45–50 kg") in `units.ts`; `formatWeekdays` ("lun, gio"), `WEEKDAY_SHORT`/`WEEKDAY_LONG` e `formatDayMonth` ("3 ottobre") in `format.ts`: da riusare nel calendario.
-- **Ordine delle schede attive:** è quello dell'elenco (riordinabile) e quello che `quickStart` usa senza storico.
-- **Segnaposto:** `/calendar` (step 5) e `/history` (step 8) sono ancora stati vuoti; Oggi (`/`) fa solo il rimando a `/welcome` e conferma il diario.
-- Verifica: 112 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 172 Vitest, `astro check` pulito, detector a 0 su `src/` e su `/kit` nei due temi (sulle pagine con l'intestazione resta solo la nota consultiva `flat-type-hierarchy`, presente già allo step 3).
+- **Oggi** (`src/components/today/Today.svelte`): striscia della settimana, righe a scelta singola da `quickStart` con la suggerita selezionata, "Altra scheda", "Allenamento libero", "Inizia allenamento" appiccicato sopra la tab bar; "Riprendi allenamento" con una sessione in corso; "Fatto oggi · Riapri"; ultimo allenamento.
+- **Calendario** (`src/components/calendar/`): settimana e mese, foglio del giorno con l'eccezione per data, settimana tipo con un `select` per giorno. `?date=YYYY-MM-DD` apre il foglio del giorno, `?view=month` il mese, `#week-plan` la settimana tipo.
+- **Logica:** `src/lib/archive/calendar.ts` (date, stato del giorno, settimana tipo, eccezioni) e `sessions.ts` (`startSession`, `reopenSession`, `finishSession`, `removeSession`/`restoreSession`, `summarizeSession`, `currentExercise`, `lastFinishedSession`). `blocksOf`/`orderLabels` accettano anche le voci di sessione.
+- **`/workout`** è il segnaposto `WorkoutPlaceholder.svelte`: la sessione esiste già (creata da Oggi con le voci della scheda e le serie vuote), lo step 6 la rende registrabile. Sostituire il componente, non la pagina.
+- Verifica: 144 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 195 Vitest, `astro check` pulito, detector a 0 su `src/`, `/calendar`, `/workout` e `/kit` nei due temi (resta la nota consultiva `flat-type-hierarchy`).
 
-## Step 5 in dettaglio: Calendario e Oggi
+## Step 6 in dettaglio: allenamento attivo
 
-- Storie: US-04, US-05, US-06, US-11 (più US-17 per "Riprendi"). Brief: `route-calendar` (`/calendar`) e `route` (Oggi, `/`).
-- **Dati:** pianificazione in `archive.schedule` (`mon`…`sun` → id scheda, `null` = riposo, chiave assente = niente), eccezioni in `archive.overrides` (`YYYY-MM-DD` → id o `null`). `planFor(archive, date)` dice cosa prevede una data (l'eccezione vince); `quickStart(archive, date)` dà righe e suggerita di Oggi (US-11, decisione del 10 ottobre 2026: suggerita già selezionata, il tocco sulla riga seleziona e non avvia). Le schede archiviate non si propongono e non si assegnano.
-- **Date:** sempre `toDateKey`/`fromDateKey`/`weekdayOf` (ora locale), mai `toISOString()`.
-- **Avvio dell'allenamento:** "Inizia allenamento" deve creare la sessione (una sola in corso alla volta, `sessionInProgress`); la pagina dell'allenamento attivo è dello step 6. Decidere allo step 5 cosa crea l'avvio (sessione con le voci della scheda: `SessionExercise` con gruppo, recuperi e serie vuote secondo `sets`) e dove porta finché `/workout` non esiste: va concordato con l'utente o rimandato con un segnaposto onesto.
-- **Verifica del piano:** e2e "pianifico B il giovedì → giovedì Oggi propone B" (con `page.clock` per fissare la data).
-- **Invito all'installazione dopo il primo allenamento concluso (US-03):** resta per il riepilogo dello step 6.
+- Storie: US-11 (avvio, già fatto), US-12…US-20. Brief: `route-workout`.
+- **Sessione:** già creata da `startSession`; le serie hanno `kg`/`reps`/`completedAt` a `null`. "Precedente" = stessa serie (indice e variante) dell'ultima sessione conclusa con quell'esercizio (PIANO, "Regole di comportamento chiave").
+- **Fine:** `finishSession` chiede almeno un esercizio (regola del PoC); il riepilogo è dello step 6, l'invito all'installazione (US-03) va lì (`canPromptInstall`/`promptInstall` di `src/lib/pwa.ts`).
+- **Mini-barra (US-17):** nelle altre pagine, `transition:persist` nell'`AppLayout`; aggiornare `--bottom-bars-height` come fanno tab bar e `ArchiveStatus`. Oggi mostra già "Riprendi" e il Calendario "In corso".
+- **Barra di salvataggio:** sull'allenamento attivo è sempre visibile (decisione dello step 3).
+- **Prova reale in palestra** alla fine dello step, con la checklist di USER-STORIES.md §5.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -53,6 +52,8 @@ Tutto è su `main`. Decisioni dello step 4 nello "Stato" dello step 4 in PIANO.m
 - **Rumore del proxy:** durante i test Chromium prova a contattare `accounts.google.com` e `android.clients.google.com` (servizi del browser, non dell'app): il proxy li rifiuta, non c'entra con il controllo "nessuna richiesta esterna" di US-03, che guarda solo le richieste della pagina.
 - **Lucide 1.x:** alcune icone hanno cambiato nome; il pacchetto Astro non ha gli alias. Esempi: `trash-2` → `trash`, `history` → `rotate-ccw-clock`. Controllare in `node_modules/@lucide/astro/src/icons/`.
 - **`light-dark()` nei token:** il valore si risolve dove il token viene usato, secondo il `color-scheme` di quell'elemento. Per questo dentro `.shell` (che dichiara `color-scheme: dark`) i token di contenuto danno la variante scura. Tailwind lascia `light-dark()` nativo nel CSS generato.
+- **Fuso orario nei test:** il browser di Playwright è in `Europe/Rome`, il container in UTC. Per `page.clock.setFixedTime` usare istanti con il fuso esplicito (`'2026-10-08T18:30:00+02:00'`); l'aiuto `session()` di `tests/e2e/helpers.ts` crea sessioni alle 18:00 UTC, cioè le 20:00 nel browser.
+- **Spazi in Svelte:** uno spazio tra `}` e `{#if}` può sparire ("da 25 min· Panca"): le righe di metadati si compongono nello script con `[…].filter(Boolean).join(' · ')`.
 - **Playwright e anteprime:** un elemento `inert` viene comunque trovato da `getByRole`; nelle anteprime di `/kit` i controlli finti sono `div`, non `button`. Per l'overlay del timer usare `page.locator('dialog[open]')`.
 
 ## Da non dimenticare

@@ -1,0 +1,10 @@
+---
+// Allenamento in corso (/workout). Allo step 5 è un segnaposto con il programma della sessione appena
+// iniziata da Oggi; lo step 6 lo sostituisce con l'allenamento attivo (US-12…US-20).
+import AppLayout from '../layouts/AppLayout.astro';
+import WorkoutPlaceholder from '../components/workout/WorkoutPlaceholder.svelte';
+---
+
+<AppLayout title="Allenamento">
+  <WorkoutPlaceholder client:only="svelte" />
+</AppLayout>

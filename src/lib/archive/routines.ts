@@ -69,6 +69,7 @@ export const RECENT_ROUTINES = 4;
  * schede attive nel loro ordine), più quella pianificata per la data se non è già tra queste.
  * Suggerita (già selezionata, decisione del 10 ottobre 2026): la pianificata; altrimenti, tra le
  * fatte, quella fatta da più tempo, così A/B si alternano da sole; senza storico la prima riga.
+ * Una scheda già conclusa nella data stessa non si suggerisce (si passa alla successiva).
  * Contano solo le sessioni concluse e le schede non archiviate.
  */
 export function quickStart(archive: Pick<Archive, 'routines' | 'schedule' | 'overrides' | 'sessions'>, date: string): QuickStart {
@@ -86,6 +87,9 @@ export function quickStart(archive: Pick<Archive, 'routines' | 'schedule' | 'ove
   if (plannedId && !ids.includes(plannedId)) ids.push(plannedId);
 
   const rows = ids.map((id) => ({ routine: active.get(id)!, lastDone: lastDone.get(id) ?? null, planned: id === plannedId }));
-  const suggested = plannedId ?? done.at(-1) ?? rows[0]?.routine.id ?? null;
+  // una scheda già fatta in quella data non si suggerisce di nuovo (seconda sessione del giorno, US-20)
+  const fresh = (id: string | null | undefined) => (id && lastDone.get(id) !== date ? id : null);
+  const suggested =
+    fresh(plannedId) ?? [...done].reverse().find(fresh) ?? rows.find((r) => fresh(r.routine.id))?.routine.id ?? rows[0]?.routine.id ?? null;
   return { rows, suggested, plan };
 }

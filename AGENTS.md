@@ -63,12 +63,14 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   catalog.ts            catalogo base + personalizzati: nameKey, findByName, suggestExercises, ensureExercise (US-14)
   routines.ts           withStarterRoutines, planFor, sessionInProgress, quickStart (US-11: ultime 4 schede e suggerita)
   routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry)
+  calendar.ts           calendario (step 5): addDays, weekStart, weekDates, monthWeeks, dayInfo (stato del giorno: done, in-progress, skipped, planned, rest, empty), setWeeklyDay, setDateOverride, staleWeeklyDays
+  sessions.ts           sessioni (step 5): startSession (da scheda o libero, una sola in corso), reopenSession, finishSession, removeSession/restoreSession, summarizeSession, currentExercise, lastFinishedSession
   conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
   poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
 src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce()
 src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatWeightRange, formatDistance
-src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration, formatWeekdays ("lun, gio"), formatDayMonth (con test)
+src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration, formatWeekdays ("lun, gio"), formatDayMonth; dallo step 5 formatRelativeDay ("giovedì", "12 giorni fa"), formatOnDay ("l’8 settembre"), formatElapsed ("1 h 05 min"), formatClock, formatWeekRange, formatMonth, formatLongDay (con test)
 src/lib/device.ts       isIos, isStandalone, canVibrate, ultimo backup (bodytracker.lastBackup), downloadText
 src/lib/pwa.ts          registerServiceWorker (scope = percorso base, solo in produzione), invito all'installazione trattenuto (listenForInstallPrompt, canPromptInstall, promptInstall, evento bt:installable)
 src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starter-routines.ts (A/B convertite); test di parità con il PoC in seed-data.test.ts
@@ -76,12 +78,14 @@ tests/fixtures/         synthetic-poc-backup.json (formato "Esporta" del PoC), u
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 public/icons/           icone della PWA (192, 512, maskable 512, apple-touch 180)
 src/pages/
-  index.astro           Oggi (/): allo step 3 porta al primo avvio se non c'è un archivio e conferma che il diario è pronto; lo step 5 la completa
+  index.astro           Oggi (/): primo avvio se non c'è un archivio; settimana, schede da scegliere con la suggerita, Inizia/Riprendi, ultimo allenamento
   welcome.astro         primo avvio (/welcome): cosa fa, dove sono i dati, schede di esempio, da zero, importa
   settings.astro        Impostazioni e Dati e privacy (/settings)
   routines.astro        Schede (/routines): elenco con crea, duplica, rinomina, riordina, archivia, elimina
   routine.astro         editor di una scheda (/routine?id=…)
-  calendar.astro, history.astro   segnaposto con stato vuoto, sostituiti dagli step 5 e 8
+  calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
+  workout.astro         allenamento in corso (/workout): allo step 5 segnaposto con il programma della sessione, sostituito dallo step 6
+  history.astro         segnaposto con stato vuoto, sostituito dallo step 8
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   kit.astro             /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione e dal precache
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
@@ -89,7 +93,9 @@ src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro);
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
 src/components/settings/  SettingsPage (tema, unità, allenamento), DataSection (Dati e privacy), InstallSection (app sul telefono)
-src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte
+src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
+src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
+src/components/workout/WorkoutPlaceholder.svelte  segnaposto di /workout (step 5)
 src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
 src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca e "Crea «…»" (esercizio personalizzato)
 src/components/workout/RestTimer.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
@@ -132,6 +138,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - **Si lavora sempre su `main`:** niente branch né pull request, anche se la sessione propone un branch di lavoro. Commit e push direttamente su `main` (`git push origin main`).
 - **Fine di uno step:** aggiorna `docs/restyling/HANDOFF.md` per lo step successivo e chiudi **sempre** il messaggio finale all'utente con il prompt di handoff completo, copiato da HANDOFF.md, pronto da incollare nella nuova conversazione.
 - **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
+- **Date nei test e2e:** il browser dei test è in `Europe/Rome` (`timezoneId`), Node no: per fissare "oggi" con `page.clock.setFixedTime` usa un istante con il fuso esplicito (`new Date('2026-10-08T18:30:00+02:00')`).
 - Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/routine?id=`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
 - Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showTabs={false}` e `showHeader={false}` solo sul primo avvio). `/kit` usa `Base`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
@@ -148,10 +155,10 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Le schermate Calendario e Storico sono segnaposto (stato vuoto) fino agli step 5 e 8; Oggi dallo step 3 fa solo il rimando al primo avvio e conferma che il diario è pronto. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Lo Storico è un segnaposto (stato vuoto) fino allo step 8; `/workout` è un segnaposto onesto fino allo step 6: "Inizia allenamento" crea già la sessione vera, ma le serie non si registrano ancora (si può annullare l'allenamento, o concluderlo se ha valori importati). Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
-- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-07-us-10-routines`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
 ## Riferimento: `BodyTracker/`
 

@@ -32,13 +32,15 @@ test.describe('US-01 primo avvio', () => {
     await page.goto('');
     await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
     await expectPage(page, '');
-    await expect(page.getByText('2 schede (Scheda A, Scheda B)')).toBeVisible();
+    // Oggi propone le schede di esempio, con la prima già selezionata (US-11)
+    await expect(page.getByRole('radio', { name: /^Scheda A/ })).toBeChecked();
+    await expect(page.getByRole('radio', { name: /^Scheda B/ })).toBeVisible();
     expect((await storedArchive(page))?.routines.map((r) => r.id)).toEqual(['routine-a', 'routine-b']);
     // la conservazione dei dati si chiede dopo la scelta
     expect(await page.evaluate(() => (window as unknown as { persistCalls: number }).persistCalls)).toBe(1);
 
     await page.reload();
-    await expect(page.getByText('Il diario è pronto')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Inizia allenamento' })).toBeVisible();
     await expectPage(page, '');
   });
 
@@ -46,13 +48,13 @@ test.describe('US-01 primo avvio', () => {
     await page.goto('');
     await page.getByRole('button', { name: 'Parti da zero' }).click();
     await expectPage(page, '');
-    await expect(page.getByText('0 schede, 0 allenamenti')).toBeVisible();
+    await expect(page.getByText('Non hai schede attive.', { exact: false })).toBeVisible();
     const archive = await storedArchive(page);
     expect(archive?.routines).toEqual([]);
     expect(archive?.revision).toBe(1);
 
     await page.goto('');
-    await expect(page.getByText('Il diario è pronto')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Allenamento libero' })).toBeVisible();
     await expectPage(page, '');
   });
 

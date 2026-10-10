@@ -475,6 +475,16 @@ L'editor delle schede si legge come la scheda di carta. Ogni voce è una riga da
 ### Foglio del catalogo
 Foglio dal basso per scegliere un esercizio: campo di ricerca con l'icona a sinistra, fisso in testa mentre l'elenco scorre; risultati come righe da 48px separate da `line`, con "personalizzato" in `muted`; in fondo "Crea «…»" in `accent-text` con l'icona più, quando il nome scritto non c'è.
 
+### Giorni del calendario
+Lo stato di un giorno ha sempre un'icona Lucide più un testo (nell'etichetta accessibile quando lo spazio non basta), mai il solo colore: **Fatto** (`circle-check`, `accent-text`), **In corso** (`circle-play`, `accent-text`), **Saltato** (`circle-x`, `warning`), **In programma** (`circle-dashed`, `muted`; oggi "Da fare"), **Riposo** (`moon`, `muted`, solo nella striscia: nelle righe lo dice il titolo). Oggi ha il bordo `accent-text` e il fondo `surface`.
+- **Striscia della settimana** (Oggi): sette colonne alte 76px, giorno abbreviato a 12px `muted`, numero a 18px, icona da 18px; ogni giorno è un link al suo foglio nel Calendario.
+- **Riga del giorno** (Calendario): pulsante a tutta larghezza alto almeno 64px, separato da un filo `line`; a sinistra giorno e numero (20px), al centro la scheda (o ciò che si è fatto) in grassetto con una nota `muted` a 14px ("solo per questa data", "in programma: Scheda B"), a destra icona e stato a 14px. Riposo e "Niente in programma" a peso normale `muted`.
+- **Mese compatto:** tabella di sette colonne con celle alte 56px, numero (650) e icona da 16px sotto; i giorni degli altri mesi restano vuoti; legenda sotto la tabella. Il riposo non ha segno.
+- **Settimana tipo:** una riga per giorno con il nome a sinistra e un `select` nativo (Niente, Riposo, le schede attive) a destra; l'avviso di una scheda archiviata ancora assegnata è in `warning` sotto la riga.
+
+### Righe della scheda in Oggi
+Le righe di scelta (`.choice`) alte 64px con il radio, il nome della scheda a 18px e sotto esercizi e ultima volta a 14px `muted`; la pianificata ha a destra "Oggi" con l'icona del calendario in `accent-text`. "Inizia allenamento" (primario alto 56px a 18px) è appiccicato sopra la tab bar con il fondo della pagina, così resta nella zona del pollice anche a 320×568.
+
 ### Riga serie
 L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · precedente · kg · rip · spunta, alta 56px.
 - **Tipo/numero:** pulsante da 48px, peso 650 a 18px; il numero è `muted`, le sigle dei tipi speciali (R, D, C) sono `accent-text`. Un tocco passa al tipo successivo.
