@@ -16,12 +16,11 @@ Segue [ANALISI.md](ANALISI.md). Ogni step è un commit (o una PR) verificabile d
 | 6 | Dati | Nessuna migrazione dal vecchio formato `bb-*`. **Import dei dati del PoC** (`bodytracker.archivio.v1`) come funzione permanente dell'app, per recuperare il tuo diario attuale |
 | 7 | Hosting | Oggi pubblicata in un **percorso del sito personale**, domani su un dominio proprio: il percorso base deve essere configurabile |
 | 8 | Progetti | Resta solo l'app nella radice. **`BodyTracker/` viene eliminata** a fine restyling |
+| 9 | Impostazioni | **Tema** Sistema/Chiaro/Scuro e **unità di misura**: peso kg/lb, distanza m/ft (vedi "Unità di misura") |
+| 10 | Pubblicazione | Percorso URL `/bodytracker/` sul sito personale (non è la cartella del repository; modificabile con `BT_BASE`) |
+| 11 | Lingua | Interfaccia solo in italiano per ora |
 
-Assunzioni da confermare (se non indicato altrimenti):
-- unità **kg**;
-- nome **BodyTracker**;
-- indirizzo di pubblicazione sul sito personale `/bodytracker/`: è il **percorso URL**, non la cartella del repository, ed è modificabile con `BT_BASE`;
-- interfaccia solo in italiano.
+Nome: **BodyTracker**.
 
 ## Scelte tecniche
 
@@ -58,7 +57,13 @@ interface Archivio {
   pianificazione: Record<GiornoSettimana, string | null>; // lun..dom -> id scheda
   eccezioni: Record<string, string | null>;               // YYYY-MM-DD -> id scheda (o riposo)
   sessioni: Sessione[];
-  impostazioni: { tema: 'sistema' | 'chiaro' | 'scuro'; recuperoPredefinito: number; suono: boolean; vibrazione: boolean };
+  impostazioni: {
+    tema: 'sistema' | 'chiaro' | 'scuro';
+    unitaPeso: 'kg' | 'lb';
+    unitaDistanza: 'm' | 'ft';
+    recuperoPredefinito: number;          // secondi
+    suono: boolean; vibrazione: boolean;
+  };
 }
 
 interface Scheda {
@@ -72,7 +77,9 @@ interface VoceScheda {
   gruppo: string | null;          // stessa stringa = superserie
   serie: number;                  // serie target
   ripetizioni: string;            // "6–8"
-  carico: string;                 // "45–50 kg", testo libero
+  caricoMin: number | null;       // kg, convertito in visualizzazione
+  caricoMax: number | null;       // kg; uguale a caricoMin se non è un intervallo
+  notaCarico: string;             // "da tarare"
   unita: string;                  // "per manubrio"
   recupero: number;               // secondi
   recuperoRiscaldamento: number;  // secondi
@@ -91,7 +98,8 @@ interface VoceSessione {
 interface Serie {
   id: string;
   tipo: 'normale' | 'riscaldamento' | 'drop' | 'cedimento';
-  kg: number | null; ripetizioni: number | null;
+  kg: number | null;                     // sempre in kg, anche se l'utente usa lb
+  ripetizioni: number | null;
   completata: number | null;             // timestamp della spunta
 }
 
@@ -102,6 +110,19 @@ interface TimerRecupero { sessioneId: string; voceId: string; serieId: string; i
 **Dati iniziali**
 - Il catalogo e le schede A/B del PoC (`esercizi.js`) vengono convertiti una volta in `src/data/catalogo.ts` e `src/data/schede-iniziali.ts`. Gli ID degli esercizi restano identici, perché il tuo storico li usa. Le eventuali immagini degli esercizi vanno in `public/esercizi/`.
 - I recuperi come "2′" o "60–75″" vengono convertiti in secondi: per un intervallo si usa il valore minimo (es. 60–75″ → 60 s), e la scheda resta modificabile.
+
+- Il carico di partenza del PoC (testo come "45–50 kg" o "40 kg, da tarare") viene diviso in `caricoMin`, `caricoMax` e `notaCarico`.
+
+## Unità di misura
+
+Costo basso, perché la regola è unica: **i dati si salvano sempre in unità metriche** (kg, metri) e si convertono solo in ingresso e in uscita.
+- `src/lib/unita.ts`: `daKg`/`aKg` e `daMetri`/`aMetri`, più la formattazione (`formattaPeso(kg, impostazioni)` → "135 lb"), con test.
+- **Peso (kg/lb):** campi serie, colonna "precedente", carichi delle schede, riepilogo, volume, record e grafici mostrano e accettano l'unità scelta.
+  - Il valore digitato viene convertito in kg **senza arrotondare** il dato salvato: 135 lb restano 135 lb quando rilette.
+  - L'arrotondamento è solo in visualizzazione: 0,25 kg / 0,5 lb.
+  - Cambiare unità non modifica nessun dato salvato.
+- **Distanza (m/ft):** l'impostazione e le funzioni di conversione esistono da subito, ma oggi **nessuna schermata usa distanze** (non ci sono esercizi cardio né misure corporee). Servirà quando verranno aggiunti esercizi a distanza (es. camminata con carico, vogatore); fino ad allora è l'unico punto senza effetto visibile, e la schermata Impostazioni lo dice.
+- Export ed import restano in kg/metri, indipendenti dall'unità mostrata.
 
 **Import del PoC**
 - Da file di backup, la funzione "Esporta" del PoC.
@@ -171,16 +192,17 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** detector a 0 su `/_kit` nei due temi, contrasti ≥ 4,5:1, target ≥ 44–48px.
 
 ### Step 2: Dati
-- `src/lib/archivio/`: tipi, validazione, repository (caricamento, salvataggio, revisione, quota, conflitto tra schede, evento di aggiornamento), seed dal PoC, conversione dei recuperi.
+- `src/lib/archivio/`: tipi, validazione, repository (caricamento, salvataggio, revisione, quota, conflitto tra schede, evento di aggiornamento), seed dal PoC, conversione dei recuperi e dei carichi.
+- `src/lib/unita.ts` (conversioni e formattazione di peso e distanza).
 - Import ed export v2, import del backup del PoC e lettura diretta della sua chiave.
 - Conversione di `BodyTracker/palestra/esercizi.js` in `src/data/` (catalogo e schede iniziali, stessi ID).
 - Rimozione del codice `bb-*` attuale.
-- **Verifica:** test Vitest su validazione, import del PoC (con un tuo backup reale, se me lo fornisci, oppure uno sintetico), conflitti e quota.
+- **Verifica:** test Vitest su validazione, import del PoC (con un tuo backup reale, se me lo fornisci, oppure uno sintetico), conflitti, quota e conversioni di unità (andata e ritorno senza perdita).
 
 ### Step 3: Guscio dell'app e PWA
 - Layout mobile con tab bar in basso (Oggi, Calendario, Schede, Storico) e accesso alle impostazioni; safe area; `ClientRouter`.
 - Manifest, icone, service worker con precache, registrazione con scope pari al percorso base, pagina offline non necessaria (tutto in precache).
-- Impostazioni: tema, recupero predefinito, suono e vibrazione, sezione Dati e privacy.
+- Impostazioni: tema (Sistema/Chiaro/Scuro, applicato prima del primo disegno per evitare il lampo di tema sbagliato), unità di peso e di distanza, recupero predefinito, suono e vibrazione, sezione Dati e privacy.
 - **Verifica:** Playwright offline (contesto senza rete dopo la prima visita), nessuna richiesta a domini esterni, build con `BT_BASE=/bodytracker/` funzionante.
 
 ### Step 4: Schede
@@ -201,7 +223,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 
 ### Step 6: Allenamento attivo
 - Elenco esercizi con target della scheda, selettore variante, approfondimento dal catalogo.
-- Righe serie `tipo/n · precedente · kg · rip · ✓`, aggiungi o rimuovi serie, note.
+- Righe serie `tipo/n · precedente · kg|lb · rip · ✓` (intestazione e valori nell'unità scelta), aggiungi o rimuovi serie, note.
 - Aggiungi esercizio durante la sessione; riordino.
 - Barra fissa con durata della sessione e stato del salvataggio; "Termina" con riepilogo; sessione riapribile dallo storico.
 - Mini-barra persistente (`transition:persist`) quando si naviga altrove.
