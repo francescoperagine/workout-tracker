@@ -125,6 +125,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 ## Convenzioni
 
 - **Si lavora sempre su `main`:** niente branch né pull request, anche se la sessione propone un branch di lavoro. Commit e push direttamente su `main` (`git push origin main`).
+- **Fine di uno step:** aggiorna `docs/restyling/HANDOFF.md` per lo step successivo e chiudi **sempre** il messaggio finale all'utente con il prompt di handoff completo, copiato da HANDOFF.md, pronto da incollare nella nuova conversazione.
 - **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
 - Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
 - Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showTabs={false}` e `showHeader={false}` solo sul primo avvio). `/kit` usa `Base`.
