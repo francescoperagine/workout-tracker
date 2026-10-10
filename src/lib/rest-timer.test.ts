@@ -197,15 +197,15 @@ describe('prossima serie (US-21)', () => {
   it('US-21 esercizio, serie e target della scheda', () => {
     const { archive, session } = withSession();
     const bench = session.exercises[1];
-    expect(nextSetText(archive, session, { exercise: bench, set: bench.sets[1] })).toBe('Panca piana bilanciere · serie 2 · 40\u00a0kg\u00a0×\u00a06–8');
+    expect(nextSetText(archive, session, { exercise: bench, set: bench.sets[1] })).toBe('Panca piana bilanciere ·\u00a0serie\u00a02 ·\u00a040\u00a0kg\u00a0×\u00a06–8');
   });
 
   it('US-21 i valori già scritti vincono sui target; senza peso restano le ripetizioni', () => {
     const { archive, session } = withSession((_, s) => Object.assign(s.exercises[1].sets[0], { kg: 42.5, reps: 7 }));
     const bench = session.exercises[1];
-    expect(nextSetText(archive, session, { exercise: bench, set: bench.sets[0] })).toBe('Panca piana bilanciere · serie 1 · 42,5\u00a0kg\u00a0×\u00a07');
+    expect(nextSetText(archive, session, { exercise: bench, set: bench.sets[0] })).toBe('Panca piana bilanciere ·\u00a0serie\u00a01 ·\u00a042,5\u00a0kg\u00a0×\u00a07');
     const free = exercise('x', [set('x1', false, { kg: null, reps: 12 })]);
-    expect(nextSetText(archive, { ...session, routineId: null, exercises: [free] }, { exercise: free, set: free.sets[0] })).toBe('Squat bilanciere · serie 1 · 12\u00a0rip');
+    expect(nextSetText(archive, { ...session, routineId: null, exercises: [free] }, { exercise: free, set: free.sets[0] })).toBe('Squat bilanciere ·\u00a0serie\u00a01 ·\u00a012\u00a0rip');
   });
 
   it('US-21 all’ultima serie non c’è una prossima', () => {
