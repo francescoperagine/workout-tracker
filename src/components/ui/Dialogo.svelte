@@ -41,6 +41,7 @@
 
 <style>
   .dialogo {
+    margin: auto;
     width: calc(100% - 2rem);
     max-width: 28rem;
     padding: 1.5rem;
@@ -70,6 +71,6 @@
     margin-top: 1.5rem;
   }
   .azioni > :global(*) {
-    flex: 1 1 8rem;
+    flex: 1 1 auto;
   }
 </style>

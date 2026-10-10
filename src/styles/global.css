@@ -86,6 +86,10 @@
     accent-color: var(--color-accento);
     scrollbar-color: var(--color-linea-forte) var(--color-fondo);
   }
+  :root {
+    /* altezza dello stack fisso in basso (tab bar, barra di salvataggio, timer ridotto): la imposta la pagina */
+    --altezza-barre-basse: 0px;
+  }
   :root[data-theme="chiaro"] {
     color-scheme: light;
   }
@@ -302,6 +306,50 @@
     color: var(--color-pericolo);
     font-size: 0.875rem;
     margin-top: 0.375rem;
+  }
+
+  /* Scelta singola in un elenco (variante, catalogo): riga intera toccabile con radio del tema */
+  .scelta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 48px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-linea-forte);
+    border-radius: var(--radius-campo);
+    cursor: pointer;
+  }
+  .scelta:has(:checked) {
+    border-color: var(--color-accento-testo);
+    background: var(--color-fatto);
+  }
+  .radio {
+    appearance: none;
+    flex-shrink: 0;
+    display: grid;
+    place-content: center;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    border: 1.5px solid var(--color-linea-forte);
+    border-radius: 50%;
+    background: var(--color-campo);
+    cursor: pointer;
+  }
+  .radio::before {
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-accento);
+    transform: scale(0);
+    transition: transform 0.15s var(--ease-uscita);
+  }
+  .radio:checked {
+    border-color: var(--color-accento);
+  }
+  .radio:checked::before {
+    transform: scale(1);
   }
 
   /* Pannello: un solo livello, mai annidato */

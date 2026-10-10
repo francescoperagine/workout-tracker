@@ -23,8 +23,8 @@
   <ul class="flex flex-col gap-2">
     {#each varianti as v (v)}
       <li>
-        <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-[var(--radius-campo)] border border-linea-forte px-3">
-          <input type="radio" name="variante" value={v} bind:group={variante} class="size-5" />
+        <label class="scelta">
+          <input type="radio" name="variante" value={v} bind:group={variante} class="radio" />
           {v}
         </label>
       </li>

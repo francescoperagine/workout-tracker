@@ -132,7 +132,7 @@
     min-height: 48px;
     text-align: left;
     color: var(--color-secondario);
-    font-size: clamp(0.875rem, 4vw, 1rem);
+    font-size: var(--text-base);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

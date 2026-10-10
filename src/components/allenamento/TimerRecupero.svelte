@@ -42,6 +42,7 @@
   const restanti = $derived(anteprima ?? Math.max(0, Math.ceil((fine - adesso) / 1000)));
   const frazione = $derived(anteprima !== null ? anteprima / durata : totale > 0 ? Math.min(1, restanti / totale) : 0);
   const vai = $derived(restanti === 0);
+  const finale = $derived(restanti > 0 && restanti <= 10);
 
   // Avvio e arresto
   $effect(() => {
@@ -110,7 +111,7 @@
 </script>
 
 {#snippet schermo()}
-  <div class="schermo" class:vai>
+  <div class="schermo" class:vai class:finale>
     <div class="livello" style:height={`${vai ? 0 : frazione * 100}%`} aria-hidden="true"></div>
     <div class="testa">
       <span>Recupero · {formattaDurata(durata)}</span>
@@ -119,7 +120,7 @@
       </button>
     </div>
     <div class="centro">
-      <p class="cifre-timer" aria-hidden="true">{vai ? 'Vai' : formattaDurata(restanti)}</p>
+      <p class="cifre-timer" class:lunghe={restanti >= 600} aria-hidden="true">{vai ? 'Vai' : formattaDurata(restanti)}</p>
       <p class="prossima">
         {#if prossima}
           <span class="etichetta-prossima">{vai ? 'Adesso' : 'Prossima'}</span>
@@ -225,7 +226,10 @@
     inset: auto 0 0;
     background: var(--color-livello);
     border-top: 4px solid var(--color-guscio-accento);
-    transition: height 0.4s var(--ease-uscita);
+  }
+  /* Ultimi 10 s: le cifre passano all'accento, preludio allo schermo lime di "Vai" */
+  .finale .cifre-timer {
+    color: var(--color-guscio-accento);
   }
   .schermo.vai {
     background: var(--color-guscio-accento);
@@ -257,11 +261,15 @@
   }
   .cifre-timer {
     margin: 0;
-    font-size: min(34cqw, 26cqh, 13rem);
+    /* "m:ss" largo circa l'80% dello schermo; "mm:ss" un passo sotto */
+    font-size: min(44cqw, 30cqh, 16rem);
     line-height: 1;
     font-weight: 650;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
+  }
+  .cifre-timer.lunghe {
+    font-size: min(35cqw, 30cqh, 13rem);
   }
   .prossima {
     margin: 0 auto;
@@ -329,7 +337,6 @@
     inset: 0 auto 0 0;
     background: var(--color-livello);
     border-top: 3px solid var(--color-guscio-accento);
-    transition: width 0.4s var(--ease-uscita);
   }
   .ridotto > :global(*:not(.barra-livello)) {
     position: relative;

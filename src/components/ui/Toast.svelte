@@ -38,7 +38,8 @@
 <style>
   .area {
     position: fixed;
-    inset: auto 0 calc(140px + env(safe-area-inset-bottom)) 0;
+    /* sopra le barre in basso della pagina, che ne dichiara l'altezza in --altezza-barre-basse */
+    inset: auto 0 calc(var(--altezza-barre-basse) + 0.75rem + env(safe-area-inset-bottom)) 0;
     z-index: 40;
     display: flex;
     justify-content: center;

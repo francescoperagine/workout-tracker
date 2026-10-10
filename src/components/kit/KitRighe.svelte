@@ -41,6 +41,11 @@
     queueMicrotask(() => (recupero = true));
   }
 
+  // Con il timer attivo lo stack in basso è tab bar (57px) più barra ridotta (56px): i toast salgono sopra
+  $effect(() => {
+    document.body.style.setProperty('--altezza-barre-basse', recupero ? '113px' : '57px');
+  });
+
   function aggiungiSerie() {
     const ultima = serie.at(-1);
     serie.push({ tipo: 'normale', precedente: null, kg: ultima?.kg ?? '', rip: '', fatta: false });
