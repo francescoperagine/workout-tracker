@@ -99,7 +99,7 @@ Quando porti una funzionalità dalla versione statica all'app Astro, usa questi 
 
 ## Restyling in corso
 
-È previsto un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi, ricerche e decisioni aperte sono in `docs/restyling/ANALISI.md`: leggilo prima di toccare la UI.
+È previsto un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi e ricerche sono in `docs/restyling/ANALISI.md`, il piano a step con le decisioni prese in `docs/restyling/PIANO.md`: leggili prima di toccare la UI.
 
 ## Note varie
 
