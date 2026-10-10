@@ -1,0 +1,53 @@
+---
+// Guscio dell'app (step 3): intestazione con l'accesso alle Impostazioni, contenuto che scorre e,
+// nella zona del pollice, lo stack fisso in basso: barra di salvataggio (solo quando c'è un problema)
+// e tab bar. La navigazione tra le pagine passa dal ClientRouter, che tiene caricati i moduli
+// (archivio compreso) e scambia solo il contenuto.
+import { ClientRouter } from 'astro:transitions';
+import Base from './Base.astro';
+import AppHeader from '../components/ui/AppHeader.astro';
+import TabBar, { type TabId } from '../components/ui/TabBar.astro';
+import ArchiveStatus from '../components/shell/ArchiveStatus.svelte';
+
+interface Props {
+  title: string;
+  /** titolo nell'intestazione, se diverso da quello del documento */
+  heading?: string;
+  subtitle?: string;
+  description?: string;
+  /** voce attiva della tab bar; nessuna nelle Impostazioni */
+  tab?: TabId;
+  /** false nelle schermate senza navigazione (primo avvio) */
+  showTabs?: boolean;
+  showHeader?: boolean;
+  showSettings?: boolean;
+}
+
+const { title, heading = title, subtitle, description, tab, showTabs = true, showHeader = true, showSettings = true } = Astro.props;
+
+// Altezza della tab bar (56px più il filo superiore), senza l'area sicura che la tab bar aggiunge da sé
+const TAB_BAR_HEIGHT = 57;
+const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
+---
+
+<Base title={`${title} · BodyTracker`} description={description} bodyStyle={`--bottom-bars-height: ${barsBelow}px`}>
+  <ClientRouter slot="head" />
+  {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} />}
+
+  <main class="mx-auto w-full max-w-2xl px-4 pt-6 pb-[calc(var(--bottom-bars-height)+env(safe-area-inset-bottom)+2rem)]">
+    <slot />
+  </main>
+
+  <div class="fixed inset-x-0 bottom-0 z-20" transition:animate="none">
+    <ArchiveStatus barsBelow={barsBelow} client:only="svelte" />
+    {showTabs && <TabBar active={tab} />}
+  </div>
+</Base>
+
+<script>
+  // Moduli: girano una volta per visita, anche con il ClientRouter
+  import { listenForInstallPrompt, registerServiceWorker } from '../lib/pwa';
+
+  listenForInstallPrompt();
+  registerServiceWorker();
+</script>

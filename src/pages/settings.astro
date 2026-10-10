@@ -1,0 +1,9 @@
+---
+// Impostazioni e Dati e privacy (brief .impeccable/surfaces/route-settings.md).
+import AppLayout from '../layouts/AppLayout.astro';
+import SettingsPage from '../components/settings/SettingsPage.svelte';
+---
+
+<AppLayout title="Impostazioni" showSettings={false}>
+  <SettingsPage client:only="svelte" />
+</AppLayout>

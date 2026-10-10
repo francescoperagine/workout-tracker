@@ -1,15 +1,18 @@
 ---
 // Documento di base di ogni pagina: lingua, meta, font, token e tema applicato prima del primo disegno.
 import { themeBootScript } from '../lib/theme';
+import { appUrl } from '../lib/paths';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   bodyClass?: string;
+  /** stile in linea del body (es. variabili CSS della pagina) */
+  bodyStyle?: string;
 }
 
-const { title, description = 'Diario di allenamento privato: i dati restano su questo dispositivo.', bodyClass } = Astro.props;
+const { title, description = 'Diario di allenamento privato: i dati restano su questo dispositivo.', bodyClass, bodyStyle } = Astro.props;
 
 // Unico script inline ammesso: deve girare prima del CSS per evitare il lampo del tema sbagliato.
 const themeScript = themeBootScript();
@@ -25,13 +28,20 @@ const themeScript = themeBootScript();
     <meta name="robots" content="noindex, nofollow" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#142321" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={appUrl('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={appUrl('/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={appUrl('/manifest.webmanifest')} />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="BodyTracker" />
+    <!-- Installata su iOS: la barra di stato è trasparente sopra il guscio verde, l'intestazione rispetta l'area sicura -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>{title}</title>
     <script is:inline set:html={themeScript} />
-    <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={appUrl('/fonts/atkinson-hyperlegible-next-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
     <meta name="generator" content={Astro.generator} />
   </head>
-  <body class={bodyClass}>
+  <body class={bodyClass} style={bodyStyle}>
     <slot />
   </body>
 </html>

@@ -5,6 +5,10 @@ import { defineConfig, devices } from '@playwright/test';
 // nel container cloud) invece di quella scaricata con `npx playwright install chromium`.
 const executablePath = process.env.PW_CHROMIUM_PATH || undefined;
 const port = 4322;
+// Con BT_BASE=/bodytracker/ la suite gira sulla build pubblicata in un percorso del sito: i test usano
+// percorsi relativi ('settings/'), risolti rispetto a baseURL, mai assoluti ('/settings').
+const rawBase = process.env.BT_BASE || '/';
+const base = `/${rawBase.replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -13,10 +17,12 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: `http://localhost:${port}`,
+    baseURL: `http://localhost:${port}${base}`,
     locale: 'it-IT',
     timezoneId: 'Europe/Rome',
     trace: 'retain-on-failure',
+    // Il service worker resta fuori dai test, tranne in quelli della PWA (US-03) che lo riattivano
+    serviceWorkers: 'block',
     launchOptions: { executablePath },
   },
   projects: [
@@ -27,7 +33,7 @@ export default defineConfig({
   webServer: {
     // --ignore-lock: tiene il server in primo piano anche quando Astro lo manderebbe in background (es. sotto un agente)
     command: `npm run build && npx astro preview --port ${port} --ignore-lock`,
-    url: `http://localhost:${port}`,
+    url: `http://localhost:${port}${base}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  export type SaveBarStatus = 'saved' | 'saving' | 'unsaved' | 'conflict';
+  export type SaveBarStatus = 'saved' | 'saving' | 'unsaved' | 'conflict' | 'unreadable';
 </script>
 
 <script lang="ts">
@@ -14,7 +14,7 @@
     status: SaveBarStatus;
     onsavenow?: () => void;
     onreload?: () => void;
-    /** azione principale a destra (es. "Termina") */
+    /** azione principale a destra (es. "Termina"); con `unreadable` è il rimando al recupero dei dati */
     action?: Snippet;
   }
 
@@ -25,10 +25,11 @@
     saving: 'Salvataggio…',
     unsaved: 'Non salvato: spazio esaurito. I dati restano in questa pagina.',
     conflict: 'Il diario è cambiato in un’altra scheda. Ricarica per non sovrascriverlo.',
+    unreadable: 'Il diario salvato non è leggibile. Non è stato sovrascritto: recuperalo da Dati e privacy.',
   };
 </script>
 
-<div class="shell bar" class:problem={status === 'unsaved' || status === 'conflict'}>
+<div class="shell bar" class:problem={status === 'unsaved' || status === 'conflict' || status === 'unreadable'}>
   <p class="status" role="status" aria-live="polite">
     {#if status === 'saved'}
       <Check size={18} aria-hidden="true" class="icon-ok" />

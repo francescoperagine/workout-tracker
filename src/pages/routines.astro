@@ -1,0 +1,12 @@
+---
+// Schede: segnaposto dello step 3, perché la tab bar porti già a una pagina vera. La sostituisce lo step 4 del piano.
+import AppLayout from '../layouts/AppLayout.astro';
+import EmptyState from '../components/ui/EmptyState.astro';
+import ClipboardList from '@lucide/astro/icons/clipboard-list';
+---
+
+<AppLayout title="Schede" tab="routines">
+  <EmptyState title="In arrivo: le schede" text="Qui creerai e modificherai le schede: esercizi, serie, ripetizioni, carichi, recuperi, alternative e superserie.">
+    <ClipboardList slot="icon" size={28} />
+  </EmptyState>
+</AppLayout>

@@ -1,6 +1,6 @@
 ---
 // Pagina interna del design system: tutti i componenti base nei due temi.
-// Fuori dalla navigazione, noindex; da escludere dal precache allo step 3. ?theme=light|dark forza il tema.
+// Fuori dalla navigazione, noindex, escluso dal precache del service worker. ?theme=light|dark forza il tema.
 import Base from '../layouts/Base.astro';
 import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar from '../components/ui/TabBar.astro';
@@ -11,6 +11,8 @@ import KitSetRows from '../components/kit/KitSetRows.svelte';
 import KitSaveBars from '../components/kit/KitSaveBars.svelte';
 import KitOverlays from '../components/kit/KitOverlays.svelte';
 import SegmentedControl from '../components/ui/SegmentedControl.svelte';
+import KitControls from '../components/kit/KitControls.svelte';
+import { appUrl } from '../lib/paths';
 import Plus from '@lucide/astro/icons/plus';
 import Trash from '@lucide/astro/icons/trash';
 import Dumbbell from '@lucide/astro/icons/dumbbell';
@@ -135,6 +137,7 @@ const weightUnits = [
         </select>
       </div>
       <SegmentedControl name="weight-unit" label="Unità di peso" options={weightUnits} value="kg" client:load />
+      <KitControls client:load />
     </section>
 
     <section aria-labelledby="s-sets" class="flex flex-col gap-3">
@@ -172,7 +175,7 @@ const weightUnits = [
       <div class="panel">
         <EmptyState title="Nessuna sessione ancora" text="Le sessioni concluse compaiono qui, dalla più recente. Inizia dalla scheda di oggi.">
           <Inbox slot="icon" size={28} />
-          <a href="/" class="btn btn-primary"><Dumbbell aria-hidden="true" />Vai a Oggi</a>
+          <a href={appUrl('/')} class="btn btn-primary"><Dumbbell aria-hidden="true" />Vai a Oggi</a>
         </EmptyState>
       </div>
     </section>

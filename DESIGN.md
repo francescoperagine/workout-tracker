@@ -212,6 +212,19 @@ components:
   set-check-done:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.on-accent}"
+  switch:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.line-strong}"
+    rounded: "16px"
+    width: "52px"
+    height: "32px"
+  switch-checked:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.on-accent}"
+  stepper-value:
+    textColor: "{colors.foreground}"
+    typography: "{typography.digits}"
+    height: "48px"
   segmented:
     backgroundColor: "{colors.field}"
     rounded: "{rounded.panel}"
@@ -448,7 +461,9 @@ Diretti e pieni di peso, con il verbo dell'azione nel testo.
 - **Focus:** il bordo passa a `accent-text` e l'anello di 3px si stringe a 1px di distanza.
 - **Error:** bordo `danger` con `aria-invalid`, messaggio in `danger` che dice come correggere.
 - **Righe di scelta:** riga intera toccabile da 48px con bordo `line-strong` e radio del tema da 22px; selezionata, bordo `accent-text` e fondo `done`.
-- **Controllo segmentato:** binario `field` con bordo `line-strong`, angoli da 12px e 4px di imbottitura; segmenti da 48px, testo `muted` peso 600; il segmento scelto è pieno di `accent` con testo `on-accent`. Per poche opzioni sempre visibili (tema, unità).
+- **Controllo segmentato:** binario `field` con bordo `line-strong`, angoli da 12px e 4px di imbottitura; segmenti da 48px, testo `muted` peso 600; il segmento scelto è pieno di `accent` con testo `on-accent`. Per poche opzioni sempre visibili (tema, unità). Sta direttamente sul fondo, mai dentro un pannello: il binario è già un contenitore.
+- **Interruttore:** per le preferenze sì/no (suono, vibrazione). Riga intera toccabile da 48px con etichetta (peso 600) ed eventuale spiegazione `muted` a 14px a sinistra; a destra un binario da 52×32px con bordo 1.5px `line-strong` su `field` e un pomello `line-strong` da 23px. Acceso: binario e bordo `accent`, pomello `on-accent` spostato a destra (0.2s, curva di uscita). Disattivato: opacità 0.45, con la spiegazione del perché nella riga. È una checkbox nativa con `role="switch"`.
+- **Valore a passi:** per valori che si regolano a passi fissi e che il tastierino numerico non sa scrivere (il recupero "1:30" ha i due punti). Etichetta sopra, poi tre colonne: pulsante secondario "−15 s", il valore in cifre (600, 1.375rem) centrato, pulsante secondario "+15 s". Ai limiti il pulsante si disattiva. Il valore è annunciato con cortesia, a parole per gli screen reader ("1 minuto e 30 secondi").
 
 ### Riga serie
 L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · precedente · kg · rip · spunta, alta 56px.
@@ -500,7 +515,7 @@ Lo schermo è la clessidra.
 - **Do** far avanzare il livello del timer a scatti di un secondo.
 
 ### Don't:
-- **Don't** usare la palette predefinita di Tailwind (`gray-*`, `blue-*`, `green-*`, `red-*`) nel codice nuovo. La grafica vecchia (pagine `index`, `workout`, `about`, `Layout.astro`, le classi `.container` e `.input` in `global.css`) la usa ancora ed è fuori ambito finché non viene sostituita.
+- **Don't** usare la palette predefinita di Tailwind (`gray-*`, `blue-*`, `green-*`, `red-*`). La grafica vecchia che la usava è stata rimossa allo step 3.
 - **Don't** schiarire il guscio nel tema chiaro né usare token di contenuto per intestazione, barre, avvisi o timer.
 - **Don't** aggiungere ombre: l'unica è quella dell'avviso.
 - **Don't** annidare pannelli dentro pannelli.

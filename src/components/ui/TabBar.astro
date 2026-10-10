@@ -4,6 +4,7 @@ import House from '@lucide/astro/icons/house';
 import CalendarDays from '@lucide/astro/icons/calendar-days';
 import ClipboardList from '@lucide/astro/icons/clipboard-list';
 import History from '@lucide/astro/icons/rotate-ccw-clock';
+import { appUrl } from '../../lib/paths';
 
 export type TabId = 'today' | 'calendar' | 'routines' | 'history';
 
@@ -14,14 +15,14 @@ interface Props {
 const { active } = Astro.props;
 
 const tabs = [
-  { id: 'today', label: 'Oggi', href: '/', Icon: House },
-  { id: 'calendar', label: 'Calendario', href: '/calendar', Icon: CalendarDays },
-  { id: 'routines', label: 'Schede', href: '/routines', Icon: ClipboardList },
-  { id: 'history', label: 'Storico', href: '/history', Icon: History },
+  { id: 'today', label: 'Oggi', href: appUrl('/'), Icon: House },
+  { id: 'calendar', label: 'Calendario', href: appUrl('/calendar'), Icon: CalendarDays },
+  { id: 'routines', label: 'Schede', href: appUrl('/routines'), Icon: ClipboardList },
+  { id: 'history', label: 'Storico', href: appUrl('/history'), Icon: History },
 ] as const;
 ---
 
-<nav class="shell border-t border-shell-line pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
+<nav transition:animate="none" class="shell border-t border-shell-line pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
   <ul class="mx-auto grid max-w-2xl grid-cols-4">
     {
       tabs.map(({ id, label, href, Icon }) => (

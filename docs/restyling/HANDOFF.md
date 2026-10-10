@@ -1,33 +1,32 @@
-# Handoff: restyling BodyTracker, partenza dallo step 3
+# Handoff: restyling BodyTracker, partenza dallo step 4
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 3 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 4 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief delle superfici dello step 3. Esegui lo **step 3** del piano (guscio dell'app con tab bar e `ClientRouter`, PWA con manifest e service worker, percorso base `BT_BASE`, Impostazioni con tema, unità, recupero, suono e vibrazione, Dati e privacy con export, import v2 e del PoC, primo avvio `/welcome`), usando l'archivio v2 dello step 2, con test e2e nominati con l'ID della storia. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e il brief `.impeccable/surfaces/route-routines.md`. Esegui lo **step 4** del piano (Schede: elenco con crea, duplica, rinomina, riordina, archivia, elimina con conferma; editor con esercizi dal catalogo o personalizzati, serie, ripetizioni, carico nell'unità scelta, recupero e recupero di riscaldamento, alternative, superserie, riordino accessibile), usando l'archivio v2 e il guscio dello step 3, con test e2e nominati con l'ID della storia. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
 
-## Stato a fine step 2 (10 ottobre 2026)
+## Stato a fine step 3 (10 ottobre 2026)
 
-Tutto è su `main`.
+Tutto è su `main`. Decisioni dello step 3 nello "Stato" dello step 3 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
 
-- **US-11 deciso dall'utente:** su Oggi la scheda suggerita è **già selezionata**; "Inizia allenamento" parte con 1 tocco, toccare un'altra riga la seleziona (2 tocchi), non avvia. Registrato in USER-STORIES.md, nel brief `route.md` e in BRIEF.md §4.
-- **Step 1** (design system, `/kit`, temi): invariato, vedi PIANO.md.
-- **Codice in inglese** (richiesta dell'utente dopo lo step 2): file, cartelle, route, identificatori, campi del modello dati, chiavi di storage, token e classi CSS sono in inglese; i testi per l'utente, i commenti, la documentazione e gli ID degli esercizi del PoC restano in italiano. Regola in `AGENTS.md`, "Lingua".
-- **Step 2 (dati):** fatto. Moduli e chiavi in `AGENTS.md`; decisioni nello "Stato" dello step 2 in PIANO.md. In breve:
-  - `src/lib/archive/`: modello v2, validazione, `ArchiveRepository` (revisione, quota, archivio illeggibile, conflitto tra schede, `subscribe`), catalogo con esercizi personalizzati (US-14), `quickStart` (US-11), conversione del PoC, import del PoC, export/import v2 con anteprima e unione;
-  - `src/lib/units.ts`; `src/data/catalog.ts` e `starter-routines.ts` (ID del PoC invariati, test di parità con `esercizi.js`);
-  - 135 test Vitest verdi (anche con fusi orari diversi), `astro check` e build verdi, e2e invariati e verdi.
-- **Non ancora usato da nessuna pagina:** l'archivio v2 entra nell'interfaccia dallo step 3. Le pagine vecchie usano ancora `bb-*`.
+- **Guscio:** `src/layouts/AppLayout.astro` (ClientRouter, `AppHeader`, `TabBar`, `ArchiveStatus` che mostra la barra di salvataggio solo con un problema). Ogni pagina nuova usa `AppLayout` con `tab="routines"` ecc.
+- **Percorso base:** ogni link passa da `appUrl()` (`src/lib/paths.ts`), con la barra finale per le pagine. I test usano percorsi relativi.
+- **Archivio nelle isole:** `archiveStore()` di `src/lib/archive-store.svelte.ts` (`archive`, `state`, `isNew` reattivi; `update`; `repo`). Isole che leggono l'archivio: `client:only="svelte"`.
+- **PWA:** service worker generato alla build (`src/integrations/service-worker.ts`), manifest in `src/pages/manifest.webmanifest.ts`, icone in `public/icons/` (`node scripts/make-icons.mjs`).
+- **Componenti nuovi:** `Switch`, `Stepper` (valore a passi, da riusare per i recuperi della scheda), `SaveBar` con lo stato `unreadable`, `ImportFlow`. Formattazione dei testi in `src/lib/format.ts` (`formatDuration` "1:30", `plural`, `formatPeriod`).
+- **Segnaposto:** `/routines` (step 4), `/calendar` (step 5), `/history` (step 8) sono stati vuoti; Oggi (`/`) fa solo il rimando a `/welcome` e conferma il diario (step 5).
+- **App vecchia `bb-*` rimossa.**
+- Verifica: 82 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 147 Vitest, `astro check` pulito, detector a 0.
 
-## Step 3 in dettaglio: guscio e PWA
+## Step 4 in dettaglio: Schede
 
-- Storie: US-01, US-02 (interfaccia), US-03, US-30, US-31, US-32, US-33. Brief: `route-welcome`, `route-settings` e il guscio (vedi BRIEF.md).
-- **Archivio nell'interfaccia:** `sharedArchive()` una volta per pagina; `requestPersistence()` all'avvio; `SaveBar` collegata a `repo.state`/`repo.message` con "Salva ora" (`repo.saveNow()`); stato `unreadable` → download di `repo.originalContent` e import; stato `conflict` → messaggio in linea e "Ricarica" (`repo.reload()`). `SaveBar` ha gli stati `saved`, `saving`, `unsaved`, `conflict`.
-- **Primo avvio:** `repo.isNew` indica che non c'è ancora un archivio. "Inizia con le schede di esempio" = `repo.update(withStarterRoutines)`; "Parti da zero" = salvataggio dell'archivio vuoto. Da qui anche l'import del PoC.
-- **Import:** `checkSize(file.size)`, `readBackup(text, repo.archive)`, `previewImport` (numero di allenamenti, periodo, nuovi e già presenti, scartati con il motivo, avvisi), scelta "mantieni"/"sostituisci" (`keep`/`replace`), `mergeImport`, `repo.replace`. Lettura diretta del PoC: `readPocKey()` sulla stessa origine. Per l'e2e c'è `tests/fixtures/synthetic-poc-backup.json`.
-- **Export:** `exportArchive(repo.archive)` con `backupFileName()`.
-- **Unità e impostazioni:** `repo.update(a => ({ ...a, settings: { ... } }))`; il tema resta in `src/lib/theme.ts`. La distanza non ha ancora effetti visibili e le Impostazioni lo dicono.
-- **Codice `bb-*`:** si rimuove con l'ultima pagina vecchia sostituita (step 3–6), aggiornando lo smoke test.
+- Storie: US-07, US-08, US-09, US-10. Brief: `route-routines` (elenco `/routines`, editor `/routine?id=`; route in query string perché il sito è statico).
+- **Dati:** schede in `archive.routines` (`Routine`, `RoutineExercise` in `src/lib/archive/types.ts`); carichi in kg (`loadMin`, `loadMax`, `loadNote`, `unit`), mostrati e accettati nell'unità scelta con `src/lib/units.ts`; recuperi in secondi (`Stepper` + `formatDuration`). Superserie: stessa stringa in `group`. Alternative: id di esercizi.
+- **Catalogo:** `suggestExercises` per la ricerca (foglio dal basso), `ensureExercise` per un nome libero (US-14).
+- **Vincoli:** eliminare una scheda con sessioni non si può (si archivia, US-10); limiti in `LIMITS` (200 schede, 100 voci, 20 alternative).
+- **Verifica del piano:** e2e "crea scheda C con superserie e la ritrovi dopo il ricaricamento"; le schede A/B del PoC si devono poter ricreare identiche nell'editor.
+- **Invito all'installazione dopo il primo allenamento concluso (US-03):** non è dello step 4: va nel riepilogo dello step 6.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -47,10 +46,13 @@ Tutto è su `main`.
   PUPPETEER_EXECUTABLE_PATH=/tmp/chromium-nosandbox npx impeccable detect http://localhost:4321/kit
   ```
   Per il tema chiaro e scuro, ripetere con `/kit?theme=light` e `/kit?theme=dark`.
-- **Playwright:** installato anche globalmente (`$(npm root -g)/playwright`, 1.56), con Chromium in `/opt/pw-browsers`. Il progetto usa `@playwright/test` 1.64: lanciare gli e2e con `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e`. Non eseguire `playwright install`.
+- **Playwright:** installato anche globalmente (`$(npm root -g)/playwright`, 1.56), con Chromium in `/opt/pw-browsers`. Il progetto usa `@playwright/test` 1.64: lanciare gli e2e con `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e` (e di nuovo con `BT_BASE=/bodytracker/` davanti). Non eseguire `playwright install`. Per script di screenshot fuori dal repository: `NODE_PATH=$PWD/node_modules node script.cjs` (CommonJS, perché `NODE_PATH` non vale per gli ESM).
 - **Chiusura dei server:** se serve `pkill`, non usare `pkill -f "astro preview"`: il pattern corrisponde anche alla shell che esegue il comando e la termina. Usare `pkill -f "[a]stro preview"`, **da solo** nel comando: se nella stessa riga compare anche il testo `astro preview` (es. `npx astro preview stop; pkill …`), la shell viene terminata lo stesso.
 - **Avviso noto di `astro check`:** un hint su `BodyTracker/palestra/app.js` (`returnValue` deprecato). Va ignorato: il file sparirà allo step 9.
-- **Detector su `src/`:** segnala un `side-tab` (`border-l-4`) in `src/pages/about.astro`: è la grafica vecchia e sparirà con il restyling. I componenti nuovi e `/kit` sono a 0.
+- **Detector:** a 0 su `src/` e sulle pagine renderizzate (`/welcome`, `/settings`, `/calendar`, `/kit` nei due temi). Sulle pagine senza archivio `/` porta a `/welcome`: per controllare Oggi serve un archivio nel browser.
+- **Isole e build:** il rendering alla build esegue anche le isole `client:load`; se leggono l'archivio all'avvio la build fallisce ("L’archivio è disponibile solo nel browser"). Usare `client:only="svelte"` o leggere l'archivio in `onMount`.
+- **Detector e larghezza:** il detector misura le pagine a larghezza desktop: righe oltre 80 caratteri e controlli con bordo dentro un `.panel` (nested cards) compaiono lì e non a 390px.
+- **Rumore del proxy:** durante i test Chromium prova a contattare `accounts.google.com` e `android.clients.google.com` (servizi del browser, non dell'app): il proxy li rifiuta, non c'entra con il controllo "nessuna richiesta esterna" di US-03, che guarda solo le richieste della pagina.
 - **Lucide 1.x:** alcune icone hanno cambiato nome; il pacchetto Astro non ha gli alias. Esempi: `trash-2` → `trash`, `history` → `rotate-ccw-clock`. Controllare in `node_modules/@lucide/astro/src/icons/`.
 - **`light-dark()` nei token:** il valore si risolve dove il token viene usato, secondo il `color-scheme` di quell'elemento. Per questo dentro `.shell` (che dichiara `color-scheme: dark`) i token di contenuto danno la variante scura. Tailwind lascia `light-dark()` nativo nel CSS generato.
 - **Playwright e anteprime:** un elemento `inert` viene comunque trovato da `getByRole`; nelle anteprime di `/kit` i controlli finti sono `div`, non `button`. Per l'overlay del timer usare `page.locator('dialog[open]')`.

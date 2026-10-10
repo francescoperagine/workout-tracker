@@ -1,45 +1,9 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import WeeklyCalendar from '../components/WeeklyCalendar.astro';
-import WorkoutEditor from '../components/WorkoutEditor.astro';
-import CalendarConfig from '../components/CalendarConfig.astro';
-import HistoryView from '../components/HistoryView.astro';
+// Oggi (route "/"): la schermata di apertura e la prima voce della tab bar.
+import AppLayout from '../layouts/AppLayout.astro';
+import Today from '../components/today/Today.svelte';
 ---
 
-<Layout
-  title="BodyTracker — Allenamenti"
-  description="Traccia i tuoi allenamenti, monitora i progressi e raggiungi i tuoi obiettivi fitness"
->
-  <div class="space-y-6">
-    <!-- Welcome Section -->
-    <div class="bg-white p-6 rounded-2xl shadow-lg">
-      <div class="mb-4">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">I Tuoi Allenamenti</h1>
-        <p class="text-gray-600">
-          Gestisci e monitora i tuoi allenamenti quotidiani
-        </p>
-      </div>
-    </div>
-
-    <!-- Weekly Calendar -->
-    <section id="calendario">
-      <WeeklyCalendar />
-    </section>
-
-    <!-- Configuration and Quick Editor -->
-    <section class="grid md:grid-cols-2 gap-6" id="allenamenti">
-      <div>
-        <CalendarConfig />
-      </div>
-
-      <div>
-        <WorkoutEditor />
-      </div>
-    </section>
-
-    <!-- History View -->
-    <section id="storico">
-      <HistoryView />
-    </section>
-  </div>
-</Layout>
+<AppLayout title="Oggi" tab="today">
+  <Today client:only="svelte" />
+</AppLayout>

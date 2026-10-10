@@ -26,10 +26,14 @@ export const DEFAULT_THEME: Theme = 'system';
 export const THEMES = Object.keys(THEME_REGISTRY) as Theme[];
 export const THEME_LABELS = Object.fromEntries(THEMES.map((t) => [t, THEME_REGISTRY[t].label])) as Record<Theme, string>;
 
-/** Script inline di Base.astro: applica il tema salvato prima del primo disegno, solo se è nel registro. */
+/**
+ * Script inline di Base.astro: applica il tema salvato prima del primo disegno, solo se è nel registro.
+ * Con il ClientRouter lo script in <head> gira una volta sola e la navigazione sostituisce gli attributi
+ * di <html>: per questo il tema viene applicato anche al documento nuovo prima dello scambio.
+ */
 export function themeBootScript(): string {
   const allowed = THEMES.filter((t) => t !== DEFAULT_THEME);
-  return `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(${JSON.stringify(allowed)}.indexOf(t)>-1)document.documentElement.dataset.theme=t}catch(e){}`;
+  return `(function(){function a(d){try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(${JSON.stringify(allowed)}.indexOf(t)>-1)d.documentElement.dataset.theme=t}catch(e){}}a(document);document.addEventListener('astro:before-swap',function(e){a(e.newDocument)})})()`;
 }
 
 export function isTheme(value: unknown): value is Theme {

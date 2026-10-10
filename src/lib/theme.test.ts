@@ -66,4 +66,17 @@ describe('registro dei temi', () => {
     expect(script).toContain('["light","dark"]');
     expect(script).not.toContain('system');
   });
+
+  it('lo script inline riapplica il tema al documento nuovo della navigazione (ClientRouter)', async () => {
+    const { themeBootScript } = await import('./theme');
+    const listeners: Record<string, (e: unknown) => void> = {};
+    const doc = () => ({ documentElement: { dataset: {} as Record<string, string> } });
+    const current = { ...doc(), addEventListener: (type: string, fn: (e: unknown) => void) => (listeners[type] = fn) };
+    const storage = { getItem: () => 'dark' };
+    new Function('document', 'localStorage', themeBootScript())(current, storage);
+    expect(current.documentElement.dataset.theme).toBe('dark');
+    const next = doc();
+    listeners['astro:before-swap']({ newDocument: next });
+    expect(next.documentElement.dataset.theme).toBe('dark');
+  });
 });

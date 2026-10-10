@@ -1,6 +1,7 @@
 ---
 // Intestazione del guscio: titolo della schermata, riga di stato e accesso alle Impostazioni.
 import SlidersHorizontal from '@lucide/astro/icons/sliders-horizontal';
+import { appUrl } from '../../lib/paths';
 
 interface Props {
   title: string;
@@ -12,7 +13,7 @@ interface Props {
 const { title, subtitle, showSettings = true } = Astro.props;
 ---
 
-<header class="shell sticky top-0 z-20 border-b border-shell-line pt-[env(safe-area-inset-top)]">
+<header transition:animate="none" class="shell sticky top-0 z-20 border-b border-shell-line pt-[env(safe-area-inset-top)]">
   <div class="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4">
     <div class="min-w-0 py-2">
       <h1 class="truncate text-lg leading-tight font-bold">{title}</h1>
@@ -22,7 +23,7 @@ const { title, subtitle, showSettings = true } = Astro.props;
       <slot name="actions" />
       {
         showSettings && (
-          <a href="/settings" class="btn btn-icon" aria-label="Impostazioni">
+          <a href={appUrl('/settings')} class="btn btn-icon" aria-label="Impostazioni">
             <SlidersHorizontal size={22} aria-hidden="true" />
           </a>
         )

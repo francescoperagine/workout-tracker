@@ -1,0 +1,40 @@
+---
+// Primo avvio (US-01): cosa fa l'app, dove sono i dati, come iniziare. Una schermata, non un carosello;
+// Oggi la mostra una sola volta, quando nel browser non c'è ancora un archivio.
+import AppLayout from '../layouts/AppLayout.astro';
+import WelcomeActions from '../components/welcome/WelcomeActions.svelte';
+import Smartphone from '@lucide/astro/icons/smartphone';
+import WifiOff from '@lucide/astro/icons/wifi-off';
+import { appUrl } from '../lib/paths';
+---
+
+<AppLayout title="Benvenuto" showTabs={false} showHeader={false}>
+  <div class="flex min-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-8 pt-[env(safe-area-inset-top)]">
+    <div class="flex flex-col gap-5">
+      <h1 class="flex items-center gap-3 text-page-title font-bold">
+        <img src={appUrl('/favicon.svg')} alt="" width="40" height="40" class="rounded-[var(--radius-field)]" />
+        BodyTracker
+      </h1>
+      <p class="m-0 max-w-[60ch] text-lg">
+        Il diario per la sala pesi: schede della settimana, serie con la volta scorsa sempre in vista, recupero con il
+        timer, progressi per esercizio.
+      </p>
+      <ul class="m-0 flex list-none flex-col gap-3 p-0">
+        <li class="flex gap-3">
+          <Smartphone size={22} class="mt-0.5 shrink-0 text-accent-text" aria-hidden="true" />
+          <span>I dati restano su questo dispositivo: nessun account, niente viene inviato a un server.</span>
+        </li>
+        <li class="flex gap-3">
+          <WifiOff size={22} class="mt-0.5 shrink-0 text-accent-text" aria-hidden="true" />
+          <span>Dopo la prima apertura funziona anche senza rete.</span>
+        </li>
+      </ul>
+      <a href={appUrl('/settings#data')} class="self-start">Come sono conservati i dati</a>
+    </div>
+
+    <!-- Azioni sempre nella zona del pollice: a 320×568 scorre solo il testo sopra -->
+    <div class="sticky bottom-0 mt-auto -mb-8 bg-background pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <WelcomeActions client:load />
+    </div>
+  </div>
+</AppLayout>

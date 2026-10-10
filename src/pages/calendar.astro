@@ -1,0 +1,12 @@
+---
+// Calendario: segnaposto dello step 3, perché la tab bar porti già a una pagina vera. La sostituisce lo step 5 del piano.
+import AppLayout from '../layouts/AppLayout.astro';
+import EmptyState from '../components/ui/EmptyState.astro';
+import CalendarDays from '@lucide/astro/icons/calendar-days';
+---
+
+<AppLayout title="Calendario" tab="calendar">
+  <EmptyState title="In arrivo: il calendario" text="Qui assegnerai una scheda a ogni giorno della settimana, con le eccezioni per un singolo giorno, e vedrai a colpo d’occhio cosa hai fatto.">
+    <CalendarDays slot="icon" size={28} />
+  </EmptyState>
+</AppLayout>
