@@ -1,252 +1,1210 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-02T15:55:26.250298+00:00",
+  "generatedAt": "2026-10-10T13:21:51+00:00",
   "title": "Design System: BodyTracker",
   "extensions": {
     "colorMeta": {
       "fondo": {
         "role": "neutral",
-        "displayName": "Fondo",
+        "displayName": "Salvia pallido / Verde notte",
+        "canonical": "light-dark(#eef2ec, #142321)",
+        "light": "#eef2ec",
+        "dark": "#142321",
         "tonalRamp": [
-          "oklch(15% 0.0209 185.43)",
-          "oklch(26% 0.0209 185.43)",
-          "oklch(38% 0.0209 185.43)",
-          "oklch(49% 0.0209 185.43)",
-          "oklch(61% 0.0209 185.43)",
-          "oklch(72% 0.0209 185.43)",
-          "oklch(84% 0.0209 185.43)",
-          "oklch(95% 0.0209 185.43)"
+          "oklch(15% 0.009 135)",
+          "oklch(26% 0.009 135)",
+          "oklch(38% 0.009 135)",
+          "oklch(49% 0.009 135)",
+          "oklch(61% 0.009 135)",
+          "oklch(72% 0.009 135)",
+          "oklch(84% 0.009 135)",
+          "oklch(95% 0.009 135)"
         ]
       },
       "superficie": {
         "role": "neutral",
-        "displayName": "Superficie",
+        "displayName": "Bianco / Verde pannello",
+        "canonical": "light-dark(#ffffff, #1e302d)",
+        "light": "#ffffff",
+        "dark": "#1e302d",
         "tonalRamp": [
-          "oklch(15% 0.0243 183.07)",
-          "oklch(26% 0.0243 183.07)",
-          "oklch(38% 0.0243 183.07)",
-          "oklch(49% 0.0243 183.07)",
-          "oklch(61% 0.0243 183.07)",
-          "oklch(72% 0.0243 183.07)",
-          "oklch(84% 0.0243 183.07)",
-          "oklch(95% 0.0243 183.07)"
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
         ]
       },
       "campo": {
         "role": "neutral",
         "displayName": "Campo",
+        "canonical": "light-dark(#f7f9f5, #142321)",
+        "light": "#f7f9f5",
+        "dark": "#142321",
         "tonalRamp": [
-          "oklch(15% 0.0209 185.43)",
-          "oklch(26% 0.0209 185.43)",
-          "oklch(38% 0.0209 185.43)",
-          "oklch(49% 0.0209 185.43)",
-          "oklch(61% 0.0209 185.43)",
-          "oklch(72% 0.0209 185.43)",
-          "oklch(84% 0.0209 185.43)",
-          "oklch(95% 0.0209 185.43)"
+          "oklch(15% 0.006 129)",
+          "oklch(26% 0.006 129)",
+          "oklch(38% 0.006 129)",
+          "oklch(49% 0.006 129)",
+          "oklch(61% 0.006 129)",
+          "oklch(72% 0.006 129)",
+          "oklch(84% 0.006 129)",
+          "oklch(95% 0.006 129)"
         ]
       },
       "testo": {
         "role": "neutral",
-        "displayName": "Testo",
+        "displayName": "Verde inchiostro / Salvia chiaro",
+        "canonical": "light-dark(#142321, #f0f5ee)",
+        "light": "#142321",
+        "dark": "#f0f5ee",
         "tonalRamp": [
-          "oklch(15% 0.0106 136.56)",
-          "oklch(26% 0.0106 136.56)",
-          "oklch(38% 0.0106 136.56)",
-          "oklch(49% 0.0106 136.56)",
-          "oklch(61% 0.0106 136.56)",
-          "oklch(72% 0.0106 136.56)",
-          "oklch(84% 0.0106 136.56)",
-          "oklch(95% 0.0106 136.56)"
+          "oklch(15% 0.021 185)",
+          "oklch(26% 0.021 185)",
+          "oklch(38% 0.021 185)",
+          "oklch(49% 0.021 185)",
+          "oklch(61% 0.021 185)",
+          "oklch(72% 0.021 185)",
+          "oklch(84% 0.021 185)",
+          "oklch(95% 0.021 185)"
         ]
       },
       "secondario": {
         "role": "neutral",
-        "displayName": "Secondario",
+        "displayName": "Grigio salvia",
+        "canonical": "light-dark(#4b5f55, #b8c9bf)",
+        "light": "#4b5f55",
+        "dark": "#b8c9bf",
         "tonalRamp": [
-          "oklch(15% 0.0231 160.11)",
-          "oklch(26% 0.0231 160.11)",
-          "oklch(38% 0.0231 160.11)",
-          "oklch(49% 0.0231 160.11)",
-          "oklch(61% 0.0231 160.11)",
-          "oklch(72% 0.0231 160.11)",
-          "oklch(84% 0.0231 160.11)",
-          "oklch(95% 0.0231 160.11)"
+          "oklch(15% 0.029 163)",
+          "oklch(26% 0.029 163)",
+          "oklch(38% 0.029 163)",
+          "oklch(49% 0.029 163)",
+          "oklch(61% 0.029 163)",
+          "oklch(72% 0.029 163)",
+          "oklch(84% 0.029 163)",
+          "oklch(95% 0.029 163)"
         ]
       },
       "linea": {
         "role": "neutral",
-        "displayName": "Linea",
+        "displayName": "Linea (decorativa)",
+        "canonical": "light-dark(#c3d0c6, #344a41)",
+        "light": "#c3d0c6",
+        "dark": "#344a41",
         "tonalRamp": [
-          "oklch(15% 0.0341 165.11)",
-          "oklch(26% 0.0341 165.11)",
-          "oklch(38% 0.0341 165.11)",
-          "oklch(49% 0.0341 165.11)",
-          "oklch(61% 0.0341 165.11)",
-          "oklch(72% 0.0341 165.11)",
-          "oklch(84% 0.0341 165.11)",
-          "oklch(95% 0.0341 165.11)"
+          "oklch(15% 0.020 153)",
+          "oklch(26% 0.020 153)",
+          "oklch(38% 0.020 153)",
+          "oklch(49% 0.020 153)",
+          "oklch(61% 0.020 153)",
+          "oklch(72% 0.020 153)",
+          "oklch(84% 0.020 153)",
+          "oklch(95% 0.020 153)"
+        ]
+      },
+      "linea-forte": {
+        "role": "neutral",
+        "displayName": "Linea forte (bordi dei controlli)",
+        "canonical": "light-dark(#788f80, #6b8577)",
+        "light": "#788f80",
+        "dark": "#6b8577",
+        "tonalRamp": [
+          "oklch(15% 0.034 157)",
+          "oklch(26% 0.034 157)",
+          "oklch(38% 0.034 157)",
+          "oklch(49% 0.034 157)",
+          "oklch(61% 0.034 157)",
+          "oklch(72% 0.034 157)",
+          "oklch(84% 0.034 157)",
+          "oklch(95% 0.034 157)"
         ]
       },
       "accento": {
         "role": "primary",
-        "displayName": "Accento",
+        "displayName": "Verde foresta / Lime",
+        "canonical": "light-dark(#2f5d34, #c7e69c)",
+        "light": "#2f5d34",
+        "dark": "#c7e69c",
         "tonalRamp": [
-          "oklch(15% 0.1023 126.85)",
-          "oklch(26% 0.1023 126.85)",
-          "oklch(38% 0.1023 126.85)",
-          "oklch(49% 0.1023 126.85)",
-          "oklch(61% 0.1023 126.85)",
-          "oklch(72% 0.1023 126.85)",
-          "oklch(84% 0.1023 126.85)",
-          "oklch(95% 0.1023 126.85)"
+          "oklch(15% 0.068 146)",
+          "oklch(26% 0.084 146)",
+          "oklch(38% 0.084 146)",
+          "oklch(49% 0.084 146)",
+          "oklch(61% 0.084 146)",
+          "oklch(72% 0.084 146)",
+          "oklch(84% 0.071 146)",
+          "oklch(95% 0.042 146)"
         ]
       },
-      "inchiostro": {
+      "su-accento": {
         "role": "primary",
-        "displayName": "Inchiostro",
+        "displayName": "Inchiostro su accento",
+        "canonical": "light-dark(#f2f9e8, #19301e)",
+        "light": "#f2f9e8",
+        "dark": "#19301e",
         "tonalRamp": [
-          "oklch(15% 0.0440 149.84)",
-          "oklch(26% 0.0440 149.84)",
-          "oklch(38% 0.0440 149.84)",
-          "oklch(49% 0.0440 149.84)",
-          "oklch(61% 0.0440 149.84)",
-          "oklch(72% 0.0440 149.84)",
-          "oklch(84% 0.0440 149.84)",
-          "oklch(95% 0.0440 149.84)"
+          "oklch(15% 0.024 125)",
+          "oklch(26% 0.024 125)",
+          "oklch(38% 0.024 125)",
+          "oklch(49% 0.024 125)",
+          "oklch(61% 0.024 125)",
+          "oklch(72% 0.024 125)",
+          "oklch(84% 0.024 125)",
+          "oklch(95% 0.024 125)"
+        ]
+      },
+      "accento-testo": {
+        "role": "primary",
+        "displayName": "Accento per testo",
+        "canonical": "light-dark(#2f5d34, #c7e69c)",
+        "light": "#2f5d34",
+        "dark": "#c7e69c",
+        "tonalRamp": [
+          "oklch(15% 0.068 146)",
+          "oklch(26% 0.084 146)",
+          "oklch(38% 0.084 146)",
+          "oklch(49% 0.084 146)",
+          "oklch(61% 0.084 146)",
+          "oklch(72% 0.084 146)",
+          "oklch(84% 0.071 146)",
+          "oklch(95% 0.042 146)"
+        ]
+      },
+      "fatto": {
+        "role": "neutral",
+        "displayName": "Serie fatta",
+        "canonical": "light-dark(#ddebd0, #28432f)",
+        "light": "#ddebd0",
+        "dark": "#28432f",
+        "tonalRamp": [
+          "oklch(15% 0.039 130)",
+          "oklch(26% 0.039 130)",
+          "oklch(38% 0.039 130)",
+          "oklch(49% 0.039 130)",
+          "oklch(61% 0.039 130)",
+          "oklch(72% 0.039 130)",
+          "oklch(84% 0.039 130)",
+          "oklch(95% 0.039 130)"
         ]
       },
       "pericolo": {
-        "role": "neutral",
-        "displayName": "Pericolo",
+        "role": "tertiary",
+        "displayName": "Rosso mattone / Corallo",
+        "canonical": "light-dark(#a8321f, #ffb6a6)",
+        "light": "#a8321f",
+        "dark": "#ffb6a6",
         "tonalRamp": [
-          "oklch(15% 0.0886 32.76)",
-          "oklch(26% 0.0886 32.76)",
-          "oklch(38% 0.0886 32.76)",
-          "oklch(49% 0.0886 32.76)",
-          "oklch(61% 0.0886 32.76)",
-          "oklch(72% 0.0886 32.76)",
-          "oklch(84% 0.0886 32.76)",
-          "oklch(95% 0.0886 32.76)"
+          "oklch(15% 0.068 32)",
+          "oklch(26% 0.096 32)",
+          "oklch(38% 0.125 32)",
+          "oklch(49% 0.153 32)",
+          "oklch(61% 0.128 32)",
+          "oklch(72% 0.100 32)",
+          "oklch(84% 0.071 32)",
+          "oklch(95% 0.042 32)"
         ]
+      },
+      "pericolo-fondo": {
+        "role": "tertiary",
+        "displayName": "Rosato pericolo",
+        "canonical": "light-dark(#fbe9e5, #3d2621)",
+        "light": "#fbe9e5",
+        "dark": "#3d2621",
+        "tonalRamp": [
+          "oklch(15% 0.020 33)",
+          "oklch(26% 0.020 33)",
+          "oklch(38% 0.020 33)",
+          "oklch(49% 0.020 33)",
+          "oklch(61% 0.020 33)",
+          "oklch(72% 0.020 33)",
+          "oklch(84% 0.020 33)",
+          "oklch(95% 0.020 33)"
+        ]
+      },
+      "avviso": {
+        "role": "tertiary",
+        "displayName": "Ambra",
+        "canonical": "light-dark(#6b3d0f, #ffe0bd)",
+        "light": "#6b3d0f",
+        "dark": "#ffe0bd",
+        "tonalRamp": [
+          "oklch(15% 0.068 60)",
+          "oklch(26% 0.086 60)",
+          "oklch(38% 0.086 60)",
+          "oklch(49% 0.086 60)",
+          "oklch(61% 0.086 60)",
+          "oklch(72% 0.086 60)",
+          "oklch(84% 0.071 60)",
+          "oklch(95% 0.042 60)"
+        ]
+      },
+      "avviso-fondo": {
+        "role": "tertiary",
+        "displayName": "Fondo ambra",
+        "canonical": "light-dark(#fbecd9, #3e2f23)",
+        "light": "#fbecd9",
+        "dark": "#3e2f23",
+        "tonalRamp": [
+          "oklch(15% 0.030 74)",
+          "oklch(26% 0.030 74)",
+          "oklch(38% 0.030 74)",
+          "oklch(49% 0.030 74)",
+          "oklch(61% 0.030 74)",
+          "oklch(72% 0.030 74)",
+          "oklch(84% 0.030 74)",
+          "oklch(95% 0.030 74)"
+        ]
+      },
+      "avviso-linea": {
+        "role": "tertiary",
+        "displayName": "Linea ambra (decorativa)",
+        "canonical": "light-dark(#c28a4a, #846b4e)",
+        "light": "#c28a4a",
+        "dark": "#846b4e",
+        "tonalRamp": [
+          "oklch(15% 0.068 68)",
+          "oklch(26% 0.096 68)",
+          "oklch(38% 0.106 68)",
+          "oklch(49% 0.106 68)",
+          "oklch(61% 0.106 68)",
+          "oklch(72% 0.100 68)",
+          "oklch(84% 0.071 68)",
+          "oklch(95% 0.042 68)"
+        ]
+      },
+      "guscio": {
+        "role": "neutral",
+        "displayName": "Verde guscio",
+        "canonical": "#142321",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.021 185)",
+          "oklch(26% 0.021 185)",
+          "oklch(38% 0.021 185)",
+          "oklch(49% 0.021 185)",
+          "oklch(61% 0.021 185)",
+          "oklch(72% 0.021 185)",
+          "oklch(84% 0.021 185)",
+          "oklch(95% 0.021 185)"
+        ]
+      },
+      "guscio-pannello": {
+        "role": "neutral",
+        "displayName": "Pannello del guscio",
+        "canonical": "#1e302d",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.024 183)",
+          "oklch(26% 0.024 183)",
+          "oklch(38% 0.024 183)",
+          "oklch(49% 0.024 183)",
+          "oklch(61% 0.024 183)",
+          "oklch(72% 0.024 183)",
+          "oklch(84% 0.024 183)",
+          "oklch(95% 0.024 183)"
+        ]
+      },
+      "guscio-pannello-hover": {
+        "role": "neutral",
+        "displayName": "Pannello del guscio al passaggio",
+        "canonical": "#2a4238",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.035 167)",
+          "oklch(26% 0.035 167)",
+          "oklch(38% 0.035 167)",
+          "oklch(49% 0.035 167)",
+          "oklch(61% 0.035 167)",
+          "oklch(72% 0.035 167)",
+          "oklch(84% 0.035 167)",
+          "oklch(95% 0.035 167)"
+        ]
+      },
+      "guscio-testo": {
+        "role": "neutral",
+        "displayName": "Testo del guscio",
+        "canonical": "#f0f5ee",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.011 137)",
+          "oklch(26% 0.011 137)",
+          "oklch(38% 0.011 137)",
+          "oklch(49% 0.011 137)",
+          "oklch(61% 0.011 137)",
+          "oklch(72% 0.011 137)",
+          "oklch(84% 0.011 137)",
+          "oklch(95% 0.011 137)"
+        ]
+      },
+      "guscio-secondario": {
+        "role": "neutral",
+        "displayName": "Secondario del guscio",
+        "canonical": "#b8c9bf",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.023 160)",
+          "oklch(26% 0.023 160)",
+          "oklch(38% 0.023 160)",
+          "oklch(49% 0.023 160)",
+          "oklch(61% 0.023 160)",
+          "oklch(72% 0.023 160)",
+          "oklch(84% 0.023 160)",
+          "oklch(95% 0.023 160)"
+        ]
+      },
+      "guscio-linea": {
+        "role": "neutral",
+        "displayName": "Linea del guscio (decorativa)",
+        "canonical": "#344a41",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.031 168)",
+          "oklch(26% 0.031 168)",
+          "oklch(38% 0.031 168)",
+          "oklch(49% 0.031 168)",
+          "oklch(61% 0.031 168)",
+          "oklch(72% 0.031 168)",
+          "oklch(84% 0.031 168)",
+          "oklch(95% 0.031 168)"
+        ]
+      },
+      "guscio-linea-forte": {
+        "role": "neutral",
+        "displayName": "Linea forte del guscio",
+        "canonical": "#6b8577",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.037 162)",
+          "oklch(26% 0.037 162)",
+          "oklch(38% 0.037 162)",
+          "oklch(49% 0.037 162)",
+          "oklch(61% 0.037 162)",
+          "oklch(72% 0.037 162)",
+          "oklch(84% 0.037 162)",
+          "oklch(95% 0.037 162)"
+        ]
+      },
+      "guscio-accento": {
+        "role": "primary",
+        "displayName": "Lime del guscio",
+        "canonical": "#c7e69c",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.068 127)",
+          "oklch(26% 0.096 127)",
+          "oklch(38% 0.102 127)",
+          "oklch(49% 0.102 127)",
+          "oklch(61% 0.102 127)",
+          "oklch(72% 0.100 127)",
+          "oklch(84% 0.071 127)",
+          "oklch(95% 0.042 127)"
+        ]
+      },
+      "guscio-accento-hover": {
+        "role": "primary",
+        "displayName": "Lime chiaro",
+        "canonical": "#dbf4b8",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.068 126)",
+          "oklch(26% 0.083 126)",
+          "oklch(38% 0.083 126)",
+          "oklch(49% 0.083 126)",
+          "oklch(61% 0.083 126)",
+          "oklch(72% 0.083 126)",
+          "oklch(84% 0.071 126)",
+          "oklch(95% 0.042 126)"
+        ]
+      },
+      "guscio-su-accento": {
+        "role": "primary",
+        "displayName": "Inchiostro su lime",
+        "canonical": "#19301e",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.044 150)",
+          "oklch(26% 0.044 150)",
+          "oklch(38% 0.044 150)",
+          "oklch(49% 0.044 150)",
+          "oklch(61% 0.044 150)",
+          "oklch(72% 0.044 150)",
+          "oklch(84% 0.044 150)",
+          "oklch(95% 0.042 150)"
+        ]
+      },
+      "guscio-avviso": {
+        "role": "tertiary",
+        "displayName": "Ambra del guscio",
+        "canonical": "#ffe0bd",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.057 70)",
+          "oklch(26% 0.057 70)",
+          "oklch(38% 0.057 70)",
+          "oklch(49% 0.057 70)",
+          "oklch(61% 0.057 70)",
+          "oklch(72% 0.057 70)",
+          "oklch(84% 0.057 70)",
+          "oklch(95% 0.042 70)"
+        ]
+      },
+      "guscio-avviso-icona": {
+        "role": "tertiary",
+        "displayName": "Icona ambra del guscio",
+        "canonical": "#ffc98f",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.068 68)",
+          "oklch(26% 0.096 68)",
+          "oklch(38% 0.096 68)",
+          "oklch(49% 0.096 68)",
+          "oklch(61% 0.096 68)",
+          "oklch(72% 0.096 68)",
+          "oklch(84% 0.071 68)",
+          "oklch(95% 0.042 68)"
+        ]
+      },
+      "guscio-avviso-linea": {
+        "role": "tertiary",
+        "displayName": "Linea ambra del guscio",
+        "canonical": "#846b4e",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.053 71)",
+          "oklch(26% 0.053 71)",
+          "oklch(38% 0.053 71)",
+          "oklch(49% 0.053 71)",
+          "oklch(61% 0.053 71)",
+          "oklch(72% 0.053 71)",
+          "oklch(84% 0.053 71)",
+          "oklch(95% 0.042 71)"
+        ]
+      },
+      "livello": {
+        "role": "secondary",
+        "displayName": "Verde livello",
+        "canonical": "#2b4a36",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.051 155)",
+          "oklch(26% 0.051 155)",
+          "oklch(38% 0.051 155)",
+          "oklch(49% 0.051 155)",
+          "oklch(61% 0.051 155)",
+          "oklch(72% 0.051 155)",
+          "oklch(84% 0.051 155)",
+          "oklch(95% 0.042 155)"
+        ]
+      },
+      "fondale": {
+        "role": "neutral",
+        "displayName": "Fondale delle modali",
+        "canonical": "rgb(9 23 19 / 0.6)",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.021 174)",
+          "oklch(26% 0.021 174)",
+          "oklch(38% 0.021 174)",
+          "oklch(49% 0.021 174)",
+          "oklch(61% 0.021 174)",
+          "oklch(72% 0.021 174)",
+          "oklch(84% 0.021 174)",
+          "oklch(95% 0.021 174)"
+        ],
+        "note": "Verde quasi nero rgb(9 23 19) a opacità fissa; la rampa è quella del colore pieno."
+      },
+      "ombra": {
+        "role": "neutral",
+        "displayName": "Ombra dell'avviso",
+        "canonical": "rgb(9 23 19 / 0.28)",
+        "themeIndependent": true,
+        "tonalRamp": [
+          "oklch(15% 0.021 174)",
+          "oklch(26% 0.021 174)",
+          "oklch(38% 0.021 174)",
+          "oklch(49% 0.021 174)",
+          "oklch(61% 0.021 174)",
+          "oklch(72% 0.021 174)",
+          "oklch(84% 0.021 174)",
+          "oklch(95% 0.021 174)"
+        ],
+        "note": "Verde quasi nero rgb(9 23 19) a opacità fissa; la rampa è quella del colore pieno."
       }
     },
     "typographyMeta": {
-      "headline": {
-        "displayName": "headline",
-        "purpose": "Ruolo osservato nel diario."
+      "titolo-pagina": {
+        "displayName": "Titolo pagina",
+        "purpose": "Titoli di sezione e di schermata nel contenuto."
       },
-      "title": {
-        "displayName": "title",
-        "purpose": "Ruolo osservato nel diario."
+      "titolo": {
+        "displayName": "Titolo",
+        "purpose": "Titolo di fogli, conferme e stati vuoti; testo delle lastre del timer."
       },
-      "body": {
-        "displayName": "body",
-        "purpose": "Ruolo osservato nel diario."
+      "titolo-compatto": {
+        "displayName": "Titolo compatto",
+        "purpose": "Titolo dell'intestazione del guscio e nome dell'esercizio."
       },
-      "label": {
-        "displayName": "label",
-        "purpose": "Ruolo osservato nel diario."
+      "corpo": {
+        "displayName": "Corpo",
+        "purpose": "Testo corrente e colonna \"precedente\" della riga serie (16px)."
       },
-      "numero-serie": {
-        "displayName": "numero-serie",
-        "purpose": "Valori numerici delle serie."
+      "etichetta": {
+        "displayName": "Etichetta",
+        "purpose": "Etichette dei campi, aiuti, errori, stato della barra di salvataggio."
+      },
+      "pulsante": {
+        "displayName": "Pulsante",
+        "purpose": "Testo di tutti i pulsanti."
+      },
+      "cifre": {
+        "displayName": "Cifre",
+        "purpose": "Numeri in evidenza e tempo del timer ridotto (lì a peso 700)."
+      },
+      "cifre-serie": {
+        "displayName": "Cifre serie",
+        "purpose": "Peso e ripetizioni nei campi della riga serie: mai sotto 20px."
+      },
+      "cifre-timer": {
+        "displayName": "Cifre timer",
+        "purpose": "Conto alla rovescia a tutto schermo, largo circa l'80% della larghezza; con \"mm:ss\" scende a min(35cqw, 30cqh, 13rem)."
       }
     },
-    "shadows": [],
+    "font": {
+      "family": "Atkinson Hyperlegible Next",
+      "source": "/fonts/atkinson-hyperlegible-next-latin.woff2",
+      "format": "woff2-variations",
+      "weightRange": "200 800",
+      "display": "swap",
+      "subset": "latin (unicode-range U+0000-00FF e simboli tipografici)",
+      "preload": true,
+      "numeric": "font-variant-numeric: tabular-nums sulla radice; zero barrato proprio del carattere, nessuna feature zero",
+      "licenza": "SIL OFL (public/fonts/atkinson-hyperlegible-next-OFL.txt)"
+    },
+    "themes": {
+      "mechanism": "Colori di contenuto come light-dark(chiaro, scuro) in @theme. <html> senza data-theme: color-scheme: light dark (segue il sistema). data-theme=\"chiaro\": color-scheme: light. data-theme=\"scuro\": color-scheme: dark.",
+      "storageKey": "bodytracker.tema",
+      "values": [
+        "sistema",
+        "chiaro",
+        "scuro"
+      ],
+      "firstPaint": "Script in linea in Base.astro, prima del CSS, legge bodytracker.tema e imposta data-theme; 'sistema' rimuove la chiave e l'attributo.",
+      "shell": "Le superfici del guscio dichiarano color-scheme: dark: i token di contenuto al loro interno risolvono al valore scuro in entrambi i temi. theme-color del browser: #142321."
+    },
+    "focus": {
+      "default": "outline: 3px solid var(--color-accento-testo); outline-offset: 3px",
+      "guscio": "outline-color: var(--color-guscio-accento) dentro il guscio",
+      "timerVai": "outline-color: var(--color-guscio-su-accento) sullo schermo lime",
+      "campi": "outline-offset: 1px e border-color: var(--color-accento-testo) su campi, campi serie e pulsanti della riga serie",
+      "segmentato": "outline 3px accento-testo, offset 2px, sull'etichetta che contiene il radio a fuoco"
+    },
+    "browserSurfaces": {
+      "selection": "background accento, color su-accento",
+      "caret": "accento-testo",
+      "accentColor": "accento",
+      "scrollbar": "linea-forte su fondo",
+      "placeholder": "secondario, opacity 1",
+      "tapHighlight": "transparent",
+      "touchAction": "manipulation su button, a, label, summary",
+      "textWrap": "balance su h1–h3, pretty su p"
+    },
+    "shadows": [
+      {
+        "name": "sospensione-avviso",
+        "value": "0 8px 24px var(--color-ombra)",
+        "purpose": "Unica ombra del sistema, solo sotto l'avviso breve."
+      }
+    ],
+    "backdrops": [
+      {
+        "name": "fondale",
+        "value": "var(--color-fondale)",
+        "purpose": "Velo dietro fogli e conferme."
+      },
+      {
+        "name": "fondale-timer",
+        "value": "var(--color-guscio)",
+        "purpose": "Velo pieno dietro il timer a tutto schermo."
+      }
+    ],
     "motion": [
       {
-        "name": "scelta-scheda",
-        "value": "background-color .15s ease",
-        "purpose": "Hover dei pulsanti scheda; disattivato con prefers-reduced-motion."
+        "name": "ease-uscita",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva di tutte le transizioni di stato."
+      },
+      {
+        "name": "stato-controllo",
+        "value": "0.15s var(--ease-uscita)",
+        "purpose": "Colore di fondo e bordo di pulsanti, spunta, segmenti; scala del pallino del radio."
+      },
+      {
+        "name": "riga-fatta",
+        "value": "background-color 0.2s var(--ease-uscita)",
+        "purpose": "Fondo della riga serie quando diventa fatta."
+      },
+      {
+        "name": "foglio-sale",
+        "value": "0.32s var(--ease-uscita), da translateY(24px) e opacità 0.6",
+        "purpose": "Apertura del foglio dal basso."
+      },
+      {
+        "name": "avviso-entra",
+        "value": "0.24s var(--ease-uscita), da translateY(8px) e opacità 0",
+        "purpose": "Comparsa dell'avviso breve."
+      },
+      {
+        "name": "livello-timer",
+        "value": "scatti di 1 s, nessuna transizione",
+        "purpose": "Il livello del timer cambia altezza (o larghezza nel ridotto) solo a ogni secondo."
+      },
+      {
+        "name": "salvataggio-in-corso",
+        "value": "rotazione 1s linear infinite",
+        "purpose": "Icona di attesa nella barra di salvataggio."
+      },
+      {
+        "name": "movimento-ridotto",
+        "value": "prefers-reduced-motion: reduce → transizioni e animazioni a 0.01ms, scroll-behavior auto",
+        "purpose": "Rispetto della preferenza di sistema."
       }
     ],
     "breakpoints": [
       {
-        "name": "mobile",
-        "value": "600px"
+        "name": "telefono-minimo",
+        "value": "320px"
+      },
+      {
+        "name": "telefono",
+        "value": "390px"
+      },
+      {
+        "name": "colonna",
+        "value": "42rem",
+        "note": "Larghezza massima del contenuto e delle barre del guscio."
       }
-    ]
+    ],
+    "targets": {
+      "controlloMinimo": "48px",
+      "rigaSerie": "56px",
+      "timerRidotto": "56px",
+      "lastraTimer": "64px",
+      "intestazione": "64px",
+      "barraSalvataggio": "68px",
+      "voceTabBar": "56px"
+    },
+    "contrast": {
+      "metodo": "WCAG 2.x, rapporto di luminanza relativa sui valori esadecimali dei token.",
+      "soglie": {
+        "testo": 4.5,
+        "bordiControlli": 3.0
+      },
+      "chiaro": {
+        "testo": [
+          {
+            "testo": "testo",
+            "fondo": "fondo",
+            "rapporto": 14.35
+          },
+          {
+            "testo": "testo",
+            "fondo": "superficie",
+            "rapporto": 16.25
+          },
+          {
+            "testo": "testo",
+            "fondo": "campo",
+            "rapporto": 15.34
+          },
+          {
+            "testo": "testo",
+            "fondo": "fatto",
+            "rapporto": 13.05
+          },
+          {
+            "testo": "secondario",
+            "fondo": "fondo",
+            "rapporto": 6.05
+          },
+          {
+            "testo": "secondario",
+            "fondo": "superficie",
+            "rapporto": 6.85
+          },
+          {
+            "testo": "secondario",
+            "fondo": "campo",
+            "rapporto": 6.46
+          },
+          {
+            "testo": "secondario",
+            "fondo": "fatto",
+            "rapporto": 5.5
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "fondo",
+            "rapporto": 6.78
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "superficie",
+            "rapporto": 7.67
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "fatto",
+            "rapporto": 6.16
+          },
+          {
+            "testo": "su-accento",
+            "fondo": "accento",
+            "rapporto": 7.12
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "fondo",
+            "rapporto": 5.9
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "superficie",
+            "rapporto": 6.69
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "pericolo-fondo",
+            "rapporto": 5.7
+          },
+          {
+            "testo": "avviso",
+            "fondo": "avviso-fondo",
+            "rapporto": 7.87
+          }
+        ],
+        "bordi": [
+          {
+            "testo": "linea-forte",
+            "fondo": "fondo",
+            "rapporto": 3.07
+          },
+          {
+            "testo": "linea-forte",
+            "fondo": "superficie",
+            "rapporto": 3.48
+          },
+          {
+            "testo": "linea-forte",
+            "fondo": "campo",
+            "rapporto": 3.28
+          },
+          {
+            "testo": "linea",
+            "fondo": "fondo",
+            "rapporto": 1.41
+          },
+          {
+            "testo": "linea",
+            "fondo": "superficie",
+            "rapporto": 1.6
+          },
+          {
+            "testo": "avviso-linea",
+            "fondo": "avviso-fondo",
+            "rapporto": 2.58
+          }
+        ]
+      },
+      "scuro": {
+        "testo": [
+          {
+            "testo": "testo",
+            "fondo": "fondo",
+            "rapporto": 14.71
+          },
+          {
+            "testo": "testo",
+            "fondo": "superficie",
+            "rapporto": 12.53
+          },
+          {
+            "testo": "testo",
+            "fondo": "campo",
+            "rapporto": 14.71
+          },
+          {
+            "testo": "testo",
+            "fondo": "fatto",
+            "rapporto": 9.82
+          },
+          {
+            "testo": "secondario",
+            "fondo": "fondo",
+            "rapporto": 9.4
+          },
+          {
+            "testo": "secondario",
+            "fondo": "superficie",
+            "rapporto": 8.01
+          },
+          {
+            "testo": "secondario",
+            "fondo": "campo",
+            "rapporto": 9.4
+          },
+          {
+            "testo": "secondario",
+            "fondo": "fatto",
+            "rapporto": 6.28
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "fondo",
+            "rapporto": 11.78
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "superficie",
+            "rapporto": 10.05
+          },
+          {
+            "testo": "accento-testo",
+            "fondo": "fatto",
+            "rapporto": 7.87
+          },
+          {
+            "testo": "su-accento",
+            "fondo": "accento",
+            "rapporto": 10.27
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "fondo",
+            "rapporto": 9.67
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "superficie",
+            "rapporto": 8.24
+          },
+          {
+            "testo": "pericolo",
+            "fondo": "pericolo-fondo",
+            "rapporto": 8.34
+          },
+          {
+            "testo": "avviso",
+            "fondo": "avviso-fondo",
+            "rapporto": 10.18
+          }
+        ],
+        "bordi": [
+          {
+            "testo": "linea-forte",
+            "fondo": "fondo",
+            "rapporto": 4.06
+          },
+          {
+            "testo": "linea-forte",
+            "fondo": "superficie",
+            "rapporto": 3.46
+          },
+          {
+            "testo": "linea-forte",
+            "fondo": "campo",
+            "rapporto": 4.06
+          },
+          {
+            "testo": "linea",
+            "fondo": "fondo",
+            "rapporto": 1.7
+          },
+          {
+            "testo": "linea",
+            "fondo": "superficie",
+            "rapporto": 1.45
+          },
+          {
+            "testo": "avviso-linea",
+            "fondo": "avviso-fondo",
+            "rapporto": 2.56
+          }
+        ]
+      },
+      "guscio": {
+        "testo": [
+          {
+            "testo": "guscio-testo",
+            "fondo": "guscio",
+            "rapporto": 14.71
+          },
+          {
+            "testo": "guscio-secondario",
+            "fondo": "guscio",
+            "rapporto": 9.4
+          },
+          {
+            "testo": "guscio-accento",
+            "fondo": "guscio",
+            "rapporto": 11.78
+          },
+          {
+            "testo": "guscio-testo",
+            "fondo": "guscio-pannello",
+            "rapporto": 12.53
+          },
+          {
+            "testo": "guscio-secondario",
+            "fondo": "guscio-pannello",
+            "rapporto": 8.01
+          },
+          {
+            "testo": "guscio-testo",
+            "fondo": "livello",
+            "rapporto": 8.9
+          },
+          {
+            "testo": "guscio-secondario",
+            "fondo": "livello",
+            "rapporto": 5.69
+          },
+          {
+            "testo": "guscio-accento",
+            "fondo": "livello",
+            "rapporto": 7.13
+          },
+          {
+            "testo": "guscio-su-accento",
+            "fondo": "guscio-accento",
+            "rapporto": 10.27
+          },
+          {
+            "testo": "guscio-accento",
+            "fondo": "guscio-su-accento",
+            "rapporto": 10.27
+          },
+          {
+            "testo": "guscio-su-accento",
+            "fondo": "guscio-accento-hover",
+            "rapporto": 11.9
+          },
+          {
+            "testo": "guscio-testo",
+            "fondo": "guscio-pannello-hover",
+            "rapporto": 9.82
+          },
+          {
+            "testo": "guscio-avviso",
+            "fondo": "guscio",
+            "rapporto": 12.89
+          },
+          {
+            "testo": "guscio-avviso-icona",
+            "fondo": "guscio",
+            "rapporto": 10.84
+          }
+        ],
+        "bordi": [
+          {
+            "testo": "guscio-linea-forte",
+            "fondo": "guscio",
+            "rapporto": 4.06
+          },
+          {
+            "testo": "guscio-linea-forte",
+            "fondo": "guscio-pannello",
+            "rapporto": 3.46
+          },
+          {
+            "testo": "guscio-linea-forte",
+            "fondo": "livello",
+            "rapporto": 2.46
+          },
+          {
+            "testo": "guscio-pannello",
+            "fondo": "livello",
+            "rapporto": 1.41
+          },
+          {
+            "testo": "guscio-linea",
+            "fondo": "guscio",
+            "rapporto": 1.7
+          },
+          {
+            "testo": "guscio-avviso-linea",
+            "fondo": "guscio",
+            "rapporto": 3.25
+          }
+        ]
+      },
+      "note": [
+        "linea, guscio-linea, avviso-linea e guscio-avviso-linea sono decorative (separatori, fili): non delimitano controlli.",
+        "Il bordo del pulsante distruttivo è `pericolo` pieno: 6,69:1 su superficie nel tema chiaro, 8,24:1 nel tema scuro.",
+        "Le lastre del timer, quando il livello è dietro di loro, hanno bordo a 2,46:1 e riempimento a 1,41:1 sul livello; il testo delle lastre è a 12,53:1."
+      ]
+    }
   },
   "components": [
     {
-      "name": "Concludi allenamento",
+      "name": "Pulsante primario",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Azione primaria.",
-      "html": "<button class=\"ds-button-primary\">Concludi allenamento</button>",
-      "css": ".ds-button-primary{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--accento);color:var(--inchiostro);border:0;border-radius:8px;padding:12px 20px;font-weight:650;min-height:48px;cursor:pointer}.ds-button-primary:hover{background:#dbf4b8}.ds-button-primary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+      "description": "Azione principale della schermata: riempimento accento, inchiostro su accento, 48px.",
+      "html": "<button type=\"button\" class=\"ds-pulsante-primario\">Inizia allenamento</button>",
+      "css": ".ds-pulsante-primario { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 48px; padding: 0 1.25rem; border-radius: var(--radius-campo, 8px); border: 1px solid transparent; font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; font-weight: 650; font-size: 1rem; line-height: 1.2; cursor: pointer; transition: background-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)), border-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); background: var(--color-accento, light-dark(#2f5d34, #c7e69c)); color: var(--color-su-accento, light-dark(#f2f9e8, #19301e)); } .ds-pulsante-primario:hover { background: color-mix(in oklab, var(--color-accento, light-dark(#2f5d34, #c7e69c)) 86%, var(--color-testo, light-dark(#142321, #f0f5ee))); } .ds-pulsante-primario:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 3px; } .ds-pulsante-primario:disabled { opacity: 0.45; cursor: not-allowed; }"
     },
     {
-      "name": "Salva ora",
+      "name": "Pulsante secondario",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Azione secondaria.",
-      "html": "<button class=\"ds-button-secondary\">Salva ora</button>",
-      "css": ".ds-button-secondary{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--superficie);color:var(--testo);border:1px solid var(--linea);border-radius:8px;padding:12px 20px;font-weight:650;min-height:48px;cursor:pointer}.ds-button-secondary:hover{background:#2c443a}.ds-button-secondary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+      "description": "Alternativa all'azione principale: superficie con bordo linea forte.",
+      "html": "<button type=\"button\" class=\"ds-pulsante-secondario\">Altra scheda</button>",
+      "css": ".ds-pulsante-secondario { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 48px; padding: 0 1.25rem; border-radius: var(--radius-campo, 8px); border: 1px solid transparent; font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; font-weight: 650; font-size: 1rem; line-height: 1.2; cursor: pointer; transition: background-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)), border-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); background: var(--color-superficie, light-dark(#ffffff, #1e302d)); color: var(--color-testo, light-dark(#142321, #f0f5ee)); border-color: var(--color-linea-forte, light-dark(#788f80, #6b8577)); } .ds-pulsante-secondario:hover { background: color-mix(in oklab, var(--color-superficie, light-dark(#ffffff, #1e302d)) 90%, var(--color-accento, light-dark(#2f5d34, #c7e69c))); } .ds-pulsante-secondario:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 3px; }"
     },
     {
-      "name": "Campo peso",
+      "name": "Pulsante distruttivo",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Elimina o cancella: trasparente, testo e bordo pericolo; il verbo dice cosa fa.",
+      "html": "<button type=\"button\" class=\"ds-pulsante-pericolo\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 6h18\"/><path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\"/><path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\"/></svg>Elimina</button>",
+      "css": ".ds-pulsante-pericolo { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 48px; padding: 0 1.25rem; border-radius: var(--radius-campo, 8px); border: 1px solid transparent; font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; font-weight: 650; font-size: 1rem; line-height: 1.2; cursor: pointer; transition: background-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)), border-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); background: transparent; color: var(--color-pericolo, light-dark(#a8321f, #ffb6a6)); border-color: var(--color-pericolo, light-dark(#a8321f, #ffb6a6)); } .ds-pulsante-pericolo svg { width: 20px; height: 20px; flex-shrink: 0; } .ds-pulsante-pericolo:hover { background: var(--color-pericolo-fondo, light-dark(#fbe9e5, #3d2621)); } .ds-pulsante-pericolo:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 3px; }"
+    },
+    {
+      "name": "Campo",
       "kind": "input",
       "refersTo": "input",
-      "description": "Campo numerico per una serie.",
-      "html": "<label class=\"ds-label\">Peso · kg<input class=\"ds-input\" type=\"number\" min=\"0\" placeholder=\"—\" aria-label=\"Peso in kg\"></label>",
-      "css": ".ds-label{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;color:var(--secondario);font-size:14px;font-weight:500;display:block}.ds-input{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;display:block;width:100%;min-width:0;background:var(--campo);color:var(--testo);border:1px solid var(--linea);border-radius:8px;padding:10px 12px;margin-top:6px;min-height:52px;font-size:22px;font-variant-numeric:tabular-nums}.ds-input::placeholder{color:var(--secondario);opacity:1}.ds-input:invalid:not(:placeholder-shown){border-color:var(--pericolo)}.ds-input:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+      "description": "Campo di testo con etichetta sopra e aiuto o errore sotto.",
+      "html": "<div class=\"ds-gruppo\"><label class=\"ds-etichetta\" for=\"ds-nome\">Nome della sessione</label><input id=\"ds-nome\" class=\"ds-campo\" value=\"Scheda A\"><p class=\"ds-aiuto\">Visibile nello storico e nel calendario.</p></div>",
+      "css": ".ds-gruppo { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: var(--color-testo, light-dark(#142321, #f0f5ee)); } .ds-etichetta { display: block; color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; } .ds-campo { display: block; width: 100%; min-height: 48px; padding: 0.625rem 0.75rem; border-radius: var(--radius-campo, 8px); border: 1px solid var(--color-linea-forte, light-dark(#788f80, #6b8577)); background: var(--color-campo, light-dark(#f7f9f5, #142321)); color: var(--color-testo, light-dark(#142321, #f0f5ee)); font: inherit; font-size: 1rem; } .ds-campo:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 1px; border-color: var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); } .ds-campo[aria-invalid=\"true\"] { border-color: var(--color-pericolo, light-dark(#a8321f, #ffb6a6)); } .ds-aiuto { color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); font-size: 0.875rem; margin: 0.375rem 0 0; }"
     },
     {
-      "name": "Navigazione",
-      "kind": "nav",
-      "refersTo": "",
-      "description": "Sezioni del diario con stato corrente.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Sezioni del diario\"><button aria-current=\"page\">Allenamento</button><button>Storico</button><button>Dati e privacy</button></nav>",
-      "css": ".ds-nav{display:flex;gap:28px;border-bottom:1px solid var(--linea)}.ds-nav button{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:none;cursor:pointer;color:var(--secondario);min-height:48px;padding:12px 0;border:0;border-bottom:1px solid transparent;white-space:nowrap}.ds-nav button[aria-current=page]{color:var(--accento);border-color:var(--accento)}.ds-nav button:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
-    },
-    {
-      "name": "Pannello esercizio",
-      "kind": "card",
-      "refersTo": "card",
-      "description": "Contenitore operativo delle serie.",
-      "html": "<section class=\"ds-card\"><h2>Panca piana</h2><p>8 rip. · Recupero 90 secondi</p></section>",
-      "css": ".ds-card{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--superficie);color:var(--testo);border-radius:12px;padding:24px}.ds-card h2{font-size:20px;line-height:1.35;font-weight:650;margin:0}.ds-card p{font-size:14px;color:var(--secondario);margin:16px 0 24px}"
-    },
-    {
-      "name": "Modifica nome",
+      "name": "Riga serie",
       "kind": "custom",
-      "refersTo": "",
-      "description": "Nome modificabile su richiesta.",
-      "html": "<details class=\"ds-details\"><summary>Modifica nome</summary><label>Nome esercizio<input value=\"Panca piana\"></label></details>",
-      "css": ".ds-details{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;color:var(--secondario);font-size:14px}.ds-details summary{min-height:44px;align-content:center;cursor:pointer}.ds-details summary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}.ds-details label{display:block;margin:8px 0 12px;font-weight:500}.ds-details input{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;display:block;margin-top:6px;background:var(--campo);color:var(--testo);border:1px solid var(--linea);border-radius:8px;min-height:48px;padding:10px 12px}.ds-details input:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+      "refersTo": "set-row",
+      "description": "Unità di lavoro: tipo/n · precedente · kg · rip · spunta. La spunta su una riga vuota conferma il precedente.",
+      "html": "<div class=\"ds-righe\"><div class=\"ds-riga ds-fatta\"><button type=\"button\" class=\"ds-tipo\">1</button><button type=\"button\" class=\"ds-precedente\">40 × 8</button><input class=\"ds-campo-serie\" inputmode=\"decimal\" value=\"40\" aria-label=\"Peso serie 1, kg\"><input class=\"ds-campo-serie\" inputmode=\"numeric\" value=\"8\" aria-label=\"Ripetizioni serie 1\"><button type=\"button\" class=\"ds-spunta\" aria-pressed=\"true\" aria-label=\"Annulla serie 1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></button></div><div class=\"ds-riga\"><button type=\"button\" class=\"ds-tipo\">2</button><button type=\"button\" class=\"ds-precedente\">40 × 7</button><input class=\"ds-campo-serie\" inputmode=\"decimal\" placeholder=\"40\" aria-label=\"Peso serie 2, kg\"><input class=\"ds-campo-serie\" inputmode=\"numeric\" placeholder=\"7\" aria-label=\"Ripetizioni serie 2\"><button type=\"button\" class=\"ds-spunta\" aria-pressed=\"false\" aria-label=\"Segna serie 2 come fatta\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></button></div></div>",
+      "css": ".ds-righe { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: var(--color-testo, light-dark(#142321, #f0f5ee)); background: var(--color-superficie, light-dark(#ffffff, #1e302d)); padding: 1rem; border-radius: var(--radius-pannello, 12px); } .ds-riga { display: grid; grid-template-columns: 2rem minmax(3.75rem, 1fr) minmax(3.25rem, 4.75rem) minmax(3rem, 4rem) 3rem; gap: clamp(0.25rem, 1.6vw, 0.5rem); align-items: center; min-height: 56px; margin-inline: -0.375rem; padding-inline: 0.375rem; border-radius: var(--radius-campo, 8px); transition: background-color 0.2s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-riga.ds-fatta { background: var(--color-fatto, light-dark(#ddebd0, #28432f)); } .ds-riga button { font: inherit; background: none; border: 0; cursor: pointer; } .ds-tipo { height: 48px; border-radius: var(--radius-campo, 8px); font-weight: 650 !important; font-size: 1.125rem !important; color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); } .ds-fatta .ds-tipo { color: var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); } .ds-precedente { min-height: 48px; text-align: left; color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-precedente:hover { color: var(--color-testo, light-dark(#142321, #f0f5ee)); } .ds-campo-serie { width: 100%; min-width: 0; height: 48px; padding: 0 0.125rem; border-radius: var(--radius-campo, 8px); border: 1px solid var(--color-linea-forte, light-dark(#788f80, #6b8577)); background: var(--color-campo, light-dark(#f7f9f5, #142321)); color: var(--color-testo, light-dark(#142321, #f0f5ee)); font: inherit; font-size: clamp(1.25rem, 5.6vw, 1.375rem); font-weight: 600; text-align: center; } .ds-campo-serie::placeholder { font-weight: 400; color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); opacity: 1; } .ds-campo-serie:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 1px; border-color: var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); } .ds-fatta .ds-campo-serie { border-color: transparent; background: transparent; } .ds-spunta { display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--radius-campo, 8px); border: 1.5px solid var(--color-linea-forte, light-dark(#788f80, #6b8577)) !important; color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); transition: background-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)), border-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-spunta:hover { border-color: var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)) !important; color: var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); } .ds-fatta .ds-spunta { background: var(--color-accento, light-dark(#2f5d34, #c7e69c)); border-color: var(--color-accento, light-dark(#2f5d34, #c7e69c)) !important; color: var(--color-su-accento, light-dark(#f2f9e8, #19301e)); } .ds-riga button:focus-visible { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 1px; }"
+    },
+    {
+      "name": "Controllo segmentato",
+      "kind": "chip",
+      "refersTo": "segmented",
+      "description": "Una scelta tra poche opzioni sempre visibili (tema, unità).",
+      "html": "<fieldset class=\"ds-segmentato\"><legend class=\"ds-seg-etichetta\">Tema</legend><div class=\"ds-opzioni\"><label><input type=\"radio\" name=\"ds-tema\">Sistema</label><label class=\"ds-scelto\"><input type=\"radio\" name=\"ds-tema\" checked>Chiaro</label><label><input type=\"radio\" name=\"ds-tema\">Scuro</label></div></fieldset>",
+      "css": ".ds-segmentato { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; border: 0; margin: 0; padding: 0; min-width: 0; } .ds-seg-etichetta { color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; } .ds-opzioni { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 4px; padding: 4px; border-radius: var(--radius-pannello, 12px); border: 1px solid var(--color-linea-forte, light-dark(#788f80, #6b8577)); background: var(--color-campo, light-dark(#f7f9f5, #142321)); } .ds-opzioni label { position: relative; display: grid; place-items: center; min-height: 48px; padding: 0 0.5rem; border-radius: var(--radius-campo, 8px); color: var(--color-secondario, light-dark(#4b5f55, #b8c9bf)); font-weight: 600; cursor: pointer; transition: background-color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)), color 0.15s var(--ease-uscita, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-opzioni label:hover { color: var(--color-testo, light-dark(#142321, #f0f5ee)); } .ds-opzioni label.ds-scelto { background: var(--color-accento, light-dark(#2f5d34, #c7e69c)); color: var(--color-su-accento, light-dark(#f2f9e8, #19301e)); } .ds-opzioni input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-opzioni label:has(input:focus-visible) { outline: 3px solid var(--color-accento-testo, light-dark(#2f5d34, #c7e69c)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tab bar",
+      "kind": "nav",
+      "refersTo": "tab-bar",
+      "description": "Navigazione principale del guscio, in basso nella zona del pollice; uguale nei due temi.",
+      "html": "<nav class=\"ds-tabbar\" aria-label=\"Sezioni\"><a href=\"#\" aria-current=\"page\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg>Oggi</a><a href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 2v3\"/><path d=\"M16 2v3\"/><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 9h18\"/><path d=\"M8 13h.01\"/><path d=\"M12 13h.01\"/><path d=\"M16 13h.01\"/><path d=\"M8 17h.01\"/><path d=\"M12 17h.01\"/><path d=\"M16 17h.01\"/></svg>Calendario</a><a href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"M12 11h4\"/><path d=\"M12 16h4\"/><path d=\"M8 11h.01\"/><path d=\"M8 16h.01\"/></svg>Schede</a><a href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/><path d=\"M12 7v5l4 2\"/></svg>Storico</a></nav>",
+      "css": ".ds-tabbar { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--color-guscio, #142321); border-top: 1px solid var(--color-guscio-linea, #344a41); color-scheme: dark; } .ds-tabbar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; font-size: 0.75rem; text-decoration: none; color: var(--color-guscio-secondario, #b8c9bf); } .ds-tabbar a:hover { color: var(--color-guscio-testo, #f0f5ee); } .ds-tabbar a[aria-current=\"page\"] { color: var(--color-guscio-accento, #c7e69c); font-weight: 700; } .ds-tabbar a:focus-visible { outline: 3px solid var(--color-guscio-accento, #c7e69c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Avviso breve",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "Pillola del guscio con l'unica ombra del sistema e un'azione facoltativa (Annulla).",
+      "html": "<div class=\"ds-toast\" role=\"status\"><span class=\"ds-toast-testo\">Serie 3 rimossa</span><button type=\"button\" class=\"ds-toast-azione\">Annulla</button><button type=\"button\" class=\"ds-toast-chiudi\" aria-label=\"Chiudi avviso\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></button></div>",
+      "css": ".ds-toast { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 0.5rem; width: min(100%, 32rem); min-height: 56px; padding: 0.25rem 0.25rem 0.25rem 1rem; background: var(--color-guscio, #142321); color: var(--color-guscio-testo, #f0f5ee); border: 1px solid var(--color-guscio-linea-forte, #6b8577); border-radius: var(--radius-pannello, 12px); box-shadow: 0 8px 24px var(--color-ombra, rgb(9 23 19 / 0.28)); color-scheme: dark; } .ds-toast-testo { flex: 1; min-width: 0; } .ds-toast button { font: inherit; background: transparent; border: 0; cursor: pointer; min-height: 48px; border-radius: var(--radius-campo, 8px); } .ds-toast-azione { padding: 0 0.25rem; color: var(--color-guscio-accento, #c7e69c); font-weight: 650; } .ds-toast-azione:hover { text-decoration: underline; } .ds-toast-chiudi { width: 48px; display: grid; place-items: center; color: var(--color-guscio-secondario, #b8c9bf); } .ds-toast-chiudi:hover { background: color-mix(in oklab, currentColor 12%, transparent); } .ds-toast button:focus-visible { outline: 3px solid var(--color-guscio-accento, #c7e69c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Timer di recupero",
+      "kind": "custom",
+      "refersTo": "timer",
+      "description": "Componente distintivo: il livello verde riempie lo schermo dal basso e scende a scatti di 1 s; cifre lime negli ultimi 10 s, schermo lime con Vai alla fine.",
+      "html": "<div class=\"ds-timer\"><div class=\"ds-livello\" style=\"height:70%\"></div><div class=\"ds-testa\"><span>Recupero · 2:00</span><button type=\"button\" class=\"ds-icona\" aria-label=\"Riduci il timer\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m14 10 7-7\"/><path d=\"M20 10h-6V4\"/><path d=\"m3 21 7-7\"/><path d=\"M4 14h6v6\"/></svg></button></div><div class=\"ds-centro\"><p class=\"ds-cifre\">1:24</p><p class=\"ds-prossima\"><span>Prossima</span>Panca piana · serie 2 · 40 kg × 6–8</p></div><div class=\"ds-comandi\"><button type=\"button\" class=\"ds-lastra\">−15 s</button><button type=\"button\" class=\"ds-lastra\">+15 s</button><button type=\"button\" class=\"ds-lastra\">Salta</button></div></div>",
+      "css": ".ds-timer { font-family: var(--font-sans, 'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; position: relative; container-type: size; display: flex; flex-direction: column; height: 560px; max-width: 390px; padding: 0.5rem 1rem 1rem; overflow: hidden; border-radius: var(--radius-finestra, 16px); background: var(--color-guscio, #142321); color: var(--color-guscio-testo, #f0f5ee); color-scheme: dark; } .ds-livello { position: absolute; inset: auto 0 0; background: var(--color-livello, #2b4a36); border-top: 4px solid var(--color-guscio-accento, #c7e69c); } .ds-testa, .ds-centro, .ds-comandi { position: relative; } .ds-testa { display: flex; align-items: center; justify-content: space-between; color: var(--color-guscio-secondario, #b8c9bf); } .ds-icona { width: 48px; height: 48px; display: grid; place-items: center; background: transparent; border: 0; border-radius: var(--radius-campo, 8px); color: var(--color-guscio-secondario, #b8c9bf); cursor: pointer; } .ds-centro { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1rem; text-align: center; } .ds-cifre { margin: 0; font-size: min(44cqw, 30cqh, 16rem); line-height: 1; font-weight: 650; letter-spacing: -0.02em; } .ds-prossima { margin: 0 auto; max-width: 30ch; font-size: 1.125rem; line-height: 1.4; } .ds-prossima span { display: block; font-size: 0.875rem; color: var(--color-guscio-secondario, #b8c9bf); } .ds-comandi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.625rem; } .ds-lastra { min-height: 64px; border-radius: var(--radius-pannello, 12px); border: 1px solid var(--color-guscio-linea-forte, #6b8577); background: var(--color-guscio-pannello, #1e302d); color: var(--color-guscio-testo, #f0f5ee); font: inherit; font-size: 1.25rem; font-weight: 700; cursor: pointer; } .ds-lastra:hover { background: var(--color-guscio-pannello-hover, #2a4238); } .ds-timer button:focus-visible { outline: 3px solid var(--color-guscio-accento, #c7e69c); outline-offset: 3px; }"
     }
   ],
   "narrative": {
-    "northStar": "",
-    "overview": "Estensione del tracker esistente: fondo verde scuro, pannelli sobri e verde chiaro per azioni e stato selezionato. Il carattere è operativo, compatto e leggibile durante la registrazione in palestra.\n\nLa superficie privilegia variante, serie e carico. La modifica dei nomi è raccolta in dettagli espandibili; lo stato del salvataggio locale rimane nella barra inferiore. Non è stata introdotta una nuova identità visiva.",
+    "northStar": "Il guscio verde",
+    "overview": "BodyTracker è uno strumento da sala pesi, non una vetrina. Un guscio verde scuro, lo stesso nei due temi, tiene insieme le parti che il pollice tocca sempre: intestazione, barra di salvataggio, tab bar, avvisi e timer. Dentro il guscio scorre il contenuto (schede, righe serie, campi), che segue il tema scelto: chiaro con fondo verde salvia pallido e pannelli bianchi, oppure scuro nello stesso verde del guscio. L'utente sceglie Sistema, Chiaro o Scuro; il guscio non cambia mai, quindi l'app resta riconoscibile in penombra e al sole.\n\nLa densità è quella di un registro operativo: pochi passi tipografici, cifre tabulari ovunque, controlli alti almeno 48px, un solo livello di pannelli, nessuna ombra se non sotto l'avviso sospeso. La profondità si legge per tono (fondo, superficie, campo) e per bordo, mai per elevazione. Il carattere viene da due materiali: il verde (foresta nel contenuto chiaro, lime sul guscio e nel contenuto scuro) e Atkinson Hyperlegible Next, un carattere progettato per distinguere ogni lettera e ogni cifra a colpo d'occhio.\n\nIl gesto distintivo è il timer di recupero: lo schermo intero diventa una clessidra. Un livello verde intermedio con un filo lime in cima riempie lo schermo dal basso e scende a scatti di un secondo, così il tempo che resta si legge con la coda dell'occhio da un metro di distanza. Negli ultimi dieci secondi le cifre diventano lime; alla fine tutto lo schermo diventa lime e dice \"Vai\". L'anello attorno alle cifre, lo standard della categoria, è stato scartato.",
     "keyCharacteristics": [
-      "Una colonna operativa su desktop e telefono.",
-      "Numeri tabulari per carichi, ripetizioni e date dello storico.",
-      "Accento condiviso da azioni, selezione e completamento."
+      "Guscio verde scuro fisso, contenuto chiaro o scuro con scelta Sistema/Chiaro/Scuro.",
+      "Ogni colore del contenuto è una coppia `light-dark()`; dentro il guscio il contenuto risolve sempre al valore scuro.",
+      "Atkinson Hyperlegible Next ospitato in locale, cifre tabulari su tutta la pagina, zero barrato del carattere stesso.",
+      "Piatto e tonale: l'unica ombra è quella dell'avviso.",
+      "Tre raggi (8, 12, 16px) assegnati per ruolo, non per gusto.",
+      "Bersagli da 48px, righe e voci di navigazione da 56px, lastre del timer da 64px.",
+      "Timer a livello che scende a scatti; schermo lime a fine recupero."
     ],
     "rules": [
       {
-        "name": "The Accento operativo Rule",
-        "body": "Il verde chiaro indica azione o stato utile alla registrazione.",
+        "name": "La regola del guscio fisso",
+        "body": "Intestazione, barra di salvataggio, tab bar, avvisi e timer usano solo i token `guscio-*` e `livello`, uguali nei due temi. Nel tema chiaro il guscio non diventa chiaro.",
         "section": "colors"
       },
       {
-        "name": "The Profondità tonale Rule",
-        "body": "Usare superficie, bordo e fondale per distinguere i livelli già presenti nel diario.",
+        "name": "La regola della coppia",
+        "body": "Ogni colore del contenuto è scritto come `light-dark(chiaro, scuro)` in `@theme`. Un colore di contenuto con un solo valore è un errore: rompe uno dei due temi.",
+        "section": "colors"
+      },
+      {
+        "name": "La regola della linea forte",
+        "body": "Il bordo che fa riconoscere un controllo usa `linea-forte` (almeno 3:1 sul fondo in entrambi i temi). `linea` (circa 1,5:1) è solo per separatori e bordi decorativi.",
+        "section": "colors"
+      },
+      {
+        "name": "La regola del 4,5",
+        "body": "Tutto il testo, compreso il secondario e i segnaposto, supera 4,5:1 sul suo fondo in entrambi i temi; i rapporti misurati sono nel sidecar.",
+        "section": "colors"
+      },
+      {
+        "name": "La regola delle cifre tabulari",
+        "body": "`font-variant-numeric: tabular-nums` è impostato sulla radice e ripetuto sui componenti numerici. Nessuna cifra proporzionale, nessuna feature `zero` aggiunta: lo zero barrato è già del carattere.",
+        "section": "typography"
+      },
+      {
+        "name": "La regola dei 20px",
+        "body": "I campi in cui si scrivono peso e ripetizioni hanno cifre di almeno 20px (fino a 22px); tutto il resto della riga serie può stare a 16px.",
+        "section": "typography"
+      },
+      {
+        "name": "La regola del carattere locale",
+        "body": "Un solo carattere, servito dal sito stesso. Nessun font remoto e nessun carattere di sistema come voce dell'interfaccia.",
+        "section": "typography"
+      },
+      {
+        "name": "La regola del pollice",
+        "body": "Le azioni frequenti stanno in basso: navigazione, azione principale della schermata (a destra nella barra di salvataggio), comandi del timer. In alto restano solo il titolo e l'accesso alle Impostazioni.",
+        "section": "layout"
+      },
+      {
+        "name": "La regola dei 48",
+        "body": "Ogni controllo toccabile è alto almeno 48px; righe serie e voci della tab bar 56px; lastre del timer 64px.",
+        "section": "layout"
+      },
+      {
+        "name": "La regola dell'unica ombra",
+        "body": "Una sola ombra in tutto il sistema, quella dell'avviso. Pannelli, pulsanti, fogli, barre e timer non ne hanno.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do mantenere l’identità verde scuro e il contrasto tra superficie e campi.",
-      "Do mantenere i nomi modificabili nei dettagli espandibili e variante e serie direttamente accessibili.",
-      "Do conservare il focus visibile e lo spazio inferiore che evita la sovrapposizione della barra fissa."
+      "**Do** usare solo i token del sistema (`superficie`, `secondario`, `linea-forte`, …) e scrivere ogni nuovo colore di contenuto come coppia `light-dark()` in `@theme`.",
+      "**Do** mettere la classe del guscio su ogni superficie verde scuro fissa (intestazione, barre in basso, avvisi, timer), così il contenuto al suo interno risolve al valore scuro e il focus diventa lime.",
+      "**Do** dare il bordo `linea-forte` a ogni controllo e riservare `linea` ai separatori.",
+      "**Do** tenere ogni controllo toccabile ad almeno 48px, le righe serie e le voci della tab bar a 56px, le lastre del timer a 64px.",
+      "**Do** lasciare le cifre tabulari e tenere peso e ripetizioni da inserire ad almeno 20px.",
+      "**Do** usare l'anello di focus di 3px a 3px di distanza (1px su campi e riga serie), in `accento-testo` nel contenuto e lime sul guscio.",
+      "**Do** usare la curva di uscita `cubic-bezier(0.16, 1, 0.3, 1)` per le transizioni di stato e rispettare `prefers-reduced-motion`.",
+      "**Do** far avanzare il livello del timer a scatti di un secondo."
     ],
     "donts": [
-      "Don't introdurre un nuovo mondo visivo nell’estensione del diario.",
-      "Don't anteporre un titolo promozionale ai controlli operativi.",
-      "Don't trasformare la sessione desktop in un cruscotto decorativo."
+      "**Don't** usare la palette predefinita di Tailwind (`gray-*`, `blue-*`, `green-*`, `red-*`) nel codice nuovo. La grafica vecchia (pagine `index`, `workout`, `about`, `Layout.astro`, le classi `.container` e `.input` in `global.css`) la usa ancora ed è fuori ambito finché non viene sostituita.",
+      "**Don't** schiarire il guscio nel tema chiaro né usare token di contenuto per intestazione, barre, avvisi o timer.",
+      "**Don't** aggiungere ombre: l'unica è quella dell'avviso.",
+      "**Don't** annidare pannelli dentro pannelli.",
+      "**Don't** disegnare un anello di avanzamento attorno alle cifre del timer né animare il livello in modo continuo.",
+      "**Don't** caricare font remoti, usare il carattere di sistema come voce dell'interfaccia o aggiungere la feature `zero`.",
+      "**Don't** usare `linea` come unico bordo di un controllo: è sotto 3:1.",
+      "**Don't** aprire una finestra modale per inserire dati: il foglio serve per scegliere e consultare, la conferma solo per le azioni distruttive."
     ]
   }
 }

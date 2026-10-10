@@ -213,7 +213,7 @@
   .pulsante-pericolo {
     background: transparent;
     color: var(--color-pericolo);
-    border-color: color-mix(in oklab, var(--color-pericolo) 60%, transparent);
+    border-color: var(--color-pericolo);
   }
   .pulsante-pericolo:hover:not(:disabled) {
     background: var(--color-pericolo-fondo);

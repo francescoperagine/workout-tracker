@@ -15,7 +15,7 @@
   <legend class="etichetta">{etichetta}</legend>
   <div class="opzioni">
     {#each opzioni as opzione (opzione.valore)}
-      <label class:scelta={valore === opzione.valore}>
+      <label class:attiva={valore === opzione.valore}>
         <input type="radio" name={nome} value={opzione.valore} bind:group={valore} onchange={() => onchange?.(opzione.valore)} />
         {opzione.etichetta}
       </label>
@@ -44,7 +44,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    min-height: 44px;
+    min-height: 48px;
     padding: 0 0.5rem;
     border-radius: var(--radius-campo);
     color: var(--color-secondario);
@@ -55,7 +55,7 @@
   label:hover {
     color: var(--color-testo);
   }
-  label.scelta {
+  label.attiva {
     background: var(--color-accento);
     color: var(--color-su-accento);
   }
