@@ -17,8 +17,9 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 
 ## Outcome and proof
 
-- La scheda pianificata per oggi con un grande "Inizia allenamento" nella zona del pollice. Contenuto: nome della scheda, numero di esercizi, durata stimata se calcolabile dallo storico, primi esercizi.
-- Alternative: "Altra scheda" e "Allenamento libero".
+- **Percorso felice (US-11):** le ultime 4 schede fatte (distinte, dalla più recente), più la pianificata per oggi se manca, come righe grandi da toccare; una è già selezionata come suggerimento (la pianificata, altrimenti la recente fatta da più tempo, così A/B si alternano). Sotto, nella zona del pollice, un grande "Inizia allenamento". 1 tocco se il suggerimento è giusto, 2 altrimenti; nessuna conferma.
+- Ogni riga: nome della scheda, numero di esercizi, ultima volta ("giovedì", "12 giorni fa"), segno "Oggi" se pianificata.
+- Alternative: "Altra scheda" (elenco completo in un foglio dal basso) e "Allenamento libero".
 - Se c'è una sessione in corso il pulsante principale diventa "Riprendi" (con durata trascorsa ed esercizio corrente).
 - Ultimo allenamento: data, scheda, serie, eventuale record.
 
@@ -41,6 +42,7 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 ## Interaction and layout
 
 - Una colonna; l'azione primaria cade nella metà inferiore a 390×844 senza scorrere; tab bar in basso (Oggi, Calendario, Schede, Storico).
+- Le righe delle schede sono un gruppo a scelta singola (le righe di scelta del design system, `.scelta`), non pulsanti primari: l'unica azione primaria resta "Inizia allenamento". Le 4 righe e "Inizia" entrano senza scorrere a 390×844; a 320×568 "Inizia" resta fisso sopra la tab bar.
 - La striscia della settimana è leggibile senza colore (icona o testo per lo stato), toccabile per giorno.
 
 ## Constraints and open decisions

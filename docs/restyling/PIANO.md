@@ -174,6 +174,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - durata 0 = nessun timer;
   - togliere la spunta durante il recupero annulla il timer.
 - **Varianti:** stessa regola del PoC. Se la variante ha già valori, il cambio chiede conferma e svuota le serie; lo storico tiene traccia di variante ed esercizio base.
+  - Oltre alle alternative della scheda, "Altro esercizio…" accetta un nome scritto a mano. Se corrisponde (senza maiuscole, spazi e accenti) a un esercizio del catalogo si usa quello; altrimenti si crea un esercizio personalizzato in `catalogo`, riusato le volte successive. La voce di sessione ha `esercizioId` del sostituto e `varianteDi` dell'esercizio previsto.
 - **Sessioni:** più sessioni nello stesso giorno sono possibili. Una sola sessione "in corso" alla volta; concludere mostra un riepilogo (durata, serie, volume, record).
 
 ## Step
@@ -230,7 +231,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - settimana scorrevole e vista mese compatta;
   - assegnazione di una scheda a ogni giorno della settimana, eccezione per una singola data (scheda diversa o riposo);
   - stati del giorno: pianificato, fatto, saltato, oggi.
-- Oggi: scheda prevista e "Inizia allenamento"; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
+- Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
 - **Verifica:** e2e "pianifico B il giovedì → giovedì Oggi propone B".
 
 ### Step 6: Allenamento attivo

@@ -27,7 +27,7 @@ I flussi vengono prima delle pagine: ogni passaggio qui sotto deve funzionare a 
 
 ### Flusso 1. Allenamento del giorno (US-11, 12, 21, 22, 18)
 
-1. **Oggi:** la scheda di oggi ("Scheda A · 8 esercizi") con "Inizia allenamento" in basso. 1 tocco.
+1. **Oggi:** le ultime 4 schede fatte come righe grandi, con quella suggerita già selezionata ("Scheda B · 8 esercizi · ultima volta giovedì"), e "Inizia allenamento" in basso. 1 tocco se il suggerimento è giusto, 2 tocchi altrimenti (scheda, Inizia).
 2. **Allenamento attivo:** in vista il primo esercizio, "1 Squat bilanciere · 6–8 · 45–50 kg · rec. 2:00", con le serie precompilate vuote e "precedente" su ogni riga.
 3. **Serie:** spunta sulla riga vuota, che conferma il precedente 50 × 8: 1 tocco (P1). Se cambia qualcosa: tocco su "precedente" o un campo, poi la spunta.
 4. **Timer:** alla spunta si apre il recupero a tutto schermo, 2:00, con "Prossima: Squat bilanciere · serie 2 · 50 kg × 6–8". Se serve: +15 s, oppure Salta.
@@ -43,9 +43,9 @@ I flussi vengono prima delle pagine: ogni passaggio qui sotto deve funzionare a 
 
 ### Flusso 3. Macchina occupata (US-14, 08)
 
-1. Nell'esercizio corrente, il selettore variante mostra le alternative della scheda ("Leg press", "Squat al Smith", "Goblet squat").
+1. Nell'esercizio corrente, il selettore variante (foglio dal basso) mostra le alternative della scheda ("Leg press", "Squat al Smith", "Goblet squat") e "Altro esercizio…": un campo di testo per scrivere a mano l'esercizio fatto, con i nomi simili del catalogo come suggerimento.
 2. Se ci sono già valori inseriti: conferma, poi le serie si svuotano (come nel PoC).
-3. "Precedente" e record diventano quelli della variante scelta; la scheda non cambia.
+3. "Precedente" e record diventano quelli della variante scelta; un nome scritto a mano diventa un esercizio personalizzato del catalogo. La scheda non cambia.
 
 ### Flusso 4. Primo avvio (US-01, 11)
 

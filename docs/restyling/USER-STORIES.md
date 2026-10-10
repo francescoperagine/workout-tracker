@@ -78,14 +78,17 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 ### E4. Allenamento
 
-**US-11 (M, step 5–6).** Come utente in palestra, voglio avviare l'allenamento di oggi con un tocco, per iniziare subito.
-- Oggi mostra la scheda pianificata con "Inizia allenamento"; alternative: altra scheda o allenamento libero.
-- Se c'è una sessione in corso, il pulsante principale diventa "Riprendi".
+**US-11 (M, step 5–6).** Come utente in palestra, voglio scegliere la scheda e avviare l'allenamento nel minor tempo possibile, per iniziare subito.
+- Oggi mostra, come righe grandi da toccare, le **ultime 4 schede fatte** (distinte, dalla più recente), più quella pianificata per oggi se non è già tra queste. Senza storico: le schede attive nel loro ordine.
+- Una scheda è **già selezionata** come suggerimento: quella pianificata per oggi; senza pianificazione, tra le recenti quella fatta da più tempo (con A/B si alternano da sole).
+- "Inizia allenamento" sta nella zona del pollice. Percorso felice: **1 tocco** se il suggerimento è giusto, **2 tocchi** altrimenti (scheda, poi Inizia). Nessuna conferma e nessuna schermata intermedia.
+- Alternative meno frequenti: "Altra scheda" (elenco completo, in un foglio dal basso) e "Allenamento libero".
+- Se c'è una sessione in corso, il pulsante principale diventa "Riprendi" e le schede passano in secondo piano.
 
 **US-12 (M, step 6).** Come utente, voglio registrare peso e ripetizioni di ogni serie vedendo cosa ho fatto la volta scorsa, per progredire senza ricordare a memoria.
 - Riga serie: tipo/numero · precedente · peso · ripetizioni · spunta.
 - Toccando "precedente" i valori vengono copiati; tastiera numerica (decimale per il peso).
-- La spunta su una riga vuota conferma i valori "precedente" (1 tocco); senza precedente, una riga vuota non si spunta. Togliere la spunta annulla la registrazione.
+- La spunta su una riga vuota conferma i valori "precedente" (1 tocco); senza precedente, una riga vuota non si spunta e il cursore va al primo campo vuoto. Togliere la spunta annulla la registrazione.
 - Rispetta P1.
 
 **US-13 (M, step 6).** Come utente, voglio segnare una serie come riscaldamento, drop o cedimento, per distinguere le serie che contano.
@@ -93,6 +96,8 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-14 (M, step 6).** Come utente, voglio passare a una variante quando la macchina è occupata, mantenendo i carichi di ciascuna variante separati.
 - Se ci sono già valori: conferma e svuotamento delle serie, come nel PoC. "Precedente" si riferisce alla variante scelta.
+- Oltre alle alternative della scheda, il selettore ha **"Altro esercizio…"** con un campo di testo, per scrivere a mano l'esercizio fatto al posto di quello previsto. Mentre si scrive compaiono i nomi simili del catalogo; un nome nuovo diventa un esercizio personalizzato del catalogo, così la volta dopo ha il suo "precedente" e il suo storico.
+- La sostituzione vale solo per la sessione: la scheda non cambia.
 
 **US-15 (M, step 6).** Come utente, voglio aggiungere o togliere serie ed esercizi durante la sessione, perché il programma reale cambia.
 - "Aggiungi serie" riprende il peso dell'ultima serie con ripetizioni vuote.
@@ -162,9 +167,9 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 ## 4. Flussi principali da progettare per primi
 
-1. **Allenamento del giorno:** Oggi → Inizia → serie (precedente, spunta) → recupero a tutto schermo → serie successiva → … → Termina → riepilogo. Storie: US-11, 12, 21, 22, 18.
+1. **Allenamento del giorno:** Oggi (scheda suggerita già selezionata, oppure una delle ultime 4) → Inizia → serie (precedente, spunta) → recupero a tutto schermo → serie successiva → … → Termina → riepilogo. Storie: US-11, 12, 21, 22, 18.
 2. **Interruzione:** a metà recupero il telefono si blocca; al rientro si ritrova timer e sessione. Storie: US-17, 26.
-3. **Macchina occupata:** cambio variante a metà esercizio. Storie: US-14, 08.
+3. **Macchina occupata:** cambio variante a metà esercizio, scelta tra le alternative o scritta a mano. Storie: US-14, 08.
 4. **Primo avvio:** nuovo visitatore → schede di esempio → primo allenamento. Storie: US-01, 11.
 5. **Cambio programma:** duplicare la scheda A, modificarla, assegnarla al lunedì. Storie: US-10, 07, 04.
 
