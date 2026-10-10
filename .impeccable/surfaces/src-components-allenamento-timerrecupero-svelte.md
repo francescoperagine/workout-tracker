@@ -25,7 +25,7 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 
 ## Selected direction
 
-- **Autorità visiva:** mondo del PoC esteso (step 1). Qui si decide la mossa distintiva: il tempo che resta è la cosa più grande sullo schermo e cambia stato in modo inequivocabile alla fine.
+- **Autorità visiva:** mondo del PoC esteso (step 1): guscio verde scuro con accento lime, Atkinson Hyperlegible Next. Il timer è la mossa distintiva: il tempo che resta è la cosa più grande sullo schermo e cambia stato in modo inequivocabile alla fine.
 - **Tesi di interazione:** il timer non chiede attenzione, la concede. Un solo numero, un solo progresso, quattro controlli grandi in basso. Ridurlo è sempre possibile e non perde il conteggio.
 
 ## Scope and boundaries
@@ -50,5 +50,19 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 ## Constraints and open decisions
 
 - Avvisi garantiti solo con l'app aperta; le Impostazioni lo spiegano. Predisposizione Web Push senza server.
-- **Aperto (step 1):** forma del progresso (anello, barra, riempimento dello sfondo) e trattamento dello stato "Vai", da scegliere come mossa distintiva.
+- **Deciso (step 1):** il progresso è il **livello che si svuota** (scelta dell'utente tra livello, anello e tacche); lo stato "Vai" porta tutto lo schermo sull'accento. Vedi il contratto di direzione.
 - Il builder non deve inventare suoni scaricati da fonti esterne: il suono si genera localmente (`AudioContext`) o è un file incluso nel sito.
+
+## Direction contract
+
+THESIS: lo schermo stesso è la clessidra. Un livello verde riempie lo schermo dal basso e scende a ogni secondo: quanto recupero resta si legge con la coda dell'occhio, senza leggere le cifre. Rifiuta l'anello attorno alle cifre, lo standard della categoria (Strong, Hevy).
+
+OWN-WORLD: fondo del guscio verde scuro in entrambi i temi (il timer è un momento del guscio, non del contenuto); livello in verde intermedio con un bordo superiore lime di 4px; cifre Atkinson Hyperlegible Next tabulari, peso 650, alte quanto metà della larghezza; controlli come lastre a tutta larghezza con raggio 12px. Allo stato "Vai" tutto lo schermo diventa lime, testo in inchiostro verde.
+
+STORY: l'utente spunta la serie, appoggia il telefono, beve. Da un metro vede quanto verde resta e la prossima serie; se serve allunga o salta col pollice; alla fine lo schermo diventa lime e capisce "vai" prima di leggere la parola.
+
+FIRST VIEWPORT: in alto "Recupero · 2:00" e Riduci (icona, 48px); cifre al centro dell'altezza ottica, larghe circa l'80% dello schermo; sotto, "Prossima" con esercizio, serie, peso × ripetizioni; in basso, nella zona del pollice, −15 s, +15 s, Salta in tre lastre da 64px, e "Riduci" come testo sotto. Il livello sta dietro a tutto.
+
+FORM: estensione del mondo del PoC (new-work §1, brand incompleto), scelta tra tre forme presentate all'utente (livello, anello, tacche); nessun seed: la gara tra mondi è esclusa da HANDOFF.md. Il livello avanza a scatti di 1 s, senza animazione continua; con `prefers-reduced-motion` nessuna transizione.
+
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

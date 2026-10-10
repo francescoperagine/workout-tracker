@@ -62,7 +62,7 @@ interface Archivio {
   eccezioni: Record<string, string | null>;               // YYYY-MM-DD -> id scheda (o riposo)
   sessioni: Sessione[];
   impostazioni: {
-    tema: 'sistema' | 'chiaro' | 'scuro';
+    // il tema non sta qui: è una preferenza del dispositivo, nella chiave `bodytracker.tema` (step 1)
     unitaPeso: 'kg' | 'lb';
     unitaDistanza: 'm' | 'ft';
     recuperoPredefinito: number;          // secondi
@@ -197,6 +197,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - superfici del browser tematizzate (selezione, caret, focus, scrollbar).
 - Pagina interna `/kit` per vedere tutti i componenti nei due temi (esclusa dal precache e dalla navigazione). Non `/_kit`: Astro non genera le pagine il cui nome comincia con `_`.
 - **Verifica:** detector a 0 su `/kit` nei due temi, contrasti ≥ 4,5:1, target ≥ 44–48px.
+- **Stato (10 ottobre 2026):** fatto. Scelte dell'utente: tema chiaro "guscio verde" (intestazione, barre e timer restano verde scuro), font Atkinson Hyperlegible Next, timer a **livello che si svuota**. `DESIGN.md` riscritto, token in `@theme` con `light-dark()`, componenti base in `src/components/ui/`, `/kit`, test US-30. Il tema è salvato nella chiave `bodytracker.tema` e non nell'archivio: lo script inline lo applica prima del primo disegno senza leggere il diario.
 
 ### Step 2: Dati
 - **Storie:** US-02 (import PoC, logica), US-31 (unità, logica), US-33 (salvataggio, quota, conflitti).

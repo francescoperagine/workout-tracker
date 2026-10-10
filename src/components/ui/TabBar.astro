@@ -1,0 +1,44 @@
+---
+// Navigazione principale in basso, nella zona del pollice (P2). Le Impostazioni stanno nell'intestazione.
+import House from '@lucide/astro/icons/house';
+import CalendarDays from '@lucide/astro/icons/calendar-days';
+import ClipboardList from '@lucide/astro/icons/clipboard-list';
+import History from '@lucide/astro/icons/rotate-ccw-clock';
+
+export type VoceTab = 'oggi' | 'calendario' | 'schede' | 'storico';
+
+interface Props {
+  attiva?: VoceTab;
+}
+
+const { attiva } = Astro.props;
+
+const voci = [
+  { id: 'oggi', etichetta: 'Oggi', href: '/', Icona: House },
+  { id: 'calendario', etichetta: 'Calendario', href: '/calendario', Icona: CalendarDays },
+  { id: 'schede', etichetta: 'Schede', href: '/schede', Icona: ClipboardList },
+  { id: 'storico', etichetta: 'Storico', href: '/storico', Icona: History },
+] as const;
+---
+
+<nav class="guscio border-t border-guscio-linea pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
+  <ul class="mx-auto grid max-w-2xl grid-cols-4">
+    {
+      voci.map(({ id, etichetta, href, Icona }) => (
+        <li>
+          <a
+            href={href}
+            aria-current={attiva === id ? 'page' : undefined}
+            class:list={[
+              'flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs no-underline',
+              attiva === id ? 'font-bold text-guscio-accento' : 'text-guscio-secondario hover:text-guscio-testo',
+            ]}
+          >
+            <Icona size={22} aria-hidden="true" />
+            {etichetta}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

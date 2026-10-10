@@ -1,14 +1,333 @@
 @import "tailwindcss";
-/* Tailwind 4 non carica in automatico la configurazione JS: serve per i colori "brand" e le animazioni */
-@config "../../tailwind.config.mjs";
 
-html, body {
-    height: 100%;
+/*
+  Design system di BodyTracker: il mondo verde del PoC, in tema chiaro e scuro.
+  I valori normativi sono in DESIGN.md. Ogni colore di tema usa light-dark():
+  - nessun attributo su <html> → segue il sistema (color-scheme: light dark);
+  - data-theme="chiaro" / "scuro" → forza il tema (scelta nelle Impostazioni, src/lib/tema.ts).
+  Il guscio (intestazione, barra di salvataggio, tab bar, timer) resta verde scuro in entrambi i temi.
+*/
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/atkinson-hyperlegible-next-latin.woff2") format("woff2-variations"),
+    url("/fonts/atkinson-hyperlegible-next-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-.container { max-width: 900px; }
+
+@theme {
+  /* Contenuto: cambia con il tema (chiaro, scuro) */
+  --color-fondo: light-dark(#eef2ec, #142321);
+  --color-superficie: light-dark(#ffffff, #1e302d);
+  --color-campo: light-dark(#f7f9f5, #142321);
+  --color-testo: light-dark(#142321, #f0f5ee);
+  --color-secondario: light-dark(#4b5f55, #b8c9bf);
+  --color-linea: light-dark(#c3d0c6, #344a41);
+  --color-linea-forte: light-dark(#788f80, #6b8577);
+  --color-accento: light-dark(#2f5d34, #c7e69c);
+  --color-su-accento: light-dark(#f2f9e8, #19301e);
+  --color-accento-testo: light-dark(#2f5d34, #c7e69c);
+  --color-fatto: light-dark(#ddebd0, #28432f);
+  --color-pericolo: light-dark(#a8321f, #ffb6a6);
+  --color-pericolo-fondo: light-dark(#fbe9e5, #3d2621);
+  --color-avviso: light-dark(#6b3d0f, #ffe0bd);
+  --color-avviso-fondo: light-dark(#fbecd9, #3e2f23);
+  --color-avviso-linea: light-dark(#c28a4a, #846b4e);
+
+  /* Guscio: uguale nei due temi, è il mondo verde scuro del PoC */
+  --color-guscio: #142321;
+  --color-guscio-pannello: #1e302d;
+  --color-guscio-testo: #f0f5ee;
+  --color-guscio-secondario: #b8c9bf;
+  --color-guscio-linea: #344a41;
+  --color-guscio-linea-forte: #6b8577;
+  --color-guscio-accento: #c7e69c;
+  --color-guscio-su-accento: #19301e;
+  --color-guscio-pannello-hover: #2a4238;
+  --color-guscio-accento-hover: #dbf4b8;
+  --color-guscio-avviso: #ffe0bd;
+  --color-guscio-avviso-icona: #ffc98f;
+  --color-guscio-avviso-linea: #846b4e;
+  --color-livello: #2b4a36;
+  /* Fondale delle modali e ombra degli elementi sospesi: verde quasi nero del PoC */
+  --color-fondale: rgb(9 23 19 / 0.6);
+  --color-ombra: rgb(9 23 19 / 0.28);
+
+  --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif;
+
+  /* Scala tipografica: pochi passi, cifre a parte */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-titolo-pagina: 1.75rem;
+  --text-titolo-pagina--line-height: 1.15;
+  --text-cifre: 1.375rem;
+  --text-cifre--line-height: 1.2;
+
+  --radius-campo: 8px;
+  --radius-pannello: 12px;
+  --radius-finestra: 16px;
+
+  --ease-uscita: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+    accent-color: var(--color-accento);
+    scrollbar-color: var(--color-linea-forte) var(--color-fondo);
+  }
+  :root[data-theme="chiaro"] {
+    color-scheme: light;
+  }
+  :root[data-theme="scuro"] {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+  body {
+    background: var(--color-fondo);
+    color: var(--color-testo);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-accento);
+    color: var(--color-su-accento);
+  }
+  input,
+  textarea {
+    caret-color: var(--color-accento-testo);
+  }
+  a {
+    color: var(--color-accento-testo);
+    text-underline-offset: 4px;
+  }
+  button,
+  a,
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-accento-testo);
+    outline-offset: 3px;
+  }
+  /* Sul guscio verde scuro il contorno usa l'accento lime anche nel tema chiaro */
+  .guscio :focus-visible {
+    outline-color: var(--color-guscio-accento);
+  }
+  ::placeholder {
+    color: var(--color-secondario);
+    opacity: 1;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
 
 @layer components {
-    .input {
-        @apply rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none;
-    }
+  /* Guscio: superfici verde scuro fisse (intestazione, barre in basso, timer) */
+  .guscio {
+    background: var(--color-guscio);
+    color: var(--color-guscio-testo);
+    color-scheme: dark;
+  }
+
+  /* Pulsanti */
+  .pulsante {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.25rem;
+    border-radius: var(--radius-campo);
+    border: 1px solid transparent;
+    font-weight: 650;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s var(--ease-uscita), border-color 0.15s var(--ease-uscita);
+  }
+  .pulsante:disabled,
+  .pulsante[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .pulsante svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .pulsante-primario {
+    background: var(--color-accento);
+    color: var(--color-su-accento);
+  }
+  .pulsante-primario:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-accento) 86%, var(--color-testo));
+  }
+  .pulsante-secondario {
+    background: var(--color-superficie);
+    color: var(--color-testo);
+    border-color: var(--color-linea-forte);
+  }
+  .pulsante-secondario:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-superficie) 90%, var(--color-accento));
+  }
+  .pulsante-pericolo {
+    background: transparent;
+    color: var(--color-pericolo);
+    border-color: color-mix(in oklab, var(--color-pericolo) 60%, transparent);
+  }
+  .pulsante-pericolo:hover:not(:disabled) {
+    background: var(--color-pericolo-fondo);
+  }
+  .pulsante-testo {
+    min-height: 48px;
+    padding: 0 0.25rem;
+    background: transparent;
+    color: var(--color-accento-testo);
+    font-size: var(--text-base);
+  }
+  .pulsante-testo:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+  .pulsante-icona {
+    width: 48px;
+    padding: 0;
+    background: transparent;
+    color: var(--color-secondario);
+  }
+  .pulsante-icona:hover:not(:disabled) {
+    background: color-mix(in oklab, currentColor 12%, transparent);
+  }
+  .pulsante-ampio {
+    width: 100%;
+  }
+  /* Sul guscio il primario è lime con inchiostro verde, come nel PoC */
+  .guscio .pulsante-primario {
+    background: var(--color-guscio-accento);
+    color: var(--color-guscio-su-accento);
+  }
+  .guscio .pulsante-primario:hover:not(:disabled) {
+    background: var(--color-guscio-accento-hover);
+  }
+  .guscio .pulsante-secondario {
+    background: var(--color-guscio-pannello);
+    color: var(--color-guscio-testo);
+    border-color: var(--color-guscio-linea-forte);
+  }
+  .guscio .pulsante-secondario:hover:not(:disabled) {
+    background: var(--color-guscio-pannello-hover);
+  }
+  .guscio .pulsante-icona {
+    color: var(--color-guscio-secondario);
+  }
+  .guscio .pulsante-testo {
+    color: var(--color-guscio-accento);
+  }
+
+  /* Campi */
+  .etichetta {
+    display: block;
+    color: var(--color-secondario);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.375rem;
+  }
+  .campo {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-campo);
+    border: 1px solid var(--color-linea-forte);
+    background: var(--color-campo);
+    color: var(--color-testo);
+    font: inherit;
+  }
+  .campo:focus-visible {
+    outline-offset: 1px;
+    border-color: var(--color-accento-testo);
+  }
+  .campo[aria-invalid="true"] {
+    border-color: var(--color-pericolo);
+  }
+  select.campo {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23788f80' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  .aiuto {
+    color: var(--color-secondario);
+    font-size: 0.875rem;
+    margin-top: 0.375rem;
+  }
+  .errore-campo {
+    color: var(--color-pericolo);
+    font-size: 0.875rem;
+    margin-top: 0.375rem;
+  }
+
+  /* Pannello: un solo livello, mai annidato */
+  .pannello {
+    background: var(--color-superficie);
+    border-radius: var(--radius-pannello);
+    padding: clamp(0.75rem, 4vw, 1rem);
+  }
+
+  .cifre {
+    font-size: var(--text-cifre);
+    line-height: var(--text-cifre--line-height);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+  Grafica vecchia (pagine pre-restyling: index, workout, about). Resta finché gli step 3–6
+  non sostituiscono quelle pagine; non usarla nel codice nuovo.
+*/
+.container {
+  max-width: 900px;
+}
+@layer components {
+  .input {
+    @apply rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none;
+  }
 }

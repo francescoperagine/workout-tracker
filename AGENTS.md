@@ -42,9 +42,11 @@ astro.config.mjs        site francescoperagine.com, output statico (default), in
 svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
 playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322
-tailwind.config.mjs     palette "brand-*" e animazioni (fade-in, slide-up, float), caricato da global.css con @config
-src/styles/global.css   @import "tailwindcss", @config, regole globali e classe .input
-src/layouts/Layout.astro  <html lang="it">, meta robots noindex (app privata), Header + <main class="container"> + Footer. Props: title, description, showBackButton
+src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.guscio, .pulsante-*, .campo, .pannello, .cifre); in fondo la grafica vecchia (.container, .input) delle pagine pre-restyling
+src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, preload del font, script inline del tema. Props: title, description, bodyClass
+src/layouts/Layout.astro  grafica vecchia: Base + Header + <main class="container"> + Footer. Props: title, description, showBackButton
+src/lib/tema.ts         tema Sistema/Chiaro/Scuro: chiave bodytracker.tema, leggiTema, applicaTema, salvaTema (con test)
+public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 src/scripts/
   bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson
   exercise-list.ts      Editor condiviso della lista esercizi/serie (mountExerciseList, promptNewExercise)
@@ -52,7 +54,12 @@ src/pages/
   index.astro           Home: WeeklyCalendar, CalendarConfig, WorkoutEditor, HistoryView
   about.astro           Pagina informativa statica (sezione #privacy)
   workout.astro         Editor dell'allenamento di un giorno: /workout?date=YYYY-MM-DD (data letta lato client)
-src/components/
+src/pages/kit.astro     /kit: pagina interna del design system (?tema=chiaro|scuro forza il tema); fuori dalla navigazione
+src/components/ui/      componenti base: Intestazione, TabBar, StatoVuoto (.astro); CampoSerie, RigaSerie, Segmentato,
+                        BarraSalvataggio, Toast, Foglio, Dialogo (.svelte)
+src/components/allenamento/TimerRecupero.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
+src/components/kit/     isole dimostrative usate solo da /kit
+src/components/  (grafica vecchia)
   Header.astro          Navigazione sticky + menu mobile (script bundlato da Astro)
   Footer.astro
   WeeklyCalendar.astro  Settimana corrente/precedente/successiva; ogni giorno linka a /workout/<data>
@@ -64,8 +71,8 @@ src/components/
 ### Modello di rendering
 
 - Il sito è **completamente statico** (nessun adapter, nessun rendering lato server). Non introdurre route dinamiche lato server: un parametro variabile va passato in query string e letto nel client, come fa `workout.astro`.
-- **Svelte 5** è installato (`@astrojs/svelte`) ma non ancora usato: dal restyling le parti con stato (allenamento attivo, timer, editor delle schede, grafici) diventano isole Svelte (`client:load`), il resto resta `.astro`. Le regole qui sotto valgono per il codice attuale, pre-restyling.
-- I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi.
+- **Svelte 5** (`@astrojs/svelte`): i componenti con stato del design system sono già Svelte (`src/components/ui/`, `TimerRecupero`); dal restyling le parti con stato (allenamento attivo, timer, editor delle schede, grafici) diventano isole Svelte (`client:load`), il resto resta `.astro`. Le regole qui sotto su `<script>`, `innerHTML` e `escapeHtml` valgono per il codice pre-restyling; nelle isole Svelte il testo passa dal templating di Svelte, che fa l'escape da solo.
+- I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi. Unica eccezione: lo script `is:inline` del tema in `Base.astro`, che deve girare prima del primo disegno.
 - Accedi al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
 - Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …). **Ogni testo dell'utente inserito in un template HTML deve passare da `escapeHtml`**; altrimenti usa `textContent`.
 - I componenti comunicano tramite l'evento `window` `bb:updated` (`UPDATED_EVENT`) e l'evento `storage` per altre schede. `putWorkout`, `mergeWorkouts` e `clearWorkouts` lo emettono già; dopo `saveCalendar` va emesso a mano. Un editor che salva a ogni modifica deve ignorare l'evento generato dal proprio salvataggio, altrimenti il re-render fa perdere il focus (vedi il flag `saving` in `WorkoutEditor`).
@@ -88,17 +95,23 @@ src/components/
 
 - Testo dell'interfaccia, `title`/`description` e messaggi utente in **italiano**; date formattate con `toLocaleDateString('it-IT', …)`.
 - Ogni pagina usa `Layout`; le sottopagine passano `showBackButton={true}`.
-- Lo stile è fatto con classi di utilità Tailwind direttamente nel markup: card `bg-white rounded-2xl shadow-lg p-6/p-8`, azioni primarie `bg-blue-600 … hover:bg-blue-700`, azioni di salvataggio `bg-green-600`, azioni distruttive in rosso. Tailwind 4 usa la sintassi `bg-linear-to-r`/`bg-linear-to-br` (non `bg-gradient-to-*`).
-- Le azioni distruttive chiedono conferma con `confirm(...)`; il feedback oggi usa `alert(...)`.
-- I colori personalizzati (`bg-brand-primary`, …) e le animazioni (`animate-fade-in`, …) si definiscono in `tailwind.config.mjs`. Per gli input di form semplici usa la classe `.input` di `global.css`.
+- **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
+  - Colori di contenuto, che cambiano col tema: `bg-fondo`, `bg-superficie`, `bg-campo`, `text-testo`, `text-secondario`, `border-linea`, `border-linea-forte`, `bg-accento`/`text-su-accento`, `text-accento-testo`, `bg-fatto`, `text-pericolo`, `bg-avviso-fondo`. Sono `light-dark()`: niente varianti `dark:`.
+  - Guscio, uguale nei due temi (intestazione, barra di salvataggio, tab bar, timer): classe `.guscio` più i token `guscio-*` e `livello`. Dentro `.guscio` i token di contenuto si risolvono nella variante scura.
+  - Classi componente: `.pulsante` con `.pulsante-primario`, `-secondario`, `-pericolo`, `-testo`, `-icona`, `-ampio`; `.etichetta`, `.campo`, `.aiuto`, `.errore-campo`; `.pannello` (un solo livello, mai annidato); `.cifre` per pesi e ripetizioni.
+  - Scala tipografica: `text-xs` … `text-xl`, `text-titolo-pagina`, `text-cifre`; raggi `--radius-campo`/`-pannello`/`-finestra`. Tutti i numeri sono tabulari (`font-variant-numeric` sulla radice).
+  - Icone: Lucide da `@lucide/astro/icons/<nome>` e `@lucide/svelte/icons/<nome>`, tratto 2, 20–22px, `aria-hidden` con un'etichetta sul controllo. Nessuna emoji.
+  - Prima di aggiungere un componente guarda `/kit`; un componente nuovo del design system va mostrato anche lì.
+- Le pagine vecchie (index, workout, about) usano ancora `Layout.astro`, la palette di default di Tailwind e `.input`: restano così finché gli step 3–6 non le sostituiscono.
+- Conferme e feedback: il codice nuovo usa `Dialogo` (azioni distruttive), `Toast` (esito, con "Annulla" dove possibile) e `BarraSalvataggio`, non `alert`/`confirm`. Il codice vecchio usa ancora quelli nativi.
 - Link alle sezioni della home sempre assoluti (`/#allenamenti`, `/#storico`), perché Header e Footer compaiono su tutte le pagine; link alla pagina di un giorno tramite `workoutUrl(dateKey)`.
 - Il codice segue lo stile dei file vicini: alcuni file usano punto e virgola, altri no. Non riformattare interi file.
 - I commenti nel codice sono un misto di italiano e inglese; preferisci l'italiano per i testi rivolti all'utente.
 
 ## Limiti noti
 
-- Test appena introdotti: oggi c'è solo uno smoke test e2e (`tests/e2e/smoke.spec.ts`). Ogni nuova storia porta il suo test.
-- `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; se li sostituisci, fallo in modo coerente su tutti i componenti.
+- Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`) e US-30 sui temi (`tests/e2e/us-30-temi.spec.ts`, su `/kit`). Ogni nuova storia porta il suo test.
+- Nelle pagine vecchie `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; spariscono con la riscrittura delle pagine (step 3–6).
 - Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.
 
 ## Riferimento: `BodyTracker/`
@@ -117,8 +130,8 @@ Il PoC è la specifica delle funzioni da portare nell'app Astro: alla fine del r
 | Percorso | Cosa è |
 | --- | --- |
 | `PRODUCT.md` | Verità di prodotto (utenti, scena d'uso, vincoli, principi). Spostato dal PoC e aggiornato con le decisioni del piano |
-| `DESIGN.md` | Design system. Oggi è ancora quello del PoC (verde scuro, solo tema scuro): lo step 1 lo riscrive |
-| `.impeccable/design.json` | Sidecar di `DESIGN.md` (rampe tonali, componenti), spostato dal PoC |
+| `DESIGN.md` | Design system chiaro e scuro (step 1): token normativi nel frontmatter, regole nel testo. `/kit` lo mostra |
+| `.impeccable/design.json` | Sidecar di `DESIGN.md` (rampe tonali, componenti) |
 | `.impeccable/config.json` | Configurazione condivisa del detector e dell'hook |
 | `.impeccable/surfaces/*.md` | Brief per superficie (scritti con `shape`), riletti da Impeccable a ogni modifica della superficie |
 | `.claude/skills/impeccable/` | Skill Impeccable 4.5.2 (copia di `plugin/skills/impeccable` del repository ufficiale, commit `d631a88`) |

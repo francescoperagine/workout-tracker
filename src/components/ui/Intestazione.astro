@@ -1,0 +1,32 @@
+---
+// Intestazione del guscio: titolo della schermata, riga di stato e accesso alle Impostazioni.
+import SlidersHorizontal from '@lucide/astro/icons/sliders-horizontal';
+
+interface Props {
+  titolo: string;
+  sottotitolo?: string;
+  /** false nelle schermate che non devono portare alle Impostazioni (es. le Impostazioni stesse) */
+  impostazioni?: boolean;
+}
+
+const { titolo, sottotitolo, impostazioni = true } = Astro.props;
+---
+
+<header class="guscio sticky top-0 z-20 border-b border-guscio-linea pt-[env(safe-area-inset-top)]">
+  <div class="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4">
+    <div class="min-w-0 py-2">
+      <h1 class="truncate text-lg leading-tight font-bold">{titolo}</h1>
+      {sottotitolo && <p class="truncate text-sm text-guscio-secondario">{sottotitolo}</p>}
+    </div>
+    <div class="flex items-center gap-1">
+      <slot name="azioni" />
+      {
+        impostazioni && (
+          <a href="/impostazioni" class="pulsante pulsante-icona" aria-label="Impostazioni">
+            <SlidersHorizontal size={22} aria-hidden="true" />
+          </a>
+        )
+      }
+    </div>
+  </div>
+</header>

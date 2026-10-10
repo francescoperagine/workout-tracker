@@ -13,7 +13,7 @@ Confermato: app **Astro 7** statica nella radice del repository, con isole **Sve
 - **Fuori ambito:** allenatori con più atleti, social, sincronizzazione tra dispositivi, piani generati automaticamente, consigli medici.
 
 ## Product Purpose
-Diario di allenamento con i pesi, privato e offline: pianificare le schede sulla settimana, avviare l'allenamento del giorno con un tocco, registrare ogni serie (peso, ripetizioni, tipo) vedendo il valore della volta scorsa, recuperare il tempo giusto con un timer a tutto schermo, ritrovare e correggere lo storico, vedere i progressi per esercizio. Successo: una serie registrata in 2 tocchi quando si ripete la volta scorsa, e nessun dato mai perso.
+Diario di allenamento con i pesi, privato e offline: pianificare le schede sulla settimana, avviare l'allenamento del giorno con un tocco, registrare ogni serie (peso, ripetizioni, tipo) vedendo il valore della volta scorsa, recuperare il tempo giusto con un timer a tutto schermo, ritrovare e correggere lo storico, vedere i progressi per esercizio. Successo: una serie registrata in 1 tocco quando si ripete la volta scorsa (la spunta conferma il precedente), e nessun dato mai perso.
 
 ## Positioning
 Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il recupero), ma come web app installabile che **non manda nulla a nessun server**: niente account, niente abbonamento, niente statistiche, tutto nel browser e funzionante offline. In più, le **varianti per esercizio** con carichi separati, per quando la macchina è occupata.
@@ -36,7 +36,7 @@ Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il
 - **Lessico:** "scheda", "serie", "ripetizioni", "recupero", "riscaldamento", "variante", "superserie", "precedente", "carico". Interfaccia solo in italiano.
 
 ## Brand Commitments
-Nome **BodyTracker**. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo di partenza è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: i dettagli visivi sono in `DESIGN.md`.
+Nome **BodyTracker**. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: il guscio resta verde scuro in entrambi, il font è Atkinson Hyperlegible Next, la mossa distintiva è il timer a livello che si svuota. I dettagli visivi sono in `DESIGN.md`.
 
 ## Evidence on Hand
 - Schede reali A/B e catalogo esercizi con ID stabili in `BodyTracker/palestra/esercizi.js` (`window.schedeIniziali`, `window.catalogoEsercizi`). Gli ID non vanno cambiati: lo storico dell'utente li usa.

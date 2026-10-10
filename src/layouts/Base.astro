@@ -1,0 +1,37 @@
+---
+// Documento di base di ogni pagina: lingua, meta, font, token e tema applicato prima del primo disegno.
+import { CHIAVE_TEMA } from '../lib/tema';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  bodyClass?: string;
+}
+
+const { title, description = 'Diario di allenamento privato: i dati restano su questo dispositivo.', bodyClass } = Astro.props;
+
+// Unico script inline ammesso: deve girare prima del CSS per evitare il lampo del tema sbagliato.
+const scriptTema = `try{var t=localStorage.getItem(${JSON.stringify(CHIAVE_TEMA)});if(t==="chiaro"||t==="scuro")document.documentElement.dataset.theme=t}catch(e){}`;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <!-- App privata: i dati restano nel browser, le pagine non vanno indicizzate -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#142321" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <script is:inline set:html={scriptTema} />
+    <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

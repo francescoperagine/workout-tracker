@@ -1,0 +1,16 @@
+---
+// Stato vuoto: dice cosa comparirà qui e come farlo comparire, con al massimo un'azione.
+interface Props {
+  titolo: string;
+  testo: string;
+}
+
+const { titolo, testo } = Astro.props;
+---
+
+<div class="flex flex-col items-start gap-3 py-8">
+  <div class="text-secondario" aria-hidden="true"><slot name="icona" /></div>
+  <h2 class="text-xl leading-snug font-bold">{titolo}</h2>
+  <p class="max-w-[60ch] text-secondario">{testo}</p>
+  <slot />
+</div>
