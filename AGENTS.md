@@ -45,7 +45,7 @@ playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.guscio, .pulsante-*, .campo, .pannello, .cifre); in fondo la grafica vecchia (.container, .input) delle pagine pre-restyling
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, preload del font, script inline del tema. Props: title, description, bodyClass
 src/layouts/Layout.astro  grafica vecchia: Base + Header + <main class="container"> + Footer. Props: title, description, showBackButton
-src/lib/tema.ts         tema Sistema/Chiaro/Scuro: chiave bodytracker.tema, leggiTema, applicaTema, salvaTema (con test)
+src/lib/tema.ts         temi: REGISTRO_TEMI (unico elenco: Sistema, Chiaro, Scuro; i temi futuri si aggiungono qui e in src/styles/temi/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.tema, leggiTema, applicaTema, salvaTema, script inline (con test)
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 src/scripts/
   bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson

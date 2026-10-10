@@ -332,6 +332,17 @@ Una famiglia sola di verdi, dal quasi nero del guscio al salvia pallido del fond
 
 Il meccanismo dei temi: nessun attributo su `<html>` significa "segui il sistema" (`color-scheme: light dark`); `data-theme="chiaro"` o `data-theme="scuro"` forza il tema. La preferenza vive nella chiave `bodytracker.tema` ed è applicata da uno script in linea prima del primo disegno, per evitare il lampo del tema sbagliato. Ogni superficie del guscio dichiara `color-scheme: dark`, quindi un token di contenuto usato dentro il guscio prende il suo valore scuro anche nel tema chiaro.
 
+### Aggiungere un tema
+
+I temi sono un registro, non un elenco cablato: `REGISTRO_TEMI` in `src/lib/tema.ts` è l'unica fonte, e da lì leggono lo script in linea di `Base.astro`, il selettore delle Impostazioni e i test. Un tema aggiuntivo (per esempio arancione su nero) è una **palette**: ridefinisce i token, non i componenti.
+
+1. Una voce nel registro: `arancione: { etichetta: 'Arancione', schema: 'dark' }`. `schema` è `light` o `dark` per un tema con un solo aspetto, `auto` se segue il sistema (allora i valori sono coppie `light-dark()`).
+2. Un file `src/styles/temi/arancione.css`, importato in testa a `global.css`, con una sola regola `:root[data-theme="arancione"] { color-scheme: dark; … }` che sovrascrive **tutti** i token di contenuto e del guscio (`guscio-*`, `livello`, `fondale`, `ombra`). Il file resta fuori dai layer, così vince sui valori di `@theme`.
+3. Le stesse soglie del sistema verde: testo ≥ 4,5:1 su fondo, superficie, campo e fatto; `linea-forte` ≥ 3:1; testo su accento ≥ 4,5:1; cifre del timer leggibili sul guscio e sul livello. Il test del registro (`src/lib/tema.test.ts`) fallisce se un tema non ha la sua regola CSS o il suo `color-scheme`.
+4. I colori del tema vanno nel frontmatter di questo file e in `.impeccable/design.json`; `/kit` lo mostra da solo nel selettore.
+
+Il verde resta il tema predefinito. Il guscio di un tema aggiuntivo può avere un colore diverso, ma resta fisso in tutte le schermate di quel tema. Unico valore oggi non sovrascrivibile: la freccia dei `select`, un SVG con il grigio `#788f80`, leggibile su fondi chiari e scuri.
+
 ### Primary
 - **Verde foresta / Lime** (`accento`): l'azione primaria e la selezione nel contenuto: pulsante primario, segmento scelto, spunta della serie fatta, pallino del radio, selezione del testo. Foresta profondo nel tema chiaro, lime nel tema scuro. Il testo sopra l'accento usa sempre **Inchiostro su accento** (`su-accento`), salvia quasi bianco sul foresta e verde inchiostro sul lime.
 - **Accento per testo** (`accento-testo`): link, cursore di inserimento, anello di focus nel contenuto, bordo del campo a fuoco, sigla del tipo di serie speciale. Oggi ha gli stessi valori di `accento` in entrambi i temi: resta un token separato perché nasce per il testo su fondo, non per il riempimento.

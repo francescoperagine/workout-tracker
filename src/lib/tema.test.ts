@@ -43,3 +43,27 @@ describe('tema', () => {
     expect(radice.dataset.theme).toBeUndefined();
   });
 });
+
+describe('registro dei temi', () => {
+  it('ogni tema non predefinito ha la sua regola CSS :root[data-theme]', async () => {
+    const { readFileSync, readdirSync, existsSync } = await import('node:fs');
+    const { REGISTRO_TEMI, TEMA_PREDEFINITO, TEMI } = await import('./tema');
+    const cartella = new URL('../styles/temi/', import.meta.url);
+    const css = [
+      readFileSync(new URL('../styles/global.css', import.meta.url), 'utf8'),
+      ...(existsSync(cartella) ? readdirSync(cartella).filter((f) => f.endsWith('.css')).map((f) => readFileSync(new URL(f, cartella), 'utf8')) : []),
+    ].join('\n');
+    for (const tema of TEMI.filter((t) => t !== TEMA_PREDEFINITO)) {
+      expect(css, `manca :root[data-theme="${tema}"]`).toContain(`:root[data-theme="${tema}"]`);
+      const schema = REGISTRO_TEMI[tema].schema;
+      if (schema !== 'auto') expect(css).toMatch(new RegExp(`:root\\[data-theme="${tema}"\\][^}]*color-scheme:\\s*${schema}`));
+    }
+  });
+
+  it('lo script inline ammette solo i temi del registro', async () => {
+    const { scriptTemaPrimaDelDisegno } = await import('./tema');
+    const script = scriptTemaPrimaDelDisegno();
+    expect(script).toContain('["chiaro","scuro"]');
+    expect(script).not.toContain('sistema');
+  });
+});

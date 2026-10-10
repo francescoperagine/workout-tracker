@@ -1,10 +1,12 @@
 @import "tailwindcss";
+/* Temi aggiuntivi (palette): un file per tema in src/styles/temi/, importato qui. Vedi DESIGN.md, "Aggiungere un tema". */
 
 /*
   Design system di BodyTracker: il mondo verde del PoC, in tema chiaro e scuro.
   I valori normativi sono in DESIGN.md. Ogni colore di tema usa light-dark():
   - nessun attributo su <html> → segue il sistema (color-scheme: light dark);
-  - data-theme="chiaro" / "scuro" → forza il tema (scelta nelle Impostazioni, src/lib/tema.ts).
+  - data-theme="chiaro" / "scuro" → forza il tema (scelta nelle Impostazioni, src/lib/tema.ts);
+  - data-theme="<palette>" → un tema aggiuntivo sovrascrive i token in src/styles/temi/<palette>.css.
   Il guscio (intestazione, barra di salvataggio, tab bar, timer) resta verde scuro in entrambi i temi.
 */
 

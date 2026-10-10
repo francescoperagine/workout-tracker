@@ -1,6 +1,6 @@
 ---
 // Documento di base di ogni pagina: lingua, meta, font, token e tema applicato prima del primo disegno.
-import { CHIAVE_TEMA } from '../lib/tema';
+import { scriptTemaPrimaDelDisegno } from '../lib/tema';
 import '../styles/global.css';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 const { title, description = 'Diario di allenamento privato: i dati restano su questo dispositivo.', bodyClass } = Astro.props;
 
 // Unico script inline ammesso: deve girare prima del CSS per evitare il lampo del tema sbagliato.
-const scriptTema = `try{var t=localStorage.getItem(${JSON.stringify(CHIAVE_TEMA)});if(t==="chiaro"||t==="scuro")document.documentElement.dataset.theme=t}catch(e){}`;
+const scriptTema = scriptTemaPrimaDelDisegno();
 ---
 
 <!doctype html>

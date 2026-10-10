@@ -593,7 +593,8 @@
         "scuro"
       ],
       "firstPaint": "Script in linea in Base.astro, prima del CSS, legge bodytracker.tema e imposta data-theme; 'sistema' rimuove la chiave e l'attributo.",
-      "shell": "Le superfici del guscio dichiarano color-scheme: dark: i token di contenuto al loro interno risolvono al valore scuro in entrambi i temi. theme-color del browser: #142321."
+      "shell": "Le superfici del guscio dichiarano color-scheme: dark: i token di contenuto al loro interno risolvono al valore scuro in entrambi i temi. theme-color del browser: #142321.",
+      "registry": "REGISTRO_TEMI in src/lib/tema.ts è l'unico elenco dei temi (script in linea, selettore, test). Un tema aggiuntivo è una palette: voce nel registro con schema light|dark|auto e file src/styles/temi/<id>.css con :root[data-theme=\"<id>\"] { color-scheme; tutti i token di contenuto e del guscio }, non stratificato. Vedi DESIGN.md, Aggiungere un tema."
     },
     "focus": {
       "default": "outline: 3px solid var(--color-accento-testo); outline-offset: 3px",
