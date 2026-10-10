@@ -10,7 +10,7 @@ Il repository contiene due cose distinte:
 | Percorso | Cosa è | Stato |
 | --- | --- | --- |
 | `src/`, `public/`, config in radice | App **Astro 5 + Tailwind CSS 4** (package `astro-bodytracker-starter`) | In sviluppo attivo, è il target principale |
-| `BodyTracker/` | Versione precedente: pacchetto statico HTML/CSS/JS senza build (`palestra/`) più documentazione di prodotto e design (`documentazione/`) | Riferimento. Non viene importato né compilato da Astro |
+| `BodyTracker/` | PoC: pacchetto statico HTML/CSS/JS senza build (`palestra/`) più documentazione di prodotto e design (`documentazione/`) | Da assorbire nell'app radice e **da eliminare** a fine restyling. Non viene importato né compilato da Astro |
 
 Tutti i dati dell'utente restano nel browser (`localStorage`): nessun backend, database, account o chiamata API. Mantieni questo vincolo, a meno che non venga chiesto esplicitamente di cambiarlo.
 
@@ -95,7 +95,11 @@ src/components/
 - `BodyTracker/documentazione/DESIGN.md` e `design.json`: design system "verde scuro" (token per colori, tipografia, raggi e spaziature).
 - `BodyTracker/palestra/esercizi.js`: catalogo esercizi (`window.catalogoEsercizi`) e schede iniziali (`window.schedeIniziali`).
 
-Quando porti una funzionalità dalla versione statica all'app Astro, usa questi file come specifica. Non modificare `BodyTracker/palestra/` se non richiesto: è un pacchetto pubblicabile a sé stante, con un formato dati proprio (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) che non è compatibile con le chiavi `bb-*` dell'app Astro.
+Il PoC è la specifica delle funzioni da portare nell'app Astro: alla fine del restyling deve restare solo l'app nella radice, con le funzioni di entrambi. La tabella "Assorbimento del PoC" in `docs/restyling/PIANO.md` elenca cosa portare. Non sviluppare nuove funzioni in `BodyTracker/`. Il suo formato dati (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) resta supportato dall'app radice solo come formato di importazione.
+
+## Restyling in corso
+
+È previsto un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi e ricerche sono in `docs/restyling/ANALISI.md`, il piano a step con le decisioni prese in `docs/restyling/PIANO.md`, il punto di ripartenza in `docs/restyling/HANDOFF.md`: leggili prima di toccare la UI.
 
 ## Note varie
 
