@@ -47,5 +47,6 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 
 ## Constraints and open decisions
 
+- **Deciso (US-11, 10 ottobre 2026):** la scheda suggerita è **già selezionata** e "Inizia allenamento" parte con 1 tocco; toccare un'altra riga la seleziona (2 tocchi), non avvia. Scartate dall'utente: nessuna preselezione (sempre 2 tocchi) e riga che avvia subito (rischio di avvio involontario, più azioni primarie in competizione).
 - **Deciso:** accesso alle Impostazioni con un'icona nell'intestazione delle schermate principali, non come quinta voce della tab bar.
 - Il builder non deve inventare: metriche motivazionali, streak, obiettivi non richiesti.

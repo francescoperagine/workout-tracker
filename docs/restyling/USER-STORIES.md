@@ -80,7 +80,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-11 (M, step 5–6).** Come utente in palestra, voglio scegliere la scheda e avviare l'allenamento nel minor tempo possibile, per iniziare subito.
 - Oggi mostra, come righe grandi da toccare, le **ultime 4 schede fatte** (distinte, dalla più recente), più quella pianificata per oggi se non è già tra queste. Senza storico: le schede attive nel loro ordine.
-- Una scheda è **già selezionata** come suggerimento: quella pianificata per oggi; senza pianificazione, tra le recenti quella fatta da più tempo (con A/B si alternano da sole).
+- Una scheda è **già selezionata** come suggerimento: quella pianificata per oggi; senza pianificazione, tra le recenti quella fatta da più tempo (con A/B si alternano da sole). Toccare una riga la seleziona soltanto, non avvia (decisione dell'utente del 10 ottobre 2026: scartate "nessuna preselezione" e "tocco sulla riga che avvia subito").
 - "Inizia allenamento" sta nella zona del pollice. Percorso felice: **1 tocco** se il suggerimento è giusto, **2 tocchi** altrimenti (scheda, poi Inizia). Nessuna conferma e nessuna schermata intermedia.
 - Alternative meno frequenti: "Altra scheda" (elenco completo, in un foglio dal basso) e "Allenamento libero".
 - Se c'è una sessione in corso, il pulsante principale diventa "Riprendi" e le schede passano in secondo piano.

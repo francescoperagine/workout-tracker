@@ -83,7 +83,8 @@ Proposte emerse scrivendo i brief, confermate dall'utente e riportate in [USER-S
    - Impostazioni da un'icona nell'intestazione, non come quinta tab;
    - Progressi dentro Storico;
    - vista mese del Calendario in v1.
-4. **Hook del detector di Impeccable:** attivo in `.claude/settings.json`, condiviso e valido anche per le sessioni cloud.
+4. **US-11, scheda suggerita su Oggi:** **già selezionata**, con "Inizia allenamento" nella zona del pollice (1 tocco nel caso felice, 2 per un'altra scheda); toccare una riga seleziona, non avvia. Scartate: nessuna preselezione e riga che avvia subito.
+5. **Hook del detector di Impeccable:** attivo in `.claude/settings.json`, condiviso e valido anche per le sessioni cloud.
 
 ## 5. Dopo la conferma
 
