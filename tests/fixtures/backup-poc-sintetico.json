@@ -1,0 +1,157 @@
+{
+  "versione": 1,
+  "allenamenti": [
+    {
+      "id": "poc-1",
+      "data": "2026-09-01",
+      "scheda": "A",
+      "nome": "Scheda A",
+      "concluso": true,
+      "esercizi": [
+        {
+          "id": "e1",
+          "catalogoId": "squat-bilanciere",
+          "nome": "Squat bilanciere",
+          "varianteId": "squat-bilanciere",
+          "variante": "Squat bilanciere",
+          "serie": [
+            { "peso": "50", "ripetizioni": "8" },
+            { "peso": "50", "ripetizioni": "7" },
+            { "peso": "", "ripetizioni": "" }
+          ],
+          "note": "",
+          "completato": true
+        },
+        {
+          "id": "e2",
+          "catalogoId": "panca-piana-bilanciere",
+          "nome": "Panca piana bilanciere",
+          "varianteId": "chest-press",
+          "variante": "Chest press",
+          "serie": [
+            { "peso": "42.5", "ripetizioni": "10" }
+          ],
+          "note": "macchina 2, sedile 4",
+          "completato": true
+        }
+      ]
+    },
+    {
+      "id": "poc-2",
+      "data": "2026-09-03",
+      "scheda": "B",
+      "nome": "Scheda B",
+      "concluso": true,
+      "esercizi": [
+        {
+          "id": "e1",
+          "catalogoId": "rematore-manubri-petto-su-panca-inclinata",
+          "nome": "Rematore pesante",
+          "varianteId": "rematore-manubri-petto-su-panca-inclinata",
+          "variante": "Rematore manubri, petto su panca inclinata",
+          "serie": [
+            { "peso": "14", "ripetizioni": "10" }
+          ],
+          "note": "per manubrio",
+          "completato": true
+        },
+        {
+          "id": "e2",
+          "catalogoId": "",
+          "nome": "Crunch ai cavi",
+          "varianteId": "",
+          "variante": "Crunch ai cavi",
+          "serie": [
+            { "peso": "30", "ripetizioni": "15" }
+          ],
+          "note": "",
+          "completato": false
+        },
+        {
+          "id": "e3",
+          "catalogoId": "",
+          "nome": "Hack Squat",
+          "varianteId": "",
+          "variante": "Hack Squat",
+          "serie": [
+            { "peso": "abc", "ripetizioni": "10" }
+          ],
+          "note": "",
+          "completato": false
+        }
+      ]
+    },
+    {
+      "id": "poc-3",
+      "data": "2026-09-05",
+      "scheda": "libero",
+      "nome": "Allenamento libero",
+      "concluso": true,
+      "esercizi": [
+        {
+          "id": "e1",
+          "catalogoId": "",
+          "nome": "crunch  ai CAVI",
+          "varianteId": "",
+          "variante": "crunch  ai CAVI",
+          "serie": [
+            { "peso": "32.5", "ripetizioni": "12" }
+          ],
+          "note": "",
+          "completato": true
+        },
+        {
+          "id": "e2",
+          "catalogoId": "",
+          "nome": "Pàlla medica",
+          "varianteId": "",
+          "variante": "Pàlla medica",
+          "serie": [
+            { "peso": "", "ripetizioni": "20" }
+          ],
+          "note": "",
+          "completato": true
+        }
+      ]
+    },
+    {
+      "id": "poc-4",
+      "data": "2026-02-30",
+      "scheda": "A",
+      "nome": "Data impossibile",
+      "concluso": true,
+      "esercizi": []
+    },
+    {
+      "id": "poc-1",
+      "data": "2026-09-06",
+      "scheda": "A",
+      "nome": "Duplicato",
+      "concluso": true,
+      "esercizi": []
+    },
+    {
+      "id": "poc-5",
+      "data": "2026-09-08",
+      "scheda": "A",
+      "nome": "Scheda A",
+      "concluso": false,
+      "esercizi": [
+        {
+          "id": "e1",
+          "catalogoId": "squat-bilanciere",
+          "nome": "Squat bilanciere",
+          "varianteId": "leg-press",
+          "variante": "Leg press",
+          "serie": [
+            { "peso": "120", "ripetizioni": "10" },
+            { "peso": "120", "ripetizioni": "" }
+          ],
+          "note": "",
+          "completato": false
+        }
+      ]
+    }
+  ],
+  "esportatoIl": "2026-09-08T18:30:00.000Z"
+}

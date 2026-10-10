@@ -46,6 +46,19 @@ src/styles/global.css   design system: @font-face, token in @theme (colori light
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, preload del font, script inline del tema. Props: title, description, bodyClass
 src/layouts/Layout.astro  grafica vecchia: Base + Header + <main class="container"> + Footer. Props: title, description, showBackButton
 src/lib/tema.ts         temi: REGISTRO_TEMI (unico elenco: Sistema, Chiaro, Scuro; i temi futuri si aggiungono qui e in src/styles/temi/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave bodytracker.tema, leggiTema, applicaTema, salvaTema, script inline (con test)
+src/lib/archivio/       archivio v2 (step 2), un modulo per tema, tutto esportato da index.ts:
+  tipi.ts               modello dati v2, chiavi, LIMITI, IMPOSTAZIONI_PREDEFINITE, archivioVuoto, ErroreArchivio
+  date.ts               chiaveData, daChiaveData, dataValida, giornoSettimana (ora locale)
+  validazione.ts        validaArchivio: ricostruzione campo per campo, messaggi in italiano
+  repository.ts         RepositoryArchivio (revisione, quota, illeggibile, conflitto tra schede, ascolta), archivioCondiviso, richiediPersistenza
+  catalogo.ts           catalogo base + personalizzati: chiaveNome, cercaPerNome, suggerisciEsercizi, assicuraEsercizio (US-14)
+  schede.ts             conSchedeIniziali, pianificazioneDel, sessioneInCorso, avvioRapido (US-11: ultime 4 schede e suggerita)
+  conversione.ts        testi del PoC → v2: recuperoInSecondi, dividiCarico, schedaDaPoc
+  import-poc.ts         convertiArchivioPoc (backup del PoC, con scarti e avvisi), leggiChiavePoc
+  backup.ts             esportaArchivio, leggiBackup (v2 o PoC), anteprimaImport, unisciImport (mantieni/sostituisci)
+src/lib/unita.ts        kg/lb e m/ft: daKg/aKg, daMetri/aMetri, leggiPeso, valoreCampoPeso, formattaPeso, formattaDistanza
+src/data/               catalogo.ts (CATALOGO_BASE, ID del PoC invariati) e schede-iniziali.ts (A/B convertite); test di parità con il PoC
+tests/fixtures/         backup-poc-sintetico.json (formato "Esporta" del PoC), usato da Vitest e utilizzabile negli e2e
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 src/scripts/
   bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson
@@ -73,7 +86,7 @@ src/components/  (grafica vecchia)
 - Il sito è **completamente statico** (nessun adapter, nessun rendering lato server). Non introdurre route dinamiche lato server: un parametro variabile va passato in query string e letto nel client, come fa `workout.astro`.
 - **Svelte 5** (`@astrojs/svelte`): i componenti con stato del design system sono già Svelte (`src/components/ui/`, `TimerRecupero`); dal restyling le parti con stato (allenamento attivo, timer, editor delle schede, grafici) diventano isole Svelte (`client:load`), il resto resta `.astro`. Le regole qui sotto su `<script>`, `innerHTML` e `escapeHtml` valgono per il codice pre-restyling; nelle isole Svelte il testo passa dal templating di Svelte, che fa l'escape da solo.
 - I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi. Unica eccezione: lo script `is:inline` del tema in `Base.astro`, che deve girare prima del primo disegno.
-- Accedi al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
+- Il codice nuovo accede al diario **solo tramite `src/lib/archivio/`** (`RepositoryArchivio`). Il codice vecchio accede al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
 - Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …). **Ogni testo dell'utente inserito in un template HTML deve passare da `escapeHtml`**; altrimenti usa `textContent`.
 - I componenti comunicano tramite l'evento `window` `bb:updated` (`UPDATED_EVENT`) e l'evento `storage` per altre schede. `putWorkout`, `mergeWorkouts` e `clearWorkouts` lo emettono già; dopo `saveCalendar` va emesso a mano. Un editor che salva a ogni modifica deve ignorare l'evento generato dal proprio salvataggio, altrimenti il re-render fa perdere il focus (vedi il flag `saving` in `WorkoutEditor`).
 - Ogni componente cerca la propria radice con un attributo (`[data-weekly-calendar]`, `[data-calendar-config]`, `[data-workout-editor]`, `[data-history-view]`, `[data-workout-page]`) e poi usa `root.querySelector('#id')`. Gli ID sono duplicati tra componenti e pagine (`#exercise-list`, `#add-exercise`, `#list`), quindi limita sempre le query alla radice del componente.
@@ -85,8 +98,17 @@ src/components/  (grafica vecchia)
 | `bb-calendar` | `{ "Lunedì": "Petto", ... }`: nomi completi dei giorni in italiano, con accento | Scritta da CalendarConfig, letta da WeeklyCalendar e `workout.astro` |
 | `bb-workouts` | `[{ date: "YYYY-MM-DD", exercises: [{ name, sets: [{ reps, weight }] }] }]` | Un solo elemento per data, ordinato per data crescente. Un allenamento senza esercizi viene rimosso. Usata da tutti gli editor, dal calendario e dallo storico |
 | `workout` | Legacy | Vecchia chiave di WorkoutEditor: alla prima lettura viene migrata in `bb-workouts` e poi cancellata |
+| `bodytracker.archivio.v2` | `Archivio` di `src/lib/archivio/tipi.ts` (`versione: 2`, `revisione`, `catalogo`, `schede`, `pianificazione`, `eccezioni`, `sessioni`, `impostazioni`) | Archivio nuovo (step 2). Si legge e si scrive **solo** con `RepositoryArchivio` (`archivioCondiviso()` nel browser). Pesi in kg, distanze in metri |
+| `bodytracker.archivio.v1` | Archivio del PoC | Solo lettura, per l'import diretto sulla stessa origine (`leggiChiavePoc`) |
+| `bodytracker.tema` | `chiaro` \| `scuro` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/tema.ts`) |
 
-- I tipi (`Workout`, `Exercise`, `WorkoutSet`, `CalendarConfig`) sono in `bodytracker.ts`. Se cambi la forma dei dati, aggiorna anche `isWorkout`/`parseWorkouts` e prevedi una migrazione dei dati esistenti.
+- **Archivio v2 (codice nuovo):**
+  - le modifiche passano da `repo.aggiorna(a => nuovoArchivio)` con funzioni pure che non mutano l'argomento; il repository incrementa `revisione`, salva e notifica (`ascolta`, con `origine`: `modifica`, `esterna`, `ricarica`, `importazione`). Con stato `illeggibile` o `conflitto` non scrive nulla;
+  - pianificazione ed eccezioni: id di scheda, `null` = riposo, chiave assente = nulla di pianificato;
+  - una sola sessione con `fine: null` (in corso) alla volta; `unisciImport` lo garantisce anche negli import;
+  - esercizi: quelli di base sono in `src/data/catalogo.ts` (ID mai cambiati né rimossi), quelli personalizzati in `archivio.catalogo` con id `pers-<nome>`; un nome scritto a mano passa sempre da `assicuraEsercizio`;
+  - i riferimenti (scheda, esercizio) non sono vincolati dalla validazione: un id sconosciuto si mostra con `nomeEsercizio`, che ricade sull'id.
+- I tipi vecchi (`Workout`, `Exercise`, `WorkoutSet`, `CalendarConfig`) sono in `bodytracker.ts`. Se cambi la forma dei dati, aggiorna anche `isWorkout`/`parseWorkouts` e prevedi una migrazione dei dati esistenti.
 - Le date sono stringhe `YYYY-MM-DD` in **ora locale**: usa `toDateKey(date)` e `parseDateKey(key)`, mai `toISOString()` o `new Date('YYYY-MM-DD')` (che usano UTC).
 - I nomi dei giorni vengono da `DAY_NAMES` (indicizzato da `getDay()`), `DAY_NAMES_SHORT` e `WEEK_DAYS` (ordine lunedì–domenica) di `bodytracker.ts`. Non riscriverli altrove.
 - Formato di import/export: un array di `Workout`. "Esporta JSON" in home produce un array di un solo elemento, quindi è reimportabile. L'importazione valida l'intero file e lo unisce allo storico: le date già presenti vengono sostituite.
@@ -110,6 +132,7 @@ src/components/  (grafica vecchia)
 
 ## Limiti noti
 
+- Il codice `bb-*` (`src/scripts/bodytracker.ts`, `exercise-list.ts` e le pagine vecchie) resta finché gli step 3–6 non sostituiscono le pagine: niente migrazione da `bb-*` (decisione 6 del piano).
 - Test e2e: lo smoke test (`tests/e2e/smoke.spec.ts`), US-30 sui temi (`tests/e2e/us-30-temi.spec.ts`) e i componenti di `/kit` (`tests/e2e/kit.spec.ts`). Ogni nuova storia porta il suo test.
 - Nelle pagine vecchie `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; spariscono con la riscrittura delle pagine (step 3–6).
 - Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.

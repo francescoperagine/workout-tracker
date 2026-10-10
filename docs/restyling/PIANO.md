@@ -208,6 +208,15 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - Conversione di `BodyTracker/palestra/esercizi.js` in `src/data/` (catalogo e schede iniziali, stessi ID).
 - Rimozione del codice `bb-*` attuale.
 - **Verifica:** test Vitest su validazione, import del PoC (con un tuo backup reale, se me lo fornisci, oppure uno sintetico), conflitti, quota e conversioni di unità (andata e ritorno senza perdita).
+- **Stato (10 ottobre 2026):** fatto, con 129 test Vitest nuovi (135 in tutto). `src/lib/archivio/`, `src/lib/unita.ts`, `src/data/` e il backup sintetico in `tests/fixtures/`. Decisioni prese nello step:
+  - **Pianificazione ed eccezioni:** id di scheda, `null` = riposo, chiave assente = nulla di pianificato (servono tre stati: US-04 "Riposo" e il caso "nessuna pianificazione" del brief di Oggi).
+  - **Conflitto tra schede:** come nel PoC non si sovrascrive mai; in più, con la revisione, una scheda **senza modifiche in sospeso** adotta il diario più recente invece di bloccarsi. Il blocco con "ricarica" resta per il conflitto vero (modifiche in entrambe) e per chi salva su una revisione superata.
+  - **Schede iniziali:** il PoC non ha numero di serie né recupero di riscaldamento: **3 serie e 60 s**, modificabili. Id `scheda-a`/`scheda-b`, voci `a-1`, `a-2a`, …
+  - **Esercizi personalizzati (US-14):** id `pers-<parole-del-nome>`, stabile (stesso nome → stesso id anche su un altro dispositivo); confronto senza maiuscole, spazi, punteggiatura e accenti; vince l'esercizio di base.
+  - **Import del PoC:** il file con struttura sbagliata si rifiuta; un singolo allenamento o esercizio non valido si **scarta con il motivo** (US-02) invece di rifiutare tutto. Nomi liberi → esercizi personalizzati; un id sconosciuto resta lo stesso come personalizzato; un nome cambiato a mano nel PoC finisce nelle note (il modello v2 non ha il campo). Allenamento `A`/`B` → schede iniziali, aggiunte solo se mancano; gruppo e recuperi della voce dalla scheda. Inizio = mezzogiorno locale della data; le serie con valori di un allenamento concluso (o di un esercizio spuntato) sono completate; le serie vuote restano, non completate.
+  - **Import v2:** validazione completa (un errore rifiuta il file). Unione per id con "mantieni"/"sostituisci" anche per schede, esercizi personalizzati, pianificazione ed eccezioni; impostazioni del backup solo con "sostituisci". Resta aperta una sola sessione in corso, la più recente.
+  - **Unità:** campi di modifica al centesimo (135,3 lb restano 135,3), etichette al passo di 0,25 kg / 0,5 lb e 0,1 m / 0,5 ft, virgola decimale e spazio unificatore.
+  - **Codice `bb-*`:** non rimosso. Le pagine vecchie ne dipendono finché gli step 3–6 non le sostituiscono; si toglie con l'ultima di esse, insieme allo smoke test.
 
 ### Step 3: Guscio dell'app e PWA
 - **Storie:** US-01, US-02 (interfaccia), US-03, US-30, US-31, US-32, US-33.
@@ -231,7 +240,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - settimana scorrevole e vista mese compatta;
   - assegnazione di una scheda a ogni giorno della settimana, eccezione per una singola data (scheda diversa o riposo);
   - stati del giorno: pianificato, fatto, saltato, oggi.
-- Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
+- Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo; decisione confermata il 10 ottobre 2026, logica in `avvioRapido` dallo step 2) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
 - **Verifica:** e2e "pianifico B il giovedì → giovedì Oggi propone B".
 
 ### Step 6: Allenamento attivo

@@ -1,36 +1,32 @@
-# Handoff: restyling BodyTracker, partenza dallo step 2
+# Handoff: restyling BodyTracker, partenza dallo step 3
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 2 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 3 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md` e `DESIGN.md`. Prima chiedimi la decisione aperta su US-11 (scheda suggerita già selezionata su Oggi, oppure nessuna preselezione, oppure tocco sulla scheda che avvia subito) e aggiorna storia e brief con la mia risposta. Poi esegui lo **step 2** del piano (dati: archivio v2 con revisione, quota e conflitti tra schede; unità kg/lb e m/ft; import ed export v2 e import del backup del PoC; catalogo e schede iniziali da `BodyTracker/palestra/esercizi.js` con gli stessi ID), compresi i due requisiti nuovi: esercizi personalizzati creati da un nome scritto a mano (US-14) e le ultime 4 schede fatte con la suggerita (US-11). Tutto con test Vitest. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati alla fine dello step per mostrarmi i test e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief delle superfici dello step 3. Esegui lo **step 3** del piano (guscio dell'app con tab bar e `ClientRouter`, PWA con manifest e service worker, percorso base `BT_BASE`, Impostazioni con tema, unità, recupero, suono e vibrazione, Dati e privacy con export, import v2 e del PoC, primo avvio `/benvenuto`), usando l'archivio v2 dello step 2, con test e2e nominati con l'ID della storia. Lavora direttamente su `main`, senza branch, e fai push su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
 
-## Stato a fine step 1 (10 ottobre 2026)
+## Stato a fine step 2 (10 ottobre 2026)
 
 Tutto è su `main`.
 
-- **Storie e brief confermati** (commit `docs: conferma di storie e brief…`): spunta su riga vuota = conferma del precedente (1 tocco, P1); US-09, US-25, US-16, US-19, US-20 sono M; criteri aggiunti a US-15, US-21, US-27, US-33; esclusioni della v1; struttura confermata (`/benvenuto`, riepilogo dopo Termina, Impostazioni da icona, Progressi in Storico, vista mese). Vedi BRIEF.md §4.
-- **Design system (step 1):**
-  - scelte dell'utente: tema chiaro "guscio verde" (intestazione, barra di salvataggio, tab bar e timer restano verde scuro con accento lime anche nel tema chiaro), font **Atkinson Hyperlegible Next** self-hosted in `public/fonts/`, timer a **livello che si svuota** con stato "Vai" tutto lime;
-  - `DESIGN.md` e `.impeccable/design.json` riscritti dalla build; token in `@theme` in `src/styles/global.css` con `light-dark()`; `tailwind.config.mjs` rimosso;
-  - tema: `src/lib/tema.ts`, chiave `bodytracker.tema` (preferenza del dispositivo, non nell'archivio), script inline in `src/layouts/Base.astro`;
-  - componenti base in `src/components/ui/`, timer in `src/components/allenamento/TimerRecupero.svelte` (motore provvisorio basato sull'istante di fine; persistenza, wake lock e suono allo step 7);
-  - `/kit` (`src/pages/kit.astro`, `?tema=chiaro|scuro`), test e2e US-30, detector a 0 su `/kit` nei due temi.
-- **Pagine vecchie** (index, workout, about, `Layout.astro`, archivio `bb-*`): invariate, con la palette di default di Tailwind. Le sostituiscono gli step 2–6.
-- **Hook del detector** attivo in `.claude/settings.json`.
+- **US-11 deciso dall'utente:** su Oggi la scheda suggerita è **già selezionata**; "Inizia allenamento" parte con 1 tocco, toccare un'altra riga la seleziona (2 tocchi), non avvia. Registrato in USER-STORIES.md, nel brief `route.md` e in BRIEF.md §4.
+- **Step 1** (design system, `/kit`, temi): invariato, vedi PIANO.md.
+- **Step 2 (dati):** fatto. Moduli e chiavi in `AGENTS.md`; decisioni nello "Stato" dello step 2 in PIANO.md. In breve:
+  - `src/lib/archivio/`: modello v2, validazione, `RepositoryArchivio` (revisione, quota, archivio illeggibile, conflitto tra schede, `ascolta`), catalogo con esercizi personalizzati (US-14), `avvioRapido` (US-11), conversione del PoC, import del PoC, export/import v2 con anteprima e unione;
+  - `src/lib/unita.ts`; `src/data/catalogo.ts` e `schede-iniziali.ts` (ID del PoC invariati, test di parità con `esercizi.js`);
+  - 135 test Vitest verdi (anche con fusi orari diversi), `astro check` e build verdi, e2e invariati e verdi.
+- **Non ancora usato da nessuna pagina:** l'archivio v2 entra nell'interfaccia dallo step 3. Le pagine vecchie usano ancora `bb-*`.
 
-## Step 2 in dettaglio: dati
+## Step 3 in dettaglio: guscio e PWA
 
-Obiettivo dal piano: `src/lib/archivio/` (tipi, validazione, repository con revisione, quota e conflitto tra schede, evento di aggiornamento), `src/lib/unita.ts`, import ed export v2, import del backup del PoC e lettura diretta della sua chiave, conversione di `BodyTracker/palestra/esercizi.js` in `src/data/` con gli **stessi ID**, rimozione del codice `bb-*` quando le pagine nuove non ne dipendono più. Storie: US-02 (logica), US-31 (logica), US-33.
-
-- Il modello dati v2 è in PIANO.md; `impostazioni.tema` è stato tolto (il tema vive in `bodytracker.tema`).
-- Due requisiti aggiunti dopo lo step 1 toccano i dati: la **variante scritta a mano** (US-14: un nome nuovo diventa un esercizio personalizzato in `catalogo`, riconosciuto senza maiuscole, spazi e accenti) e l'**avvio dalle ultime 4 schede** (US-11: serve una funzione che dia le schede distinte più recenti e quella suggerita). Prevederli nel repository e nei test.
-- Altri temi in futuro: il registro è in `src/lib/tema.ts`, la procedura in DESIGN.md, "Aggiungere un tema".
-- Limiti, messaggi e comportamenti del PoC (quota, archivio illeggibile, conflitto tra schede) sono la specifica: leggere `BodyTracker/palestra/app.js` e `BodyTracker/LEGGIMI.md`.
-- Recuperi come "2′" o "60–75″" → secondi, valore minimo dell'intervallo; carichi testuali → `caricoMin`, `caricoMax`, `notaCarico`.
-- Verifica: Vitest su validazione, import del PoC (backup sintetico finché l'utente non ne fornisce uno reale), conflitti, quota, conversioni di unità andata e ritorno.
-- Le pagine vecchie usano ancora `src/scripts/bodytracker.ts`: se lo step 2 rimuove `bb-*` prima che gli step 3–6 abbiano sostituito le pagine, aggiornare anche lo smoke test.
+- Storie: US-01, US-02 (interfaccia), US-03, US-30, US-31, US-32, US-33. Brief: `route-benvenuto`, `route-impostazioni` e il guscio (vedi BRIEF.md).
+- **Archivio nell'interfaccia:** `archivioCondiviso()` una volta per pagina; `richiediPersistenza()` all'avvio; barra di salvataggio collegata a `repo.stato`/`repo.messaggio` con "Salva ora" (`repo.salvaOra()`); stato `illeggibile` → download di `repo.contenutoOriginale` e import; stato `conflitto` → messaggio in linea e "Ricarica" (`repo.ricarica()`).
+- **Primo avvio:** `repo.nuovo` indica che non c'è ancora un archivio. "Inizia con le schede di esempio" = `repo.aggiorna(conSchedeIniziali)`; "Parti da zero" = salvataggio dell'archivio vuoto. Da qui anche l'import del PoC.
+- **Import:** `controllaDimensione(file.size)`, `leggiBackup(testo, repo.archivio)`, `anteprimaImport` (numero di allenamenti, periodo, nuovi e già presenti, scartati con il motivo, avvisi), scelta "mantieni"/"sostituisci", `unisciImport`, `repo.sostituisci`. Lettura diretta del PoC: `leggiChiavePoc()` sulla stessa origine. Per l'e2e c'è `tests/fixtures/backup-poc-sintetico.json`.
+- **Export:** `esportaArchivio(repo.archivio)` con `nomeFileBackup()`.
+- **Unità e impostazioni:** `repo.aggiorna(a => ({ ...a, impostazioni: { ... } }))`; il tema resta in `src/lib/tema.ts`. La distanza non ha ancora effetti visibili e le Impostazioni lo dicono.
+- **Codice `bb-*`:** si rimuove con l'ultima pagina vecchia sostituita (step 3–6), aggiornando lo smoke test.
 
 ## Insidie dell'ambiente (container cloud)
 
