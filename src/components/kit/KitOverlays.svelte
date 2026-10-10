@@ -3,6 +3,7 @@
   import BottomSheet from '../ui/BottomSheet.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import Toast from '../ui/Toast.svelte';
+  import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
 
   const variants = ['Panca piana bilanciere', 'Panca piana manubri', 'Chest press'];
   // demo: in app i suggerimenti vengono dal catalogo
@@ -15,6 +16,10 @@
   let other = $state('');
   let otherInput: HTMLInputElement | undefined = $state();
   let toast: string | null = $state(null);
+  // foglio del catalogo dell'editor delle schede: solo gli esercizi di base, nessun archivio
+  let pickerOpen = $state(false);
+  let picked = $state('');
+  const describe = (p: PickedExercise) => (p.kind === 'new' ? `nuovo «${p.name}»` : p.id);
 
   const suggestions = $derived(
     other.trim().length < 2
@@ -37,8 +42,11 @@
   <button type="button" class="btn btn-secondary" onclick={() => (sheetOpen = true)}>Cambia variante</button>
   <button type="button" class="btn btn-danger" onclick={() => (dialogOpen = true)}>Elimina sessione</button>
   <button type="button" class="btn btn-secondary" onclick={() => (toast = 'Serie 3 rimossa')}>Rimuovi serie</button>
+  <button type="button" class="btn btn-secondary" onclick={() => (pickerOpen = true)}>Aggiungi esercizio</button>
 </div>
-<p class="hint">Variante scelta: {variant}</p>
+<p class="hint">Variante scelta: {variant}{picked ? ` · esercizio: ${picked}` : ''}</p>
+
+<ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={{ catalog: {} }} onpick={(p) => (picked = describe(p))} />
 
 <BottomSheet bind:open={sheetOpen} title="Cambia variante">
   <p class="mb-3 text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>

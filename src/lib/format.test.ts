@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateKey, formatDuration, formatPeriod, plural, speakDuration, withPreposition } from './format';
+import { formatDateKey, formatDayMonth, formatDuration, formatPeriod, formatWeekdays, plural, speakDuration, withPreposition } from './format';
 
 describe('format', () => {
   it('plurali', () => {
@@ -35,5 +35,18 @@ describe('format', () => {
     expect(withPreposition('a', '18 maggio')).toBe('al 18 maggio');
     expect(formatPeriod('2026-09-01', '2026-09-08')).toBe('dal 1 settembre 2026 all’8 settembre 2026');
     expect(formatPeriod('2026-03-11', '2026-03-11')).toBe('dell’11 marzo 2026');
+  });
+});
+
+describe('giorni e date brevi', () => {
+  it('formatWeekdays', () => {
+    expect(formatWeekdays(['mon', 'thu'])).toBe('lun, gio');
+    expect(formatWeekdays(['sun'], true)).toBe('domenica');
+    expect(formatWeekdays([])).toBe('');
+  });
+
+  it('formatDayMonth mostra l’anno solo se diverso', () => {
+    expect(formatDayMonth('2026-10-03', '2026-10-10')).toBe('3 ottobre');
+    expect(formatDayMonth('2025-12-31', '2026-10-10')).toBe('31 dicembre 2025');
   });
 });

@@ -1,5 +1,6 @@
 // Formattazione dei testi per l'utente (italiano): plurali, date, durate.
 import { fromDateKey } from './archive/dates';
+import type { Weekday } from './archive/types';
 
 /** plural(1, 'scheda', 'schede') → '1 scheda'; plural(3, …) → '3 schede' */
 export function plural(count: number, one: string, many: string): string {
@@ -47,4 +48,27 @@ export function formatPeriod(from: string, to: string): string {
   return from === to
     ? withPreposition('di', formatDateKey(from))
     : `${withPreposition('da', formatDateKey(from))} ${withPreposition('a', formatDateKey(to))}`;
+}
+
+/** Giorni della settimana abbreviati, da lunedì */
+export const WEEKDAY_SHORT: Record<Weekday, string> = { mon: 'lun', tue: 'mar', wed: 'mer', thu: 'gio', fri: 'ven', sat: 'sab', sun: 'dom' };
+export const WEEKDAY_LONG: Record<Weekday, string> = {
+  mon: 'lunedì',
+  tue: 'martedì',
+  wed: 'mercoledì',
+  thu: 'giovedì',
+  fri: 'venerdì',
+  sat: 'sabato',
+  sun: 'domenica',
+};
+
+/** ['mon', 'thu'] → 'lun, gio' */
+export function formatWeekdays(days: readonly Weekday[], long = false): string {
+  return days.map((d) => (long ? WEEKDAY_LONG : WEEKDAY_SHORT)[d]).join(', ');
+}
+
+/** '2026-10-03' → '3 ottobre', con l'anno solo se diverso da quello di `today` (YYYY-MM-DD) */
+export function formatDayMonth(key: string, today: string): string {
+  const sameYear = key.slice(0, 4) === today.slice(0, 4);
+  return fromDateKey(key).toLocaleDateString('it-IT', sameYear ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' });
 }

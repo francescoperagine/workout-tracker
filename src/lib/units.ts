@@ -81,3 +81,10 @@ export function parseWeight(text: string, unit: WeightUnit): number | null {
   const value = parseDecimal(text);
   return value === null || Number.isNaN(value) ? value : toKg(value, unit);
 }
+
+/** Carico target di una scheda: "40 kg", "45–50 kg" o "" se non c'è. */
+export function formatWeightRange(min: number | null, max: number | null, settings: Pick<Settings, 'weightUnit'>): string {
+  if (min === null && max === null) return '';
+  if (min === null || max === null || formatWeight(min, settings) === formatWeight(max, settings)) return formatWeight(min ?? max, settings);
+  return `${formatWeight(min, settings, false)}–${formatWeight(max, settings)}`;
+}

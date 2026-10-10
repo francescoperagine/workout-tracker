@@ -62,12 +62,13 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   repository.ts         ArchiveRepository (revisione, quota, illeggibile, conflitto tra schede, subscribe), sharedArchive, requestPersistence
   catalog.ts            catalogo base + personalizzati: nameKey, findByName, suggestExercises, ensureExercise (US-14)
   routines.ts           withStarterRoutines, planFor, sessionInProgress, quickStart (US-11: ultime 4 schede e suggerita)
+  routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry)
   conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
   poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
 src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce()
-src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatDistance
-src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration (con test)
+src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWeight, weightFieldValue, formatWeight, formatWeightRange, formatDistance
+src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration, formatWeekdays ("lun, gio"), formatDayMonth (con test)
 src/lib/device.ts       isIos, isStandalone, canVibrate, ultimo backup (bodytracker.lastBackup), downloadText
 src/lib/pwa.ts          registerServiceWorker (scope = percorso base, solo in produzione), invito all'installazione trattenuto (listenForInstallPrompt, canPromptInstall, promptInstall, evento bt:installable)
 src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starter-routines.ts (A/B convertite); test di parità con il PoC in seed-data.test.ts
@@ -78,15 +79,19 @@ src/pages/
   index.astro           Oggi (/): allo step 3 porta al primo avvio se non c'è un archivio e conferma che il diario è pronto; lo step 5 la completa
   welcome.astro         primo avvio (/welcome): cosa fa, dove sono i dati, schede di esempio, da zero, importa
   settings.astro        Impostazioni e Dati e privacy (/settings)
-  calendar.astro, routines.astro, history.astro   segnaposto con stato vuoto, sostituiti dagli step 5, 4 e 8
+  routines.astro        Schede (/routines): elenco con crea, duplica, rinomina, riordina, archivia, elimina
+  routine.astro         editor di una scheda (/routine?id=…)
+  calendar.astro, history.astro   segnaposto con stato vuoto, sostituiti dagli step 5 e 8
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   kit.astro             /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione e dal precache
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
-                        SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
+                        LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
 src/components/settings/  SettingsPage (tema, unità, allenamento), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte
+src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
+src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca e "Crea «…»" (esercizio personalizzato)
 src/components/workout/RestTimer.svelte  timer di recupero a tutto schermo (livello che si svuota) e barra ridotta
 src/components/kit/     isole dimostrative usate solo da /kit
 ```
@@ -127,7 +132,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - **Si lavora sempre su `main`:** niente branch né pull request, anche se la sessione propone un branch di lavoro. Commit e push direttamente su `main` (`git push origin main`).
 - **Fine di uno step:** aggiorna `docs/restyling/HANDOFF.md` per lo step successivo e chiudi **sempre** il messaggio finale all'utente con il prompt di handoff completo, copiato da HANDOFF.md, pronto da incollare nella nuova conversazione.
 - **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
-- Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
+- Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/routine?id=`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
 - Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showTabs={false}` e `showHeader={false}` solo sul primo avvio). `/kit` usa `Base`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
   - Colori di contenuto, che cambiano col tema: `bg-background`, `bg-surface`, `bg-field`, `text-foreground`, `text-muted`, `border-line`, `border-line-strong`, `bg-accent`/`text-on-accent`, `text-accent-text`, `bg-done`, `text-danger`, `bg-warning-bg`. Sono `light-dark()`: niente varianti `dark:`.
@@ -143,10 +148,10 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Le schermate Calendario, Schede e Storico sono segnaposto (stato vuoto) fino agli step 5, 4 e 8; Oggi dallo step 3 fa solo il rimando al primo avvio e conferma che il diario è pronto.
+- Le schermate Calendario e Storico sono segnaposto (stato vuoto) fino agli step 5 e 8; Oggi dallo step 3 fa solo il rimando al primo avvio e conferma che il diario è pronto. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
-- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-07-us-10-routines`, `us-21-us-24-training-settings`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
 ## Riferimento: `BodyTracker/`
 

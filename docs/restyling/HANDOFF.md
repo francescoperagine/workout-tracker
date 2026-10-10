@@ -1,32 +1,30 @@
-# Handoff: restyling BodyTracker, partenza dallo step 4
+# Handoff: restyling BodyTracker, partenza dallo step 5
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 4 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 5 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e il brief `.impeccable/surfaces/route-routines.md`. Esegui lo **step 4** del piano (Schede: elenco con crea, duplica, rinomina, riordina, archivia, elimina con conferma; editor con esercizi dal catalogo o personalizzati, serie, ripetizioni, carico nell'unità scelta, recupero e recupero di riscaldamento, alternative, superserie, riordino accessibile), usando l'archivio v2 e il guscio dello step 3, con test e2e nominati con l'ID della storia. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief `.impeccable/surfaces/route-calendar.md` e `.impeccable/surfaces/route.md`. Esegui lo **step 5** del piano (Calendario: settimana scorrevole e vista mese compatta, assegnazione di una scheda o del riposo a ogni giorno della settimana, eccezione per una singola data, stati del giorno pianificato/fatto/saltato/oggi; Oggi: le ultime 4 schede fatte più la pianificata come righe da toccare, con la suggerita già selezionata da `quickStart`, "Inizia allenamento" nella zona del pollice, "Altra scheda" in un foglio dal basso, "Allenamento libero", "Riprendi" con una sessione in corso, ultimo allenamento), usando l'archivio v2, il guscio dello step 3 e le schede dello step 4, con test e2e nominati con l'ID della storia. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese.
 
-## Stato a fine step 3 (10 ottobre 2026)
+## Stato a fine step 4 (10 ottobre 2026)
 
-Tutto è su `main`. Decisioni dello step 3 nello "Stato" dello step 3 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
+Tutto è su `main`. Decisioni dello step 4 nello "Stato" dello step 4 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
 
-- **Guscio:** `src/layouts/AppLayout.astro` (ClientRouter, `AppHeader`, `TabBar`, `ArchiveStatus` che mostra la barra di salvataggio solo con un problema). Ogni pagina nuova usa `AppLayout` con `tab="routines"` ecc.
-- **Percorso base:** ogni link passa da `appUrl()` (`src/lib/paths.ts`), con la barra finale per le pagine. I test usano percorsi relativi.
-- **Archivio nelle isole:** `archiveStore()` di `src/lib/archive-store.svelte.ts` (`archive`, `state`, `isNew` reattivi; `update`; `repo`). Isole che leggono l'archivio: `client:only="svelte"`.
-- **PWA:** service worker generato alla build (`src/integrations/service-worker.ts`), manifest in `src/pages/manifest.webmanifest.ts`, icone in `public/icons/` (`node scripts/make-icons.mjs`).
-- **Componenti nuovi:** `Switch`, `Stepper` (valore a passi, da riusare per i recuperi della scheda), `SaveBar` con lo stato `unreadable`, `ImportFlow`. Formattazione dei testi in `src/lib/format.ts` (`formatDuration` "1:30", `plural`, `formatPeriod`).
-- **Segnaposto:** `/routines` (step 4), `/calendar` (step 5), `/history` (step 8) sono stati vuoti; Oggi (`/`) fa solo il rimando a `/welcome` e conferma il diario (step 5).
-- **App vecchia `bb-*` rimossa.**
-- Verifica: 84 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 147 Vitest, `astro check` pulito, detector a 0.
+- **Schede:** elenco `/routines` (`src/components/routines/RoutineList.svelte`) ed editor `/routine?id=` (`RoutineEditor`, `EntryEditor`). Logica pura in `src/lib/archive/routine-edit.ts` (crea, duplica, rinomina, riordina, archivia, elimina con `restoreRoutine` per l'"Annulla"; voci, alternative, superserie con `blocksOf`/`orderLabels`/`normalizeGroups`).
+- **Componenti nuovi:** `LiveField` (campo che salva a ogni battuta, in `src/components/ui/`) e `ExercisePicker` (foglio del catalogo con ricerca e "Crea «…»", in `src/components/exercises/`; servirà anche allo step 6 per "Altro esercizio…"). Entrambi in `/kit` e in DESIGN.md.
+- **Formattazione:** `formatWeightRange` ("45–50 kg") in `units.ts`; `formatWeekdays` ("lun, gio"), `WEEKDAY_SHORT`/`WEEKDAY_LONG` e `formatDayMonth` ("3 ottobre") in `format.ts`: da riusare nel calendario.
+- **Ordine delle schede attive:** è quello dell'elenco (riordinabile) e quello che `quickStart` usa senza storico.
+- **Segnaposto:** `/calendar` (step 5) e `/history` (step 8) sono ancora stati vuoti; Oggi (`/`) fa solo il rimando a `/welcome` e conferma il diario.
+- Verifica: 112 e2e verdi nella radice e con `BT_BASE=/bodytracker/`, 172 Vitest, `astro check` pulito, detector a 0 su `src/` e su `/kit` nei due temi (sulle pagine con l'intestazione resta solo la nota consultiva `flat-type-hierarchy`, presente già allo step 3).
 
-## Step 4 in dettaglio: Schede
+## Step 5 in dettaglio: Calendario e Oggi
 
-- Storie: US-07, US-08, US-09, US-10. Brief: `route-routines` (elenco `/routines`, editor `/routine?id=`; route in query string perché il sito è statico).
-- **Dati:** schede in `archive.routines` (`Routine`, `RoutineExercise` in `src/lib/archive/types.ts`); carichi in kg (`loadMin`, `loadMax`, `loadNote`, `unit`), mostrati e accettati nell'unità scelta con `src/lib/units.ts`; recuperi in secondi (`Stepper` + `formatDuration`). Superserie: stessa stringa in `group`. Alternative: id di esercizi.
-- **Catalogo:** `suggestExercises` per la ricerca (foglio dal basso), `ensureExercise` per un nome libero (US-14).
-- **Vincoli:** eliminare una scheda con sessioni non si può (si archivia, US-10); limiti in `LIMITS` (200 schede, 100 voci, 20 alternative).
-- **Verifica del piano:** e2e "crea scheda C con superserie e la ritrovi dopo il ricaricamento"; le schede A/B del PoC si devono poter ricreare identiche nell'editor.
-- **Invito all'installazione dopo il primo allenamento concluso (US-03):** non è dello step 4: va nel riepilogo dello step 6.
+- Storie: US-04, US-05, US-06, US-11 (più US-17 per "Riprendi"). Brief: `route-calendar` (`/calendar`) e `route` (Oggi, `/`).
+- **Dati:** pianificazione in `archive.schedule` (`mon`…`sun` → id scheda, `null` = riposo, chiave assente = niente), eccezioni in `archive.overrides` (`YYYY-MM-DD` → id o `null`). `planFor(archive, date)` dice cosa prevede una data (l'eccezione vince); `quickStart(archive, date)` dà righe e suggerita di Oggi (US-11, decisione del 10 ottobre 2026: suggerita già selezionata, il tocco sulla riga seleziona e non avvia). Le schede archiviate non si propongono e non si assegnano.
+- **Date:** sempre `toDateKey`/`fromDateKey`/`weekdayOf` (ora locale), mai `toISOString()`.
+- **Avvio dell'allenamento:** "Inizia allenamento" deve creare la sessione (una sola in corso alla volta, `sessionInProgress`); la pagina dell'allenamento attivo è dello step 6. Decidere allo step 5 cosa crea l'avvio (sessione con le voci della scheda: `SessionExercise` con gruppo, recuperi e serie vuote secondo `sets`) e dove porta finché `/workout` non esiste: va concordato con l'utente o rimandato con un segnaposto onesto.
+- **Verifica del piano:** e2e "pianifico B il giovedì → giovedì Oggi propone B" (con `page.clock` per fissare la data).
+- **Invito all'installazione dopo il primo allenamento concluso (US-03):** resta per il riepilogo dello step 6.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -49,7 +47,7 @@ Tutto è su `main`. Decisioni dello step 3 nello "Stato" dello step 3 in PIANO.m
 - **Playwright:** installato anche globalmente (`$(npm root -g)/playwright`, 1.56), con Chromium in `/opt/pw-browsers`. Il progetto usa `@playwright/test` 1.64: lanciare gli e2e con `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e` (e di nuovo con `BT_BASE=/bodytracker/` davanti). Non eseguire `playwright install`. Per script di screenshot fuori dal repository: `NODE_PATH=$PWD/node_modules node script.cjs` (CommonJS, perché `NODE_PATH` non vale per gli ESM).
 - **Chiusura dei server:** se serve `pkill`, non usare `pkill -f "astro preview"`: il pattern corrisponde anche alla shell che esegue il comando e la termina. Usare `pkill -f "[a]stro preview"`, **da solo** nel comando: se nella stessa riga compare anche il testo `astro preview` (es. `npx astro preview stop; pkill …`), la shell viene terminata lo stesso.
 - **Avviso noto di `astro check`:** un hint su `BodyTracker/palestra/app.js` (`returnValue` deprecato). Va ignorato: il file sparirà allo step 9.
-- **Detector:** a 0 su `src/` e sulle pagine renderizzate (`/welcome`, `/settings`, `/calendar`, `/kit` nei due temi). Sulle pagine senza archivio `/` porta a `/welcome`: per controllare Oggi serve un archivio nel browser.
+- **Detector:** a 0 su `src/` e sulle pagine renderizzate (`/welcome`, `/settings`, `/calendar`, `/kit` nei due temi). Sulle pagine senza archivio `/` porta a `/welcome`: per controllare Oggi serve un archivio nel browser. Lo stesso vale per `/routines` e `/routine?id=`: il detector apre un browser senza archivio e vede solo lo stato vuoto; le schermate con dati si controllano con uno script Playwright che mette un archivio nel `localStorage` (`addInitScript`) e fotografa a 390×844 e 320×568 nei due temi. Le note consultive (`flat-type-hierarchy`) non sono errori.
 - **Isole e build:** il rendering alla build esegue anche le isole `client:load`; se leggono l'archivio all'avvio la build fallisce ("L’archivio è disponibile solo nel browser"). Usare `client:only="svelte"` o leggere l'archivio in `onMount`.
 - **Detector e larghezza:** il detector misura le pagine a larghezza desktop: righe oltre 80 caratteri e controlli con bordo dentro un `.panel` (nested cards) compaiono lì e non a 390px.
 - **Rumore del proxy:** durante i test Chromium prova a contattare `accounts.google.com` e `android.clients.google.com` (servizi del browser, non dell'app): il proxy li rifiuta, non c'entra con il controllo "nessuna richiesta esterna" di US-03, che guarda solo le richieste della pagina.

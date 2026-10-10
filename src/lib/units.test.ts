@@ -3,6 +3,7 @@ import {
   KG_PER_LB,
   formatDistance,
   formatWeight,
+  formatWeightRange,
   fromKg,
   fromMeters,
   parseDecimal,
@@ -82,5 +83,15 @@ describe('US-31 unità di misura', () => {
     expect(roundToStep(0.30000000000000004, 0.1)).toBe(0.3);
     expect(roundToStep(12.13, 0.25)).toBe(12.25);
     expect(roundToStep(12.12, 0.25)).toBe(12);
+  });
+});
+
+describe('formatWeightRange', () => {
+  it('carico singolo, intervallo o assente, nell’unità scelta', () => {
+    expect(formatWeightRange(40, 40, { weightUnit: 'kg' })).toBe('40\u00a0kg');
+    expect(formatWeightRange(45, 50, { weightUnit: 'kg' })).toBe('45–50\u00a0kg');
+    expect(formatWeightRange(null, null, { weightUnit: 'kg' })).toBe('');
+    expect(formatWeightRange(20, null, { weightUnit: 'kg' })).toBe('20\u00a0kg');
+    expect(formatWeightRange(toKg(135, 'lb'), toKg(145, 'lb'), { weightUnit: 'lb' })).toBe('135–145\u00a0lb');
   });
 });

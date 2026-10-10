@@ -5,6 +5,7 @@ export * from './validation';
 export * from './repository';
 export * from './catalog';
 export * from './routines';
+export * from './routine-edit';
 export * from './conversion';
 export * from './poc-import';
 export * from './backup';

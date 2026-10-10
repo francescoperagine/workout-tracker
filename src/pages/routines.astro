@@ -1,12 +1,10 @@
 ---
-// Schede: segnaposto dello step 3, perché la tab bar porti già a una pagina vera. La sostituisce lo step 4 del piano.
+// Schede (US-07…US-10, brief .impeccable/surfaces/route-routines.md): elenco con crea, duplica, rinomina,
+// riordina, archivia ed elimina. L'editor di una scheda è /routine?id=… (sito statico: id in query string).
 import AppLayout from '../layouts/AppLayout.astro';
-import EmptyState from '../components/ui/EmptyState.astro';
-import ClipboardList from '@lucide/astro/icons/clipboard-list';
+import RoutineList from '../components/routines/RoutineList.svelte';
 ---
 
 <AppLayout title="Schede" tab="routines">
-  <EmptyState title="In arrivo: le schede" text="Qui creerai e modificherai le schede: esercizi, serie, ripetizioni, carichi, recuperi, alternative e superserie.">
-    <ClipboardList slot="icon" size={28} />
-  </EmptyState>
+  <RoutineList client:only="svelte" />
 </AppLayout>

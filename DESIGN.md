@@ -465,6 +465,16 @@ Diretti e pieni di peso, con il verbo dell'azione nel testo.
 - **Interruttore:** per le preferenze sì/no (suono, vibrazione). Riga intera toccabile da 48px con etichetta (peso 600) ed eventuale spiegazione `muted` a 14px a sinistra; a destra un binario da 52×32px con bordo 1.5px `line-strong` su `field` e un pomello `line-strong` da 23px. Acceso: binario e bordo `accent`, pomello `on-accent` spostato a destra (0.2s, curva di uscita). Disattivato: opacità 0.45, con la spiegazione del perché nella riga. È una checkbox nativa con `role="switch"`.
 - **Valore a passi:** per valori che si regolano a passi fissi e che il tastierino numerico non sa scrivere (il recupero "1:30" ha i due punti). Etichetta sopra, poi tre colonne: pulsante secondario "−15 s", il valore in cifre (600, 1.375rem) centrato, pulsante secondario "+15 s". Ai limiti il pulsante si disattiva. Il valore è annunciato con cortesia, a parole per gli screen reader ("1 minuto e 30 secondi").
 
+- **Campo che salva a ogni battuta** (`LiveField`): lo stesso campo, per i testi delle schede (nome, ripetizioni, carico, note). Salva a ogni carattere; finché ha il focus il testo resta com'è, poi torna al valore salvato. Un testo non valido resta visibile con l'errore sotto e non si salva.
+
+### Voce della scheda
+L'editor delle schede si legge come la scheda di carta. Ogni voce è una riga da almeno 56px senza pannello, separata da un filo `line`: a sinistra il numero d'ordine (1, 2a, 2b) a 18px in `accent-text`, poi il nome dell'esercizio (650, 18px) e sotto i target compatti in `muted` a 14px ("3 × 6–8 · 40 kg · rec. 1:15", poi unità, nota e alternative), a destra la freccia da 48px che apre la voce. Aperta, i campi stanno in linea sotto il nome, allineati al nome (a filo sotto i 360px): esercizio con "Cambia", serie e recuperi come valori a passi, ripetizioni e carico come campi, alternative come elenco con la crocetta da 48px, interruttore della superserie, "Togli dalla scheda" in pericolo.
+- **Superserie:** una riga "Superserie · 2 esercizi" in `accent-text` con l'icona del collegamento, e un filo `line-strong` di 1px nella colonna dei numeri che unisce ogni voce alla successiva.
+- **Riordino:** modalità "Riordina"/"Fine" (pulsante testuale): le righe si chiudono e mostrano due frecce da 48px. Nessun trascinamento come unico modo.
+
+### Foglio del catalogo
+Foglio dal basso per scegliere un esercizio: campo di ricerca con l'icona a sinistra, fisso in testa mentre l'elenco scorre; risultati come righe da 48px separate da `line`, con "personalizzato" in `muted`; in fondo "Crea «…»" in `accent-text` con l'icona più, quando il nome scritto non c'è.
+
 ### Riga serie
 L'unità di lavoro dell'allenamento: cinque colonne in griglia, tipo/numero · precedente · kg · rip · spunta, alta 56px.
 - **Tipo/numero:** pulsante da 48px, peso 650 a 18px; il numero è `muted`, le sigle dei tipi speciali (R, D, C) sono `accent-text`. Un tocco passa al tipo successivo.
