@@ -1,0 +1,341 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
+
+// Astro.params è Record<string, string | undefined>, quindi prima lo "narrowiamo"
+const { date } = Astro.params as Record<string, string | undefined>;
+
+if (!date) {
+  throw Astro.redirect('/');
+}
+
+// Validazione formato
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+if (!dateRegex.test(date)) {
+  throw Astro.redirect('/');
+}
+
+// Tipizzazioni esplicite
+const dateStr: string = date;
+const dateObj: Date = new globalThis.Date(`${dateStr}T00:00:00`);
+
+const formattedDate: string = dateObj.toLocaleDateString('it-IT', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const dayName: string = dateObj.toLocaleDateString('it-IT', { weekday: 'long' });
+const capitalizedDayName: string = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+---
+
+<Layout
+  title={`Allenamento ${formattedDate} — BodyTracker`}
+  description={`Visualizza e modifica l'allenamento del ${formattedDate}`}
+  showBackButton={true}
+>
+  <div class="max-w-4xl mx-auto">
+    <!-- Date Header -->
+    <div class="bg-linear-to-r from-blue-600 to-blue-700 text-white p-8 rounded-2xl shadow-lg mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-sm font-medium opacity-90 mb-1">
+            {capitalizedDayName}
+          </div>
+          <h1 class="text-3xl font-bold mb-2">
+            {formattedDate}
+          </h1>
+          <p class="text-blue-100" id="workout-plan-label">
+            <!-- Will be filled by JavaScript -->
+          </p>
+        </div>
+        <div class="text-6xl">
+          🏋️‍♂️
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Editor for this specific date -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg mb-6">
+      <div class="border-b pb-4 mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Scheda Allenamento
+        </h2>
+        <p class="text-gray-600 text-sm">
+          Modifica gli esercizi e salva i tuoi progressi
+        </p>
+      </div>
+
+      <div id="exercise-list" class="space-y-4 mb-6"></div>
+
+      <div class="flex justify-between items-center pt-6 border-t">
+        <button
+          id="add-exercise"
+          class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg font-medium"
+        >
+          + Aggiungi esercizio
+        </button>
+
+        <button
+          id="save-workout"
+          class="bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition shadow-md hover:shadow-lg font-medium"
+        >
+          💾 Salva allenamento
+        </button>
+      </div>
+    </div>
+
+    <!-- History for this date -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg">
+      <div class="border-b pb-4 mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Storico di questo giorno
+        </h2>
+        <p class="text-gray-600 text-sm">
+          Allenamenti passati dello stesso giorno della settimana
+        </p>
+      </div>
+
+      <div id="history-list" class="space-y-3">
+        <!-- Will be filled by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ date, dayName: capitalizedDayName }}>
+    const CALENDAR_KEY = 'bb-calendar';
+    const WORKOUTS_KEY = 'bb-workouts';
+
+    let workout = {
+      date: date,
+      exercises: [],
+    };
+
+    const list = document.querySelector('#exercise-list');
+    const addExerciseBtn = document.querySelector('#add-exercise');
+    const saveBtn = document.querySelector('#save-workout');
+    const historyList = document.querySelector('#history-list');
+    const planLabel = document.querySelector('#workout-plan-label');
+
+    // Load planned workout name
+    function loadPlannedWorkout() {
+      const saved = localStorage.getItem(CALENDAR_KEY);
+      const config = saved ? JSON.parse(saved) : {};
+      const plannedName = config[dayName] || 'Nessuna scheda assegnata';
+      planLabel.textContent = `Scheda: ${plannedName}`;
+    }
+
+    // Load workout for this date
+    function loadWorkout() {
+      const allWorkouts = loadAllWorkouts();
+      const existing = allWorkouts.find((w) => w.date === date);
+
+      if (existing) {
+        workout = existing;
+      } else {
+        workout = { date, exercises: [] };
+      }
+    }
+
+    function loadAllWorkouts() {
+      const raw = localStorage.getItem(WORKOUTS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveWorkout() {
+      let allWorkouts = loadAllWorkouts();
+      const existingIndex = allWorkouts.findIndex((w) => w.date === date);
+
+      if (existingIndex >= 0) {
+        allWorkouts[existingIndex] = workout;
+      } else {
+        allWorkouts.push(workout);
+      }
+
+      localStorage.setItem(WORKOUTS_KEY, JSON.stringify(allWorkouts));
+      window.dispatchEvent(new CustomEvent('bb:updated'));
+      alert('Allenamento salvato!');
+      renderHistory();
+    }
+
+    function render() {
+      list.innerHTML = '';
+
+      if (workout.exercises.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 px-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+            <div class="text-6xl mb-4">💪</div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">Nessun esercizio ancora</h3>
+            <p class="text-gray-500 mb-4">Inizia ad aggiungere esercizi per questo giorno</p>
+          </div>
+        `;
+        return;
+      }
+
+      workout.exercises.forEach((ex, i) => {
+        const exDiv = document.createElement('div');
+        exDiv.className =
+          'p-5 border-2 border-gray-200 rounded-xl bg-linear-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition';
+
+        const setsHTML = ex.sets
+          .map(
+            (set, j) => `
+            <div class="grid grid-cols-4 gap-2 mb-2">
+              <div class="flex items-center justify-center font-medium text-gray-700">${j + 1}</div>
+              <input type="number" class="rounded-lg border-gray-300 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="${set.reps}" min="1" data-reps="${i}-${j}" />
+              <input type="number" class="rounded-lg border-gray-300 text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="${set.weight}" min="0" step="0.5" data-weight="${i}-${j}" />
+              <button class="text-red-500 hover:text-red-700 transition text-sm" data-deleteset="${i}-${j}" ${ex.sets.length === 1 ? 'disabled class="text-gray-300 cursor-not-allowed"' : ''}>
+                ✕
+              </button>
+            </div>`
+          )
+          .join('');
+
+        exDiv.innerHTML = `
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-lg text-gray-800">${ex.name}</h3>
+            <div class="flex gap-2">
+              <button class="text-sm text-blue-600 hover:text-blue-800 transition" data-addset="${i}">
+                + Aggiungi serie
+              </button>
+              <button class="text-sm text-red-600 hover:text-red-800 transition" data-deleteex="${i}">
+                🗑️ Elimina
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-2 text-sm font-medium text-gray-600 mb-2">
+            <div>Serie</div><div>Ripetizioni</div><div>Peso (kg)</div><div></div>
+          </div>
+          ${setsHTML}
+        `;
+        list.appendChild(exDiv);
+      });
+    }
+
+    function addExercise() {
+      const name = prompt('Nome esercizio?');
+      if (!name) return;
+      workout.exercises.push({ name, sets: [{ reps: 10, weight: 0 }] });
+      render();
+    }
+
+    list.addEventListener('input', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      const repsAttr = target.getAttribute('data-reps');
+      const weightAttr = target.getAttribute('data-weight');
+      if (repsAttr) {
+        const [i, j] = repsAttr.split('-').map(Number);
+        workout.exercises[i].sets[j].reps = Number(target.value);
+      } else if (weightAttr) {
+        const [i, j] = weightAttr.split('-').map(Number);
+        workout.exercises[i].sets[j].weight = Number(target.value);
+      }
+    });
+
+    list.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      const addset = target.getAttribute('data-addset');
+      if (addset) {
+        const i = Number(addset);
+        workout.exercises[i].sets.push({ reps: 10, weight: 0 });
+        render();
+        return;
+      }
+
+      const deleteset = target.getAttribute('data-deleteset');
+      if (deleteset) {
+        const [i, j] = deleteset.split('-').map(Number);
+        if (workout.exercises[i].sets.length > 1) {
+          if (confirm('Rimuovere questa serie?')) {
+            workout.exercises[i].sets.splice(j, 1);
+            render();
+          }
+        }
+        return;
+      }
+
+      const deleteex = target.getAttribute('data-deleteex');
+      if (deleteex) {
+        const i = Number(deleteex);
+        if (
+          confirm(`Eliminare l'esercizio "${workout.exercises[i].name}"?`)
+        ) {
+          workout.exercises.splice(i, 1);
+          render();
+        }
+        return;
+      }
+    });
+
+    function renderHistory() {
+      const allWorkouts = loadAllWorkouts();
+      const currentDate = new Date(date);
+      const currentDayOfWeek = currentDate.getDay();
+
+      // Find workouts from the same day of the week
+      const sameDayWorkouts = allWorkouts.filter((w) => {
+        if (w.date === date) return false; // Exclude current date
+        const workoutDate = new Date(w.date + 'T00:00:00');
+        return workoutDate.getDay() === currentDayOfWeek;
+      });
+
+      // Sort by date descending
+      sameDayWorkouts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      historyList.innerHTML = '';
+
+      if (sameDayWorkouts.length === 0) {
+        historyList.innerHTML = `
+          <div class="text-center py-8 text-gray-500">
+            <p>Nessun allenamento precedente per questo giorno della settimana.</p>
+          </div>
+        `;
+        return;
+      }
+
+      sameDayWorkouts.forEach((w) => {
+        const workoutDate = new Date(w.date + 'T00:00:00');
+        const formattedDate = workoutDate.toLocaleDateString('it-IT', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+
+        const card = document.createElement('div');
+        card.className = 'p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition';
+
+        const exercisesSummary = w.exercises
+          .map((ex) => {
+            const totalSets = ex.sets.length;
+            return `<div class="text-sm"><strong>${ex.name}</strong> - ${totalSets} serie</div>`;
+          })
+          .join('');
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-2">
+            <div class="font-semibold text-gray-800">${formattedDate}</div>
+            <div class="text-xs text-gray-500">${w.exercises.length} esercizi</div>
+          </div>
+          <div class="space-y-1">
+            ${exercisesSummary}
+          </div>
+        `;
+
+        historyList.appendChild(card);
+      });
+    }
+
+    addExerciseBtn.addEventListener('click', addExercise);
+    saveBtn.addEventListener('click', saveWorkout);
+
+    loadPlannedWorkout();
+    loadWorkout();
+    render();
+    renderHistory();
+  </script>
+</Layout>

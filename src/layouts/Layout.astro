@@ -1,0 +1,44 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  showBackButton?: boolean;
+}
+
+const {
+  title = 'BodyTracker — Allenamenti',
+  description = 'Traccia i tuoi allenamenti, monitora i progressi e raggiungi i tuoi obiettivi fitness',
+  showBackButton = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE_TITLE}
+      href={new URL('rss.xml', Astro.site)}
+    />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+    <Header showBackButton={showBackButton} />
+
+    <main class="flex-1 container mx-auto px-6 py-8">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

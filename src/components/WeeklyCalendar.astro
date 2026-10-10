@@ -1,0 +1,184 @@
+---
+// Visual weekly calendar with clickable day cards
+---
+
+<div data-weekly-calendar class="p-6 bg-white rounded-2xl shadow-lg">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">📅 Calendario Settimanale</h2>
+    <p class="text-gray-600 text-sm">Clicca su un giorno per vedere e modificare l'allenamento</p>
+  </div>
+
+  <div class="flex items-center justify-between mb-4">
+    <button
+      id="prev-week"
+      class="p-2 rounded-lg hover:bg-gray-100 transition"
+      aria-label="Settimana precedente"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+
+    <h3 id="week-label" class="text-lg font-semibold text-gray-700"></h3>
+
+    <button
+      id="next-week"
+      class="p-2 rounded-lg hover:bg-gray-100 transition"
+      aria-label="Settimana successiva"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" id="calendar-days">
+    <!-- Days will be rendered here by JavaScript -->
+  </div>
+</div>
+
+<script type="module">
+  const root = document.querySelector('[data-weekly-calendar]');
+  const daysContainer = root.querySelector('#calendar-days');
+  const weekLabel = root.querySelector('#week-label');
+  const prevBtn = root.querySelector('#prev-week');
+  const nextBtn = root.querySelector('#next-week');
+
+  const CALENDAR_KEY = 'bb-calendar';
+  const WORKOUTS_KEY = 'workout';
+
+  let currentWeekOffset = 0;
+
+  const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+  const dayNamesShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+
+  function getMonday(d) {
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(date.setDate(diff));
+  }
+
+  function formatDate(date) {
+    return date.toISOString().split('T')[0];
+  }
+
+  function loadCalendarConfig() {
+    const saved = localStorage.getItem(CALENDAR_KEY);
+    return saved ? JSON.parse(saved) : {};
+  }
+
+  function hasWorkoutForDate(date) {
+    const dateStr = formatDate(date);
+    const allWorkouts = getAllWorkouts();
+    return allWorkouts.some(w => w.date === dateStr && w.exercises.length > 0);
+  }
+
+  function getAllWorkouts() {
+    // Check if there are saved workouts in various storage locations
+    const workoutsRaw = localStorage.getItem('bb-workouts');
+    const currentWorkout = localStorage.getItem(WORKOUTS_KEY);
+
+    let workouts = [];
+    if (workoutsRaw) {
+      try {
+        workouts = JSON.parse(workoutsRaw);
+      } catch (e) {
+        console.error('Error parsing workouts:', e);
+      }
+    }
+
+    // Also include current workout if it exists
+    if (currentWorkout) {
+      try {
+        const current = JSON.parse(currentWorkout);
+        if (current.exercises && current.exercises.length > 0) {
+          // Check if this workout already exists in history
+          const existingIndex = workouts.findIndex(w => w.date === current.date);
+          if (existingIndex === -1) {
+            workouts.push(current);
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing current workout:', e);
+      }
+    }
+
+    return workouts;
+  }
+
+  function render() {
+    const today = new Date();
+    const monday = getMonday(today);
+    monday.setDate(monday.getDate() + (currentWeekOffset * 7));
+
+    const calendarConfig = loadCalendarConfig();
+
+    // Update week label
+    const endOfWeek = new Date(monday);
+    endOfWeek.setDate(endOfWeek.getDate() + 6);
+    weekLabel.textContent = `${monday.getDate()} ${monday.toLocaleDateString('it-IT', { month: 'short' })} - ${endOfWeek.getDate()} ${endOfWeek.toLocaleDateString('it-IT', { month: 'short' })} ${endOfWeek.getFullYear()}`;
+
+    daysContainer.innerHTML = '';
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(date.getDate() + i);
+
+      const isToday = formatDate(date) === formatDate(new Date());
+      const dayName = dayNames[date.getDay()];
+      const plannedWorkout = calendarConfig[dayName] || '';
+      const hasWorkout = hasWorkoutForDate(date);
+
+      const dayCard = document.createElement('a');
+      dayCard.href = `/workout/${formatDate(date)}`;
+      dayCard.className = `
+        block p-4 rounded-xl border-2 transition-all cursor-pointer
+        ${isToday ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'}
+        ${hasWorkout ? 'ring-2 ring-green-400' : ''}
+      `;
+
+      dayCard.innerHTML = `
+        <div class="text-center">
+          <div class="text-xs font-medium text-gray-500 uppercase mb-1">${dayNamesShort[date.getDay()]}</div>
+          <div class="text-2xl font-bold ${isToday ? 'text-blue-600' : 'text-gray-900'} mb-2">
+            ${date.getDate()}
+          </div>
+          ${plannedWorkout ? `
+            <div class="text-xs font-medium text-gray-700 bg-gray-100 rounded px-2 py-1 mb-1">
+              ${plannedWorkout}
+            </div>
+          ` : ''}
+          ${hasWorkout ? `
+            <div class="flex items-center justify-center gap-1 text-xs text-green-600 font-medium">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span>Completato</span>
+            </div>
+          ` : `
+            <div class="text-xs text-gray-400">Nessun dato</div>
+          `}
+        </div>
+      `;
+
+      daysContainer.appendChild(dayCard);
+    }
+  }
+
+  prevBtn.addEventListener('click', () => {
+    currentWeekOffset--;
+    render();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentWeekOffset++;
+    render();
+  });
+
+  // Re-render when workouts are updated
+  window.addEventListener('bb:updated', render);
+  window.addEventListener('storage', render);
+
+  render();
+</script>

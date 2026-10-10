@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Info — BodyTracker"
+  description="Informazioni su BodyTracker e come utilizzare l'applicazione"
+  showBackButton={true}
+>
+  <div class="bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-900 mb-6">
+      Informazioni su BodyTracker
+    </h1>
+
+    <div class="prose prose-lg max-w-none">
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Cos'è BodyTracker?
+        </h2>
+        <p class="text-gray-600 leading-relaxed">
+          BodyTracker è un'applicazione web per tracciare i tuoi allenamenti in
+          palestra. Permette di registrare esercizi, serie, ripetizioni e pesi
+          utilizzati, offrendo una visione completa dei tuoi progressi nel
+          tempo.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Funzionalità Principali
+        </h2>
+        <ul class="space-y-3 text-gray-600">
+          <li class="flex items-start gap-3">
+            <span class="text-blue-600 mt-1">✓</span>
+            <span
+              ><strong>Tracciamento Allenamenti:</strong> Registra facilmente i tuoi
+              esercizi giornalieri</span
+            >
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-blue-600 mt-1">✓</span>
+            <span
+              ><strong>Gestione Serie:</strong> Aggiungi e rimuovi serie per ogni
+              esercizio</span
+            >
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-blue-600 mt-1">✓</span>
+            <span
+              ><strong>Storico Completo:</strong> Visualizza tutti i tuoi allenamenti
+              passati</span
+            >
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-blue-600 mt-1">✓</span>
+            <span
+              ><strong>Esportazione Dati:</strong> Esporta i tuoi dati in formato
+              JSON</span
+            >
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="text-blue-600 mt-1">✓</span>
+            <span
+              ><strong>Privacy Garantita:</strong> Tutti i dati sono salvati localmente
+              nel browser</span
+            >
+          </li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Come Utilizzare l'App
+        </h2>
+        <ol class="space-y-3 text-gray-600 list-decimal list-inside">
+          <li>Seleziona la data del tuo allenamento</li>
+          <li>Clicca su "Aggiungi esercizio" per iniziare</li>
+          <li>Inserisci il nome dell'esercizio</li>
+          <li>Compila le serie con ripetizioni e peso</li>
+          <li>Aggiungi altre serie o esercizi secondo necessità</li>
+          <li>I dati vengono salvati automaticamente</li>
+        </ol>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Privacy e Sicurezza
+        </h2>
+        <p class="text-gray-600 leading-relaxed">
+          BodyTracker rispetta la tua privacy. Tutti i dati degli allenamenti
+          sono salvati esclusivamente nel localStorage del tuo browser. Nessuna
+          informazione viene inviata a server esterni o condivisa con terze
+          parti.
+        </p>
+      </section>
+
+      <div
+        class="mt-10 p-6 bg-blue-50 border-l-4 border-blue-600 rounded-lg"
+      >
+        <p class="text-gray-700">
+          <strong>Pronto per iniziare?</strong> Torna alla home page e inizia a
+          tracciare i tuoi allenamenti oggi stesso!
+        </p>
+        <a
+          href="/"
+          class="inline-block mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+        >
+          Vai agli Allenamenti →
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

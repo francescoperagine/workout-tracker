@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-02T15:55:26.250298+00:00",
+  "title": "Design System: BodyTracker",
+  "extensions": {
+    "colorMeta": {
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Fondo",
+        "tonalRamp": [
+          "oklch(15% 0.0209 185.43)",
+          "oklch(26% 0.0209 185.43)",
+          "oklch(38% 0.0209 185.43)",
+          "oklch(49% 0.0209 185.43)",
+          "oklch(61% 0.0209 185.43)",
+          "oklch(72% 0.0209 185.43)",
+          "oklch(84% 0.0209 185.43)",
+          "oklch(95% 0.0209 185.43)"
+        ]
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "tonalRamp": [
+          "oklch(15% 0.0243 183.07)",
+          "oklch(26% 0.0243 183.07)",
+          "oklch(38% 0.0243 183.07)",
+          "oklch(49% 0.0243 183.07)",
+          "oklch(61% 0.0243 183.07)",
+          "oklch(72% 0.0243 183.07)",
+          "oklch(84% 0.0243 183.07)",
+          "oklch(95% 0.0243 183.07)"
+        ]
+      },
+      "campo": {
+        "role": "neutral",
+        "displayName": "Campo",
+        "tonalRamp": [
+          "oklch(15% 0.0209 185.43)",
+          "oklch(26% 0.0209 185.43)",
+          "oklch(38% 0.0209 185.43)",
+          "oklch(49% 0.0209 185.43)",
+          "oklch(61% 0.0209 185.43)",
+          "oklch(72% 0.0209 185.43)",
+          "oklch(84% 0.0209 185.43)",
+          "oklch(95% 0.0209 185.43)"
+        ]
+      },
+      "testo": {
+        "role": "neutral",
+        "displayName": "Testo",
+        "tonalRamp": [
+          "oklch(15% 0.0106 136.56)",
+          "oklch(26% 0.0106 136.56)",
+          "oklch(38% 0.0106 136.56)",
+          "oklch(49% 0.0106 136.56)",
+          "oklch(61% 0.0106 136.56)",
+          "oklch(72% 0.0106 136.56)",
+          "oklch(84% 0.0106 136.56)",
+          "oklch(95% 0.0106 136.56)"
+        ]
+      },
+      "secondario": {
+        "role": "neutral",
+        "displayName": "Secondario",
+        "tonalRamp": [
+          "oklch(15% 0.0231 160.11)",
+          "oklch(26% 0.0231 160.11)",
+          "oklch(38% 0.0231 160.11)",
+          "oklch(49% 0.0231 160.11)",
+          "oklch(61% 0.0231 160.11)",
+          "oklch(72% 0.0231 160.11)",
+          "oklch(84% 0.0231 160.11)",
+          "oklch(95% 0.0231 160.11)"
+        ]
+      },
+      "linea": {
+        "role": "neutral",
+        "displayName": "Linea",
+        "tonalRamp": [
+          "oklch(15% 0.0341 165.11)",
+          "oklch(26% 0.0341 165.11)",
+          "oklch(38% 0.0341 165.11)",
+          "oklch(49% 0.0341 165.11)",
+          "oklch(61% 0.0341 165.11)",
+          "oklch(72% 0.0341 165.11)",
+          "oklch(84% 0.0341 165.11)",
+          "oklch(95% 0.0341 165.11)"
+        ]
+      },
+      "accento": {
+        "role": "primary",
+        "displayName": "Accento",
+        "tonalRamp": [
+          "oklch(15% 0.1023 126.85)",
+          "oklch(26% 0.1023 126.85)",
+          "oklch(38% 0.1023 126.85)",
+          "oklch(49% 0.1023 126.85)",
+          "oklch(61% 0.1023 126.85)",
+          "oklch(72% 0.1023 126.85)",
+          "oklch(84% 0.1023 126.85)",
+          "oklch(95% 0.1023 126.85)"
+        ]
+      },
+      "inchiostro": {
+        "role": "primary",
+        "displayName": "Inchiostro",
+        "tonalRamp": [
+          "oklch(15% 0.0440 149.84)",
+          "oklch(26% 0.0440 149.84)",
+          "oklch(38% 0.0440 149.84)",
+          "oklch(49% 0.0440 149.84)",
+          "oklch(61% 0.0440 149.84)",
+          "oklch(72% 0.0440 149.84)",
+          "oklch(84% 0.0440 149.84)",
+          "oklch(95% 0.0440 149.84)"
+        ]
+      },
+      "pericolo": {
+        "role": "neutral",
+        "displayName": "Pericolo",
+        "tonalRamp": [
+          "oklch(15% 0.0886 32.76)",
+          "oklch(26% 0.0886 32.76)",
+          "oklch(38% 0.0886 32.76)",
+          "oklch(49% 0.0886 32.76)",
+          "oklch(61% 0.0886 32.76)",
+          "oklch(72% 0.0886 32.76)",
+          "oklch(84% 0.0886 32.76)",
+          "oklch(95% 0.0886 32.76)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "headline",
+        "purpose": "Ruolo osservato nel diario."
+      },
+      "title": {
+        "displayName": "title",
+        "purpose": "Ruolo osservato nel diario."
+      },
+      "body": {
+        "displayName": "body",
+        "purpose": "Ruolo osservato nel diario."
+      },
+      "label": {
+        "displayName": "label",
+        "purpose": "Ruolo osservato nel diario."
+      },
+      "numero-serie": {
+        "displayName": "numero-serie",
+        "purpose": "Valori numerici delle serie."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "scelta-scheda",
+        "value": "background-color .15s ease",
+        "purpose": "Hover dei pulsanti scheda; disattivato con prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Concludi allenamento",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Azione primaria.",
+      "html": "<button class=\"ds-button-primary\">Concludi allenamento</button>",
+      "css": ".ds-button-primary{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--accento);color:var(--inchiostro);border:0;border-radius:8px;padding:12px 20px;font-weight:650;min-height:48px;cursor:pointer}.ds-button-primary:hover{background:#dbf4b8}.ds-button-primary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+    },
+    {
+      "name": "Salva ora",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Azione secondaria.",
+      "html": "<button class=\"ds-button-secondary\">Salva ora</button>",
+      "css": ".ds-button-secondary{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--superficie);color:var(--testo);border:1px solid var(--linea);border-radius:8px;padding:12px 20px;font-weight:650;min-height:48px;cursor:pointer}.ds-button-secondary:hover{background:#2c443a}.ds-button-secondary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+    },
+    {
+      "name": "Campo peso",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo numerico per una serie.",
+      "html": "<label class=\"ds-label\">Peso · kg<input class=\"ds-input\" type=\"number\" min=\"0\" placeholder=\"—\" aria-label=\"Peso in kg\"></label>",
+      "css": ".ds-label{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;color:var(--secondario);font-size:14px;font-weight:500;display:block}.ds-input{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;display:block;width:100%;min-width:0;background:var(--campo);color:var(--testo);border:1px solid var(--linea);border-radius:8px;padding:10px 12px;margin-top:6px;min-height:52px;font-size:22px;font-variant-numeric:tabular-nums}.ds-input::placeholder{color:var(--secondario);opacity:1}.ds-input:invalid:not(:placeholder-shown){border-color:var(--pericolo)}.ds-input:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+    },
+    {
+      "name": "Navigazione",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Sezioni del diario con stato corrente.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Sezioni del diario\"><button aria-current=\"page\">Allenamento</button><button>Storico</button><button>Dati e privacy</button></nav>",
+      "css": ".ds-nav{display:flex;gap:28px;border-bottom:1px solid var(--linea)}.ds-nav button{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:none;cursor:pointer;color:var(--secondario);min-height:48px;padding:12px 0;border:0;border-bottom:1px solid transparent;white-space:nowrap}.ds-nav button[aria-current=page]{color:var(--accento);border-color:var(--accento)}.ds-nav button:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+    },
+    {
+      "name": "Pannello esercizio",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenitore operativo delle serie.",
+      "html": "<section class=\"ds-card\"><h2>Panca piana</h2><p>8 rip. · Recupero 90 secondi</p></section>",
+      "css": ".ds-card{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;background:var(--superficie);color:var(--testo);border-radius:12px;padding:24px}.ds-card h2{font-size:20px;line-height:1.35;font-weight:650;margin:0}.ds-card p{font-size:14px;color:var(--secondario);margin:16px 0 24px}"
+    },
+    {
+      "name": "Modifica nome",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Nome modificabile su richiesta.",
+      "html": "<details class=\"ds-details\"><summary>Modifica nome</summary><label>Nome esercizio<input value=\"Panca piana\"></label></details>",
+      "css": ".ds-details{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;color:var(--secondario);font-size:14px}.ds-details summary{min-height:44px;align-content:center;cursor:pointer}.ds-details summary:focus-visible{outline:3px solid var(--accento);outline-offset:3px}.ds-details label{display:block;margin:8px 0 12px;font-weight:500}.ds-details input{font-family:system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif;font-size:16px;line-height:1.5;display:block;margin-top:6px;background:var(--campo);color:var(--testo);border:1px solid var(--linea);border-radius:8px;min-height:48px;padding:10px 12px}.ds-details input:focus-visible{outline:3px solid var(--accento);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "",
+    "overview": "Estensione del tracker esistente: fondo verde scuro, pannelli sobri e verde chiaro per azioni e stato selezionato. Il carattere è operativo, compatto e leggibile durante la registrazione in palestra.\n\nLa superficie privilegia variante, serie e carico. La modifica dei nomi è raccolta in dettagli espandibili; lo stato del salvataggio locale rimane nella barra inferiore. Non è stata introdotta una nuova identità visiva.",
+    "keyCharacteristics": [
+      "Una colonna operativa su desktop e telefono.",
+      "Numeri tabulari per carichi, ripetizioni e date dello storico.",
+      "Accento condiviso da azioni, selezione e completamento."
+    ],
+    "rules": [
+      {
+        "name": "The Accento operativo Rule",
+        "body": "Il verde chiaro indica azione o stato utile alla registrazione.",
+        "section": "colors"
+      },
+      {
+        "name": "The Profondità tonale Rule",
+        "body": "Usare superficie, bordo e fondale per distinguere i livelli già presenti nel diario.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do mantenere l’identità verde scuro e il contrasto tra superficie e campi.",
+      "Do mantenere i nomi modificabili nei dettagli espandibili e variante e serie direttamente accessibili.",
+      "Do conservare il focus visibile e lo spazio inferiore che evita la sovrapposizione della barra fissa."
+    ],
+    "donts": [
+      "Don't introdurre un nuovo mondo visivo nell’estensione del diario.",
+      "Don't anteporre un titolo promozionale ai controlli operativi.",
+      "Don't trasformare la sessione desktop in un cruscotto decorativo."
+    ]
+  }
+}

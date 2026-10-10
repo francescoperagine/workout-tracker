@@ -1,0 +1,94 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-gray-900 text-gray-300 mt-auto">
+  <div class="container mx-auto px-6 py-8">
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Brand Section -->
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-2xl">🏋️‍♂️</span>
+          <h3 class="text-xl font-bold text-white">BodyTracker</h3>
+        </div>
+        <p class="text-sm text-gray-400">
+          Traccia i tuoi allenamenti, monitora i progressi e raggiungi i tuoi
+          obiettivi fitness.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="text-white font-semibold mb-4">Link Rapidi</h4>
+        <ul class="space-y-2">
+          <li>
+            <a
+              href="/"
+              class="text-sm hover:text-blue-400 transition"
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <a
+              href="#allenamenti"
+              class="text-sm hover:text-blue-400 transition"
+            >
+              I Miei Allenamenti
+            </a>
+          </li>
+          <li>
+            <a
+              href="#storico"
+              class="text-sm hover:text-blue-400 transition"
+            >
+              Storico
+            </a>
+          </li>
+          <li>
+            <a
+              href="/about"
+              class="text-sm hover:text-blue-400 transition"
+            >
+              Info
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Info Section -->
+      <div>
+        <h4 class="text-white font-semibold mb-4">Informazioni</h4>
+        <p class="text-sm text-gray-400 mb-2">
+          Tutti i dati sono salvati localmente nel tuo browser.
+        </p>
+        <p class="text-sm text-gray-400">
+          Nessun dato viene inviato a server esterni.
+        </p>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div
+      class="mt-8 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4"
+    >
+      <p class="text-sm text-gray-400">
+        &copy; {currentYear} BodyTracker. Tutti i diritti riservati.
+      </p>
+      <div class="flex gap-6">
+        <a
+          href="#privacy"
+          class="text-sm text-gray-400 hover:text-blue-400 transition"
+        >
+          Privacy
+        </a>
+        <a
+          href="#termini"
+          class="text-sm text-gray-400 hover:text-blue-400 transition"
+        >
+          Termini di Servizio
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
