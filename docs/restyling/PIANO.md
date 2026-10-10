@@ -4,6 +4,10 @@ Segue [ANALISI.md](ANALISI.md). Ogni step è un commit (o una PR) verificabile d
 
 **Obiettivo finale:** un solo progetto, l'app Astro nella radice, con **tutte le funzioni dell'app attuale e del PoC** più quelle nuove. Il PoC in `BodyTracker/` viene assorbito durante il restyling (catalogo, schede, documentazione di design, comportamenti) e **la cartella viene eliminata nell'ultimo step**, dopo aver verificato la parità delle funzioni (vedi "Assorbimento del PoC").
 
+## Prodotto e UX
+
+Scena d'uso, principi UX verificabili (P1–P10) e user story con priorità (US-01…US-33) sono in [USER-STORIES.md](USER-STORIES.md). **Le storie guidano gli step**: ogni step elenca quelle che realizza; una storia è chiusa solo quando il suo test e2e (nominato con l'ID) è verde.
+
 ## Decisioni prese
 
 | # | Tema | Decisione |
@@ -175,6 +179,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 ## Step
 
 ### Step 0: Fondamenta del progetto
+- **Storie:** conferma di storie e priorità con l'utente; ogni brief dichiara le storie e i principi che copre.
 - Aggiornamento ad Astro 7 e dipendenze; rimozione di MDX e sitemap se non servono (l'app è privata e non va indicizzata, quindi `noindex`).
 - Installazione di Impeccable (hook detector) e di Svelte, Vitest e Playwright (dev).
 - `PRODUCT.md` in radice: `git mv` di quello del PoC (insieme a `DESIGN.md` e `design.json`, che lo step 1 aggiorna), poi aggiornato con le decisioni sopra.
@@ -182,6 +187,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** `npm run build` verde, brief confermati da te.
 
 ### Step 1: Design system (chiaro e scuro)
+- **Principi:** P2, P3, P9, più US-30 (temi).
 - Con Impeccable: estensione del mondo del PoC a una variante chiara, scelta del font, **mossa distintiva** (il timer a tutto schermo).
 - `DESIGN.md` in radice con token per entrambi i temi; token in `@theme`; temi via `prefers-color-scheme` più attributo `data-theme`.
 - Componenti base:
@@ -192,6 +198,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** detector a 0 su `/_kit` nei due temi, contrasti ≥ 4,5:1, target ≥ 44–48px.
 
 ### Step 2: Dati
+- **Storie:** US-02 (import PoC, logica), US-31 (unità, logica), US-33 (salvataggio, quota, conflitti).
 - `src/lib/archivio/`: tipi, validazione, repository (caricamento, salvataggio, revisione, quota, conflitto tra schede, evento di aggiornamento), seed dal PoC, conversione dei recuperi e dei carichi.
 - `src/lib/unita.ts` (conversioni e formattazione di peso e distanza).
 - Import ed export v2, import del backup del PoC e lettura diretta della sua chiave.
@@ -200,12 +207,14 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** test Vitest su validazione, import del PoC (con un tuo backup reale, se me lo fornisci, oppure uno sintetico), conflitti, quota e conversioni di unità (andata e ritorno senza perdita).
 
 ### Step 3: Guscio dell'app e PWA
+- **Storie:** US-01, US-02 (interfaccia), US-03, US-30, US-31, US-32, US-33.
 - Layout mobile con tab bar in basso (Oggi, Calendario, Schede, Storico) e accesso alle impostazioni; safe area; `ClientRouter`.
 - Manifest, icone, service worker con precache, registrazione con scope pari al percorso base, pagina offline non necessaria (tutto in precache).
 - Impostazioni: tema (Sistema/Chiaro/Scuro, applicato prima del primo disegno per evitare il lampo di tema sbagliato), unità di peso e di distanza, recupero predefinito, suono e vibrazione, sezione Dati e privacy.
 - **Verifica:** Playwright offline (contesto senza rete dopo la prima visita), nessuna richiesta a domini esterni, build con `BT_BASE=/bodytracker/` funzionante.
 
 ### Step 4: Schede
+- **Storie:** US-07, US-08, US-09, US-10.
 - Elenco: crea, duplica, rinomina, archivia, elimina con conferma.
 - Editor:
   - aggiungi esercizio dal catalogo (ricerca) o personalizzato;
@@ -214,6 +223,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** e2e "crea scheda C con superserie e la ritrovi dopo il ricaricamento".
 
 ### Step 5: Calendario e Oggi
+- **Storie:** US-04, US-05, US-06, US-11.
 - Calendario:
   - settimana scorrevole e vista mese compatta;
   - assegnazione di una scheda a ogni giorno della settimana, eccezione per una singola data (scheda diversa o riposo);
@@ -222,14 +232,16 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** e2e "pianifico B il giovedì → giovedì Oggi propone B".
 
 ### Step 6: Allenamento attivo
+- **Storie:** US-11…US-20.
 - Elenco esercizi con target della scheda, selettore variante, approfondimento dal catalogo.
 - Righe serie `tipo/n · precedente · kg|lb · rip · ✓` (intestazione e valori nell'unità scelta), aggiungi o rimuovi serie, note.
 - Aggiungi esercizio durante la sessione; riordino.
 - Barra fissa con durata della sessione e stato del salvataggio; "Termina" con riepilogo; sessione riapribile dallo storico.
 - Mini-barra persistente (`transition:persist`) quando si naviga altrove.
-- **Verifica:** e2e di una sessione completa da scheda, con ricaricamento a metà; viewport 320, 390, 430 e desktop.
+- **Verifica:** e2e di una sessione completa da scheda, con ricaricamento a metà; viewport 320, 390, 430 e desktop; conteggio dei tocchi per serie (P1). **Prova reale in palestra** dell'utente sul proprio telefono con la checklist di USER-STORIES.md §5, e correzioni prima dello step 7.
 
 ### Step 7: Timer di recupero
+- **Storie:** US-21…US-26.
 - Overlay a tutto schermo:
   - conto alla rovescia grande con cifre tabulari, progresso;
   - −15 s, +15 s, Salta, Riduci (diventa barra);
@@ -243,9 +255,10 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - interfaccia `AvvisoRecupero { programma(timer): Promise<void>; annulla(id): Promise<void> }` con implementazione locale (in primo piano);
   - handler `push` e `notificationclick` già presenti nel service worker;
   - documento con il contratto di un futuro endpoint (`POST {subscription, fine}`). Nessun server.
-- **Verifica:** Vitest con timer finti; e2e con `page.clock` (spunta → overlay → +15 s → fine → chiusura); prova manuale su iPhone e Android, con una checklist nel documento.
+- **Verifica:** Vitest con timer finti; e2e con `page.clock` (spunta → overlay → +15 s → fine → chiusura); prova manuale su iPhone e Android, con una checklist nel documento; **seconda prova reale in palestra** focalizzata su timer, interruzioni e leggibilità.
 
 ### Step 8: Storico e progressi
+- **Storie:** US-27, US-28, US-29.
 - Storico per data (lista più accesso dal calendario), dettaglio sessione modificabile, eliminazione con conferma.
 - Pagina esercizio:
   - grafici di **carico massimo**, **1RM stimato** (Epley, solo serie normali con ripetizioni ≤ 12) e **volume per sessione**, con selettore di periodo;
@@ -254,6 +267,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **Verifica:** Vitest sui calcoli (riscaldamento escluso, varianti separate), e2e sulla pagina esercizio con dati seed.
 
 ### Step 9: Rifinitura, eliminazione del PoC e rilascio
+- **Storie:** tutte le M con test verde; critique di Impeccable sui flussi principali di USER-STORIES.md §4.
 - Impeccable: `critique`, `audit`, `harden` (stati vuoti, errori, nomi lunghi, quota piena, conflitto tra schede), `polish`.
 - Verifica della tabella "Assorbimento del PoC": ogni riga deve avere un test e2e verde.
 - **Eliminazione di `BodyTracker/`** (resta nella cronologia git). Le parti ancora utili di `LEGGIMI.md` (privacy, limiti, aggiunta di approfondimenti al catalogo) confluiscono nel `README.md`.

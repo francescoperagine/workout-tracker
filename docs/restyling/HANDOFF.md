@@ -4,7 +4,7 @@ Questo documento serve a riprendere il lavoro in una nuova conversazione. Contie
 
 ## Prompt da incollare nella nuova conversazione
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md` e `docs/restyling/ANALISI.md`, poi esegui lo **step 0** del piano. Lavora su un branch nuovo partendo da `main`. Alla fine dello step fermati e mostrami i brief delle superfici da confermare, prima di toccare la grafica.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/USER-STORIES.md`, `docs/restyling/PIANO.md` e `docs/restyling/ANALISI.md`, poi esegui lo **step 0** del piano. Lavora su un branch nuovo partendo da `main`. Alla fine dello step fermati e mostrami storie e brief delle superfici da confermare, prima di toccare la grafica.
 
 ## Stato a fine conversazione precedente (10 ottobre 2026)
 
@@ -20,7 +20,8 @@ Tutto è su `main`.
 - **Documenti:**
   - `AGENTS.md`: guida al codice attuale. Va aggiornato man mano che il restyling cambia struttura e convenzioni.
   - `docs/restyling/ANALISI.md`: stato, concorrenti (Strong, Hevy), vincoli del timer sul web, regole di Impeccable.
-  - `docs/restyling/PIANO.md`: **decisioni prese**, scelte tecniche, modello dati v2, unità di misura, tabella "Assorbimento del PoC", step 0–9 con criteri di verifica.
+  - `docs/restyling/USER-STORIES.md`: **scena d'uso, principi UX verificabili (P1–P10), 33 user story con priorità e criteri di accettazione**, flussi principali, metodo di validazione (test per ID, prova reale in palestra). È una bozza da confermare con l'utente allo step 0.
+  - `docs/restyling/PIANO.md`: **decisioni prese**, scelte tecniche, modello dati v2, unità di misura, tabella "Assorbimento del PoC", step 0–9 con storie coperte e criteri di verifica.
 - **Nessun dato da migrare** dal formato `bb-*`. L'unico import richiesto è il backup del PoC (`bodytracker.archivio.v1`). Un backup reale dell'utente non è ancora stato fornito: chiederlo allo step 2, oppure usarne uno sintetico.
 
 ## Decisioni chiave (riassunto; il dettaglio è nel piano)
@@ -58,11 +59,15 @@ Obiettivo: fondamenta pronte, senza ancora cambiare la grafica.
 6. **Documenti di design in radice:**
    - `git mv BodyTracker/documentazione/PRODUCT.md PRODUCT.md`, idem per `DESIGN.md` e `design.json` (dove Impeccable li vuole);
    - aggiornare `PRODUCT.md` con le decisioni del piano. Il `DESIGN.md` lo riscrive lo step 1.
-7. **Brief con `/impeccable shape`** per: Oggi, Allenamento attivo, Timer di recupero, Schede (elenco ed editor), Calendario, Storico/Progressi, Impostazioni e Dati.
-   - Modalità **Operate** per tutte.
-   - Le risposte a molte domande di scoperta sono già nel piano: non ripeterle all'utente, chiedere solo quelle che restano davvero aperte.
+7. **Storie e brief.**
+   - **Prima** rivedere con l'utente `USER-STORIES.md`: priorità M/S/C, storie mancanti o di troppo, principi P1–P10. Le storie confermate sono il contratto del restyling.
+   - Poi i **brief con `/impeccable shape`** per: Oggi, Allenamento attivo, Timer di recupero, Schede (elenco ed editor), Calendario, Storico/Progressi, Impostazioni e Dati, più il primo avvio.
+   - Modalità **Operate** per tutte. Ogni brief dichiara le storie (ID) e i principi che copre, e descrive la scena d'uso reale (una mano, tra una serie e l'altra, luce variabile, offline).
+   - Nessuna storia M deve restare senza superficie.
+   - Le risposte a molte domande di scoperta sono già in piano e storie: non ripeterle all'utente, chiedere solo quelle davvero aperte.
+   - Progettare per primi i flussi di USER-STORIES.md §4, non le singole pagine.
 8. **Verifica:** `npm run build` verde, `npx astro check` senza errori, `npm test` (anche vuoto) che parte.
-9. **Consegna:** commit, push, poi presentare i brief all'utente e **fermarsi** per la conferma.
+9. **Consegna:** commit, push, poi presentare storie e brief all'utente e **fermarsi** per la conferma.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -80,6 +85,7 @@ Obiettivo: fondamenta pronte, senza ancora cambiare la grafica.
 
 ## Da non dimenticare
 
+- **La UX conta più della grafica:** ogni scelta visiva va giudicata sulla scena d'uso (una mano, recuperi brevi, interruzioni, luce variabile) e sui principi P1–P10. I test e2e portano l'ID della storia, e dopo gli step 6 e 7 è prevista una prova reale in palestra con l'utente.
 - Gli ID del catalogo esercizi del PoC (`BodyTracker/palestra/esercizi.js`) **non vanno cambiati**: lo storico dell'utente li usa.
 - Ogni funzione nella tabella "Assorbimento del PoC" deve avere un test e2e prima di eliminare `BodyTracker/`.
 - Aggiornare `AGENTS.md` quando cambiano struttura, comandi o convenzioni (oggi descrive l'app pre-restyling).
