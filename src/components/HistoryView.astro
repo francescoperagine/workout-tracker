@@ -1,11 +1,11 @@
 ---
-const STORAGE_KEY = 'bb-workouts'
+/* Nessuna logica server-side: tutto client */
 ---
 <div data-history-view class="p-4 border rounded mt-4">
 <h2 class="font-medium mb-2">Storico allenamenti</h2>
 
 
-<div class="flex gap-2 mb-3">
+<div class="flex flex-wrap gap-2 mb-3">
 <button id="refresh" class="px-3 py-1 rounded border">Aggiorna</button>
 <button id="export" class="px-3 py-1 rounded bg-blue-600 text-white">Esporta JSON</button>
 <label class="px-3 py-1 rounded border cursor-pointer">
@@ -17,20 +17,16 @@ Importa
 
 
 <div id="list" class="space-y-2 text-sm"></div>
-<script type="module">
-const STORAGE_KEY = 'bb-workouts'
-const root = document.querySelector('[data-history-view]')
+<script>
+import { loadWorkouts, mergeWorkouts, clearWorkouts, parseWorkouts, parseDateKey, toDateKey, escapeHtml, workoutUrl, downloadJson, UPDATED_EVENT } from '../scripts/bodytracker'
 
-
-function loadList() {
-const raw = localStorage.getItem(STORAGE_KEY)
-return raw ? JSON.parse(raw) : []
-}
+const root = document.querySelector<HTMLElement>('[data-history-view]')!
+const importInput = root.querySelector<HTMLInputElement>('#import-file')!
 
 
 function render() {
-const list = loadList()
-const el = root.querySelector('#list')
+const list = loadWorkouts().reverse()
+const el = root.querySelector<HTMLElement>('#list')!
 el.innerHTML = ''
 if (!list.length) {
 el.innerHTML = '<div class="text-slate-500">Nessun allenamento registrato.</div>'
@@ -39,58 +35,51 @@ return
 
 
 list.forEach(item => {
-const d = new Date(item.date).toLocaleString()
-const card = document.createElement('div')
-card.className = 'p-2 border rounded'
-card.innerHTML = `<div class="flex justify-between"><div class="font-medium">${item.name}</div><div class="text-xs">${d}</div></div><div class="text-xs mt-1">${item.exercises.map(e=>`<div>${e}</div>`).join('')}</div>`
+const d = parseDateKey(item.date)!.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+const card = document.createElement('a')
+card.href = workoutUrl(item.date)
+card.className = 'block p-2 border rounded hover:bg-gray-50 transition'
+const exercises = item.exercises.map(e => `<div><strong>${escapeHtml(e.name)}</strong> - ${e.sets.length} serie</div>`).join('')
+card.innerHTML = `<div class="flex justify-between"><div class="font-medium">${escapeHtml(d)}</div><div class="text-xs">${item.exercises.length} esercizi</div></div><div class="text-xs mt-1">${exercises}</div>`
 el.appendChild(card)
 })
 }
 
 
-root.querySelector('#refresh').addEventListener('click', render)
+root.querySelector('#refresh')!.addEventListener('click', render)
 
 
-root.querySelector('#export').addEventListener('click', () => {
-const data = loadList()
-const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'})
-const url = URL.createObjectURL(blob)
-const a = document.createElement('a')
-a.href = url
-a.download = `bb-workouts-${new Date().toISOString()}.json`
-document.body.appendChild(a)
-a.click()
-a.remove()
-URL.revokeObjectURL(url)
+root.querySelector('#export')!.addEventListener('click', () => {
+downloadJson(loadWorkouts(), `bb-workouts-${toDateKey(new Date())}.json`)
 })
 
 
-root.querySelector('#import-file').addEventListener('change', async (ev) => {
-const f = ev.target.files[0]
+importInput.addEventListener('change', async () => {
+const f = importInput.files?.[0]
 if (!f) return
 try {
-const txt = await f.text()
-const parsed = JSON.parse(txt)
-if (!Array.isArray(parsed)) throw new Error('Formato non valido: serve array di allenamenti')
-localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
+const parsed = parseWorkouts(JSON.parse(await f.text()))
+if (!confirm(`Importare ${parsed.length} allenamenti? Quelli con la stessa data verranno sostituiti.`)) return
+mergeWorkouts(parsed)
 alert('Importazione completata')
-window.dispatchEvent(new CustomEvent('bb:updated'))
 } catch (e) {
-alert('Errore importando: ' + e.message)
+alert('Errore importando: ' + (e instanceof Error ? e.message : String(e)))
+} finally {
+// Permette di reimportare lo stesso file
+importInput.value = ''
 }
 })
 
 
-root.querySelector('#clear').addEventListener('click', () => {
+root.querySelector('#clear')!.addEventListener('click', () => {
 if (!confirm('Sei sicuro di cancellare tutto lo storico?')) return
-localStorage.removeItem(STORAGE_KEY)
-window.dispatchEvent(new CustomEvent('bb:updated'))
-render()
+clearWorkouts()
 })
 
 
 // render on update
-window.addEventListener('bb:updated', render)
+window.addEventListener(UPDATED_EVENT, render)
+window.addEventListener('storage', render)
 render()
 </script>
 </div>

@@ -19,26 +19,27 @@ Tutti i dati dell'utente restano nel browser (`localStorage`): nessun backend, d
 ```sh
 npm install        # oppure npm ci
 npm run dev        # dev server su http://localhost:4321
-npm run build      # build di produzione in dist/ (vedi "Problemi noti": oggi fallisce)
+npm run build      # sito statico in dist/
 npm run preview
 npm run astro -- <comando>
 ```
 
-Non ci sono test, linter, formatter né `astro check` configurati (`@astrojs/check` non è installato). Per verificare una modifica, avvia `npm run dev` e controlla le pagine nel browser (Chromium/Playwright è disponibile); verifica anche il layout a larghezza telefono, perché l'uso principale è da mobile in palestra.
+Non ci sono test, linter né formatter configurati, e `@astrojs/check` non è tra le dipendenze. Per il type-check usa `npm i --no-save @astrojs/check typescript && npx astro check` (non modifica `package.json`). Per verificare una modifica esegui `npm run build`, poi controlla le pagine con `npm run dev` o `npm run preview` nel browser (Chromium/Playwright è disponibile). Verifica anche il layout a larghezza telefono, perché l'uso principale è da mobile in palestra.
 
 ## Struttura dell'app Astro
 
 ```
-astro.config.mjs        site francescoperagine.com, output: 'server', integrazioni mdx + sitemap, plugin Vite di Tailwind
-tailwind.config.mjs     palette "brand" e animazioni (attenzione: non è caricato, vedi sotto)
-src/consts.ts           SITE_TITLE, SITE_DESCRIPTION, SITE_URL (usati da Layout e RSS)
-src/styles/global.css   @import "tailwindcss" + poche regole globali
+astro.config.mjs        site francescoperagine.com, output statico (default), integrazioni mdx + sitemap, plugin Vite di Tailwind
+tailwind.config.mjs     palette "brand-*" e animazioni (fade-in, slide-up, float), caricato da global.css con @config
+src/styles/global.css   @import "tailwindcss", @config, regole globali e classe .input
 src/layouts/Layout.astro  <html lang="it">, Header + <main class="container"> + Footer. Props: title, description, showBackButton
+src/scripts/
+  bodytracker.ts        Archivio localStorage, tipi, validazione, date locali, escapeHtml, downloadJson
+  exercise-list.ts      Editor condiviso della lista esercizi/serie (mountExerciseList, promptNewExercise)
 src/pages/
   index.astro           Home: WeeklyCalendar, CalendarConfig, WorkoutEditor, HistoryView
-  about.astro           Pagina informativa statica
-  workout/[date].astro  Editor dell'allenamento di una data (YYYY-MM-DD), prerender = false
-  rss.xml.js            Feed RSS residuo del template blog
+  about.astro           Pagina informativa statica (sezione #privacy)
+  workout.astro         Editor dell'allenamento di un giorno: /workout?date=YYYY-MM-DD (data letta lato client)
 src/components/
   Header.astro          Navigazione sticky + menu mobile (script bundlato da Astro)
   Footer.astro
@@ -50,21 +51,25 @@ src/components/
 
 ### Modello di rendering
 
-- I file `.astro` producono solo markup statico; **tutta la logica è lato client** in tag `<script>`.
-- La maggior parte degli script è `<script type="module">` o `<script define:vars={...}>`, quindi **inline e non elaborati da Astro/TypeScript**: niente import, niente tipi, niente controllo in fase di build. Solo lo script di `Header.astro` è un `<script>` semplice, bundlato da Astro.
-- Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …).
-- I componenti comunicano tramite l'evento `window` `bb:updated` (e l'evento `storage` per altre schede). Dopo aver scritto lo storico, emetti `window.dispatchEvent(new CustomEvent('bb:updated'))`.
-- Ogni componente cerca la propria radice con un attributo (`[data-weekly-calendar]`, `[data-calendar-config]`, `[data-workout-editor]`, `[data-history-view]`) e poi usa `root.querySelector('#id')`. Gli ID sono duplicati tra componenti e pagine (`#exercise-list`, `#add-exercise`, `#list`), quindi limita sempre le query alla radice del componente.
+- Il sito è **completamente statico** (nessun adapter, nessun rendering lato server). Non introdurre route dinamiche lato server: un parametro variabile va passato in query string e letto nel client, come fa `workout.astro`.
+- I file `.astro` producono solo markup; **tutta la logica è lato client** in tag `<script>` semplici (TypeScript, elaborati e bundlati da Astro), che importano da `src/scripts/`. Non usare `<script type="module">` o `define:vars`: diventerebbero script inline non elaborati, senza import e senza tipi.
+- Accedi al `localStorage` **solo tramite `src/scripts/bodytracker.ts`** (`loadWorkouts`, `getWorkout`, `putWorkout`, `mergeWorkouts`, `clearWorkouts`, `loadCalendar`, `saveCalendar`, …), che si occupa di validazione, ordinamento e notifica.
+- Il rendering avviene costruendo stringhe HTML e assegnandole a `innerHTML`, con delegazione degli eventi tramite attributi `data-*` (`data-addset`, `data-deleteset="i-j"`, `data-reps`, `data-weight`, `data-deleteex`, …). **Ogni testo dell'utente inserito in un template HTML deve passare da `escapeHtml`**; altrimenti usa `textContent`.
+- I componenti comunicano tramite l'evento `window` `bb:updated` (`UPDATED_EVENT`) e l'evento `storage` per altre schede. `putWorkout`, `mergeWorkouts` e `clearWorkouts` lo emettono già; dopo `saveCalendar` va emesso a mano. Un editor che salva a ogni modifica deve ignorare l'evento generato dal proprio salvataggio, altrimenti il re-render fa perdere il focus (vedi il flag `saving` in `WorkoutEditor`).
+- Ogni componente cerca la propria radice con un attributo (`[data-weekly-calendar]`, `[data-calendar-config]`, `[data-workout-editor]`, `[data-history-view]`, `[data-workout-page]`) e poi usa `root.querySelector('#id')`. Gli ID sono duplicati tra componenti e pagine (`#exercise-list`, `#add-exercise`, `#list`), quindi limita sempre le query alla radice del componente.
 
 ### Chiavi di localStorage
 
-| Chiave | Forma | Lettura / scrittura |
+| Chiave | Forma | Note |
 | --- | --- | --- |
-| `bb-calendar` | `{ "Lunedì": "Petto", ... }`: nomi completi dei giorni in italiano, con accento | CalendarConfig (l/s), WeeklyCalendar (l), `workout/[date]` (l) |
-| `bb-workouts` | `[{ date: "YYYY-MM-DD", exercises: [{ name, sets: [{ reps, weight }] }] }]`, al massimo un elemento per data | `workout/[date]` (l/s), HistoryView (l/s/import/clear), WeeklyCalendar (l) |
-| `workout` | Singolo `{ date, exercises }` | WorkoutEditor (l/s), WeeklyCalendar (l, unito a `bb-workouts` se la data non c'è) |
+| `bb-calendar` | `{ "Lunedì": "Petto", ... }`: nomi completi dei giorni in italiano, con accento | Scritta da CalendarConfig, letta da WeeklyCalendar e `workout.astro` |
+| `bb-workouts` | `[{ date: "YYYY-MM-DD", exercises: [{ name, sets: [{ reps, weight }] }] }]` | Un solo elemento per data, ordinato per data crescente. Un allenamento senza esercizi viene rimosso. Usata da tutti gli editor, dal calendario e dallo storico |
+| `workout` | Legacy | Vecchia chiave di WorkoutEditor: alla prima lettura viene migrata in `bb-workouts` e poi cancellata |
 
-I nomi dei giorni devono coincidere esattamente tra `CalendarConfig` (`['Lunedì', …, 'Domenica']`), `WeeklyCalendar` (`dayNames`, indicizzato da `getDay()`) e `workout/[date]` (giorno da `toLocaleDateString('it-IT')`, con iniziale maiuscola).
+- I tipi (`Workout`, `Exercise`, `WorkoutSet`, `CalendarConfig`) sono in `bodytracker.ts`. Se cambi la forma dei dati, aggiorna anche `isWorkout`/`parseWorkouts` e prevedi una migrazione dei dati esistenti.
+- Le date sono stringhe `YYYY-MM-DD` in **ora locale**: usa `toDateKey(date)` e `parseDateKey(key)`, mai `toISOString()` o `new Date('YYYY-MM-DD')` (che usano UTC).
+- I nomi dei giorni vengono da `DAY_NAMES` (indicizzato da `getDay()`), `DAY_NAMES_SHORT` e `WEEK_DAYS` (ordine lunedì–domenica) di `bodytracker.ts`. Non riscriverli altrove.
+- Formato di import/export: un array di `Workout`. "Esporta JSON" in home produce un array di un solo elemento, quindi è reimportabile. L'importazione valida l'intero file e lo unisce allo storico: le date già presenti vengono sostituite.
 
 ## Convenzioni
 
@@ -72,21 +77,16 @@ I nomi dei giorni devono coincidere esattamente tra `CalendarConfig` (`['Lunedì
 - Ogni pagina usa `Layout`; le sottopagine passano `showBackButton={true}`.
 - Lo stile è fatto con classi di utilità Tailwind direttamente nel markup: card `bg-white rounded-2xl shadow-lg p-6/p-8`, azioni primarie `bg-blue-600 … hover:bg-blue-700`, azioni di salvataggio `bg-green-600`, azioni distruttive in rosso. Tailwind 4 usa la sintassi `bg-linear-to-r`/`bg-linear-to-br` (non `bg-gradient-to-*`).
 - Le azioni distruttive chiedono conferma con `confirm(...)`; il feedback oggi usa `alert(...)`.
+- I colori personalizzati (`bg-brand-primary`, …) e le animazioni (`animate-fade-in`, …) si definiscono in `tailwind.config.mjs`. Per gli input di form semplici usa la classe `.input` di `global.css`.
+- Link alle sezioni della home sempre assoluti (`/#allenamenti`, `/#storico`), perché Header e Footer compaiono su tutte le pagine; link alla pagina di un giorno tramite `workoutUrl(dateKey)`.
 - Il codice segue lo stile dei file vicini: alcuni file usano punto e virgola, altri no. Non riformattare interi file.
 - I commenti nel codice sono un misto di italiano e inglese; preferisci l'italiano per i testi rivolti all'utente.
 
-## Problemi noti (verificati)
+## Limiti noti
 
-Tienine conto prima di dare per scontato un comportamento; correggili solo se rientrano nel compito.
-
-1. **`npm run build` fallisce** con `NoAdapterInstalled`: `astro.config.mjs` imposta `output: 'server'` ma non c'è un adapter. Il dev server funziona. Correzione possibile: aggiungere un adapter, oppure tornare a `output: 'static'` e mantenere `prerender = false` solo dove serve (che a sua volta richiede un adapter).
-2. **`/workout/<data non valida>` restituisce 500**: `[date].astro` usa `throw Astro.redirect('/')`, ma il redirect va restituito (`return Astro.redirect('/')`).
-3. **`/rss.xml`** è un residuo del template blog: chiama `getCollection('blog')`, ma non esiste una configurazione delle content collection, quindi il feed è vuoto e registra un errore. Anche `Layout` aggiunge un `<link rel="alternate">` verso questo feed.
-4. **Il `tailwind.config.mjs` non viene usato**: Tailwind 4 non carica automaticamente i file di configurazione JS. Le classi `brand-*` e le animazioni personalizzate non esistono, a meno di aggiungere `@config "../../tailwind.config.mjs";` in `global.css` o di spostare i token in un blocco `@theme`. Anche la classe `input` usata in `CalendarConfig` non è definita.
-5. **Modelli dati incoerenti**: `WorkoutEditor` scrive sulla chiave separata `workout` invece che su `bb-workouts`; `HistoryView` legge `item.name` e mostra `item.exercises` come stringhe, mentre le voci di `bb-workouts` non hanno `name` e gli esercizi sono oggetti `{ name, sets }`. L'importazione in `HistoryView` sostituisce tutto lo storico senza validare gli elementi.
-6. **Date e fusi orari**: `WeeklyCalendar.formatDate` usa `toISOString()` (UTC), quindi nei fusi orari a est di UTC la data può risultare del giorno precedente. Altrove si usa `new Date(\`${date}T00:00:00\`)` (ora locale). Per le chiavi `YYYY-MM-DD` preferisci una formattazione in ora locale.
-7. **XSS tramite `innerHTML`**: nomi di esercizi e schede scelti dall'utente vengono inseriti nell'HTML senza escape. Quando tocchi questi render, esegui l'escape o usa `textContent`.
-8. I link di Header e Footer verso `#allenamenti`/`#storico` funzionano solo nella home; `#privacy` e `#termini` non hanno destinazione.
+- Nessun test automatico: verifica a mano o con uno script Playwright temporaneo (fuori dal repository).
+- `alert`/`confirm`/`prompt` nativi sono usati per feedback e input; se li sostituisci, fallo in modo coerente su tutti i componenti.
+- Il pulsante "Salva allenamento" della pagina del giorno salva solo quando premuto; l'editor in home salva invece a ogni modifica.
 
 ## Riferimento: `BodyTracker/`
 

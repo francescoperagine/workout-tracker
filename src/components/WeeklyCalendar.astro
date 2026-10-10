@@ -37,82 +37,33 @@
   </div>
 </div>
 
-<script type="module">
-  const root = document.querySelector('[data-weekly-calendar]');
-  const daysContainer = root.querySelector('#calendar-days');
-  const weekLabel = root.querySelector('#week-label');
-  const prevBtn = root.querySelector('#prev-week');
-  const nextBtn = root.querySelector('#next-week');
+<script>
+  import { loadCalendar, loadWorkouts, toDateKey, dayNameOf, escapeHtml, workoutUrl, DAY_NAMES_SHORT, UPDATED_EVENT } from '../scripts/bodytracker';
 
-  const CALENDAR_KEY = 'bb-calendar';
-  const WORKOUTS_KEY = 'workout';
+  const root = document.querySelector<HTMLElement>('[data-weekly-calendar]')!;
+  const daysContainer = root.querySelector<HTMLElement>('#calendar-days')!;
+  const weekLabel = root.querySelector<HTMLElement>('#week-label')!;
+  const prevBtn = root.querySelector<HTMLButtonElement>('#prev-week')!;
+  const nextBtn = root.querySelector<HTMLButtonElement>('#next-week')!;
 
   let currentWeekOffset = 0;
 
-  const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-  const dayNamesShort = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-
-  function getMonday(d) {
-    const date = new Date(d);
+  function getMonday(d: Date) {
+    const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  }
-
-  function formatDate(date) {
-    return date.toISOString().split('T')[0];
-  }
-
-  function loadCalendarConfig() {
-    const saved = localStorage.getItem(CALENDAR_KEY);
-    return saved ? JSON.parse(saved) : {};
-  }
-
-  function hasWorkoutForDate(date) {
-    const dateStr = formatDate(date);
-    const allWorkouts = getAllWorkouts();
-    return allWorkouts.some(w => w.date === dateStr && w.exercises.length > 0);
-  }
-
-  function getAllWorkouts() {
-    // Check if there are saved workouts in various storage locations
-    const workoutsRaw = localStorage.getItem('bb-workouts');
-    const currentWorkout = localStorage.getItem(WORKOUTS_KEY);
-
-    let workouts = [];
-    if (workoutsRaw) {
-      try {
-        workouts = JSON.parse(workoutsRaw);
-      } catch (e) {
-        console.error('Error parsing workouts:', e);
-      }
-    }
-
-    // Also include current workout if it exists
-    if (currentWorkout) {
-      try {
-        const current = JSON.parse(currentWorkout);
-        if (current.exercises && current.exercises.length > 0) {
-          // Check if this workout already exists in history
-          const existingIndex = workouts.findIndex(w => w.date === current.date);
-          if (existingIndex === -1) {
-            workouts.push(current);
-          }
-        }
-      } catch (e) {
-        console.error('Error parsing current workout:', e);
-      }
-    }
-
-    return workouts;
+    date.setDate(date.getDate() - day + (day === 0 ? -6 : 1));
+    return date;
   }
 
   function render() {
-    const today = new Date();
-    const monday = getMonday(today);
+    const monday = getMonday(new Date());
     monday.setDate(monday.getDate() + (currentWeekOffset * 7));
 
-    const calendarConfig = loadCalendarConfig();
+    const calendarConfig = loadCalendar();
+    const datesWithWorkout = new Set(
+      loadWorkouts().filter(w => w.exercises.length > 0).map(w => w.date)
+    );
+    const todayKey = toDateKey(new Date());
 
     // Update week label
     const endOfWeek = new Date(monday);
@@ -124,14 +75,14 @@
     for (let i = 0; i < 7; i++) {
       const date = new Date(monday);
       date.setDate(date.getDate() + i);
+      const dateKey = toDateKey(date);
 
-      const isToday = formatDate(date) === formatDate(new Date());
-      const dayName = dayNames[date.getDay()];
-      const plannedWorkout = calendarConfig[dayName] || '';
-      const hasWorkout = hasWorkoutForDate(date);
+      const isToday = dateKey === todayKey;
+      const plannedWorkout = calendarConfig[dayNameOf(date)] || '';
+      const hasWorkout = datesWithWorkout.has(dateKey);
 
       const dayCard = document.createElement('a');
-      dayCard.href = `/workout/${formatDate(date)}`;
+      dayCard.href = workoutUrl(dateKey);
       dayCard.className = `
         block p-4 rounded-xl border-2 transition-all cursor-pointer
         ${isToday ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'}
@@ -140,13 +91,13 @@
 
       dayCard.innerHTML = `
         <div class="text-center">
-          <div class="text-xs font-medium text-gray-500 uppercase mb-1">${dayNamesShort[date.getDay()]}</div>
+          <div class="text-xs font-medium text-gray-500 uppercase mb-1">${DAY_NAMES_SHORT[date.getDay()]}</div>
           <div class="text-2xl font-bold ${isToday ? 'text-blue-600' : 'text-gray-900'} mb-2">
             ${date.getDate()}
           </div>
           ${plannedWorkout ? `
             <div class="text-xs font-medium text-gray-700 bg-gray-100 rounded px-2 py-1 mb-1">
-              ${plannedWorkout}
+              ${escapeHtml(plannedWorkout)}
             </div>
           ` : ''}
           ${hasWorkout ? `
@@ -177,7 +128,7 @@
   });
 
   // Re-render when workouts are updated
-  window.addEventListener('bb:updated', render);
+  window.addEventListener(UPDATED_EVENT, render);
   window.addEventListener('storage', render);
 
   render();
