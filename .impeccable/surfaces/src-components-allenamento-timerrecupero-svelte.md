@@ -31,7 +31,7 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 ## Scope and boundaries
 
 - Dentro: overlay a tutto schermo (`position: fixed`, `100dvh`, safe area; non l'API Fullscreen), barra ridotta sopra la barra della sessione e nella mini-barra delle altre pagine, stati di fine.
-- Recupero dalla voce di scheda o dalla sessione; recupero di riscaldamento se la serie è di riscaldamento; 0 = nessun timer. In superserie parte solo dopo l'ultimo esercizio del giro (US-25).
+- Recupero dalla voce di scheda o dalla sessione; recupero di riscaldamento se la serie è di riscaldamento; 0 = nessun timer. In superserie parte solo dopo l'ultimo esercizio del giro (US-25, priorità M). Se la voce non ha un recupero, vale il recupero predefinito delle Impostazioni (US-21).
 - **Anti-obiettivi:** animazioni continue o pulsanti che si muovono; cifre che cambiano larghezza; annunci a ogni secondo; controlli piccoli in alto; overlay che blocca la correzione di una serie (si riduce).
 
 ## States and ranges

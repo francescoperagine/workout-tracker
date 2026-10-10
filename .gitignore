@@ -51,5 +51,5 @@ playwright-report/
 **/.impeccable/live/*.png
 # impeccable-ignore-end
 
-# Claude Code: impostazioni locali (vi finisce l'hook del detector di Impeccable)
+# Claude Code: impostazioni locali (l'hook del detector di Impeccable è in .claude/settings.json, condiviso)
 .claude/settings.local.json

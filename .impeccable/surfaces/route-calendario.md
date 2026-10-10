@@ -44,4 +44,4 @@ L'utente controlla se è in linea con il programma ("ho saltato giovedì?") e, o
 
 ## Constraints and open decisions
 
-- **Aperto:** la vista mese serve davvero in v1 o basta la settimana scorrevole con salto rapido a una data?
+- **Deciso:** la vista mese compatta è nella v1, accanto alla settimana scorrevole (che resta la vista principale su telefono).

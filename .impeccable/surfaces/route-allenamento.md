@@ -17,7 +17,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 ## Outcome and proof
 
-- Una serie registrata in **2 tocchi** se ripete la volta scorsa ("precedente" + spunta), al massimo 2 campi più la spunta altrimenti (P1).
+- Una serie registrata in **1 tocco** se ripete la volta scorsa (la spunta su una riga vuota conferma i valori "precedente"), al massimo 2 campi più la spunta altrimenti (P1). Togliere la spunta annulla.
 - La spunta della serie avvia il recupero (vedi brief del timer).
 - Alla fine, "Termina" porta a un riepilogo: durata, esercizi, serie, volume, record battuti.
 - Contenuto reale: schede A/B del PoC. Esempio: "2a Panca piana bilanciere · 6–8 · 40 kg · recupero 60–75″" in superserie con "2b Rematore manubri, petto su panca inclinata · 8–10 · 12–14 kg per manubrio".
@@ -56,6 +56,8 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 ## Constraints and open decisions
 
 - Isola Svelte persistente tra le pagine (`transition:persist`), dati in kg anche se l'utente usa lb.
-- **Aperto:** la spunta su una riga vuota conferma i valori precedenti (1 tocco, come Strong) o richiede prima il tocco su "precedente" (2 tocchi, come scritto in P1)? Da decidere con l'utente.
-- **Aperto:** il riepilogo è una schermata a sé dopo "Termina" (proposta) o un foglio dal basso.
+- **Deciso:** la spunta su una riga vuota conferma i valori precedenti (1 tocco, come Strong); senza precedente una riga vuota non si spunta.
+- **Deciso:** il riepilogo è una schermata a sé dopo "Termina".
+- Superserie (US-09, US-25), note sul carico (US-16), approfondimento (US-19) e più sessioni nello stesso giorno (US-20) sono M. Riordino degli esercizi in sessione (US-15) e data e nome modificabili anche in corso (US-27) sono criteri confermati.
+- Fuori ambito v1: calcolatore dei dischi, calcolatore di riscaldamento, note per singola serie.
 - Il builder non deve inventare: testi degli approfondimenti (oggi vuoti), regole di calcolo dei record oltre a quelle del piano.

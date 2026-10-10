@@ -47,4 +47,4 @@ L'utente cambia programma ogni qualche settimana, di solito a casa o in panchina
 ## Constraints and open decisions
 
 - Il builder non deve cambiare gli ID del catalogo del PoC né inventare esercizi o descrizioni.
-- **Aperto:** superserie e riordino con trascinamento sono indicati nel piano come candidati da rimandare; con le schede reali (6 voci su 8 in superserie) la superserie va considerata indispensabile.
+- **Deciso:** la superserie è indispensabile (US-09 è M): con le schede reali 6 voci su 8 sono in superserie. Il riordino con trascinamento resta facoltativo e rimandabile; le frecce accessibili sono obbligatorie.

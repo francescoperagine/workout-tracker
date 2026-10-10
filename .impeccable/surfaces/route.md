@@ -45,5 +45,5 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 
 ## Constraints and open decisions
 
-- **Aperto:** accesso alle Impostazioni con un'icona nell'intestazione delle schermate principali (proposta) oppure quinta voce della tab bar.
+- **Deciso:** accesso alle Impostazioni con un'icona nell'intestazione delle schermate principali, non come quinta voce della tab bar.
 - Il builder non deve inventare: metriche motivazionali, streak, obiettivi non richiesti.

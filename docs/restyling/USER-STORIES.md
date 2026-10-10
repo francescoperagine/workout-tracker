@@ -1,6 +1,6 @@
 # BodyTracker: scena d'uso, principi UX e user story
 
-Base di prodotto per il restyling. Le storie derivano dalle decisioni in [PIANO.md](PIANO.md) e dal PoC. Sono una **bozza da confermare allo step 0**, insieme ai brief di Impeccable. Ogni storia ha un ID (`US-xx`) da riportare nei brief, nei commit e nei nomi dei test e2e.
+Base di prodotto per il restyling. Le storie derivano dalle decisioni in [PIANO.md](PIANO.md) e dal PoC. Sono state **confermate dall'utente il 10 ottobre 2026**, insieme ai brief di Impeccable (vedi [BRIEF.md](BRIEF.md) §3–4 per le decisioni). Ogni storia ha un ID (`US-xx`) da riportare nei brief, nei commit e nei nomi dei test e2e.
 
 ## 1. Chi la usa e in che situazione
 
@@ -21,7 +21,7 @@ Base di prodotto per il restyling. Le storie derivano dalle decisioni in [PIANO.
 
 | # | Principio | Come si verifica |
 | --- | --- | --- |
-| P1 | **Registrare una serie costa pochissimo:** 2 tocchi se ripeti la volta scorsa ("precedente" + spunta), al massimo 2 campi più la spunta altrimenti | Conteggio dei tocchi nel test e2e di US-12 |
+| P1 | **Registrare una serie costa pochissimo:** 1 tocco se ripeti la volta scorsa (la spunta su una riga vuota conferma i valori "precedente", come in Strong), al massimo 2 campi più la spunta altrimenti; togliere la spunta annulla | Conteggio dei tocchi nel test e2e di US-12 |
 | P2 | **Zona del pollice:** azioni frequenti (spunta, aggiungi serie, timer, Termina) nella metà inferiore o sulla riga della serie; target ≥ 48px; nessun gesto nascosto come unico modo (lo swipe è solo una scorciatoia) | Revisione a 390×844 e 320×568; detector di Impeccable (target piccoli) |
 | P3 | **Leggibile a colpo d'occhio:** cifre di peso e ripetizioni ≥ 20px tabulari; timer leggibile a braccio teso (cifre molto grandi); contrasto AA in **entrambi i temi** | Detector, controllo dei contrasti, prova al sole su un telefono reale |
 | P4 | **Mai perdere dati:** salvataggio a ogni modifica con stato visibile; le azioni distruttive si possono annullare per qualche secondo o chiedono conferma; mai sovrascritture silenziose | e2e su ricaricamento, quota piena e conflitto tra schede |
@@ -35,6 +35,8 @@ Base di prodotto per il restyling. Le storie derivano dalle decisioni in [PIANO.
 ## 3. User story
 
 Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è tempo. "Step" rimanda al piano.
+
+**Fuori ambito per la v1:** calcolatore dei dischi, calcolatore di riscaldamento, note per singola serie (Strong li ha, ma non sono nelle decisioni del piano).
 
 ### E1. Primo avvio e dati esistenti
 
@@ -69,7 +71,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-08 (M, step 4).** Come utente, voglio indicare esercizi alternativi, per sapere cosa fare se la macchina è occupata.
 
-**US-09 (S, step 4).** Come utente, voglio raggruppare due esercizi in superserie, per alternarli e recuperare solo alla fine del giro.
+**US-09 (M, step 4).** Come utente, voglio raggruppare due esercizi in superserie, per alternarli e recuperare solo alla fine del giro.
 
 **US-10 (S, step 4).** Come utente, voglio duplicare, rinominare, riordinare e archiviare le schede, per gestire i cambi di programma senza perdere lo storico.
 - Archiviare non cancella le sessioni passate. Eliminare richiede conferma e non è possibile se la scheda ha sessioni (si archivia).
@@ -83,6 +85,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 **US-12 (M, step 6).** Come utente, voglio registrare peso e ripetizioni di ogni serie vedendo cosa ho fatto la volta scorsa, per progredire senza ricordare a memoria.
 - Riga serie: tipo/numero · precedente · peso · ripetizioni · spunta.
 - Toccando "precedente" i valori vengono copiati; tastiera numerica (decimale per il peso).
+- La spunta su una riga vuota conferma i valori "precedente" (1 tocco); senza precedente, una riga vuota non si spunta. Togliere la spunta annulla la registrazione.
 - Rispetta P1.
 
 **US-13 (M, step 6).** Come utente, voglio segnare una serie come riscaldamento, drop o cedimento, per distinguere le serie che contano.
@@ -94,8 +97,9 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 **US-15 (M, step 6).** Come utente, voglio aggiungere o togliere serie ed esercizi durante la sessione, perché il programma reale cambia.
 - "Aggiungi serie" riprende il peso dell'ultima serie con ripetizioni vuote.
 - Rimuovere una serie con valori si può annullare.
+- Gli esercizi si possono riordinare durante la sessione (frecce accessibili).
 
-**US-16 (S, step 6).** Come utente, voglio annotare dettagli sul carico (totale, per manubrio, macchina, regolazioni del sedile), per ritrovarli la volta dopo.
+**US-16 (M, step 6).** Come utente, voglio annotare dettagli sul carico (totale, per manubrio, macchina, regolazioni del sedile), per ritrovarli la volta dopo.
 - La nota è visibile accanto al precedente nella sessione successiva.
 
 **US-17 (M, step 6).** Come utente interrotto, voglio ritrovare la sessione esattamente dove l'ho lasciata, anche dopo aver chiuso il browser.
@@ -104,15 +108,17 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 **US-18 (M, step 6).** Come utente, voglio concludere l'allenamento e vedere un riepilogo, per chiudere la giornata con un feedback.
 - Riepilogo: durata, esercizi, serie, volume, record battuti. Una sessione conclusa resta modificabile e si può riaprire.
 
-**US-19 (S, step 6).** Come utente, voglio consultare come si esegue un esercizio, per fare bene il movimento.
+**US-19 (M, step 6).** Come utente, voglio consultare come si esegue un esercizio, per fare bene il movimento.
 - Approfondimento dal nome dell'esercizio (descrizione, immagine, passaggi, attenzione, fonti), in un foglio dal basso.
 
-**US-20 (C, step 6).** Come utente, voglio fare più sessioni nello stesso giorno (es. mattina e sera).
+**US-20 (M, step 6).** Come utente, voglio fare più sessioni nello stesso giorno (es. mattina e sera).
+- Una sola sessione "in corso" alla volta; le altre dello stesso giorno restano nello storico.
 
 ### E5. Recupero
 
 **US-21 (M, step 7).** Come utente, voglio che alla spunta della serie parta il recupero a tutto schermo, per riposare il tempo giusto senza pensarci.
 - Durata dall'esercizio (quella di riscaldamento se la serie è di riscaldamento); 0 = nessun timer.
+- Se la voce non ha un recupero, si usa il recupero predefinito delle Impostazioni.
 - Il conto alla rovescia si legge a braccio teso e mostra la prossima serie attesa.
 
 **US-22 (M, step 7).** Come utente, voglio allungare, accorciare o saltare il recupero, perché a volte serve più tempo o la macchina si libera.
@@ -124,7 +130,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 **US-24 (M, step 7).** Come utente, voglio accorgermi della fine del recupero anche senza guardare lo schermo.
 - Suono (attivabile), vibrazione dove supportata, schermo acceso durante la sessione. Con l'app chiusa nessuna garanzia, e le Impostazioni lo spiegano.
 
-**US-25 (S, step 7).** Come utente in superserie, voglio che il recupero parta solo alla fine del giro.
+**US-25 (M, step 7).** Come utente in superserie, voglio che il recupero parta solo alla fine del giro.
 
 **US-26 (M, step 7).** Come utente che ha bloccato il telefono, voglio ritrovare al rientro il tempo corretto (o il recupero già finito), mai un timer sbagliato.
 
@@ -132,6 +138,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-27 (M, step 8).** Come utente, voglio rivedere e correggere le sessioni passate, perché a volte registro male.
 - Lista per data e accesso dal calendario; dettaglio modificabile; eliminazione con conferma.
+- Data e nome della sessione modificabili, anche durante la sessione in corso.
 
 **US-28 (M, step 8).** Come utente, voglio vedere l'andamento di un esercizio (carico massimo, 1RM stimato, volume), per sapere se sto progredendo.
 - Grafico per periodo, nell'unità scelta, varianti separate, riscaldamento escluso; leggibile in entrambi i temi.
@@ -151,6 +158,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-33 (M, step 2–3).** Come utente, voglio essere avvisato se il salvataggio fallisce o se il diario è stato modificato in un'altra scheda, per non perdere nulla.
 - Rispetta P4, con gli stessi messaggi e comportamenti del PoC.
+- Archivio illeggibile: nessuna sovrascrittura, download del contenuto originale.
 
 ## 4. Flussi principali da progettare per primi
 

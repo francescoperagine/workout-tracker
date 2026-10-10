@@ -44,4 +44,4 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 
 ## Constraints and open decisions
 
-- **Aperto:** lo storico è una voce della tab bar che include i progressi (proposta), oppure "Progressi" è separato.
+- **Deciso:** Storico è una voce della tab bar e include i progressi (pagina esercizio); nessuna sezione "Progressi" separata.

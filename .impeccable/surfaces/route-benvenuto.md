@@ -43,5 +43,5 @@ Storie: US-01, US-02 (ingresso all'import del PoC), US-11 (passaggio a Oggi). Pr
 
 ## Constraints and open decisions
 
-- **Aperto:** schermata dedicata `/benvenuto` (proposta) oppure stato vuoto della schermata Oggi.
+- **Deciso:** schermata dedicata `/benvenuto`, mostrata una sola volta con l'archivio vuoto.
 - Il builder non deve inventare affermazioni su sicurezza o cifratura: l'app non cifra i dati.

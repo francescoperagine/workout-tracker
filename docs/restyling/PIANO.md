@@ -185,7 +185,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - `PRODUCT.md` in radice: `git mv` di quello del PoC (insieme a `DESIGN.md` e `design.json`, che lo step 1 aggiorna), poi aggiornato con le decisioni sopra.
 - `/impeccable shape` per le superfici: Oggi, Allenamento attivo, Timer, Schede, Calendario, Storico/Progressi, Dati. I brief vanno in `.impeccable/surfaces/`.
 - **Verifica:** `npm run build` verde, brief confermati da te.
-- **Stato (10 ottobre 2026):** fondamenta fatte (Astro 7.3, Svelte 5, Vitest, Playwright, Impeccable 4.5.2, `noindex`, documenti di design in radice). Brief in bozza in `.impeccable/surfaces/`, indicizzati in [BRIEF.md](BRIEF.md) con le proposte di revisione delle storie: **in attesa di conferma**.
+- **Stato (10 ottobre 2026):** fondamenta fatte (Astro 7.3, Svelte 5, Vitest, Playwright, Impeccable 4.5.2, `noindex`, documenti di design in radice). Brief in `.impeccable/surfaces/`, indicizzati in [BRIEF.md](BRIEF.md), e revisione delle storie **confermati dall'utente** lo stesso giorno (superserie, note, approfondimento e più sessioni al giorno diventano M; spunta su riga vuota = 1 tocco).
 
 ### Step 1: Design system (chiaro e scuro)
 - **Principi:** P2, P3, P9, più US-30 (temi).
@@ -280,4 +280,4 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **iOS:** wake lock nelle app installate (bug risolto in 18.4 secondo una fonte), sblocco dell'audio, assenza di vibrazione. Va provato su un iPhone reale prima di chiudere lo step 7.
 - **Perdita di dati su iOS** per i siti non installati: va mitigata con l'invito all'installazione, `storage.persist()` e il promemoria di backup.
 - **I tuoi dati nel PoC:** vivono nel browser in cui usi il PoC pubblicato, non nel repository. Prima di dismettere il PoC pubblicato, esporta un backup da "Dati e privacy". La lettura diretta funziona solo se la nuova app è pubblicata sullo stesso dominio del PoC.
-- **Ambito:** grafici e tipi di serie aumentano il lavoro degli step 6 e 8. Il riordino con trascinamento è il candidato da rimandare se serve. Le superserie no: nelle schede reali 6 esercizi su 8 sono in superserie (proposta di passarle a M in [BRIEF.md](BRIEF.md), da confermare).
+- **Ambito:** grafici e tipi di serie aumentano il lavoro degli step 6 e 8. Il riordino con trascinamento è il candidato da rimandare se serve. Le superserie no: nelle schede reali 6 esercizi su 8 sono in superserie, e sono M (confermato, vedi [BRIEF.md](BRIEF.md)).

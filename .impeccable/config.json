@@ -5,6 +5,10 @@
     "ignoreValues": []
   },
   "hook": {
-    "enabled": true
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
   }
 }
