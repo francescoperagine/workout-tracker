@@ -1,9 +1,9 @@
-// Percorsi dell'app rispetto al percorso base (BT_BASE, decisione 7 del piano). Ogni link, risorsa
+// Percorsi dell'app rispetto al percorso base (WT_BASE, decisione 7 del piano). Ogni link, risorsa
 // e redirect del codice nuovo passa da qui, mai da un percorso assoluto scritto a mano.
 // Le pagine sono cartelle (dist/settings/index.html): i link finiscono con "/", così il server
 // statico non deve reindirizzare e il service worker trova la pagina nel precache.
 
-/** Unisce base e percorso: joinBase('/bodytracker/', '/settings?x=1') → '/bodytracker/settings/?x=1' */
+/** Unisce base e percorso: joinBase('/workout-tracker/', '/settings?x=1') → '/workout-tracker/settings/?x=1' */
 export function joinBase(base: string, path: string): string {
   const root = base.endsWith('/') ? base : `${base}/`;
   const match = /^([^?#]*)(.*)$/.exec(path)!;
@@ -15,10 +15,10 @@ export function joinBase(base: string, path: string): string {
   return `${root}${pathname}${rest}`;
 }
 
-/** Percorso base dell'app, con la barra finale ('/' o '/bodytracker/') */
+/** Percorso base dell'app, con la barra finale ('/' o '/workout-tracker/') */
 export const BASE = joinBase(import.meta.env.BASE_URL ?? '/', '');
 
-/** Link a una pagina o a un file dell'app: appUrl('/settings') → '/bodytracker/settings/' */
+/** Link a una pagina o a un file dell'app: appUrl('/settings') → '/workout-tracker/settings/' */
 export function appUrl(path: string): string {
   return joinBase(BASE, path);
 }

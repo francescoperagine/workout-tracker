@@ -2,7 +2,7 @@
 /* Temi aggiuntivi (palette): un file per tema in src/styles/themes/, importato qui. Vedi DESIGN.md, "Aggiungere un tema". */
 
 /*
-  Design system di BodyTracker: il mondo verde del PoC, in tema chiaro e scuro.
+  Design system di Workout Tracker: il mondo verde del PoC, in tema chiaro e scuro.
   I valori normativi sono in DESIGN.md. Ogni colore di tema usa light-dark():
   - nessun attributo su <html> → segue il sistema (color-scheme: light dark);
   - data-theme="light" / "dark" → forza il tema (scelta nelle Impostazioni, src/lib/theme.ts);

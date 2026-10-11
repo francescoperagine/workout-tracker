@@ -47,12 +47,12 @@ test.describe('US-30 tema chiaro, scuro o di sistema', () => {
     await page.getByRole('radio', { name: 'Sistema' }).check();
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     expect(await backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
-    expect(await page.evaluate(() => localStorage.getItem('bodytracker.theme'))).toBeNull();
+    expect(await page.evaluate(() => localStorage.getItem('workout-tracker.theme'))).toBeNull();
   });
 
   test('US-30 una preferenza non valida nello storage viene ignorata', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
-    await page.addInitScript(() => localStorage.setItem('bodytracker.theme', 'purple'));
+    await page.addInitScript(() => localStorage.setItem('workout-tracker.theme', 'purple'));
     await page.goto('kit/');
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     expect(await backgroundOf(page, 'body')).toBe(LIGHT_BACKGROUND);

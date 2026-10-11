@@ -34,7 +34,7 @@ test.describe('US-03 app installabile e offline', () => {
     const href = await page.locator('link[rel="manifest"]').getAttribute('href');
     expect(href).toBe(`${base}manifest.webmanifest`);
     const manifest = await (await request.get('manifest.webmanifest')).json();
-    expect(manifest).toMatchObject({ name: 'BodyTracker', lang: 'it', display: 'standalone', start_url: base, scope: base });
+    expect(manifest).toMatchObject({ name: 'Workout Tracker', short_name: 'Workout', lang: 'it', display: 'standalone', start_url: base, scope: base });
     expect(manifest.icons.map((i: { sizes: string; purpose: string }) => `${i.sizes} ${i.purpose}`)).toEqual(
       expect.arrayContaining(['192x192 any', '512x512 any', '512x512 maskable']),
     );

@@ -1,4 +1,4 @@
-# Restyling BodyTracker: analisi e ricerche
+# Restyling Workout Tracker: analisi e ricerche
 
 Documento preparatorio. Raccoglie lo stato attuale, il confronto con il PoC in `BodyTracker/`, le ricerche sui concorrenti (Strong, Hevy), i vincoli tecnici del timer di recupero sul web e il metodo Impeccable. La pianificazione è uno step successivo: qui ci sono solo fatti, indicazioni emerse e decisioni aperte.
 

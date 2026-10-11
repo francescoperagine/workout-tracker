@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-10-10T13:21:51+00:00",
-  "title": "Design System: BodyTracker",
+  "title": "Design System: Workout Tracker",
   "extensions": {
     "colorMeta": {
       "background": {
@@ -586,13 +586,13 @@
     },
     "themes": {
       "mechanism": "Colori di contenuto come light-dark(chiaro, scuro) in @theme. <html> senza data-theme: color-scheme: light dark (segue il sistema). data-theme=\"light\": color-scheme: light. data-theme=\"dark\": color-scheme: dark.",
-      "storageKey": "bodytracker.theme",
+      "storageKey": "workout-tracker.theme",
       "values": [
         "system",
         "light",
         "dark"
       ],
-      "firstPaint": "Script in linea in Base.astro, prima del CSS, legge bodytracker.theme e imposta data-theme; 'system' rimuove la chiave e l'attributo.",
+      "firstPaint": "Script in linea in Base.astro, prima del CSS, legge workout-tracker.theme e imposta data-theme; 'system' rimuove la chiave e l'attributo.",
       "shell": "Le superfici del guscio dichiarano color-scheme: dark: i token di contenuto al loro interno risolvono al valore scuro in entrambi i temi. theme-color del browser: #142321.",
       "registry": "THEME_REGISTRY in src/lib/theme.ts è l'unico elenco dei temi (script in linea, selettore, test). Un tema aggiuntivo è una palette: voce nel registro con scheme light|dark|auto e file src/styles/themes/<id>.css con :root[data-theme=\"<id>\"] { color-scheme; tutti i token di contenuto e del guscio }, non stratificato. Vedi DESIGN.md, Aggiungere un tema."
     },
@@ -1141,7 +1141,7 @@
   ],
   "narrative": {
     "northStar": "Il guscio verde",
-    "overview": "BodyTracker è uno strumento da sala pesi, non una vetrina. Un guscio verde scuro, lo stesso nei due temi, tiene insieme le parti che il pollice tocca sempre: intestazione, barra di salvataggio, tab bar, avvisi e timer. Dentro il guscio scorre il contenuto (schede, righe serie, campi), che segue il tema scelto: chiaro con fondo verde salvia pallido e pannelli bianchi, oppure scuro nello stesso verde del guscio. L'utente sceglie Sistema, Chiaro o Scuro; il guscio non cambia mai, quindi l'app resta riconoscibile in penombra e al sole.\n\nLa densità è quella di un registro operativo: pochi passi tipografici, cifre tabulari ovunque, controlli alti almeno 48px, un solo livello di pannelli, nessuna ombra se non sotto l'avviso sospeso. La profondità si legge per tono (fondo, superficie, campo) e per bordo, mai per elevazione. Il carattere viene da due materiali: il verde (foresta nel contenuto chiaro, lime sul guscio e nel contenuto scuro) e Atkinson Hyperlegible Next, un carattere progettato per distinguere ogni lettera e ogni cifra a colpo d'occhio.\n\nIl gesto distintivo è il timer di recupero: lo schermo intero diventa una clessidra. Un livello verde intermedio con un filo lime in cima riempie lo schermo dal basso e scende a scatti di un secondo, così il tempo che resta si legge con la coda dell'occhio da un metro di distanza. Negli ultimi dieci secondi le cifre diventano lime; alla fine tutto lo schermo diventa lime e dice \"Vai\". L'anello attorno alle cifre, lo standard della categoria, è stato scartato.",
+    "overview": "Workout Tracker è uno strumento da sala pesi, non una vetrina. Un guscio verde scuro, lo stesso nei due temi, tiene insieme le parti che il pollice tocca sempre: intestazione, barra di salvataggio, tab bar, avvisi e timer. Dentro il guscio scorre il contenuto (schede, righe serie, campi), che segue il tema scelto: chiaro con fondo verde salvia pallido e pannelli bianchi, oppure scuro nello stesso verde del guscio. L'utente sceglie Sistema, Chiaro o Scuro; il guscio non cambia mai, quindi l'app resta riconoscibile in penombra e al sole.\n\nLa densità è quella di un registro operativo: pochi passi tipografici, cifre tabulari ovunque, controlli alti almeno 48px, un solo livello di pannelli, nessuna ombra se non sotto l'avviso sospeso. La profondità si legge per tono (fondo, superficie, campo) e per bordo, mai per elevazione. Il carattere viene da due materiali: il verde (foresta nel contenuto chiaro, lime sul guscio e nel contenuto scuro) e Atkinson Hyperlegible Next, un carattere progettato per distinguere ogni lettera e ogni cifra a colpo d'occhio.\n\nIl gesto distintivo è il timer di recupero: lo schermo intero diventa una clessidra. Un livello verde intermedio con un filo lime in cima riempie lo schermo dal basso e scende a scatti di un secondo, così il tempo che resta si legge con la coda dell'occhio da un metro di distanza. Negli ultimi dieci secondi le cifre diventano lime; alla fine tutto lo schermo diventa lime e dice \"Vai\". L'anello attorno alle cifre, lo standard della categoria, è stato scartato.",
     "keyCharacteristics": [
       "Guscio verde scuro fisso, contenuto chiaro o scuro con scelta Sistema/Chiaro/Scuro.",
       "Ogni colore del contenuto è una coppia `light-dark()`; dentro il guscio il contenuto risolve sempre al valore scuro.",

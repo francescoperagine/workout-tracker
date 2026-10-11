@@ -13,7 +13,7 @@ async function failWrites(page: Page, fail: boolean) {
     const original = w.originalSetItem;
     Storage.prototype.setItem = on
       ? function (this: Storage, key: string, value: string) {
-          if (key === 'bodytracker.archive.v2') throw new DOMException('Spazio esaurito', 'QuotaExceededError');
+          if (key === 'workout-tracker.archive.v2') throw new DOMException('Spazio esaurito', 'QuotaExceededError');
           return original.call(this, key, value);
         }
       : original;
@@ -69,7 +69,7 @@ test.describe('US-33 stato del salvataggio', () => {
   });
 
   test('US-33 archivio illeggibile: niente sovrascrittura, contenuto originale scaricabile, import di un backup', async ({ page }) => {
-    await seedStorage(page, 'bodytracker.archive.v2', '{"version":2,"rotto"');
+    await seedStorage(page, 'workout-tracker.archive.v2', '{"version":2,"rotto"');
     await page.goto('');
     // non è un primo avvio: niente benvenuto, ma l'avviso con il rimando al recupero
     await expect(saveBar(page)).toContainText('Il diario salvato non è leggibile');
@@ -82,7 +82,7 @@ test.describe('US-33 stato del salvataggio', () => {
     await page.getByRole('radio', { name: 'lb' }).click();
     await expect(page.getByText('Impostazione non salvata: prima recupera il diario o ricarica.')).toBeVisible();
     await expect(page.getByRole('radio', { name: 'kg' })).toBeChecked();
-    expect(await page.evaluate(() => localStorage.getItem('bodytracker.archive.v2'))).toBe('{"version":2,"rotto"');
+    expect(await page.evaluate(() => localStorage.getItem('workout-tracker.archive.v2'))).toBe('{"version":2,"rotto"');
 
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Scarica il contenuto originale' }).click();

@@ -5,13 +5,13 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 import { serviceWorker } from './src/integrations/service-worker';
 
-// Percorso base e sito configurabili (decisioni 7 e 10 del piano): oggi l'app è pubblicata in
-// /bodytracker/ sul sito personale, domani su un dominio proprio. Es. BT_BASE=/bodytracker/ npm run build
-const base = process.env.BT_BASE || '/';
+// Percorso base e sito configurabili: l'app è pubblicata alla radice di workout-tracker.francescoperagine.com
+// (progetto Cloudflare Pages `workout-tracker`); WT_BASE serve solo per provarla in un sottopercorso, es. `WT_BASE=/workout-tracker/ npm run build`.
+const base = process.env.WT_BASE || '/';
 
 // https://astro.build/config
 export default defineConfig({
-  site: process.env.BT_SITE || 'https://francescoperagine.com',
+  site: process.env.WT_SITE || 'https://workout-tracker.francescoperagine.com',
   base: base.endsWith('/') ? base : `${base}/`,
   integrations: [svelte(), serviceWorker()],
   vite: {

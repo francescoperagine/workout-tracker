@@ -8,7 +8,7 @@ import { generateSW } from 'workbox-build';
 export function serviceWorker(): AstroIntegration {
   let base = '/';
   return {
-    name: 'bodytracker-service-worker',
+    name: 'workout-tracker-service-worker',
     hooks: {
       'astro:config:done': ({ config }) => {
         base = config.base.endsWith('/') ? config.base : `${config.base}/`;
@@ -23,7 +23,7 @@ export function serviceWorker(): AstroIntegration {
           globIgnores: ['kit/**', '_astro/Kit*', 'sw.js', 'sw-push.js', 'workbox-*.js'],
           // handler `push` e `notificationclick` del timer di recupero (predisposizione Web Push, step 7)
           importScripts: ['sw-push.js'],
-          // gli URL del precache partono dal percorso base (BT_BASE)
+          // gli URL del precache partono dal percorso base (WT_BASE)
           modifyURLPrefix: { '': base },
           // le pagine sono cartelle con index.html; i parametri (es. ?id=) non cambiano il file
           directoryIndex: 'index.html',

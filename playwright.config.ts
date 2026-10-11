@@ -5,9 +5,9 @@ import { defineConfig, devices } from '@playwright/test';
 // nel container cloud) invece di quella scaricata con `npx playwright install chromium`.
 const executablePath = process.env.PW_CHROMIUM_PATH || undefined;
 const port = 4322;
-// Con BT_BASE=/bodytracker/ la suite gira sulla build pubblicata in un percorso del sito: i test usano
+// Con WT_BASE=/workout-tracker/ la suite gira sulla build pubblicata in un percorso del sito: i test usano
 // percorsi relativi ('settings/'), risolti rispetto a baseURL, mai assoluti ('/settings').
-const rawBase = process.env.BT_BASE || '/';
+const rawBase = process.env.WT_BASE || '/';
 const base = `/${rawBase.replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 
 export default defineConfig({

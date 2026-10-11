@@ -17,7 +17,7 @@ test.describe('US-01 primo avvio', () => {
   test('US-01 al primo avvio Oggi porta al benvenuto, senza chiedere permessi', async ({ page }) => {
     await page.goto('');
     await expectPage(page, 'welcome/');
-    await expect(page.getByRole('heading', { name: 'BodyTracker', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Workout Tracker', level: 1 })).toBeVisible();
     await expect(page.getByText('I dati restano su questo dispositivo')).toBeVisible();
     await expect(page.getByText('funziona anche senza rete')).toBeVisible();
     // tre azioni: esempio (primaria), da zero, importa

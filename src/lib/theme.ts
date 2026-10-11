@@ -20,7 +20,7 @@ export const THEME_REGISTRY = {
 
 export type Theme = keyof typeof THEME_REGISTRY;
 
-export const THEME_KEY = 'bodytracker.theme';
+export const THEME_KEY = 'workout-tracker.theme';
 /** Il tema predefinito non scrive nulla: nessun data-theme e nessuna chiave salvata */
 export const DEFAULT_THEME: Theme = 'system';
 export const THEMES = Object.keys(THEME_REGISTRY) as Theme[];

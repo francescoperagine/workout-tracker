@@ -1,4 +1,4 @@
-# Restyling BodyTracker: piano
+# Restyling Workout Tracker: piano
 
 Segue [ANALISI.md](ANALISI.md). Ogni step è un commit (o una PR) verificabile da solo, nell'ordine indicato. Il codice si scrive solo dopo la conferma di questo piano.
 
@@ -18,13 +18,16 @@ Scena d'uso, principi UX verificabili (P1–P10) e user story con priorità (US-
 | 4 | Ambito v1 | Oltre a calendario, schede e allenamento: **tipi di serie** e **grafici dei progressi** |
 | 5 | PWA | Installabile, **sempre usabile offline, privata**: nessuna richiesta esterna, font e icone inclusi nel sito, nessuna statistica |
 | 6 | Dati | Nessuna migrazione dal vecchio formato `bb-*`. **Import dei dati del PoC** (`bodytracker.archivio.v1`) come funzione permanente dell'app, per recuperare il tuo diario attuale |
-| 7 | Hosting | Oggi pubblicata in un **percorso del sito personale**, domani su un dominio proprio: il percorso base deve essere configurabile |
+| 7 | Hosting | **Progetto Cloudflare Pages separato** `workout-tracker`, collegato al repository GitHub (ramo di produzione `main`, build `npm run build`, output `dist`, «Preview branches: None»). Fino alla fine del restyling solo su `https://workout-tracker.pages.dev` (non elencata, `noindex`), per le prove in palestra. Il percorso base resta configurabile (`WT_BASE`) |
 | 8 | Progetti | Resta solo l'app nella radice. **`BodyTracker/` viene eliminata** a fine restyling |
 | 9 | Impostazioni | **Tema** Sistema/Chiaro/Scuro e **unità di misura**: peso kg/lb, distanza m/ft (vedi "Unità di misura") |
-| 10 | Pubblicazione | Percorso URL `/bodytracker/` sul sito personale (non è la cartella del repository; modificabile con `BT_BASE`) |
+| 10 | Pubblicazione | Al rilascio (fine step 9) dominio `https://workout-tracker.francescoperagine.com`, elencato nella pagina Projects del sito personale. Ogni push su `main` è un deploy in produzione. Un sotto-percorso (es. `/workout-tracker/`) si prova con `WT_BASE` |
 | 11 | Lingua | Interfaccia solo in italiano per ora |
+| 12 | Nome | **Workout Tracker** (breve «Workout» sotto l'icona). «BodyTracker» è il nome di molte app che tracciano le misure del corpo (peso, circonferenze, BMI), non un diario di allenamento; «workout-tracker» coincide con il repository. Le parole chiave nel dominio non danno un vantaggio SEO apprezzabile e le pagine sono `noindex`: la reperibilità viene dalla voce nella pagina Projects del sito personale |
+| 13 | Rami | Si lavora solo su `main`, mai su rami `claude/...`. Poiché un push su `main` è un deploy in produzione, si pusha solo con i controlli dello step verdi |
+| 14 | `/kit` | La pagina del design system non entra nella build pubblicata (produzione), ma resta disponibile ai test e2e che la usano (`tests/e2e/kit.spec.ts`, `tests/e2e/us-30-themes.spec.ts`). Da fare nello step 9, che sceglie il meccanismo (es. pagina generata solo con un flag come `WT_KIT=1`, impostato dalla build di `playwright.config.ts`) e lo registra |
 
-Nome: **BodyTracker**.
+Nome: **Workout Tracker**.
 
 ## Scelte tecniche
 
@@ -41,8 +44,8 @@ Nome: **BodyTracker**.
   - `manifest.webmanifest` con icone;
   - service worker generato con **`workbox-build`** in un hook `astro:build:done`, che fa il precache di tutto `dist/`. Si usa questa via perché `@vite-pwa/astro` dichiara compatibilità solo fino ad Astro 5;
   - registrazione con scope pari al percorso base.
-- **Percorso base:** `base` e `site` di Astro da variabili d'ambiente (`BT_BASE`, `BT_SITE`). Tutti i link passano da un helper che usa `import.meta.env.BASE_URL`.
-- **Archivio:** `localStorage`, chiave `bodytracker.archive.v2`, dietro un modulo repository che gestisce validazione, revisioni e conflitti tra schede, sul modello del PoC.
+- **Percorso base:** `base` e `site` di Astro da variabili d'ambiente (`WT_BASE`, `WT_SITE`). Tutti i link passano da un helper che usa `import.meta.env.BASE_URL`.
+- **Archivio:** `localStorage`, chiave `workout-tracker.archive.v2`, dietro un modulo repository che gestisce validazione, revisioni e conflitti tra schede, sul modello del PoC.
   - All'avvio `navigator.storage.persist()`.
   - Avviso nel pannello Dati: su iOS i siti non installati possono perdere i dati dopo 7 giorni senza visite. Consigliati l'installazione e un backup periodico.
 - **Test:**
@@ -64,7 +67,7 @@ interface Archive {
   overrides: Record<string, string | null>;          // eccezioni: YYYY-MM-DD -> id scheda (o riposo)
   sessions: Session[];
   settings: {
-    // il tema non sta qui: è una preferenza del dispositivo, nella chiave `bodytracker.theme` (step 1)
+    // il tema non sta qui: è una preferenza del dispositivo, nella chiave `workout-tracker.theme` (step 1)
     weightUnit: 'kg' | 'lb';
     distanceUnit: 'm' | 'ft';
     defaultRest: number;                // recupero predefinito, secondi
@@ -109,7 +112,7 @@ interface SessionSet {                  // serie
   completedAt: number | null;            // timestamp della spunta
 }
 
-// Chiave separata `bodytracker.restTimer`, aggiornata spesso (step 7, src/lib/rest-timer.ts)
+// Chiave separata `workout-tracker.restTimer`, aggiornata spesso (step 7, src/lib/rest-timer.ts)
 interface RestTimerState {
   sessionId: string; exerciseId: string; setId: string; // exerciseId = voce della sessione
   start: number; end: number; duration: number;          // end è la verità; duration in secondi, dopo ±15 s
@@ -204,7 +207,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - superfici del browser tematizzate (selezione, caret, focus, scrollbar).
 - Pagina interna `/kit` per vedere tutti i componenti nei due temi (esclusa dal precache e dalla navigazione). Non `/_kit`: Astro non genera le pagine il cui nome comincia con `_`.
 - **Verifica:** detector a 0 su `/kit` nei due temi, contrasti ≥ 4,5:1, target ≥ 44–48px.
-- **Stato (10 ottobre 2026):** fatto. Scelte dell'utente: tema chiaro "guscio verde" (intestazione, barre e timer restano verde scuro), font Atkinson Hyperlegible Next, timer a **livello che si svuota**. `DESIGN.md` riscritto, token in `@theme` con `light-dark()`, componenti base in `src/components/ui/`, `/kit`, test US-30. Il tema è salvato nella chiave `bodytracker.theme` e non nell'archivio: lo script inline lo applica prima del primo disegno senza leggere il diario.
+- **Stato (10 ottobre 2026):** fatto. Scelte dell'utente: tema chiaro "guscio verde" (intestazione, barre e timer restano verde scuro), font Atkinson Hyperlegible Next, timer a **livello che si svuota**. `DESIGN.md` riscritto, token in `@theme` con `light-dark()`, componenti base in `src/components/ui/`, `/kit`, test US-30. Il tema è salvato nella chiave `workout-tracker.theme` e non nell'archivio: lo script inline lo applica prima del primo disegno senza leggere il diario.
 
 ### Step 2: Dati
 - **Storie:** US-02 (import PoC, logica), US-31 (unità, logica), US-33 (salvataggio, quota, conflitti).
@@ -230,8 +233,8 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - Layout mobile con tab bar in basso (Oggi, Calendario, Schede, Storico) e accesso alle impostazioni; safe area; `ClientRouter`.
 - Manifest, icone, service worker con precache, registrazione con scope pari al percorso base, pagina offline non necessaria (tutto in precache).
 - Impostazioni: tema (Sistema/Chiaro/Scuro, applicato prima del primo disegno per evitare il lampo di tema sbagliato), unità di peso e di distanza, recupero predefinito, suono e vibrazione, sezione Dati e privacy.
-- **Verifica:** Playwright offline (contesto senza rete dopo la prima visita), nessuna richiesta a domini esterni, build con `BT_BASE=/bodytracker/` funzionante.
-- **Stato (10 ottobre 2026):** fatto. Guscio (`AppLayout` con `ClientRouter`, intestazione, tab bar, barra di salvataggio nel guscio), PWA (manifest generato con il percorso base, icone, service worker con `workbox-build`), `BT_BASE`/`BT_SITE` con `appUrl()`, Impostazioni, Dati e privacy, primo avvio `/welcome`. 84 test e2e verdi sia nella radice sia con `BT_BASE=/bodytracker/`, 147 test Vitest, `astro check` pulito, detector di Impeccable a 0 sui sorgenti e sulle pagine. Decisioni prese nello step:
+- **Verifica:** Playwright offline (contesto senza rete dopo la prima visita), nessuna richiesta a domini esterni, build con `WT_BASE=/workout-tracker/` funzionante.
+- **Stato (10 ottobre 2026):** fatto. Guscio (`AppLayout` con `ClientRouter`, intestazione, tab bar, barra di salvataggio nel guscio), PWA (manifest generato con il percorso base, icone, service worker con `workbox-build`), `WT_BASE`/`WT_SITE` con `appUrl()`, Impostazioni, Dati e privacy, primo avvio `/welcome`. 84 test e2e verdi sia nella radice sia con `WT_BASE=/workout-tracker/`, 147 test Vitest, `astro check` pulito, detector di Impeccable a 0 sui sorgenti e sulle pagine. Decisioni prese nello step:
   - **App vecchia rimossa:** la home `bb-*` è sostituita da Oggi; la pagina del giorno e `/about` sarebbero rimaste orfane (raggiungibili solo dalla vecchia home), quindi sono state tolte insieme a `src/scripts/`, `Layout.astro` e alla grafica vecchia di `global.css`. Il testo di `/about` sulla privacy è confluito in Dati e privacy. Nessuna migrazione dei dati `bb-*` (decisione 6).
   - **Oggi e le altre tab allo step 3:** Oggi porta a `/welcome` se non c'è un archivio e conferma che il diario è pronto (schede e allenamenti); Calendario, Schede e Storico sono stati vuoti "In arrivo". Gli step 4, 5 e 8 li sostituiscono.
   - **Barra di salvataggio:** nel guscio compare **solo quando c'è un problema** (spazio esaurito con "Salva ora", conflitto con "Ricarica", archivio illeggibile con "Recupera" verso Dati e privacy), così non ruba 68px nella zona del pollice quando tutto va bene. Allo step 6 l'allenamento attivo la mostra sempre. `SaveBar` ha lo stato nuovo `unreadable`.
@@ -240,7 +243,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - **Installazione (US-03):** l'evento `beforeinstallprompt` viene trattenuto; "Installa l'app" sta nelle Impostazioni (su iPhone le istruzioni per Safari). L'invito discreto **dopo il primo allenamento concluso** arriva con il riepilogo (step 6), che è dove si conclude un allenamento. Avviso dei 7 giorni su iPhone e iPad non installati.
   - **Import:** senza elementi in comune non si chiede nulla; su un diario vuoto (ripristino su un telefono nuovo) un backup v2 porta anche le sue impostazioni, altrimenti restano quelle del dispositivo. Per il PoC la scelta riguarda solo gli allenamenti, perché le sue schede A/B si aggiungono solo se mancano. Il riepilogo elenca aggiunti, sostituiti o lasciati, sessioni in corso chiuse e scartati con il motivo.
   - **Cancella tutto:** conferma con il conteggio di ciò che si perde e avviso con "Annulla"; le impostazioni restano.
-  - **Ultimo backup:** chiave del dispositivo `bodytracker.lastBackup`, fuori dall'archivio (come il tema): dice quando *questo browser* ha esportato.
+  - **Ultimo backup:** chiave del dispositivo `workout-tracker.lastBackup`, fuori dall'archivio (come il tema): dice quando *questo browser* ha esportato.
   - **Recupero predefinito:** valore a passi di 15 s (da 0:15 a 60:00) con due pulsanti, perché il tastierino numerico non ha i due punti di "1:30". Componenti nuovi del design system: `Stepper` e `Switch` (interruttore), in `/kit` e in DESIGN.md.
   - **Service worker:** `generateSW` con `skipWaiting` e `clientsClaim` (una versione nuova prende subito il controllo; con il `ClientRouter` le pagine nuove portano i loro chunk), `/kit` fuori dal precache, parametri della query ignorati. Le pagine si linkano con la barra finale (`/settings/`), così il precache le trova senza regole aggiuntive.
   - **Tema e `ClientRouter`:** lo scambio di pagina sostituisce gli attributi di `<html>`; lo script inline del tema li riapplica al documento nuovo su `astro:before-swap`.
@@ -253,7 +256,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - riordino (frecce, accessibile; trascinamento facoltativo) e raggruppamento in superserie;
   - serie, ripetizioni, carico, unità, recupero e recupero di riscaldamento, alternative.
 - **Verifica:** e2e "crea scheda C con superserie e la ritrovi dopo il ricaricamento".
-- **Stato (10 ottobre 2026):** fatto. Elenco `/routines` (`RoutineList`), editor `/routine?id=` (`RoutineEditor`, `EntryEditor`), foglio del catalogo `ExercisePicker`, campo `LiveField` che salva a ogni battuta; logica pura in `src/lib/archive/routine-edit.ts`. 28 test e2e nuovi in `us-07-us-10-routines.spec.ts` (112 in tutto, verdi nella radice e con `BT_BASE=/bodytracker/`), 172 test Vitest, `astro check` pulito, detector a 0 su `src/` e su `/kit` nei due temi. Le schede A/B del PoC si ricreano identiche dall'editor (test e2e dedicato). Decisioni prese nello step:
+- **Stato (10 ottobre 2026):** fatto. Elenco `/routines` (`RoutineList`), editor `/routine?id=` (`RoutineEditor`, `EntryEditor`), foglio del catalogo `ExercisePicker`, campo `LiveField` che salva a ogni battuta; logica pura in `src/lib/archive/routine-edit.ts`. 28 test e2e nuovi in `us-07-us-10-routines.spec.ts` (112 in tutto, verdi nella radice e con `WT_BASE=/workout-tracker/`), 172 test Vitest, `astro check` pulito, detector a 0 su `src/` e su `/kit` nei due temi. Le schede A/B del PoC si ricreano identiche dall'editor (test e2e dedicato). Decisioni prese nello step:
   - **Crea:** una scheda vuota con il nome proposto ("Scheda C", la prima lettera libera) e subito l'editor, dove il nome si cambia. Nessun passaggio intermedio né campi obbligatori.
   - **Azioni di una scheda:** nell'elenco, pulsante "⋯" che apre un foglio dal basso con Modifica esercizi, Rinomina, Duplica, Archivia/Ripristina, Elimina. Rinomina avviene **in linea** nella riga (Invio salva, Esc annulla). Duplica crea "Scheda A (copia)" subito dopo l'originale e resta nell'elenco, con "Annulla". Archivia e Ripristina con "Annulla"; l'archiviata si apre in **sola lettura** con "Ripristina".
   - **Eliminare:** solo una scheda senza allenamenti (altrimenti il foglio spiega perché e propone di archiviarla); conferma che dice cosa si perde (esercizi, giorni assegnati); toglie dalla pianificazione e dalle eccezioni i giorni che la indicavano, e "Annulla" li rimette.
@@ -274,7 +277,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - stati del giorno: pianificato, fatto, saltato, oggi.
 - Oggi: le ultime 4 schede fatte (più quella pianificata) come righe da toccare, con la suggerita già selezionata (la pianificata, altrimenti la recente fatta da più tempo; decisione confermata il 10 ottobre 2026, logica in `quickStart` dallo step 2) e "Inizia allenamento" nella zona del pollice: 1 tocco nel caso felice, 2 al massimo; alternative (altra scheda, allenamento libero); "Riprendi" se c'è una sessione in corso; ultimo allenamento.
 - **Verifica:** e2e "pianifico B il giovedì → giovedì Oggi propone B".
-- **Stato (10 ottobre 2026):** fatto. Calendario `/calendar` (`Calendar`, `DaySheet`, `WeekStrip`), Oggi riscritta (`Today`), segnaposto `/workout`; logica pura in `src/lib/archive/calendar.ts` e `sessions.ts`. 144 test e2e verdi nella radice e con `BT_BASE=/bodytracker/` (nuovi `us-04-us-06-calendar` e `us-11-us-17-today`, con `page.clock`), 195 Vitest, `astro check` pulito, detector a 0 su `src/`, `/calendar`, `/workout` e `/kit` nei due temi. Decisioni prese nello step (da confermare con l'utente):
+- **Stato (10 ottobre 2026):** fatto. Calendario `/calendar` (`Calendar`, `DaySheet`, `WeekStrip`), Oggi riscritta (`Today`), segnaposto `/workout`; logica pura in `src/lib/archive/calendar.ts` e `sessions.ts`. 144 test e2e verdi nella radice e con `WT_BASE=/workout-tracker/` (nuovi `us-04-us-06-calendar` e `us-11-us-17-today`, con `page.clock`), 195 Vitest, `astro check` pulito, detector a 0 su `src/`, `/calendar`, `/workout` e `/kit` nei due temi. Decisioni prese nello step (da confermare con l'utente):
   - **Avvio:** "Inizia allenamento" crea subito la sessione vera (`startSession`: una voce per esercizio con superserie e recuperi della scheda, tante serie vuote quante le serie target) e porta a `/workout`, che fino allo step 6 è un **segnaposto onesto**: programma della scheda con i target, "Torna a Oggi", "Annulla allenamento" (con "Annulla"; conferma se ci sono valori) e "Concludi" solo se la sessione ha già valori (sessioni aperte importate dal PoC). Una sessione vuota non si conclude, così il calendario non mostra "fatto" senza serie.
   - **Oggi:** striscia della settimana in alto (tocco → foglio del giorno nel Calendario), data e cosa prevede ("In programma: Scheda A", "Oggi riposo", "Niente in programma · Pianifica la settimana"), righe a scelta singola con la suggerita selezionata, "Altra scheda" (solo se ci sono altre schede attive: il foglio seleziona e chiude, la scheda scelta diventa una riga in più) e "Allenamento libero" come pulsanti testuali, "Inizia allenamento" appiccicato sopra la tab bar, ultimo allenamento (link al giorno nel calendario; i record arrivano con lo step 8). Una sola azione primaria per stato: "Riprendi allenamento" con una sessione in corso (le righe spariscono; durata, esercizio corrente e serie fatte; "iniziato l’8 settembre" se è rimasta aperta da un altro giorno), "Allenati comunque" nel giorno di riposo, "Nuovo allenamento" con "Fatto oggi: … · Riapri" se oggi c'è già una sessione conclusa, "Allenamento libero" senza schede attive.
   - **Suggerita:** come allo step 2, più una regola: una scheda già conclusa nella data non si suggerisce di nuovo (seconda sessione del giorno, US-20).
@@ -291,7 +294,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - Mini-barra persistente (`transition:persist`) quando si naviga altrove.
 - **Verifica:** e2e di una sessione completa da scheda, con ricaricamento a metà; viewport 320, 390, 430 e desktop; conteggio dei tocchi per serie (P1). **Prova reale in palestra** dell'utente sul proprio telefono con la checklist di USER-STORIES.md §5, e correzioni prima dello step 7.
 
-- **Stato (10 ottobre 2026):** fatto, in attesa della prova reale in palestra. Allenamento attivo in `src/components/workout/` (`Workout`, `WorkoutExercise`, `VariantSheet`, `ExerciseDetailsSheet`, `SessionSummary`), mini-barra `src/components/shell/WorkoutMiniBar.svelte`, logica pura in `src/lib/archive/workout.ts`, stack delle barre in `src/lib/bottom-bars.ts`; il segnaposto dello step 5 è stato tolto. 54 test e2e nuovi in `us-12-us-20-workout.spec.ts` (198 in tutto, verdi nella radice e con `BT_BASE=/bodytracker/`), 213 Vitest, `astro check` pulito, detector a 0 su `src/`. Decisioni prese nello step (da confermare con l'utente):
+- **Stato (10 ottobre 2026):** fatto, in attesa della prova reale in palestra. Allenamento attivo in `src/components/workout/` (`Workout`, `WorkoutExercise`, `VariantSheet`, `ExerciseDetailsSheet`, `SessionSummary`), mini-barra `src/components/shell/WorkoutMiniBar.svelte`, logica pura in `src/lib/archive/workout.ts`, stack delle barre in `src/lib/bottom-bars.ts`; il segnaposto dello step 5 è stato tolto. 54 test e2e nuovi in `us-12-us-20-workout.spec.ts` (198 in tutto, verdi nella radice e con `WT_BASE=/workout-tracker/`), 213 Vitest, `astro check` pulito, detector a 0 su `src/`. Decisioni prese nello step (da confermare con l'utente):
   - **Precedente:** l'esercizio nell'ultima sessione **conclusa prima di questa** (data, poi ora d'inizio) con lo stesso esercizio, cioè la stessa variante, e almeno un valore. Le serie si confrontano per posizione **separatamente** tra riscaldamento e serie di lavoro: aggiungere un riscaldamento non sposta i confronti.
   - **Spunta (P1):** i campi vuoti prendono il precedente (anche uno solo: scrivere solo le ripetizioni tiene il peso della volta scorsa). Servono le ripetizioni; il peso può mancare (corpo libero). Senza valori il cursore va al primo campo vuoto. Ogni battuta salva (come `LiveField`): un numero non valido resta visibile con il bordo d'errore e non si salva. Invio nel peso passa alle ripetizioni.
   - **Serie da fare adesso:** si resta sul blocco dell'ultima serie spuntata finché ha serie da fare, poi il blocco successivo, poi quelli saltati; in superserie tocca all'esercizio con meno serie fatte (2a, 2b, 2a…). Il numero dell'esercizio diventa una pastiglia piena e, dopo la spunta, la riga successiva scorre in vista solo se è fuori schermo. `currentExercise` (Oggi, mini-barra) usa la stessa regola.
@@ -325,13 +328,13 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - documento con il contratto di un futuro endpoint (`POST {subscription, fine}`). Nessun server.
 - **Verifica:** Vitest con timer finti; e2e con `page.clock` (spunta → overlay → +15 s → fine → chiusura); prova manuale su iPhone e Android, con una checklist nel documento; **seconda prova reale in palestra** focalizzata su timer, interruzioni e leggibilità.
 
-- **Stato (10 ottobre 2026):** fatto, in attesa delle prove reali (palestra dello step 6, rimandata dall'utente, più quella dello step 7, e prova manuale su iPhone e Android con la checklist di [WEB-PUSH.md](WEB-PUSH.md)). Motore in `src/lib/rest-timer.ts` (logica pura) e `src/lib/rest-timer.svelte.ts` (store), avvisi in `src/lib/rest-alert.ts`, schermo acceso in `src/lib/wake-lock.ts`, `RestNotifier` in `src/lib/rest-notifier.ts`, handler `push` e `notificationclick` in `public/sw-push.js`; viste `RestTimer` (schermo intero) e `RestTimerBar` (ridotto), isola globale `RestTimerHost` nel guscio. 19 test Vitest nuovi, a orologio finto (232 in tutto), 17 test e2e nuovi in `us-21-us-26-rest-timer.spec.ts` con `page.clock` più uno per togliere una serie in mezzo (234 esecuzioni in tutto, verdi nella radice e con `BT_BASE=/bodytracker/`), `astro check` pulito, detector a 0 su `src/`.
+- **Stato (10 ottobre 2026):** fatto, in attesa delle prove reali (palestra dello step 6, rimandata dall'utente, più quella dello step 7, e prova manuale su iPhone e Android con la checklist di [WEB-PUSH.md](WEB-PUSH.md)). Motore in `src/lib/rest-timer.ts` (logica pura) e `src/lib/rest-timer.svelte.ts` (store), avvisi in `src/lib/rest-alert.ts`, schermo acceso in `src/lib/wake-lock.ts`, `RestNotifier` in `src/lib/rest-notifier.ts`, handler `push` e `notificationclick` in `public/sw-push.js`; viste `RestTimer` (schermo intero) e `RestTimerBar` (ridotto), isola globale `RestTimerHost` nel guscio. 19 test Vitest nuovi, a orologio finto (232 in tutto), 17 test e2e nuovi in `us-21-us-26-rest-timer.spec.ts` con `page.clock` più uno per togliere una serie in mezzo (234 esecuzioni in tutto, verdi nella radice e con `WT_BASE=/workout-tracker/`), `astro check` pulito, detector a 0 su `src/`.
   - **Esito della prova dello step 6 e decisioni aperte (risposte dell'utente del 10 ottobre 2026):** prova in palestra non ancora fatta (si farà insieme a quella del timer). Decisione 1 cambiata: **"Togli" su ogni riga**. Confermate le raccomandazioni sulle altre: "Termina" senza conferma, tab bar visibile durante l'allenamento, durata in minuti, "Cambia esercizio" sempre visibile, peso facoltativo alla spunta; mini-barra su Oggi **solo con un recupero in corso**.
   - **Togli serie su ogni riga:** il tocco sul numero della serie apre un foglio dal basso con il tipo (Normale, Riscaldamento, Drop, Cedimento, con la sigla e la scelta attuale segnata) e "Togli serie" (con "Annulla" se aveva valori; spento con una serie sola, e il foglio dice perché). Il pulsante "Togli serie" sotto le righe non c'è più. Cambiare tipo costa ora 2 tocchi invece di 1–3, ma ogni tipo ha il suo nome e la rimozione sta dove sta la serie.
   - **Quando parte:** alla spunta riuscita (non a quella che porta al campo vuoto). Recupero di riscaldamento per una serie di riscaldamento; 0 = nessun timer. **Superserie:** il giro continua (nessun recupero) se un altro esercizio del blocco ha meno serie fatte e ne ha ancora da fare; altrimenti parte il recupero dell'esercizio appena spuntato. Una spunta che non avvia un recupero chiude quello in corso (si è ripreso a lavorare); una nuova spunta sostituisce il recupero in corso.
   - **Recupero predefinito:** ogni voce ha un recupero numerico; il predefinito delle Impostazioni si applica quando nasce una voce senza recupero (voce nuova di una scheda, esercizio aggiunto in sessione o nell'allenamento libero, e ora anche una voce del PoC con recupero mancante o illeggibile, che prima diventava 0 = nessun timer). Cambiare il predefinito non tocca le voci già create.
   - **Annullamento:** il timer non vale più (e sparisce) quando la serie perde la spunta, viene tolta, cambia variante, o la sessione si conclude o si annulla, anche da un'altra scheda del browser: lo store lo verifica a ogni modifica dell'archivio.
-  - **Motore:** l'istante di fine è la verità, salvato nella chiave `bodytracker.restTimer` a ogni cambiamento (avvio, ±15 s, riduci, avviso dato); scatti di 250 ms e ricalcolo a `visibilitychange`; evento `storage` per le altre schede. −15 s non porta mai la fine nel passato: con meno di 15 s chiude il recupero. La durata nell'intestazione segue ±15 s ("Recupero · 2:15").
+  - **Motore:** l'istante di fine è la verità, salvato nella chiave `workout-tracker.restTimer` a ogni cambiamento (avvio, ±15 s, riduci, avviso dato); scatti di 250 ms e ricalcolo a `visibilitychange`; evento `storage` per le altre schede. −15 s non porta mai la fine nel passato: con meno di 15 s chiude il recupero. La durata nell'intestazione segue ±15 s ("Recupero · 2:15").
   - **Fine:** "Vai" lime con "Adesso" e la serie; si chiude da solo dopo 6 s **in vista** (con la pagina nascosta aspetta il rientro). Al rientro a recupero finito l'intestazione dice "Recupero finito da 1:20". Suono e vibrazione una volta sola, solo se la fine arriva entro un minuto (niente suono fuori tempo dopo lo schermo bloccato).
   - **Suono:** tre toni brevi (880, 880, 1320 Hz) generati con `AudioContext`, sbloccato dalla spunta; vibrazione `[200, 100, 200, 100, 400]` ms. Seguono gli interruttori delle Impostazioni.
   - **Schermo acceso:** wake lock per tutto l'allenamento in corso (non solo durante il recupero, come dice US-24), richiesto di nuovo al rientro, rilasciato alla fine dell'allenamento.
@@ -356,12 +359,24 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - Impeccable: `critique`, `audit`, `harden` (stati vuoti, errori, nomi lunghi, quota piena, conflitto tra schede), `polish`.
 - Verifica della tabella "Assorbimento del PoC": ogni riga deve avere un test e2e verde.
 - **Eliminazione di `BodyTracker/`** (resta nella cronologia git). Le parti ancora utili di `LEGGIMI.md` (privacy, limiti, aggiunta di approfondimenti al catalogo) confluiscono nel `README.md`.
-- Aggiornamento di `AGENTS.md` e `README.md` (comandi, pubblicazione in un percorso del sito, privacy, catalogo).
-- **Verifica:** detector a 0 su tutte le pagine nei due temi, suite Playwright verde, Lighthouse PWA/accessibilità, build con base `/bodytracker/` provata con un server statico, nessun riferimento residuo a `BodyTracker/` nel repository.
+- Aggiornamento di `AGENTS.md` e `README.md` (comandi, pubblicazione su Cloudflare Pages, privacy, catalogo).
+- **`/kit` fuori dalla build pubblicata** ma disponibile ai test (`tests/e2e/kit.spec.ts`, `tests/e2e/us-30-themes.spec.ts`): scegliere il meccanismo (es. pagina generata solo se è impostato un flag come `WT_KIT=1`, che `playwright.config.ts` imposta per la sua build) e registrarlo in `AGENTS.md` e in questo piano.
+- **Verifica dei nomi:** nessun riferimento a «BodyTracker»/`bodytracker` nel repository, tranne il formato d'import del PoC `bodytracker.archivio.v1` (chiave, codice e fixture dei test).
+- **Verifica:** detector a 0 su tutte le pagine nei due temi, suite Playwright verde, Lighthouse PWA/accessibilità, build alla radice provata su `workout-tracker.pages.dev`, più la suite con `WT_BASE=/workout-tracker/`; nessun riferimento residuo a `BodyTracker/` nel repository.
+
+### Rilascio
+
+Dopo la chiusura dello step 9:
+
+- [ ] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al progetto Pages `workout-tracker`.
+- [ ] 2. Esporta il backup su `workout-tracker.pages.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
+- [ ] 3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria: azione nuova che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco. Segue le regole di quel repo.
+- [ ] 4. Da lì in poi ogni push su `main` è online.
 
 ## Rischi e punti da verificare
 
 - **iOS:** wake lock nelle app installate (bug risolto in 18.4 secondo una fonte), sblocco dell'audio, assenza di vibrazione. Va provato su un iPhone reale prima di chiudere lo step 7.
 - **Perdita di dati su iOS** per i siti non installati: va mitigata con l'invito all'installazione, `storage.persist()` e il promemoria di backup.
-- **I tuoi dati nel PoC:** vivono nel browser in cui usi il PoC pubblicato, non nel repository. Prima di dismettere il PoC pubblicato, esporta un backup da "Dati e privacy". La lettura diretta funziona solo se la nuova app è pubblicata sullo stesso dominio del PoC.
+- **I tuoi dati nel PoC:** vivono nel browser in cui usi il PoC, non nel repository. Il PoC non è mai stato pubblicato, quindi la lettura diretta della sua chiave sulla stessa origine non si applica mai: l'import avviene dal file di backup. Prima di eliminare il PoC, esporta un backup da "Dati e privacy" e provane l'import nell'app.
+- **Deploy con l'app aperta in allenamento:** il service worker usa `skipWaiting`, `clientsClaim` e `cleanupOutdatedCaches`; un deploy mentre una pagina è aperta potrebbe rimuovere dalla cache chunk ancora richiesti da quella pagina. Da verificare nello step 9 (e, se serve, rimandare l'attivazione della nuova versione a sessione chiusa).
 - **Ambito:** grafici e tipi di serie aumentano il lavoro degli step 6 e 8. Il riordino con trascinamento è il candidato da rimandare se serve. Le superserie no: nelle schede reali 6 esercizi su 8 sono in superserie, e sono M (confermato, vedi [BRIEF.md](BRIEF.md)).

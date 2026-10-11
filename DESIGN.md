@@ -1,5 +1,5 @@
 ---
-name: BodyTracker
+name: Workout Tracker
 description: Diario di allenamento privato e offline, con un guscio verde scuro attorno a un contenuto chiaro o scuro.
 colors:
   background: "light-dark(#eef2ec, #142321)"
@@ -318,13 +318,13 @@ components:
     textColor: "{colors.shell-on-accent}"
 ---
 
-# Design System: BodyTracker
+# Design System: Workout Tracker
 
 ## Overview
 
 **Creative North Star: "Il guscio verde"**
 
-BodyTracker è uno strumento da sala pesi, non una vetrina. Un guscio verde scuro, lo stesso nei due temi, tiene insieme le parti che il pollice tocca sempre: intestazione, barra di salvataggio, tab bar, avvisi e timer. Dentro il guscio scorre il contenuto (schede, righe serie, campi), che segue il tema scelto: chiaro con fondo verde salvia pallido e pannelli bianchi, oppure scuro nello stesso verde del guscio. L'utente sceglie Sistema, Chiaro o Scuro; il guscio non cambia mai, quindi l'app resta riconoscibile in penombra e al sole.
+Workout Tracker è uno strumento da sala pesi, non una vetrina. Un guscio verde scuro, lo stesso nei due temi, tiene insieme le parti che il pollice tocca sempre: intestazione, barra di salvataggio, tab bar, avvisi e timer. Dentro il guscio scorre il contenuto (schede, righe serie, campi), che segue il tema scelto: chiaro con fondo verde salvia pallido e pannelli bianchi, oppure scuro nello stesso verde del guscio. L'utente sceglie Sistema, Chiaro o Scuro; il guscio non cambia mai, quindi l'app resta riconoscibile in penombra e al sole.
 
 La densità è quella di un registro operativo: pochi passi tipografici, cifre tabulari ovunque, controlli alti almeno 48px, un solo livello di pannelli, nessuna ombra se non sotto l'avviso sospeso. La profondità si legge per tono (fondo, superficie, campo) e per bordo, mai per elevazione. Il carattere viene da due materiali: il verde (foresta nel contenuto chiaro, lime sul guscio e nel contenuto scuro) e Atkinson Hyperlegible Next, un carattere progettato per distinguere ogni lettera e ogni cifra a colpo d'occhio.
 
@@ -343,7 +343,7 @@ Il gesto distintivo è il timer di recupero: lo schermo intero diventa una cless
 
 Una famiglia sola di verdi, dal quasi nero del guscio al salvia pallido del fondo chiaro, con un accento che è foresta sul chiaro e lime sullo scuro, e due colori di stato caldi (pericolo e avviso) usati con parsimonia.
 
-Il meccanismo dei temi: nessun attributo su `<html>` significa "segui il sistema" (`color-scheme: light dark`); `data-theme="light"` o `data-theme="dark"` forza il tema. La preferenza vive nella chiave `bodytracker.theme` ed è applicata da uno script in linea prima del primo disegno, per evitare il lampo del tema sbagliato. Ogni superficie del guscio dichiara `color-scheme: dark`, quindi un token di contenuto usato dentro il guscio prende il suo valore scuro anche nel tema chiaro.
+Il meccanismo dei temi: nessun attributo su `<html>` significa "segui il sistema" (`color-scheme: light dark`); `data-theme="light"` o `data-theme="dark"` forza il tema. La preferenza vive nella chiave `workout-tracker.theme` ed è applicata da uno script in linea prima del primo disegno, per evitare il lampo del tema sbagliato. Ogni superficie del guscio dichiara `color-scheme: dark`, quindi un token di contenuto usato dentro il guscio prende il suo valore scuro anche nel tema chiaro.
 
 ### Aggiungere un tema
 

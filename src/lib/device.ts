@@ -1,7 +1,7 @@
 // Informazioni e preferenze del dispositivo, fuori dall'archivio (come il tema): piattaforma,
 // app installata, vibrazione, data dell'ultimo backup esportato da questo browser.
 
-export const LAST_BACKUP_KEY = 'bodytracker.lastBackup';
+export const LAST_BACKUP_KEY = 'workout-tracker.lastBackup';
 
 /** iPhone, iPad o iPod (anche iPadOS, che si presenta come Mac con il touch) */
 export function isIos(nav: Pick<Navigator, 'userAgent' | 'maxTouchPoints'> = navigator): boolean {

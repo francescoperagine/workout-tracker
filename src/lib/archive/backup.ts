@@ -24,7 +24,7 @@ export function exportArchive(archive: Archive, now: Date = new Date()): string 
 }
 
 export function backupFileName(now: Date = new Date()): string {
-  return `bodytracker-${toDateKey(now)}.json`;
+  return `workout-tracker-${toDateKey(now)}.json`;
 }
 
 /** Da chiamare con `file.size` prima di leggere il file. */

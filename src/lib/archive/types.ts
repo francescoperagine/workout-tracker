@@ -2,7 +2,7 @@
 // Regola delle unità: pesi sempre in kg e distanze in metri; la conversione avviene solo
 // in ingresso e in uscita (src/lib/units.ts).
 
-export const ARCHIVE_KEY = 'bodytracker.archive.v2';
+export const ARCHIVE_KEY = 'workout-tracker.archive.v2';
 /** Chiave del PoC: si legge soltanto, per l'import diretto sulla stessa origine */
 export const POC_ARCHIVE_KEY = 'bodytracker.archivio.v1';
 

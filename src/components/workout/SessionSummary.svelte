@@ -124,7 +124,7 @@
   {#if invite}
     <section class="panel install" aria-labelledby="install-title">
       <h3 id="install-title" class="install-title">Tienila sul telefono</h3>
-      <p class="m-0">Installata sulla schermata Home, BodyTracker si apre come un’app e funziona anche senza rete.</p>
+      <p class="m-0">Installata sulla schermata Home, Workout Tracker si apre come un’app e funziona anche senza rete.</p>
       {#if canPrompt}
         <button type="button" class="btn btn-secondary self-start" onclick={() => promptInstall()}>Installa l’app</button>
       {:else}

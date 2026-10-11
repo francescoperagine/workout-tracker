@@ -1,7 +1,7 @@
 // Timer di recupero (step 7: US-21…US-26). Logica pura, senza DOM: l'istante di fine (`end`) è la
 // verità, il tempo che resta si ricalcola sempre da lì. Così bloccare il telefono, ricaricare o
 // cambiare pagina non sposta il conteggio (US-26): al rientro il tempo è giusto, o il recupero è finito.
-// Lo stato vive in una chiave sua (`bodytracker.restTimer`), fuori dall'archivio: cambia spesso e non
+// Lo stato vive in una chiave sua (`workout-tracker.restTimer`), fuori dall'archivio: cambia spesso e non
 // fa parte del diario (PIANO.md, "Modello dati v2").
 import { blocksOf } from './archive/routine-edit';
 import { exerciseName } from './archive/catalog';
@@ -9,7 +9,7 @@ import { plannedEntry, previousExercise, previousSets, setNumbers } from './arch
 import type { Archive, Session } from './archive/types';
 import { formatWeight } from './units';
 
-export const REST_TIMER_KEY = 'bodytracker.restTimer';
+export const REST_TIMER_KEY = 'workout-tracker.restTimer';
 
 /** Soglie degli annunci per lo screen reader (P9): solo a 30 s, 10 s e alla fine */
 export const ANNOUNCE_AT = [30, 10, 0] as const;

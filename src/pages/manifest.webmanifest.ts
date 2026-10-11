@@ -1,4 +1,4 @@
-// Manifest della PWA (US-03), generato alla build per usare il percorso base (BT_BASE) in
+// Manifest della PWA (US-03), generato alla build per usare il percorso base (WT_BASE) in
 // start_url, scope e icone. I colori sono quelli del guscio, uguali nei due temi.
 import type { APIRoute } from 'astro';
 import { BASE, appUrl } from '../lib/paths';
@@ -8,8 +8,8 @@ const SHELL = '#142321';
 export const GET: APIRoute = () => {
   const manifest = {
     id: BASE,
-    name: 'BodyTracker',
-    short_name: 'BodyTracker',
+    name: 'Workout Tracker',
+    short_name: 'Workout',
     description: 'Diario di allenamento privato e offline: i dati restano su questo dispositivo.',
     lang: 'it',
     dir: 'ltr',

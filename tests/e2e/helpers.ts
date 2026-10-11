@@ -3,7 +3,7 @@ import { expect, type Page } from '@playwright/test';
 import { ARCHIVE_KEY, emptyArchive, validateArchive, type Archive, type Session } from '../../src/lib/archive';
 
 // Aiuti comuni dei test e2e. Le pagine si aprono con percorsi relativi ('settings/'), così la suite
-// gira anche con BT_BASE (vedi playwright.config.ts).
+// gira anche con WT_BASE (vedi playwright.config.ts).
 
 export const POC_BACKUP = readFileSync(new URL('../fixtures/synthetic-poc-backup.json', import.meta.url), 'utf8');
 

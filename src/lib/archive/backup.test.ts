@@ -32,7 +32,7 @@ describe('US-32 esportazione v2', () => {
   });
 
   it('nome del file con la data locale', () => {
-    expect(backupFileName(new Date(2026, 0, 5, 23, 59))).toBe('bodytracker-2026-01-05.json');
+    expect(backupFileName(new Date(2026, 0, 5, 23, 59))).toBe('workout-tracker-2026-01-05.json');
   });
 });
 

@@ -25,10 +25,10 @@
   <h2 id="s-app" class="section-title">App sul telefono</h2>
   <div class="panel flex flex-col gap-3">
     {#if installed}
-      <p class="m-0">BodyTracker è installata su questo dispositivo e funziona anche senza rete.</p>
+      <p class="m-0">Workout Tracker è installata su questo dispositivo e funziona anche senza rete.</p>
     {:else}
       <p class="m-0">
-        Installata sulla schermata Home, BodyTracker si apre come un’app, a tutto schermo, e funziona anche senza rete.
+        Installata sulla schermata Home, Workout Tracker si apre come un’app, a tutto schermo, e funziona anche senza rete.
       </p>
       {#if canPrompt}
         <button type="button" class="btn btn-secondary self-start" onclick={() => promptInstall()}>Installa l’app</button>

@@ -51,7 +51,7 @@
 
   function downloadOriginal() {
     if (store.repo.originalContent === null) return;
-    downloadText(store.repo.originalContent, `bodytracker-illeggibile-${backupFileName().slice('bodytracker-'.length)}`);
+    downloadText(store.repo.originalContent, `workout-tracker-illeggibile-${backupFileName().slice('workout-tracker-'.length)}`);
   }
 
   function clearAll() {

@@ -1,4 +1,4 @@
-# BodyTracker: brief delle superfici (step 0)
+# Workout Tracker: brief delle superfici (step 0)
 
 Indice dei brief scritti con il metodo `shape` di Impeccable. I brief veri e propri sono in `.impeccable/surfaces/`, dove Impeccable li rilegge a ogni modifica della superficie. Questo documento li collega ai flussi, alle storie e ai principi di [USER-STORIES.md](USER-STORIES.md). Tutte le superfici sono in modalità **Operate**.
 

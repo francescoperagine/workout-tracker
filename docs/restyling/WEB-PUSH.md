@@ -4,7 +4,7 @@ Documento dello step 7 (PIANO.md, "Predisposizione Web Push"). Oggi gli avvisi d
 
 ## Come funziona oggi
 
-- **Motore:** `src/lib/rest-timer.ts` (logica pura) e `src/lib/rest-timer.svelte.ts` (store). La verità è l'istante di fine (`end`, timestamp), salvato nella chiave `bodytracker.restTimer` a ogni cambiamento: ricarica, chiusura e schermo bloccato non spostano il conteggio. Il tempo si ricalcola a ogni scatto (250 ms) e a `visibilitychange`.
+- **Motore:** `src/lib/rest-timer.ts` (logica pura) e `src/lib/rest-timer.svelte.ts` (store). La verità è l'istante di fine (`end`, timestamp), salvato nella chiave `workout-tracker.restTimer` a ogni cambiamento: ricarica, chiusura e schermo bloccato non spostano il conteggio. Il tempo si ricalcola a ogni scatto (250 ms) e a `visibilitychange`.
 - **Avviso locale:** `localRestNotifier` (`src/lib/rest-notifier.ts`) programma un timeout alla fine; lo store controlla comunque la fine a ogni scatto. Suono (`AudioContext`, sbloccato dalla spunta) e vibrazione (`navigator.vibrate`) secondo le Impostazioni, una volta sola (`alerted` nello stato salvato, anche tra schede del browser). Oltre un minuto di ritardo non suonano più: l'utente vede "Recupero finito da …" al rientro.
 - **Schermo acceso:** Screen Wake Lock (`src/lib/wake-lock.ts`) per tutto l'allenamento in corso, richiesto di nuovo quando la pagina torna visibile.
 - **Service worker:** `public/sw-push.js`, importato da `sw.js` (`importScripts` in `src/integrations/service-worker.ts`), ha già gli handler `push` e `notificationclick`. Oggi nessuno invia push.

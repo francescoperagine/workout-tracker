@@ -1,4 +1,4 @@
-# BodyTracker
+# Workout Tracker
 <!-- impeccable:product-schema 1 -->
 
 ## Platform
@@ -23,11 +23,11 @@ Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il
 - Rete scarsa o assente in palestra: dopo la prima visita tutto deve funzionare offline.
 - Interruzioni continue: notifiche, macchina occupata, chiacchiere, schermo che si spegne. Chiudere, bloccare o ricaricare deve riportare esattamente alla sessione e al timer in corso.
 - Uso principale da telefono (riferimento 390×844, minimo 320×568), anche installata sulla schermata Home; desktop per pianificare e rivedere lo storico.
-- Pubblicata nel percorso `/bodytracker/` del sito personale (configurabile con `BT_BASE`/`BT_SITE`), in futuro su un dominio proprio.
+- Pubblicata su `https://workout-tracker.francescoperagine.com` (progetto Cloudflare Pages `workout-tracker`, deploy a ogni push su `main`). Durante le prove in palestra, fino alla fine del restyling, vive solo su `https://workout-tracker.pages.dev` (non elencata, pagine `noindex`). `WT_BASE`/`WT_SITE` restano per provare la build in un sotto-percorso.
 
 ## Capabilities and Constraints
 - **Funzioni v1:** primo avvio con schede di esempio o da zero; schede con esercizi dal catalogo o liberi, serie, ripetizioni e carichi target (anche intervalli), recupero e recupero di riscaldamento, alternative, superserie; pianificazione settimanale con eccezioni per singola data; allenamento attivo con colonna "precedente", spunta per serie, tipi di serie (normale, riscaldamento, drop, cedimento), varianti, note sul carico, approfondimento dell'esercizio; timer di recupero a tutto schermo (−15 s, +15 s, Salta, Riduci); riepilogo di fine sessione con record; storico modificabile; grafici dei progressi (carico massimo, 1RM stimato, volume); impostazioni di tema, unità, recupero predefinito, suono e vibrazione; esportazione, importazione e import del backup del PoC.
-- **Dati:** solo nel `localStorage` del browser (chiave `bodytracker.archive.v2`), con validazione, revisione per i conflitti tra schede, gestione dell'errore di quota e `navigator.storage.persist()`. Nessun backend, database, account, API, font remoti o statistiche. I dati non vanno inviati da nessuna parte.
+- **Dati:** solo nel `localStorage` del browser (chiave `workout-tracker.archive.v2`), con validazione, revisione per i conflitti tra schede, gestione dell'errore di quota e `navigator.storage.persist()`. Nessun backend, database, account, API, font remoti o statistiche. I dati non vanno inviati da nessuna parte.
 - **Unità:** peso in kg o lb, distanza in m o ft, scelte nelle impostazioni. I dati si salvano sempre in kg e metri; l'arrotondamento è solo in visualizzazione. Oggi nessuna schermata usa distanze.
 - **Avvisi del timer:** garantiti solo con l'app aperta (suono, vibrazione dove disponibile, schermo acceso con wake lock). Con l'app chiusa nessuna garanzia: c'è solo la predisposizione per un futuro Web Push, senza server.
 - **iOS:** i siti non installati possono perdere i dati dopo 7 giorni senza visite; nessuna vibrazione; l'audio richiede un gesto. L'app invita all'installazione e al backup.
@@ -36,7 +36,7 @@ Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il
 - **Lessico:** "scheda", "serie", "ripetizioni", "recupero", "riscaldamento", "variante", "superserie", "precedente", "carico". Interfaccia solo in italiano.
 
 ## Brand Commitments
-Nome **BodyTracker**. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: il guscio resta verde scuro in entrambi, il font è Atkinson Hyperlegible Next, la mossa distintiva è il timer a livello che si svuota. I dettagli visivi sono in `DESIGN.md`.
+Nome **Workout Tracker** (breve **Workout**, il nome sotto l'icona nella schermata Home). Il nome «BodyTracker» è usato da molte app che tracciano le misure del corpo (peso, circonferenze, BMI), non un diario di allenamento; «Workout Tracker» dice cosa fa l'app ed è lo stesso del repository. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: il guscio resta verde scuro in entrambi, il font è Atkinson Hyperlegible Next, la mossa distintiva è il timer a livello che si svuota. I dettagli visivi sono in `DESIGN.md`.
 
 ## Evidence on Hand
 - Schede reali A/B e catalogo esercizi con ID stabili in `BodyTracker/palestra/esercizi.js` (`window.schedeIniziali`, `window.catalogoEsercizi`). Gli ID non vanno cambiati: lo storico dell'utente li usa.

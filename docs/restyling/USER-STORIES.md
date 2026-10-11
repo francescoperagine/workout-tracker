@@ -1,4 +1,4 @@
-# BodyTracker: scena d'uso, principi UX e user story
+# Workout Tracker: scena d'uso, principi UX e user story
 
 Base di prodotto per il restyling. Le storie derivano dalle decisioni in [PIANO.md](PIANO.md) e dal PoC. Sono state **confermate dall'utente il 10 ottobre 2026**, insieme ai brief di Impeccable (vedi [BRIEF.md](BRIEF.md) §3–4 per le decisioni). Ogni storia ha un ID (`US-xx`) da riportare nei brief, nei commit e nei nomi dei test e2e.
 

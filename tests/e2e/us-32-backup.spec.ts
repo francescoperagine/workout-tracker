@@ -13,7 +13,7 @@ test.describe('US-32 backup', () => {
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Esporta backup' }).click();
     const file = await download;
-    expect(file.suggestedFilename()).toMatch(/^bodytracker-\d{4}-\d{2}-\d{2}\.json$/);
+    expect(file.suggestedFilename()).toMatch(/^workout-tracker-\d{4}-\d{2}-\d{2}\.json$/);
     const text = readFileSync((await file.path())!, 'utf8');
     const backup = JSON.parse(text);
     expect(backup).toMatchObject({ version: 2 });
