@@ -1,12 +1,9 @@
 ---
-// Storico: segnaposto dello step 3, perché la tab bar porti già a una pagina vera. La sostituisce lo step 8 del piano.
+// Storico (/history): allenamenti conclusi per mese e, nella vista Esercizi, l'ingresso ai progressi di ogni esercizio.
 import AppLayout from '../layouts/AppLayout.astro';
-import EmptyState from '../components/ui/EmptyState.astro';
-import History from '@lucide/astro/icons/rotate-ccw-clock';
+import HistoryPage from '../components/history/HistoryPage.svelte';
 ---
 
 <AppLayout title="Storico" tab="history">
-  <EmptyState title="In arrivo: lo storico" text="Qui rivedrai e correggerai gli allenamenti passati e seguirai i progressi di ogni esercizio.">
-    <History slot="icon" size={28} />
-  </EmptyState>
+  <HistoryPage client:only="svelte" />
 </AppLayout>

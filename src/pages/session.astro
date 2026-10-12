@@ -1,0 +1,10 @@
+---
+// Dettaglio di un allenamento concluso (/session?id=…, brief route-history, US-27): le stesse righe
+// serie dell'allenamento attivo, modificabili, con "Riapri" ed "Elimina". L'id si legge nel client.
+import AppLayout from '../layouts/AppLayout.astro';
+import Workout from '../components/workout/Workout.svelte';
+---
+
+<AppLayout title="Allenamento" heading="Storico" tab="history">
+  <Workout client:only="svelte" detail />
+</AppLayout>

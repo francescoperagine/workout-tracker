@@ -1,12 +1,12 @@
 <script lang="ts">
   // Riepilogo di fine allenamento (US-18, brief route-workout: "una schermata a sé dopo Termina"):
-  // durata, esercizi, serie, volume e record di carico battuti (US-29), poi cosa si è fatto per
+  // durata, esercizi, serie, volume e record battuti (carico, 1RM stimato, volume: US-29), poi cosa si è fatto per
   // esercizio. Dopo il primo allenamento concluso, l'invito discreto a installare l'app (US-03).
   // La sessione resta modificabile: "Riapri allenamento" la rimette in corso.
   import { onMount } from 'svelte';
   import CircleCheck from '@lucide/svelte/icons/circle-check';
   import Trophy from '@lucide/svelte/icons/trophy';
-  import { exerciseName, finishedCount, setNumbers, workoutSummary, type Archive, type Session } from '../../lib/archive';
+  import { exerciseName, finishedCount, sessionRecords, setNumbers, workoutSummary, type Archive, type RecordKind, type Session } from '../../lib/archive';
   import { formatClock, formatElapsed, formatLongDay, plural } from '../../lib/format';
   import { formatWeight } from '../../lib/units';
   import { appUrl } from '../../lib/paths';
@@ -23,7 +23,7 @@
   let { archive, session, today, onreopen }: Props = $props();
 
   const settings = $derived(archive.settings);
-  const summary = $derived(workoutSummary(archive, session, Date.now()));
+  const summary = $derived(workoutSummary(session, Date.now()));
   // le sessioni importate dal PoC non hanno una durata vera
   const hasDuration = $derived(summary.duration >= 60_000);
 
@@ -48,6 +48,19 @@
       })
       .join(' · ');
   }
+
+  // record per esercizio: "Carico 45 kg, prima 40 kg · 1RM stimato …"
+  const RECORD_LABEL: Record<RecordKind, string> = { load: 'Carico', e1rm: '1RM stimato', volume: 'Volume' };
+  const records = $derived(sessionRecords(archive, session));
+  const recordsByExercise = $derived(
+    [...new Set(records.map((r) => r.exerciseId))].map((exerciseId) => ({
+      exerciseId,
+      text: records
+        .filter((r) => r.exerciseId === exerciseId)
+        .map((r) => `${RECORD_LABEL[r.kind]} ${formatWeight(r.value, settings)}, prima ${formatWeight(r.previous, settings)}`)
+        .join(' · '),
+    })),
+  );
 
   const done = $derived(session.exercises.filter((e) => e.sets.some((s) => s.completedAt !== null)));
   const skipped = $derived(session.exercises.length - done.length);
@@ -92,14 +105,14 @@
     {/each}
   </dl>
 
-  {#if summary.records.length}
+  {#if records.length}
     <section aria-labelledby="records-title" class="section">
-      <h3 id="records-title" class="subtitle"><Trophy size={20} aria-hidden="true" class="text-accent-text" />{summary.records.length === 1 ? 'Record battuto' : 'Record battuti'}</h3>
+      <h3 id="records-title" class="subtitle"><Trophy size={20} aria-hidden="true" class="text-accent-text" />{records.length === 1 ? 'Record battuto' : 'Record battuti'}</h3>
       <ul class="list">
-        {#each summary.records as record (record.exerciseId)}
+        {#each recordsByExercise as record (record.exerciseId)}
           <li>
-            <span class="name">{exerciseName(archive, record.exerciseId)}</span>
-            <span class="detail">{formatWeight(record.kg, settings)}, prima {formatWeight(record.previousBest, settings)}</span>
+            <a class="name" href={`${appUrl('/exercise')}?id=${encodeURIComponent(record.exerciseId)}`}>{exerciseName(archive, record.exerciseId)}</a>
+            <span class="detail">{record.text}</span>
           </li>
         {/each}
       </ul>

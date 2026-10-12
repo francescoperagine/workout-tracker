@@ -348,7 +348,7 @@ export interface LoadRecord {
 /**
  * Record di carico (US-29): il carico massimo di questa sessione supera quello delle sessioni
  * precedenti con lo stesso esercizio (la stessa variante). Riscaldamento escluso; senza storico non
- * c'è record. Gli altri record (1RM, volume) arrivano con i grafici dello step 8.
+ * c'è record. È il record segnato nella riga serie; quelli di 1RM e volume sono in progress.ts.
  */
 export function loadRecords(archive: Pick<Archive, 'sessions'>, session: Session): LoadRecord[] {
   const best = new Map<string, { kg: number; setId: string }>();
@@ -377,11 +377,10 @@ export interface WorkoutSummary {
   warmupSets: number;
   /** kg × ripetizioni delle serie di lavoro fatte, in kg */
   volume: number;
-  records: LoadRecord[];
 }
 
-/** Riepilogo di fine allenamento (US-18) */
-export function workoutSummary(archive: Pick<Archive, 'sessions'>, session: Session, now: number): WorkoutSummary {
+/** Riepilogo di fine allenamento (US-18); i record sono in `sessionRecords` (progress.ts) */
+export function workoutSummary(session: Session, now: number): WorkoutSummary {
   let exercises = 0;
   let sets = 0;
   let warmupSets = 0;
@@ -398,7 +397,7 @@ export function workoutSummary(archive: Pick<Archive, 'sessions'>, session: Sess
       if (s.kg !== null && s.reps !== null) volume += s.kg * s.reps;
     }
   }
-  return { duration: Math.max(0, (session.end ?? now) - session.start), exercises, sets, warmupSets, volume, records: loadRecords(archive, session) };
+  return { duration: Math.max(0, (session.end ?? now) - session.start), exercises, sets, warmupSets, volume };
 }
 
 /** Numero di allenamenti conclusi (l'invito all'installazione arriva dopo il primo, US-03) */

@@ -1,0 +1,10 @@
+---
+// Progressi di un esercizio (/exercise?id=…, brief route-history, US-28 e US-29): record, grafico e
+// cronologia delle serie. L'id si legge nel client, perché il sito è statico.
+import AppLayout from '../layouts/AppLayout.astro';
+import ExerciseProgress from '../components/history/ExerciseProgress.svelte';
+---
+
+<AppLayout title="Progressi" heading="Storico" tab="history">
+  <ExerciseProgress client:only="svelte" />
+</AppLayout>

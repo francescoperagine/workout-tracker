@@ -23,24 +23,29 @@ export function unlockAudio(): void {
   if (ctx && ctx.state === 'suspended') void ctx.resume().catch(() => {});
 }
 
-/** Tre toni brevi e acuti, distinguibili nel rumore della sala pesi. */
+/**
+ * Tre toni brevi e acuti, distinguibili nel rumore della sala pesi. Onda quadra: le armoniche cadono
+ * tra 2 e 5 kHz, dove l'altoparlante di un telefono rende di più (con la sinusoide si sentiva poco,
+ * prova in palestra del 12 ottobre 2026). Il volume resta quello dei contenuti multimediali.
+ */
 export function playEndSound(): void {
   const ctx = audioContext();
   if (!ctx) return;
   if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
   const t0 = ctx.currentTime + 0.02;
-  [0, 0.28, 0.56].forEach((offset, i) => {
+  [0, 0.34, 0.68].forEach((offset, i) => {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
+    osc.type = 'square';
     osc.frequency.value = i === 2 ? 1320 : 880;
     const start = t0 + offset;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.4, start + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.9, start + 0.01);
+    gain.gain.setValueAtTime(0.9, start + 0.18);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
     osc.connect(gain).connect(ctx.destination);
     osc.start(start);
-    osc.stop(start + 0.22);
+    osc.stop(start + 0.3);
   });
 }
 

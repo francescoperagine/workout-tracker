@@ -77,6 +77,7 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
   poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
+  progress.ts           progressi (step 8): exerciseHistory (un punto per sessione conclusa: carico massimo, 1RM Epley solo serie normali fino a 12 rip, volume; riscaldamento escluso, varianti separate), personalRecords, pointsInPeriod (3m, 1y, all), exercisesDone, sessionRecords (record di carico, 1RM e volume di una sessione)
 src/lib/rest-timer.ts   timer di recupero (step 7), logica pura: REST_TIMER_KEY, RestTimerState, startRest, shiftRest (±15 s), restRemaining/restFraction/restOverFor, restAfterCheck (quale recupero parte: riscaldamento, 0, superserie a fine giro), restIsStale (spunta tolta, sessione conclusa), crossedThreshold (annunci a 30, 10, 0), nextSetText, parseRestTimer (con test a orologio finto)
 src/lib/rest-timer.svelte.ts  restTimer(): store unico del timer (stato salvato a ogni cambiamento, scatti di 250 ms, visibilitychange, evento storage, avviso di fine una volta sola, "Vai" chiuso dopo 6 s in vista); afterCheck, shift, stop, minimize, expand
 src/lib/rest-alert.ts   unlockAudio (dentro la spunta), suono di fine con AudioContext, vibrazione, alertRestEnd(settings)
@@ -101,7 +102,9 @@ src/pages/
   routine.astro         editor di una scheda (/routine?id=…)
   calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
   workout.astro         allenamento in corso (/workout, step 6); ?summary=<id> mostra il riepilogo di una sessione appena conclusa
-  history.astro         segnaposto con stato vuoto, sostituito dallo step 8
+  history.astro         Storico (/history, step 8): allenamenti per mese, ?view=exercises l'elenco degli esercizi fatti
+  session.astro         dettaglio modificabile di un allenamento concluso (/session?id=…, &date= se si arriva dal calendario): Workout con detail
+  exercise.astro        progressi di un esercizio (/exercise?id=…): record, grafico, cronologia
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   kit.astro             /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione e dal precache
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
@@ -113,7 +116,8 @@ src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave de
 src/components/settings/  SettingsPage (tema, unità, allenamento, guida «Come funziona»), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
 src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
-src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione)
+src/components/history/  HistoryPage (Storico), ExerciseProgress (pagina esercizio), ProgressChart (grafico a linea in SVG scritto a mano, skill dataviz)
+src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina; con detail il dettaglio di una sessione conclusa, senza recupero, con Riapri ed Elimina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione)
 src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
 src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca e "Crea «…»" (esercizio personalizzato)
 src/components/workout/RestTimer.svelte  vista del timer a tutto schermo (livello che si svuota, "Vai", "finito da"), finestra modale o anteprima per /kit
@@ -161,7 +165,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - **Fine di uno step:** aggiorna `docs/restyling/HANDOFF.md` per lo step successivo e chiudi **sempre** il messaggio finale all'utente con il prompt di handoff completo, copiato da HANDOFF.md, pronto da incollare nella nuova conversazione.
 - **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
 - **Date nei test e2e:** il browser dei test è in `Europe/Rome` (`timezoneId`), Node no: per fissare "oggi" con `page.clock.setFixedTime` usa un istante con il fuso esplicito (`new Date('2026-10-08T18:30:00+02:00')`).
-- Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/routine?id=`, `/history`, `/workout`, `/welcome` (vedi BRIEF.md).
+- Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/routine?id=`, `/history`, `/session?id=`, `/exercise?id=`, `/workout`, `/welcome` (vedi BRIEF.md).
 - Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showTabs={false}` e `showHeader={false}` solo sul primo avvio). `/kit` usa `Base`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
   - Colori di contenuto, che cambiano col tema: `bg-background`, `bg-surface`, `bg-field`, `text-foreground`, `text-muted`, `border-line`, `border-line-strong`, `bg-accent`/`text-on-accent`, `text-accent-text`, `bg-done`, `text-danger`, `bg-warning-bg`. Sono `light-dark()`: niente varianti `dark:`.
@@ -177,12 +181,12 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Lo Storico è un segnaposto (stato vuoto) fino allo step 8. L'allenamento attivo è completo dallo step 6, il timer di recupero dallo step 7. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Storico e progressi sono completi dallo step 8. L'allenamento attivo è completo dallo step 6, il timer di recupero dallo step 7. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
 - Gli avvisi di fine recupero arrivano solo con l'app aperta: il Web Push è solo predisposto (handler in `public/sw-push.js`, importato da `sw.js`), senza server né permessi (`docs/restyling/WEB-PUSH.md`).
 - Test dello step 6 (`us-12-us-20-workout`): le schede non hanno recupero (`rest: 0`), perché spuntano più serie di fila e il timer le coprirebbe. Nei test del timer l'orologio è fermo (`page.clock.install` più `pauseAt`) e scorre con `runFor`/`fastForward`.
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
-- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-21-us-26-rest-timer`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
+- Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-21-us-26-rest-timer`, `us-27-us-29-history`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
 ## Riferimento: `BodyTracker/`
 

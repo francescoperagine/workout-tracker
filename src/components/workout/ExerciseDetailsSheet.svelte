@@ -69,6 +69,10 @@
       <p>{lastTime}</p>
       {#if previous.exercise.notes.trim()}<p class="muted">Nota: «{previous.exercise.notes.trim()}»</p>{/if}
     {/if}
+
+    {#if exerciseId}
+      <a class="btn btn-secondary progress" href={`${appUrl('/exercise')}?id=${encodeURIComponent(exerciseId)}`}>Vedi i progressi</a>
+    {/if}
   </div>
 </BottomSheet>
 
@@ -96,6 +100,10 @@
   }
   .muted {
     color: var(--color-muted);
+  }
+  .progress {
+    align-self: flex-start;
+    margin-top: 0.75rem;
   }
   img {
     width: 100%;

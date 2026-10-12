@@ -12,3 +12,4 @@ export * from './backup';
 export * from './calendar';
 export * from './sessions';
 export * from './workout';
+export * from './progress';

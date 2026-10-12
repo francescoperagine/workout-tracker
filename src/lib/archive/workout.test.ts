@@ -100,8 +100,8 @@ describe('US-13 tipi di serie', () => {
   it('il riscaldamento non conta per volume e record', () => {
     const before = finished('b', '2026-10-01', [exercise('b1', 'x', [set('1', 60, 5)])]);
     const today = finished('t', '2026-10-10', [exercise('t1', 'x', [set('w', 80, 5, true, 'warmup'), set('1', 60, 5), set('2', 50, 10)])]);
-    const summary = workoutSummary(withAB([before, today]), today, NOW);
-    expect(summary).toMatchObject({ exercises: 1, sets: 2, warmupSets: 1, volume: 60 * 5 + 50 * 10, records: [] });
+    expect(workoutSummary(today, NOW)).toMatchObject({ exercises: 1, sets: 2, warmupSets: 1, volume: 60 * 5 + 50 * 10 });
+    expect(loadRecords(withAB([before, today]), today)).toEqual([]);
   });
 });
 
@@ -225,7 +225,7 @@ describe('US-18 riepilogo e US-29 record', () => {
     ]);
     const archive = withAB([before, today]);
     expect(loadRecords(archive, today)).toEqual([{ exerciseId: 'x', kg: 65, previousBest: 60, setId: '2' }]);
-    const summary = workoutSummary(archive, today, NOW);
+    const summary = workoutSummary(today, NOW);
     expect(summary).toMatchObject({ duration: 3_600_000, exercises: 3, sets: 5, warmupSets: 0 });
     expect(summary.volume).toBe(62.5 * 5 + 65 * 3 * 2 + 30 * 10 + 100);
     expect(finishedCount(archive)).toBe(2);

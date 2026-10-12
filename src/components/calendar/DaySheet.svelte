@@ -4,6 +4,7 @@
   // Oggi si avvia l'allenamento, in un giorno passato se ne registra uno fatto, da oggi in poi si crea una
   // scheda nuova e la si assegna alla data. Ogni scelta si salva subito; la settimana tipo si cambia nella sezione della pagina.
   import { navigate } from 'astro:transitions/client';
+  import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import {
     activeRoutines,
@@ -139,7 +140,12 @@
             {#each day.sessions as session (session.id)}
               {@const summary = summarizeSession(session, now)}
               <li class="session">
-                <span class="name">{session.name}</span>
+                {#if session.end === null}
+                  <span class="name">{session.name}</span>
+                {:else}
+                  <!-- il dettaglio modificabile (US-27); il ritorno porta di nuovo a questo giorno -->
+                  <a class="name link" href={`${appUrl('/session')}?id=${encodeURIComponent(session.id)}&date=${day.date}`}>{session.name}<ChevronRight size={20} aria-hidden="true" /></a>
+                {/if}
                 <span class="meta">
                   {[formatClock(session.start), summary.duration >= 60_000 ? formatElapsed(summary.duration) : '', plural(summary.completedSets, 'serie', 'serie'), session.end === null ? 'in corso' : '']
                     .filter(Boolean)
@@ -226,6 +232,19 @@
     font-size: var(--text-lg);
     font-weight: 700;
     overflow-wrap: anywhere;
+  }
+  .link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 48px;
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+  .link :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-muted);
   }
   .meta {
     color: var(--color-muted);

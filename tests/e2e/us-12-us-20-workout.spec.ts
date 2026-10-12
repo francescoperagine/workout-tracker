@@ -374,8 +374,11 @@ test.describe('US-18 fine dell’allenamento', () => {
     await expect(stats).toContainText('Esercizi 1');
     await expect(stats).toContainText('Serie 2');
     await expect(stats).toContainText(`Volume ${45 * 8 + 40 * 8} kg`);
-    await expect(page.getByRole('heading', { name: 'Record battuto' })).toBeVisible();
-    await expect(page.getByText('45 kg, prima 40 kg')).toBeVisible();
+    // stesse ripetizioni con più carico: record di carico e di 1RM stimato (45 × 8 → 57 kg); il volume no,
+    // perché la volta scorsa tutte le serie erano fatte
+    await expect(page.getByRole('heading', { name: 'Record battuti' })).toBeVisible();
+    await expect(page.getByText('Carico 45 kg, prima 40 kg · 1RM stimato 57 kg')).toBeVisible();
+    await expect(page.getByText(/Volume \d+ kg, prima/)).toHaveCount(0);
     await expect(page.getByRole('link', { name: /^Allenamento in corso/ })).toHaveCount(0);
     const done = (await storedArchive(page))!.sessions.find((s) => s.routineId === 'routine-a' && s.date === '2026-10-08')!;
     expect(done.end).toBe(NOW.getTime() + 65 * 60_000);

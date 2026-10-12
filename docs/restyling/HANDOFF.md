@@ -1,12 +1,29 @@
-# Handoff: restyling Workout Tracker, step 8
+# Handoff: restyling Workout Tracker, step 9
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 8 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 9 in dettaglio e le insidie dell'ambiente già incontrate.
 
 ## Prompt da incollare nella nuova conversazione
 
-**Step 8**, dopo le prove in palestra (la correzione del calendario è fatta, vedi sotto):
+**Step 9**, dopo la conferma delle decisioni dello step 8:
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e il brief `.impeccable/surfaces/route-history.md`. L'app si chiama **Workout Tracker** (rinomina dell'11 ottobre 2026, vedi «Stato dopo la rinomina» in HANDOFF.md) ed è pubblicata a ogni push su `main` su `https://workout-tracker.francescoperagine.workers.dev`. Prima di cominciare, chiedimi l'esito delle prove in palestra degli step 6 e 7 e della correzione del calendario fatte sull'app installata da quell'indirizzo (checklist di USER-STORIES.md §5 e di `docs/restyling/WEB-PUSH.md`, anche su iPhone e Android) e le risposte alle decisioni aperte dello step 7 elencate in HANDOFF.md, e applica le correzioni. Poi esegui lo **step 8** del piano (storico e progressi: `/history` con le sessioni per data e l'accesso dal calendario, dettaglio `/session?id=` modificabile con eliminazione confermata e "Riapri", pagina esercizio `/exercise?id=` con grafici in SVG scritto a mano di carico massimo, 1RM stimato con Epley solo su serie normali fino a 12 ripetizioni e volume per sessione, selettore di periodo, record personali e cronologia delle serie, varianti separate e riscaldamento escluso, nell'unità scelta e leggibili nei due temi; prima dei grafici carica la skill dataviz), usando lo storico registrato dall'allenamento attivo, con test Vitest sui calcoli ed e2e nominati con l'ID della storia (US-27…US-29). Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Un push su `main` è un deploy in produzione: pusha solo con `npm run check`, `npm test`, `npm run build` e le suite e2e verdi. Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief in `.impeccable/surfaces/`. L'app si chiama **Workout Tracker** ed è pubblicata a ogni push su `main` su `https://workout-tracker.francescoperagine.workers.dev`. Prima di cominciare, chiedimi l'esito delle prove sull'app installata dello storico e dei progressi (step 8) e del suono di fine recupero corretto, e le risposte alle decisioni aperte dello step 8 elencate in HANDOFF.md, e applica le correzioni. Poi esegui lo **step 9** del piano (rifinitura, eliminazione del PoC e rilascio): `critique`, `audit`, `harden` e `polish` di Impeccable sui flussi di USER-STORIES.md §4; verifica della tabella "Assorbimento del PoC" (ogni riga con un e2e verde); eliminazione di `BodyTracker/` con le parti utili di `LEGGIMI.md` nel `README.md`; `/kit` fuori dalla build pubblicata ma disponibile ai test; decisione sulla lettura diretta della chiave del PoC (`readPocKey`); verifica che non resti «BodyTracker» tranne il formato d'import `bodytracker.archivio.v1`; aggiornamento di `AGENTS.md` e `README.md`. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Un push su `main` è un deploy in produzione: pusha solo con `npm run check`, `npm test`, `npm run build` e le suite e2e verdi (anche con `WT_BASE=/workout-tracker/`). Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte; poi i passi del «Rilascio» in PIANO.md.
+
+## Stato a fine step 8 (12 ottobre 2026)
+
+Tutto è su `main`. Decisioni dello step nello «Stato» dello step 8 in PIANO.md; struttura e route in `AGENTS.md`.
+
+- **Prove in palestra (risposte del 12 ottobre 2026):** variante con la macchina occupata a posto; superserie non provate (l'utente fa al massimo le serie di avvicinamento); timer al sole e in penombra non provabili; solo Android (telefono di cinque anni), niente iPhone; suono udibile ma basso → onda quadra e volume più alto in `src/lib/rest-alert.ts`. Decisioni aperte dello step 7: confermate tutte le raccomandazioni.
+- **Storico e progressi:** `/history` (Allenamenti per mese e vista Esercizi), `/session?id=` (dettaglio modificabile: `Workout` con `detail`, nessun recupero, «Riapri», «Elimina» con conferma e «Annulla»), `/exercise?id=` (record, grafico `ProgressChart` in SVG, cronologia), calcoli in `src/lib/archive/progress.ts`, record di carico, 1RM e volume nel riepilogo (`sessionRecords`). Il foglio del giorno del calendario apre il dettaglio.
+- **Verifiche:** `npm run check` 0 errori, `npm test` 252 Vitest (18 nuovi in `progress.test.ts`), `npm run build` ok, `npm run test:e2e` 278 verdi e `WT_BASE=/workout-tracker/ npm run test:e2e` 278 verdi (28 nuovi in `us-27-us-29-history.spec.ts`, più il riepilogo di US-18 aggiornato ai record di 1RM), detector a 0 sui file toccati. Schermate a 390×844 e 320×568 nei due temi (Storico, Esercizi, dettaglio, pagina esercizio con grafico) mostrate all’utente.
+
+## Decisioni aperte dello step 8 (da chiedere all'utente)
+
+1. **Periodo predefinito «3 mesi»** sul grafico. Raccomandazione: tenerlo (l'andamento recente è quello che conta in palestra); se lo storico è più corto, «Tutto» mostra lo stesso.
+2. **Un grafico con «Misura» invece di tre grafici uno sotto l'altro**, per non fare un cruscotto (anti-obiettivo del brief). Raccomandazione: tenerlo.
+3. **Dettaglio con gli esercizi compattati** («Mostra serie» per vedere e correggere le righe), come un esercizio fatto nell'allenamento. Raccomandazione: tenerlo: si legge tutta la sessione a colpo d'occhio e la correzione costa un tocco.
+4. **Record nella riga serie solo per il carico**; 1RM e volume solo nel riepilogo e nello Storico. Raccomandazione: tenerlo, perché un trofeo di volume a metà esercizio cambierebbe a ogni spunta.
+5. **Storico con la vista Esercizi** (non prevista dal brief, che entrava ai progressi solo dalla riga dell'esercizio e dal calendario). Raccomandazione: tenerla, risponde a «sto progredendo sulla panca?» senza cercare una sessione.
+6. **Esercizi a corpo libero:** nessun grafico (manca il carico) e il motivo al suo posto; ripetizioni nella cronologia. Raccomandazione: rimandare un grafico delle ripetizioni a quando servirà.
 
 ## Stato dopo la correzione del calendario (12 ottobre 2026)
 
@@ -37,29 +54,9 @@ Tutto è su `main`. Decisioni dello step 7 (e risposte dell'utente sulle decisio
 - **Recupero predefinito:** una voce del PoC con recupero mancante o illeggibile prende il predefinito (prima 0 = nessun timer).
 - Verifica: 234 e2e verdi nella radice e con `WT_BASE=/workout-tracker/`, 232 Vitest, `astro check` pulito, detector a 0 su `src/`. Revisione finale di Impeccable fatta in linea (nessun agente): nessun elemento del Refuse list.
 
-## Decisioni aperte dello step 7 (da chiedere all'utente)
+## Step 9 in dettaglio
 
-1. **Schermo acceso per tutto l'allenamento** (non solo durante il recupero): consuma più batteria. Raccomandazione: tenerlo, è US-24 e il telefono resta in mano o appoggiato.
-2. **Tipo di serie dal foglio:** cambiare tipo costa 2 tocchi (prima 1–3 in ciclo), in cambio di nomi chiari e "Togli serie" sulla riga. Raccomandazione: tenerlo; se in palestra pesa, il ciclo con un tocco può tornare e il foglio aprirsi solo per "Togli" con un tocco lungo come scorciatoia.
-3. **"Vai" si chiude da solo dopo 6 s** (in vista) e la barra ridotta lime sparisce con lui. Raccomandazione: tenerlo; alternativa, la barra lime resta finché non si tocca.
-4. **Una spunta senza recupero chiude quello in corso** (es. 2a durante il recupero del giro precedente). Raccomandazione: tenerlo, vuol dire che si è ripreso a lavorare.
-5. **Ridotto resta ridotto** tra le pagine, ma ogni nuova spunta riapre lo schermo intero. Raccomandazione: tenerlo; alternativa, ricordare "preferisco ridotto" per la sessione.
-6. **Suono:** tre toni brevi generati in locale, senza scelta del volume né del suono. Raccomandazione: valutarlo in palestra (si sente nel rumore?) prima di aggiungere opzioni.
-7. **Recupero predefinito applicato quando nasce la voce**, non a ogni recupero: cambiarlo nelle Impostazioni non tocca le voci esistenti. Raccomandazione: tenerlo e dirlo nel suggerimento delle Impostazioni se crea dubbi.
-8. **Mini-barra con il timer:** il tocco riapre il timer sulla pagina dove si è, la freccia a destra torna all'allenamento. Raccomandazione: tenerlo.
-
-## Prove reali (dopo lo step 7)
-
-- **Dove:** sull'app installata da `https://workout-tracker.francescoperagine.workers.dev` (schermata Home). I dati registrati lì restano a quell'indirizzo: al rilascio si esportano e si importano sul dominio definitivo.
-- **Palestra (step 6 e 7 insieme, la prova dello step 6 non è ancora stata fatta):** con la checklist di USER-STORIES.md §5: tocchi per serie, leggibilità di cifre, precedente e timer al sole e in penombra, tastiera che non copre la riga, interruzioni (schermo bloccato durante il recupero, app chiusa e riaperta), variante con la macchina occupata, superserie 2a/2b con il recupero a fine giro, suono nel rumore della sala, "Termina" e riepilogo.
-- **Telefoni:** checklist di `docs/restyling/WEB-PUSH.md` su iPhone (installata e in Safari: wake lock, audio, nessuna vibrazione) e Android.
-
-## Step 8 in dettaglio: storico e progressi
-
-- Storie: US-27, US-28, US-29. Brief: `route-history` (`/history`, `/session?id=`, `/exercise?id=`).
-- **Esistente:** `/history` è un segnaposto con stato vuoto; il calendario apre già il foglio del giorno con gli allenamenti; il riepilogo (`SessionSummary`) e `workoutSummary`/`loadRecords` in `src/lib/archive/workout.ts` calcolano durata, volume e record di carico; `ExerciseDetailsSheet` mostra l'ultima volta di un esercizio; nome e data della sessione si modificano già in corso (US-27).
-- **Da fare:** elenco per data (più sessioni nello stesso giorno, US-20), dettaglio con le stesse righe serie (riusare `WorkoutExercise`/`SetRow` dove possibile, ma una sessione conclusa non avvia il timer: `restTimer().afterCheck` va chiamato solo per la sessione in corso), eliminazione con conferma e "Annulla", "Riapri"; calcoli puri dei progressi (carico massimo, 1RM Epley, volume) con Vitest; grafici in SVG a mano (skill dataviz); record nella riga serie e nel riepilogo (US-29, già per il carico).
-- **Varianti e riscaldamento:** i progressi sono per esercizio fatto (variante); le serie di riscaldamento non contano.
+Vedi «Step 9» e «Rilascio» in PIANO.md. Da ricordare: la prova sull'app installata è su Android (nessun iPhone disponibile), quindi i punti iOS della checklist di `docs/restyling/WEB-PUSH.md` restano non verificati; `readPocKey` (lettura diretta del PoC) è da togliere secondo la raccomandazione in «Da non dimenticare».
 
 ## Insidie dell'ambiente (container cloud)
 
