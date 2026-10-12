@@ -122,6 +122,29 @@
     </div>
   </section>
 
+  <section aria-labelledby="s-guide" class="flex flex-col gap-3">
+    <h2 id="s-guide" class="section-title">Come funziona</h2>
+    <ol class="m-0 max-w-[56ch] list-decimal space-y-2 pl-5">
+      <li>
+        <strong>Schede:</strong> in Schede prepari gli allenamenti tipo: esercizi, serie, ripetizioni, carichi e recupero. Due esercizi collegati
+        formano una superserie.
+      </li>
+      <li>
+        <strong>Calendario:</strong> tocca un giorno per assegnargli una scheda, iniziare l’allenamento di oggi o registrarne uno già fatto. La
+        settimana tipo, in fondo, vale per tutte le settimane.
+      </li>
+      <li><strong>Oggi:</strong> propone la scheda del giorno; «Inizia allenamento» e si parte.</li>
+      <li>
+        <strong>Durante l’allenamento:</strong> ogni riga mostra il precedente, cioè cosa hai fatto la volta scorsa. La spunta conferma la serie (se
+        ripeti quei valori basta la spunta) e fa partire il recupero.
+      </li>
+      <li><strong>Macchina occupata:</strong> tocca «Cambia esercizio» e scegli quello che fai al posto del previsto: i suoi carichi restano separati.</li>
+      <li>
+        <strong>I tuoi dati restano su questo telefono:</strong> nessun account, nessun server. Ogni tanto esporta un backup da Dati e privacy.
+      </li>
+    </ol>
+  </section>
+
   <DataSection {notify} />
 
   <InstallSection />

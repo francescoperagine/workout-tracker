@@ -34,6 +34,21 @@ test('US-24 suono e vibrazione si spengono e restano spenti, con il limite degli
   await expect(page.getByRole('switch', { name: 'Vibrazione a fine recupero' })).not.toBeChecked();
 });
 
+test('US-21 Impostazioni mostra la guida «Come funziona» con 6 punti', async ({ page }) => {
+  await seedArchive(page, archiveWith());
+  await page.goto('settings/');
+  const guide = page.getByRole('heading', { name: 'Come funziona', level: 2 });
+  await expect(guide).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dati e privacy', level: 2 })).toBeVisible();
+  // la guida sta prima di Dati e privacy
+  const headings = await page.locator('h2').allTextContents();
+  expect(headings.indexOf('Come funziona')).toBeLessThan(headings.indexOf('Dati e privacy'));
+  const points = page.getByRole('region', { name: 'Come funziona' }).getByRole('listitem');
+  await expect(points).toHaveCount(6);
+  await expect(points.first()).toContainText('Schede:');
+  await expect(points.last()).toContainText('I tuoi dati restano su questo telefono:');
+});
+
 test('US-24 senza vibrazione nel browser l’interruttore è disattivato e lo dice', async ({ page }) => {
   await page.addInitScript(() => {
     // come Safari su iPhone: niente navigator.vibrate

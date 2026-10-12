@@ -1,10 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 // Componenti del design system su /kit. I test delle storie vere arrivano con le pagine (step 3–7).
 
+// /kit ha molte isole: un clic prima dell'idratazione cade sull'HTML statico e non fa nulla
+async function hydrated(button: Locator) {
+  await expect(button.locator('xpath=ancestor::astro-island[1]')).not.toHaveAttribute('ssr');
+  return button;
+}
+
 test('/kit: la spunta su una riga vuota conferma il precedente e apre il recupero', async ({ page }) => {
   await page.goto('kit/');
-  await page.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
+  await (await hydrated(page.getByRole('button', { name: 'Segna serie 2 come fatta' }))).click();
   await expect(page.getByRole('textbox', { name: 'Peso serie 2, kg' })).toHaveValue('40');
   await expect(page.getByRole('textbox', { name: 'Ripetizioni serie 2' })).toHaveValue('7');
   const timer = page.locator('dialog[open]');
@@ -15,7 +21,7 @@ test('/kit: la spunta su una riga vuota conferma il precedente e apre il recuper
 
 test('/kit: la variante si può scrivere a mano al posto di quella prevista', async ({ page }) => {
   await page.goto('kit/');
-  await page.getByRole('button', { name: 'Cambia variante' }).click();
+  await (await hydrated(page.getByRole('button', { name: 'Cambia variante' }))).click();
   const sheet = page.locator('dialog[open]');
   const useButton = sheet.getByRole('button', { name: 'Usa questa variante' });
   await sheet.getByRole('radio', { name: 'Altro esercizio…' }).check();

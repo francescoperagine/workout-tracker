@@ -23,6 +23,17 @@ export function weekDates(key: string): string[] {
   return WEEKDAYS.map((_, i) => addDays(monday, i));
 }
 
+/** I 7 giorni di una finestra che parte da `start` (vista settimana del calendario: oggi e i 6 giorni dopo) */
+export function windowDates(start: string): string[] {
+  return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+}
+
+/** Inizio della finestra al caricamento: oggi, a meno che la data richiesta cada fuori da oggi + 6 giorni */
+export function windowStartFor(requested: string | null, today: string): string {
+  if (!requested || !isValidDateKey(requested) || (requested >= today && requested <= addDays(today, 6))) return today;
+  return requested;
+}
+
 /** Primo giorno del mese della data */
 export function monthStart(key: string): string {
   return `${key.slice(0, 7)}-01`;

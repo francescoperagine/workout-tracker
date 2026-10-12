@@ -110,7 +110,7 @@ src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo
 src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento
 src/components/shell/RestTimerHost.svelte  timer di recupero nel guscio (transition:persist): finestra a tutto schermo su ogni pagina, annunci alle soglie, wake lock
 src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
-src/components/settings/  SettingsPage (tema, unità, allenamento), DataSection (Dati e privacy), InstallSection (app sul telefono)
+src/components/settings/  SettingsPage (tema, unità, allenamento, guida «Come funziona»), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
 src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
 src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione)
@@ -142,6 +142,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 | `workout-tracker.theme` | `light` \| `dark` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/theme.ts`) |
 | `workout-tracker.lastBackup` | timestamp in ms | Ultimo backup esportato da questo browser (`src/lib/device.ts`), mostrato in Dati e privacy |
 | `workout-tracker.restTimer` | `RestTimerState` di `src/lib/rest-timer.ts` (sessione, voce, serie, `start`, `end`, `duration`, `warmup`, `minimized`, `alerted`) | Il recupero in corso, fuori dall'archivio perché cambia spesso. Assente = nessun recupero. Si legge e si scrive solo con `restTimer()` |
+| `workout-tracker.calendarHint` | `"seen"` | Suggerimento del calendario già visto su questo dispositivo, fuori dall'archivio. Assente = il suggerimento si vede. Letture e scritture in try/catch: se lo storage non risponde il suggerimento si vede |
 
 - **Archivio v2:**
   - le modifiche passano da `repo.update(a => newArchive)` (o `archiveStore().update`) con funzioni pure che non mutano l'argomento; il repository incrementa `revision`, salva e notifica (`subscribe`, con `origin`: `edit`, `external`, `reload`, `import`). Con stato `unreadable` o `conflict` non scrive nulla;

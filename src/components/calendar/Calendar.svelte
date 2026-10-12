@@ -2,9 +2,11 @@
   // Calendario (/calendar, brief route-calendar): settimana scorrevole come vista principale, una riga
   // per giorno con scheda e stato (US-05); mese compatto con i segni dei giorni; settimana tipo in
   // linea (US-04); un tocco su un giorno apre il suo foglio, con gli allenamenti e l'eccezione per
-  // quella sola data (US-06). `?date=YYYY-MM-DD` apre la settimana e il foglio di quel giorno
-  // (striscia di Oggi); `#week-plan` porta alla settimana tipo.
+  // quella sola data (US-06). La settimana è la finestra di 7 giorni che parte da oggi. `?date=YYYY-MM-DD`
+  // apre il foglio di quel giorno (striscia di Oggi), spostando la finestra solo se cade fuori; `#week-plan`
+  // porta alla settimana tipo.
   import { onMount, tick } from 'svelte';
+  import { navigate } from 'astro:transitions/client';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
@@ -19,6 +21,7 @@
     activeRoutines,
     addDays,
     addMonths,
+    createRoutine,
     dayInfo,
     firstSessionDate,
     hasWeeklyPlan,
@@ -28,9 +31,9 @@
     setWeeklyDay,
     staleWeeklyDays,
     toDateKey,
-    weekDates,
-    weekStart,
     weeklyValue,
+    windowDates,
+    windowStartFor,
     type Archive,
     type DayInfo,
     type Weekday,
@@ -50,19 +53,31 @@
   const params = new URLSearchParams(location.search);
   const requested = params.get('date');
   const initial = requested && isValidDateKey(requested) ? requested : today;
+  const HINT_KEY = 'workout-tracker.calendarHint';
+  const FIRST_HINT = (() => {
+    try {
+      return localStorage.getItem(HINT_KEY) !== 'seen';
+    } catch {
+      return true;
+    }
+  })();
 
   let view: 'week' | 'month' = $state(params.get('view') === 'month' ? 'month' : 'week');
   let anchor = $state(initial);
+  // inizio della finestra di 7 giorni della vista settimana
+  let windowStart = $state(windowStartFor(requested, today));
+  let showHint = $state(FIRST_HINT);
 
   // limiti: dall'inizio dello storico a qualche settimana nel futuro
-  const earliest = $derived(weekStart([firstSessionDate(store.archive) ?? today, today, initial].sort()[0]));
-  const latest = $derived(addDays(weekStart(today), FUTURE_WEEKS * 7));
+  const earliest = $derived([firstSessionDate(store.archive) ?? today, today, initial].sort()[0]);
+  const latest = $derived(addDays(today, FUTURE_WEEKS * 7));
 
-  const week = $derived(weekDates(anchor).map((date) => dayInfo(store.archive, date, today)));
+  const week = $derived(windowDates(windowStart).map((date) => dayInfo(store.archive, date, today)));
   const month = $derived(monthWeeks(anchor).map((dates) => dates.map((date) => dayInfo(store.archive, date, today))));
   const routines = $derived(activeRoutines(store.archive));
   const stale = $derived(staleWeeklyDays(store.archive));
   const planned = $derived(hasWeeklyPlan(store.archive));
+  const noRoutines = $derived(routines.length === 0);
 
   let sheetOpen = $state(false);
   let sheetDate: string | null = $state(null);
@@ -89,12 +104,30 @@
   }
 
   function openDay(date: string) {
+    if (showHint) {
+      showHint = false;
+      try {
+        localStorage.setItem(HINT_KEY, 'seen');
+      } catch {
+        // storage non disponibile: il suggerimento tornerà
+      }
+    }
     sheetDate = date;
     sheetOpen = true;
   }
 
   function moveWeek(direction: -1 | 1) {
-    anchor = addDays(weekStart(anchor), direction * 7);
+    windowStart = addDays(windowStart, direction * 7);
+  }
+
+  function createFirst() {
+    let id = '';
+    const ok = edit((a) => {
+      const result = createRoutine(a);
+      id = result.routine.id;
+      return result.archive;
+    });
+    if (ok) void navigate(appUrl(`/routine?id=${encodeURIComponent(id)}`));
   }
 
   function moveMonth(direction: -1 | 1) {
@@ -133,15 +166,7 @@
   }
 
   const weekTitle = $derived(formatWeekRange(week[0].date, week[6].date, today));
-  const weekWhen = $derived.by(() => {
-    const monday = weekStart(anchor);
-    const current = weekStart(today);
-    if (monday === current) return 'Questa settimana';
-    if (monday === addDays(current, -7)) return 'Settimana scorsa';
-    if (monday === addDays(current, 7)) return 'Settimana prossima';
-    return '';
-  });
-  const isCurrentWeek = $derived(weekStart(anchor) === weekStart(today));
+  const isCurrentWeek = $derived(windowStart === today);
   const isCurrentMonth = $derived(monthStart(anchor) === monthStart(today));
 </script>
 
@@ -164,7 +189,12 @@
       bind:value={view}
     />
 
-    {#if !planned}
+    {#if noRoutines}
+      <div class="panel flex flex-col items-start gap-3">
+        <p class="m-0 font-bold">Per pianificare serve una scheda.</p>
+        <button type="button" class="btn btn-primary" onclick={createFirst}>Crea scheda</button>
+      </div>
+    {:else if !planned}
       <p class="notice">
         Nessun giorno ha ancora una scheda. <a href="#week-plan">Assegna le schede ai giorni</a> nella settimana tipo, qui sotto.
       </p>
@@ -173,19 +203,22 @@
     {#if view === 'week'}
       <section aria-labelledby="week-title" class="period">
         <div class="period-nav">
-          <button type="button" class="btn btn-icon" aria-label="Settimana precedente" disabled={weekStart(anchor) <= earliest} onclick={() => moveWeek(-1)}>
+          <button type="button" class="btn btn-icon" aria-label="Settimana precedente" disabled={addDays(windowStart, -1) < earliest} onclick={() => moveWeek(-1)}>
             <ChevronLeft size={22} aria-hidden="true" />
           </button>
           <div class="period-title">
             <h2 id="week-title" aria-live="polite">{weekTitle}</h2>
-            {#if weekWhen}<p class="period-when">{weekWhen}</p>{/if}
+            {#if isCurrentWeek}<p class="period-when">Prossimi 7 giorni</p>{/if}
           </div>
-          <button type="button" class="btn btn-icon" aria-label="Settimana successiva" disabled={weekStart(anchor) >= latest} onclick={() => moveWeek(1)}>
+          <button type="button" class="btn btn-icon" aria-label="Settimana successiva" disabled={addDays(windowStart, 7) > latest} onclick={() => moveWeek(1)}>
             <ChevronRight size={22} aria-hidden="true" />
           </button>
         </div>
         {#if !isCurrentWeek}
-          <button type="button" class="btn btn-text self-center" onclick={() => (anchor = today)}>Torna a questa settimana</button>
+          <button type="button" class="btn btn-text self-center" onclick={() => (windowStart = today)}>Torna a oggi</button>
+        {/if}
+        {#if showHint}
+          <p class="hint m-0">Tocca un giorno per pianificarlo, iniziare l’allenamento o registrarne uno fatto.</p>
         {/if}
 
         <ul class="days">

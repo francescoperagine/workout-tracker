@@ -24,6 +24,7 @@
     ensureExercise,
     exerciseName,
     findRoutine,
+    isValidDateKey,
     linkedToPrevious,
     moveEntry,
     moveKind,
@@ -40,7 +41,10 @@
   import { appUrl } from '../../lib/paths';
 
   const store = archiveStore();
-  const routineId = new URLSearchParams(location.search).get('id') ?? '';
+  const urlParams = new URLSearchParams(location.search);
+  const routineId = urlParams.get('id') ?? '';
+  // arrivati dal foglio di un giorno: si torna al calendario con quel foglio aperto
+  const fromDate = isValidDateKey(urlParams.get('date') ?? '') ? urlParams.get('date') : null;
   const routine = $derived(findRoutine(store.archive, routineId));
   const exercises = $derived(routine?.exercises ?? []);
   const labels = $derived(orderLabels(exercises));
@@ -193,7 +197,7 @@
   </div>
 {:else}
   <div class="flex flex-col gap-6">
-    <a href={appUrl('/routines')} class="btn btn-text back"><ChevronLeft aria-hidden="true" />Tutte le schede</a>
+    <a href={fromDate ? appUrl(`/calendar?date=${fromDate}`) : appUrl('/routines')} class="btn btn-text back"><ChevronLeft aria-hidden="true" />{fromDate ? 'Torna al calendario' : 'Tutte le schede'}</a>
 
     {#if routine.archived}
       <div class="flex flex-col items-start gap-3">

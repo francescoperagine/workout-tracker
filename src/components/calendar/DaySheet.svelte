@@ -1,13 +1,19 @@
 <script lang="ts">
   // Foglio di un giorno del calendario: gli allenamenti di quella data (US-05) e cosa prevede, con
   // l'eccezione per quella sola data (US-06): come la settimana tipo, riposo o un'altra scheda.
-  // Ogni scelta si salva subito; la settimana tipo si cambia nella sezione della pagina.
+  // Oggi si avvia l'allenamento, in un giorno passato se ne registra uno fatto, da oggi in poi si crea una
+  // scheda nuova e la si assegna alla data. Ogni scelta si salva subito; la settimana tipo si cambia nella sezione della pagina.
+  import { navigate } from 'astro:transitions/client';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import {
     activeRoutines,
+    createRoutine,
     dayInfo,
     overrideValue,
+    sessionInProgress,
     setDateOverride,
+    setSessionDate,
+    startSession,
     summarizeSession,
     weeklyValue,
     type Archive,
@@ -66,6 +72,46 @@
     edit((a) => setDateOverride(a, d, value === RULE ? undefined : value === REST ? null : value));
   }
 
+  const running = $derived(sessionInProgress(archive));
+  const plannedRoutine = $derived(day?.plan.kind === 'routine' ? day.plan.routine : null);
+
+  function go(change: (archive: Archive) => Archive, path: string) {
+    if (edit(change)) {
+      open = false;
+      void navigate(appUrl(path));
+    }
+  }
+
+  function begin() {
+    const routineId = plannedRoutine?.id ?? null;
+    go((a) => startSession(a, routineId, Date.now()).archive, '/workout');
+  }
+
+  function record() {
+    if (!date) return;
+    const d = date;
+    const routineId = plannedRoutine?.id ?? null;
+    go((a) => {
+      const result = startSession(a, routineId, Date.now());
+      return setSessionDate(result.archive, result.session.id, d);
+    }, '/workout');
+  }
+
+  function createForDate() {
+    if (!date) return;
+    const d = date;
+    let id = '';
+    const ok = edit((a) => {
+      const result = createRoutine(a);
+      id = result.routine.id;
+      return setDateOverride(result.archive, d, id);
+    });
+    if (ok) {
+      open = false;
+      void navigate(appUrl(`/routine?id=${encodeURIComponent(id)}&date=${d}`));
+    }
+  }
+
   const title = $derived.by(() => {
     if (!day) return '';
     const text = `${formatLongDay(day.date, today)}${day.isToday ? ', oggi' : ''}`;
@@ -77,6 +123,16 @@
   {#if day}
     {@const look = STATUS_LOOK[day.status]}
     <div class="content">
+      {#if running}
+        <a class="btn btn-primary" href={appUrl('/workout')}>Riprendi l’allenamento in corso</a>
+      {:else if day.isToday}
+        <button type="button" class="btn btn-primary btn-wrap" onclick={begin}>
+          {plannedRoutine ? `Inizia «${plannedRoutine.name}»` : 'Inizia allenamento libero'}
+        </button>
+      {:else if day.isPast}
+        <button type="button" class="btn btn-secondary btn-wrap" onclick={record}>Registra un allenamento fatto</button>
+      {/if}
+
       {#if day.sessions.length}
         <section aria-label="Allenamenti">
           <ul class="sessions">
@@ -132,6 +188,9 @@
             <span>{staleOverride.label}</span>
           </label>
         {/if}
+        {#if !day.isPast}
+          <button type="button" class="btn btn-text self-start" onclick={createForDate}>+ Nuova scheda</button>
+        {/if}
       </fieldset>
 
       <button type="button" class="btn btn-text self-start" onclick={() => oneditweek(day.weekday)}>Cambia la settimana tipo</button>
@@ -174,6 +233,11 @@
   }
   .session .meta {
     flex: 1;
+  }
+  .btn-wrap {
+    padding-block: 0.5rem;
+    text-align: center;
+    overflow-wrap: anywhere;
   }
   .resume {
     min-width: 8rem;

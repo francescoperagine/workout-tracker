@@ -11,6 +11,8 @@ import {
   staleWeeklyDays,
   weekDates,
   weekStart,
+  windowDates,
+  windowStartFor,
 } from './calendar';
 import { fromDateKey } from './dates';
 import { planFor } from './routines';
@@ -145,5 +147,19 @@ describe('US-06 eccezione per una sola data', () => {
   it('rifiuta date non valide e schede archiviate', () => {
     expect(() => setDateOverride(base, '2026-02-30', 'a')).toThrow(ArchiveError);
     expect(() => setDateOverride({ ...base, routines: [routine('a', true)] }, '2026-10-08', 'a')).toThrow(ArchiveError);
+  });
+});
+
+describe('finestra di 7 giorni', () => {
+  it('parte dal giorno indicato e attraversa i mesi', () => {
+    expect(windowDates('2026-10-29')).toEqual(['2026-10-29', '2026-10-30', '2026-10-31', '2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04']);
+  });
+
+  it('resta su oggi se la data è nei 7 giorni di partenza, altrimenti comincia da quella data', () => {
+    expect(windowStartFor(null, '2026-10-08')).toBe('2026-10-08');
+    expect(windowStartFor('2026-10-14', '2026-10-08')).toBe('2026-10-08');
+    expect(windowStartFor('2026-10-15', '2026-10-08')).toBe('2026-10-15');
+    expect(windowStartFor('2026-10-07', '2026-10-08')).toBe('2026-10-07');
+    expect(windowStartFor('2026-02-30', '2026-10-08')).toBe('2026-10-08');
   });
 });
