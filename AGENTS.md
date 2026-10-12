@@ -39,15 +39,17 @@ Non ci sono linter né formatter configurati. Per verificare una modifica: `npm 
 
 ## Pubblicazione
 
-- Worker Cloudflare separato `workout-tracker`, collegato a questo repository GitHub: ramo di produzione `main`, build `npm run build`, output `dist`, build dei rami diversi da `main` disattivate.
+- Worker Cloudflare separato `workout-tracker`, solo asset statici, configurato in `wrangler.jsonc` (asset in `dist`, dominio personalizzato, `workers.dev` attivo). Deploy: `npm run build && npx wrangler deploy` (wrangler è già autenticato sul Mac di Francesco).
+- **Workers Builds non è ancora collegato al repository** (nessun push ha mai avviato una build: il 12 ottobre 2026 online c'era ancora il deploy manuale dell'11). Finché non lo si collega dalla dashboard (Worker `workout-tracker` → Settings → Build: repository `francescoperagine/workout-tracker`, ramo `main`, build `npm run build`, deploy `npx wrangler deploy`), dopo ogni push su `main` si fa il deploy a mano.
 - **Ogni push su `main` va in produzione.** Si lavora solo su `main`, mai su rami `claude/...`; si pusha solo con i controlli dello step verdi.
-- Fino alla fine del restyling l'app vive solo su `https://workout-tracker.francescoperagine.workers.dev` (non elencata, pagine `noindex`), per installarla sul telefono e fare le prove in palestra. Al rilascio (fine step 9) si collega `workout-tracker.francescoperagine.com` e il sito personale la elenca in Projects.
+- L'app è su `https://workout-tracker.francescoperagine.com` (dominio collegato il 12 ottobre 2026) e su `https://workout-tracker.francescoperagine.workers.dev`; le pagine restano `noindex`, il sito personale la elenca in Projects.
 - I dati del browser sono per origine: al passaggio di dominio si esporta un backup su `workers.dev` e lo si importa sul dominio nuovo.
 - `/kit` (pagina interna del design system) non è nella build pubblicata: `src/pages/_kit.astro` è ignorata dal routing di Astro e la piccola integrazione `kitPage` di `astro.config.mjs` la inietta come `/kit` solo con `npm run dev` o con `WT_KIT=1` (build dei test e2e).
 
 ## Struttura dell'app Astro
 
 ```
+wrangler.jsonc          Worker Cloudflare: asset di dist/, dominio personalizzato, workers.dev
 astro.config.mjs        site e base da WT_SITE e WT_BASE (default: https://workout-tracker.francescoperagine.com, /), output statico, Svelte, Tailwind, integrazione del service worker, /kit solo in dev o con WT_KIT=1
 svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts

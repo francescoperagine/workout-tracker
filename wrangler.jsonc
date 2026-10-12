@@ -1,0 +1,16 @@
+// Worker Cloudflare dell'app: solo asset statici (dist/ di npm run build), nessun codice server.
+{
+  "name": "workout-tracker",
+  "compatibility_date": "2026-10-06",
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "assets": {
+    "directory": "./dist"
+  },
+  "routes": [
+    { "pattern": "workout-tracker.francescoperagine.com", "custom_domain": true }
+  ],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  }
+}

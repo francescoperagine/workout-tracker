@@ -38,7 +38,7 @@ Struttura, convenzioni e decisioni sono in [AGENTS.md](AGENTS.md); prodotto e de
 
 ## Pubblicazione
 
-Worker Cloudflare `workout-tracker` (Workers Builds) collegato a questo repository: ramo di produzione `main`, comando `npm run build`, output `dist`. **Ogni push su `main` va in produzione**, quindi si pusha solo con check, test, build ed e2e verdi.
+Worker Cloudflare `workout-tracker`, solo asset statici, configurato in [wrangler.jsonc](wrangler.jsonc): `https://workout-tracker.francescoperagine.com` (e `workers.dev`). Deploy con `npm run build && npx wrangler deploy`, solo con check, test, build ed e2e verdi. Quando Workers Builds sarà collegato al repository (ramo `main`, build `npm run build`, deploy `npx wrangler deploy`), ogni push su `main` andrà in produzione da solo.
 
 ## Catalogo esercizi e approfondimenti
 

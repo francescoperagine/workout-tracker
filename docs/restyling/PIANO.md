@@ -395,10 +395,10 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 
 Dopo la chiusura dello step 9:
 
-- [x] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`. Fatto il 12 ottobre 2026 (dominio personalizzato del Worker, record DNS e certificato creati da Cloudflare).
+- [x] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`. Fatto il 12 ottobre 2026: dominio personalizzato del Worker (record DNS e certificato creati da Cloudflare), fissato in `wrangler.jsonc`. Online c'era ancora il deploy manuale dell'11 ottobre (Workers Builds non è collegato al repository): step 8 e 9 pubblicati con `npx wrangler deploy`.
 - [ ] 2. Esporta il backup su `workout-tracker.francescoperagine.workers.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
 - [ ] 3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria: azione nuova che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco. Segue le regole di quel repo.
-- [ ] 4. Da lì in poi ogni push su `main` è online.
+- [ ] 4. Da lì in poi ogni push su `main` è online: serve collegare Workers Builds al repository dalla dashboard (vedi «Pubblicazione» in `AGENTS.md`); fino ad allora deploy a mano con `npx wrangler deploy`.
 
 ## Rischi e punti da verificare
 

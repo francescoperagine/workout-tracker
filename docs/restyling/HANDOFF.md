@@ -27,10 +27,10 @@ Tutto è su `main`. Dettagli nello «Stato» dello step 9 in PIANO.md; struttura
 
 ## Rilascio (da PIANO.md)
 
-1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`.
+1. ~~Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`.~~ Fatto il 12 ottobre 2026 (`wrangler.jsonc`), con il deploy manuale degli step 8 e 9.
 2. Esporta il backup su `workout-tracker.francescoperagine.workers.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
 3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria (azione che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco), seguendo le regole di quel repo.
-4. Da lì in poi ogni push su `main` è online.
+4. Da lì in poi ogni push su `main` è online, **dopo aver collegato Workers Builds al repository** dalla dashboard (vedi «Pubblicazione» in `AGENTS.md`); fino ad allora `npm run build && npx wrangler deploy`.
 
 Dopo il rilascio le pagine sono ancora `noindex` (decisione 12: la reperibilità viene dalla pagina Projects). I rami `claude/jolly-hawking-9tb1t4` e `claude/stoic-knuth-xd0bx6`, se esistono ancora, si cancellano in locale (`git push origin --delete …`) o da GitHub.
 
