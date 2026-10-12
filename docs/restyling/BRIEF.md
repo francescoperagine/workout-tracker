@@ -44,7 +44,7 @@ I flussi vengono prima delle pagine: ogni passaggio qui sotto deve funzionare a 
 ### Flusso 3. Macchina occupata (US-14, 08)
 
 1. Nell'esercizio corrente, il selettore variante (foglio dal basso) mostra le alternative della scheda ("Leg press", "Squat al Smith", "Goblet squat") e "Altro esercizio…": un campo di testo per scrivere a mano l'esercizio fatto, con i nomi simili del catalogo come suggerimento.
-2. Se ci sono già valori inseriti: conferma, poi le serie si svuotano (come nel PoC).
+2. Se ci sono già valori inseriti: dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla».
 3. "Precedente" e record diventano quelli della variante scelta; un nome scritto a mano diventa un esercizio personalizzato del catalogo. La scheda non cambia.
 
 ### Flusso 4. Primo avvio (US-01, 11)

@@ -1,4 +1,4 @@
-// Catalogo di base, convertito una volta da BodyTracker/palestra/esercizi.js (step 2).
+// Catalogo di base, convertito una volta dal catalogo del PoC (step 2; il PoC è nella cronologia git).
 // Gli ID NON vanno cambiati né rimossi: lo storico dell'utente e i backup del PoC li usano
 // (sono dati, per questo restano in italiano). I campi seguono il modello v2, in inglese.
 // Gli approfondimenti sono vuoti di proposito: non vanno inventati testi tecnici o consigli medici.

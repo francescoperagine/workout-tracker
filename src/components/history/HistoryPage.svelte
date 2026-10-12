@@ -49,7 +49,7 @@
         group = { key, title: title.charAt(0).toUpperCase() + title.slice(1), rows: [] };
         groups.push(group);
       }
-      group.rows.push({ session, meta, records: sessionRecords(store.archive, session).length });
+      group.rows.push({ session, meta, records: new Set(sessionRecords(store.archive, session).map((r) => r.exerciseId)).size });
     }
     return groups;
   });
@@ -85,13 +85,17 @@
 
     {#if view === 'sessions'}
       {#if running}
-        <div class="panel flex flex-col items-start gap-3">
-          <div>
-            <p class="m-0 text-lg font-bold [overflow-wrap:anywhere]">{running.name}</p>
-            <p class="m-0 text-sm text-muted">{startedLine}</p>
-          </div>
-          <a href={appUrl('/workout')} class="btn btn-primary">Riprendi</a>
-        </div>
+        <!-- una riga come le altre, non un secondo "Riprendi": quello è nella mini-barra (step 9) -->
+        <section class="flex flex-col gap-1">
+          <h2 class="m-0 text-xl leading-snug font-bold">In corso</h2>
+          <a href={appUrl('/workout')} class="row border-b border-line">
+            <span class="min-w-0 flex-1">
+              <span class="block text-lg font-bold [overflow-wrap:anywhere]">{running.name}</span>
+              <span class="block text-sm text-muted">{startedLine}</span>
+            </span>
+            <ChevronRight size={20} class="shrink-0 text-muted" aria-hidden="true" />
+          </a>
+        </section>
       {/if}
 
       {#if months.length}
@@ -108,7 +112,7 @@
                         {row.meta}
                         {#if row.records}
                           · <Trophy size={16} class="inline align-text-bottom text-accent-text" aria-hidden="true" />
-                          {row.records === 1 ? 'Record' : `${row.records} record`}
+                          {row.records === 1 ? 'Record' : `Record in ${row.records} esercizi`}
                         {/if}
                       </span>
                     </span>

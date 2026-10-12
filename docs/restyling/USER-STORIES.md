@@ -95,7 +95,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Tocco sul numero della serie per cambiare tipo; il riscaldamento non conta per volume, record e grafici.
 
 **US-14 (M, step 6).** Come utente, voglio passare a una variante quando la macchina è occupata, mantenendo i carichi di ciascuna variante separati.
-- Se ci sono già valori: conferma e svuotamento delle serie, come nel PoC. "Precedente" si riferisce alla variante scelta.
+- Fino allo step 8, come nel PoC, conferma e svuotamento delle serie; dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla». "Precedente" si riferisce alla variante scelta.
 - Oltre alle alternative della scheda, il selettore ha **"Altro esercizio…"** con un campo di testo, per scrivere a mano l'esercizio fatto al posto di quello previsto. Mentre si scrive compaiono i nomi simili del catalogo; un nome nuovo diventa un esercizio personalizzato del catalogo, così la volta dopo ha il suo "precedente" e il suo storico.
 - La sostituzione vale solo per la sessione: la scheda non cambia.
 

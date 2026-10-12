@@ -1,5 +1,5 @@
-// Schede A/B del PoC (window.schedeIniziali di BodyTracker/palestra/esercizi.js), convertite una volta
-// nel modello v2 con src/lib/archive/conversion.ts (step 2): recuperi in secondi (per un intervallo
+// Schede A/B del PoC (window.schedeIniziali, nella cronologia git), convertite una volta
+// nel modello v2 (step 2): recuperi in secondi (per un intervallo
 // il minimo), carichi divisi in loadMin, loadMax e loadNote, superserie da "2a"/"2b".
 // Il PoC non indica il numero di serie né il recupero di riscaldamento: valgono i predefiniti della
 // conversione (3 serie, 60 s), modificabili nella scheda. Gli ID di schede e voci restano stabili.

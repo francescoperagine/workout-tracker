@@ -5,7 +5,7 @@
 web
 
 ## Stack
-Confermato: app **Astro 7** statica nella radice del repository, con isole **Svelte 5** per le parti con stato (allenamento attivo, timer, editor delle schede, grafici), **Tailwind CSS 4** con token in `@theme`, PWA con service worker generato da `workbox-build`. Test con Vitest (logica) e Playwright (flussi). Codice in TypeScript; testi dell'interfaccia in italiano. Il PoC statico in `BodyTracker/` è la specifica delle funzioni da assorbire e verrà eliminato a fine restyling.
+Confermato: app **Astro 7** statica nella radice del repository, con isole **Svelte 5** per le parti con stato (allenamento attivo, timer, editor delle schede, grafici), **Tailwind CSS 4** con token in `@theme`, PWA con service worker generato da `workbox-build`. Test con Vitest (logica) e Playwright (flussi). Codice in TypeScript; testi dell'interfaccia in italiano. Il PoC statico che ne era la specifica è stato assorbito ed eliminato allo step 9 (resta nella cronologia git).
 
 ## Users
 - **Primario:** il proprietario del sito, in palestra, con il telefono in mano **tra una serie e l'altra** (60–120 s di recupero), spesso in piedi, con una mano libera e le mani sudate o con magnesite. Segue schede proprie (oggi A/B, con varianti per le macchine occupate). Vuole sapere cosa fare adesso, cosa ha fatto la volta scorsa, registrare senza pensarci e vedere se progredisce.
@@ -36,10 +36,10 @@ Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il
 - **Lessico:** "scheda", "serie", "ripetizioni", "recupero", "riscaldamento", "variante", "superserie", "precedente", "carico". Interfaccia solo in italiano.
 
 ## Brand Commitments
-Nome **Workout Tracker** (breve **Workout**, il nome sotto l'icona nella schermata Home). Il nome «BodyTracker» è usato da molte app che tracciano le misure del corpo (peso, circonferenze, BMI), non un diario di allenamento; «Workout Tracker» dice cosa fa l'app ed è lo stesso del repository. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: il guscio resta verde scuro in entrambi, il font è Atkinson Hyperlegible Next, la mossa distintiva è il timer a livello che si svuota. I dettagli visivi sono in `DESIGN.md`.
+Nome **Workout Tracker** (breve **Workout**, il nome sotto l'icona nella schermata Home). Il nome del PoC («Body…», da cui il formato `bodytracker.archivio.v1`) è usato da molte app che tracciano le misure del corpo (peso, circonferenze, BMI), non un diario di allenamento; «Workout Tracker» dice cosa fa l'app ed è lo stesso del repository. Interfaccia in italiano. UX e grafica progettate con Impeccable. Il mondo visivo è quello del PoC (verde, operativo), esteso a un tema chiaro e uno scuro con scelta Sistema/Chiaro/Scuro: il guscio resta verde scuro in entrambi, il font è Atkinson Hyperlegible Next, la mossa distintiva è il timer a livello che si svuota. I dettagli visivi sono in `DESIGN.md`.
 
 ## Evidence on Hand
-- Schede reali A/B e catalogo esercizi con ID stabili in `BodyTracker/palestra/esercizi.js` (`window.schedeIniziali`, `window.catalogoEsercizi`). Gli ID non vanno cambiati: lo storico dell'utente li usa.
+- Schede reali A/B e catalogo esercizi con ID stabili, convertiti dal PoC in `src/data/starter-routines.ts` e `src/data/catalog.ts`. Gli ID non vanno cambiati: lo storico dell'utente e i backup del PoC li usano.
 - Gli approfondimenti del catalogo sono **vuoti**: non ci sono descrizioni, immagini o fonti verificate. Non vanno inventati testi tecnici o consigli medici.
 - Nessun backup reale dell'utente è ancora disponibile per provare l'import del PoC; fino ad allora si usa un backup sintetico.
 - Ricerche su concorrenti (Strong, Hevy) e vincoli del timer sul web in `docs/restyling/ANALISI.md`; scena d'uso, principi e user story in `docs/restyling/USER-STORIES.md`.

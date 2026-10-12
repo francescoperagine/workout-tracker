@@ -12,6 +12,7 @@ import {
   moveSessionExercise,
   nextSet,
   nextSetType,
+  suggestedSets,
   plannedEntry,
   previousExercise,
   previousSets,
@@ -24,6 +25,7 @@ import {
   setNumbers,
   setSessionDate,
   switchExercise,
+  undoSwitch,
   updateSet,
   workoutSummary,
 } from './workout';
@@ -106,25 +108,58 @@ describe('US-13 tipi di serie', () => {
 });
 
 describe('US-14 varianti', () => {
-  it('passare a una variante svuota le serie e ricorda l’esercizio previsto; tornare indietro lo azzera', () => {
+  it('senza serie spuntate la variante cambia sul posto: le serie si svuotano e si ricorda l’esercizio previsto', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const first = session.exercises[0];
-    const logged = updateSet(archive, session.id, first.id, first.sets[0].id, { kg: 40, reps: 8, completedAt: NOW });
-    const switched = running(switchExercise(logged, session.id, first.id, 'leg-press')).exercises[0];
-    expect(switched).toMatchObject({ exerciseId: 'leg-press', variantOf: first.exerciseId });
+    const typed = updateSet(archive, session.id, first.id, first.sets[0].id, { kg: 40, reps: 8 });
+    const { archive: switchedArchive, added } = switchExercise(typed, session.id, first.id, 'leg-press');
+    expect(added).toBeNull();
+    const switched = running(switchedArchive).exercises[0];
+    expect(switched).toMatchObject({ id: first.id, exerciseId: 'leg-press', variantOf: first.exerciseId });
     expect(switched.sets).toHaveLength(first.sets.length);
     expect(switched.sets.every((s) => s.kg === null && s.reps === null && s.completedAt === null)).toBe(true);
 
-    const again = switchExercise(switchExercise(logged, session.id, first.id, 'leg-press'), session.id, first.id, 'goblet-squat');
+    const again = switchExercise(switchedArchive, session.id, first.id, 'goblet-squat').archive;
     expect(running(again).exercises[0]).toMatchObject({ exerciseId: 'goblet-squat', variantOf: first.exerciseId });
-    const back = switchExercise(again, session.id, first.id, first.exerciseId);
+    const back = switchExercise(again, session.id, first.id, first.exerciseId).archive;
     expect(running(back).exercises[0]).toMatchObject({ exerciseId: first.exerciseId, variantOf: null });
+  });
+
+  it('con serie già spuntate quelle restano all’esercizio fatto e la variante continua sotto; Annulla rimette tutto', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const first = session.exercises[0];
+    const done = updateSet(archive, session.id, first.id, first.sets[0].id, { kg: 40, reps: 8, completedAt: NOW });
+    const typed = updateSet(done, session.id, first.id, first.sets[1].id, { kg: 45 });
+    const { archive: split, added } = switchExercise(typed, session.id, first.id, 'leg-press');
+    const [kept, variant, third] = running(split).exercises;
+    expect(kept).toMatchObject({ id: first.id, exerciseId: first.exerciseId, variantOf: null });
+    expect(kept.sets.map((s) => [s.kg, s.reps])).toEqual([[40, 8]]);
+    expect(variant).toMatchObject({ id: added, exerciseId: 'leg-press', variantOf: first.exerciseId, notes: '' });
+    expect(variant.sets.map((s) => s.id)).toEqual(first.sets.slice(1).map((s) => s.id));
+    expect(variant.sets.every((s) => s.kg === null && s.completedAt === null)).toBe(true);
+    expect(third.id).toBe(session.exercises[1].id);
+    // la voce nuova ha gli stessi target della voce prevista, e le voci dopo restano le loro
+    const s = running(split);
+    expect(plannedEntry(split, s, variant)?.id).toBe(archive.routines[0].exercises[0].id);
+    expect(plannedEntry(split, s, third)?.id).toBe(archive.routines[0].exercises[1].id);
+
+    const undone = running(undoSwitch(split, session.id, running(typed).exercises[0], added));
+    expect(undone.exercises).toEqual(running(typed).exercises);
+  });
+
+  it('con tutte le serie spuntate la variante parte con una serie', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const first = session.exercises[0];
+    let a = archive;
+    for (const set of first.sets) a = updateSet(a, session.id, first.id, set.id, { kg: 40, reps: 8, completedAt: NOW });
+    const { archive: split } = switchExercise(a, session.id, first.id, 'leg-press');
+    expect(running(split).exercises[1].sets).toHaveLength(1);
   });
 
   it('i target restano quelli della voce prevista, anche dopo variante e riordino', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const [routineA] = archive.routines;
-    const switched = switchExercise(archive, session.id, session.exercises[0].id, 'leg-press');
+    const switched = switchExercise(archive, session.id, session.exercises[0].id, 'leg-press').archive;
     const moved = moveSessionExercise(switched, session.id, session.exercises[0].id, 1);
     const s = running(moved);
     const variant = s.exercises.find((e) => e.exerciseId === 'leg-press')!;
@@ -254,5 +289,18 @@ describe('US-19 approfondimento', () => {
     expect(safeImagePath('data:image/png;base64,iVBORw0KGgo=')).not.toBeNull();
     for (const bad of ['https://example.com/a.png', '//example.com/a.png', '../segreto.png', 'a.svg', 'data:image/svg+xml;base64,PHN2Zz4=', '/assoluto.png', 'javascript:alert(1)'])
       expect(safeImagePath(bad), bad).toBeNull();
+  });
+});
+
+describe('US-12 suggerimento della serie sopra', () => {
+  const s = (id: string, kg: number | null, reps: number | null, type: SetType = 'normal'): SessionSet => ({ id, type, kg, reps, completedAt: null });
+  it('il peso scritto sopra vale per le serie sotto dello stesso genere; le ripetizioni restano la volta scorsa', () => {
+    const previous = [{ kg: 20, reps: 10 }, { kg: 40, reps: 8 }, { kg: 40, reps: 7 }, null];
+    const sets = [s('w', null, null, 'warmup'), s('1', 42.5, null), s('2', null, null), s('3', null, null)];
+    expect(suggestedSets({ sets }, previous)).toEqual([{ kg: 20, reps: 10 }, { kg: 40, reps: 8 }, { kg: 42.5, reps: 7 }, { kg: 42.5, reps: null }]);
+    // senza niente scritto il suggerimento è il precedente
+    expect(suggestedSets({ sets: sets.map((x) => ({ ...x, kg: null })) }, previous)).toEqual(previous);
+    // il riscaldamento non presta il peso alle serie di lavoro
+    expect(suggestedSets({ sets: [s('w', 20, 10, 'warmup'), s('1', null, null)] }, [null, { kg: 40, reps: 8 }])[1]).toEqual({ kg: 40, reps: 8 });
   });
 });

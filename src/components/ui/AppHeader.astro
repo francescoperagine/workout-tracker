@@ -1,5 +1,7 @@
 ---
-// Intestazione del guscio: titolo della schermata, riga di stato e accesso alle Impostazioni.
+// Intestazione del guscio: titolo della schermata, riga di stato e accesso alle Impostazioni; dove non
+// c'è la tab bar (allenamento in corso) anche il ritorno, a sinistra del titolo.
+import ChevronLeft from '@lucide/astro/icons/chevron-left';
 import SlidersHorizontal from '@lucide/astro/icons/sliders-horizontal';
 import { appUrl } from '../../lib/paths';
 
@@ -8,14 +10,23 @@ interface Props {
   subtitle?: string;
   /** false nelle schermate che non devono portare alle Impostazioni (es. le Impostazioni stesse) */
   showSettings?: boolean;
+  /** link di ritorno a sinistra del titolo, con la sua etichetta accessibile */
+  back?: { href: string; label: string };
 }
 
-const { title, subtitle, showSettings = true } = Astro.props;
+const { title, subtitle, showSettings = true, back } = Astro.props;
 ---
 
 <header transition:animate="none" class="shell sticky top-0 z-20 border-b border-shell-line pt-[env(safe-area-inset-top)]">
   <div class="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4">
-    <div class="min-w-0 py-2">
+    {
+      back && (
+        <a href={back.href} class="btn btn-icon -ml-3 shrink-0" aria-label={back.label}>
+          <ChevronLeft size={22} aria-hidden="true" />
+        </a>
+      )
+    }
+    <div class="min-w-0 grow py-2">
       <h1 class="truncate text-lg leading-tight font-bold">{title}</h1>
       {subtitle && <p class="truncate text-sm text-shell-muted">{subtitle}</p>}
     </div>

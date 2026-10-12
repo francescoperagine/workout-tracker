@@ -109,7 +109,8 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: var(--text-sm);
-    color: var(--color-shell-muted);
+    /* sopra il livello il muted scende sotto 4,5:1 */
+    color: var(--color-shell-foreground);
   }
   .go .next {
     color: var(--color-shell-on-accent);

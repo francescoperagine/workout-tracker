@@ -177,7 +177,7 @@
             {planLine}
           {/if}
           {#if !running && start.plan.kind === 'none' && active.length}
-            · <a href={appUrl('/calendar#week-plan')}>Pianifica la settimana</a>
+            · <a href={appUrl('/calendar#week-plan')} class="py-3">Pianifica la settimana</a>
           {/if}
         </p>
       </div>
@@ -360,6 +360,14 @@
     margin: 0 -1rem;
     padding: 0.75rem 1rem;
     background: var(--color-background);
+  }
+  /* quando la pagina scorre sotto, il contenuto sfuma invece di sembrare tagliato a metà (320×568) */
+  .thumb::before {
+    content: '';
+    position: absolute;
+    inset: -1.5rem 0 100%;
+    background: linear-gradient(to bottom, transparent, var(--color-background));
+    pointer-events: none;
   }
   .start {
     min-height: 56px;

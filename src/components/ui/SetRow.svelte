@@ -33,6 +33,8 @@
     number: number;
     type?: SetType;
     previous?: Previous | null;
+    /** segnaposto dei campi vuoti, se diverso dal precedente (peso della serie sopra); assente = il precedente */
+    suggestion?: Previous | null;
     kg?: string;
     reps?: string;
     done?: boolean;
@@ -53,6 +55,7 @@
     number,
     type = 'normal',
     previous = null,
+    suggestion = undefined,
     kg = '',
     reps = '',
     done = false,
@@ -65,6 +68,8 @@
     onreps,
     oncheck,
   }: Props = $props();
+
+  const hint = $derived(suggestion === undefined ? previous : suggestion);
 
   // Testi per l'utente: sigla nel badge e nome nell'etichetta accessibile
   const BADGE: Record<SetType, string> = { normal: '', warmup: 'R', drop: 'D', failure: 'C' };
@@ -124,7 +129,7 @@
     value={kg}
     kind="decimal"
     label={`Peso ${setName}, ${unit}`}
-    placeholder={previous?.kg}
+    placeholder={hint?.kg}
     {done}
     oninput={onkg}
     onkeydown={(e) => onkeydown(e, 'kg')}
@@ -134,7 +139,7 @@
     value={reps}
     kind="integer"
     label={`Ripetizioni ${setName}`}
-    placeholder={previous?.reps}
+    placeholder={hint?.reps}
     enterkeyhint="done"
     {done}
     oninput={onreps}
@@ -149,7 +154,7 @@
 <style>
   .row {
     display: grid;
-    grid-template-columns: 2rem minmax(3.75rem, 1fr) minmax(3.25rem, 4.75rem) minmax(3rem, 4rem) 3rem;
+    grid-template-columns: 2.25rem minmax(3.75rem, 1fr) minmax(3.25rem, 4.75rem) minmax(3rem, 4rem) 3rem;
     gap: clamp(0.25rem, 1.6vw, 0.5rem);
     align-items: center;
     min-height: 56px;
@@ -164,12 +169,19 @@
     background: var(--color-done);
   }
   .type {
+    position: relative;
     height: 48px;
     border-radius: var(--radius-field);
     font-weight: 650;
     font-size: var(--text-lg);
     color: var(--color-muted);
     font-variant-numeric: tabular-nums;
+  }
+  /* bersaglio di 44px: si allarga sul margine della riga a sinistra, non sotto il precedente */
+  .type::before {
+    content: '';
+    position: absolute;
+    inset: 0 -2px 0 -0.375rem;
   }
   .type.special {
     color: var(--color-accent-text);

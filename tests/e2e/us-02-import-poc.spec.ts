@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { POC_BACKUP, archiveWith, chooseFile, expectPage, seedArchive, seedStorage, sheet, storedArchive } from './helpers';
+import { POC_BACKUP, archiveWith, chooseFile, seedArchive, sheet, storedArchive, hydrated } from './helpers';
 
-// US-02: importare il diario del PoC, da file di backup o dalla sua chiave sulla stessa origine,
-// con anteprima (allenamenti e periodo), conferma e riepilogo degli scartati con il motivo.
+// US-02: importare il diario del PoC da file di backup, con anteprima (allenamenti e periodo),
+// conferma e riepilogo degli scartati con il motivo.
 // Backup sintetico: 4 allenamenti validi dal 1 all'8 settembre 2026, 3 elementi scartati, schede A e B.
 
 test.describe('US-02 import del diario del PoC', () => {
@@ -49,34 +49,11 @@ test.describe('US-02 import del diario del PoC', () => {
     await sheet(page).getByRole('button', { name: 'Importa' }).click();
     await expect(sheet(page).getByText('4 allenamenti già presenti lasciati com’era')).toBeVisible();
   });
-
-  test('US-02 al primo avvio propone il diario della versione precedente trovato sulla stessa origine', async ({ page }) => {
-    await seedStorage(page, 'bodytracker.archivio.v1', POC_BACKUP);
-    await page.goto('');
-    await expectPage(page, 'welcome/');
-    await expect(page.getByText('Ho trovato il diario della versione precedente su questo dispositivo.')).toBeVisible();
-    // l'import diventa l'azione principale
-    await expect(page.getByRole('button', { name: 'Importa il diario' })).toHaveClass(/btn-primary/);
-    await expect(page.getByRole('button', { name: 'Inizia con le schede di esempio' })).toHaveClass(/btn-secondary/);
-
-    await page.getByRole('button', { name: 'Importa il diario' }).click();
-    await expect(sheet(page).getByText('4 allenamenti dal 1 settembre 2026 all’8 settembre 2026')).toBeVisible();
-    await sheet(page).getByRole('button', { name: 'Importa' }).click();
-    await sheet(page).getByRole('button', { name: 'Fatto' }).click();
-    await expectPage(page, '');
-    // Oggi riprende l'allenamento rimasto aperto nel PoC e mostra l'ultimo concluso
-    await expect(page.getByText('iniziato l’8 settembre', { exact: false })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Riprendi allenamento' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Ultimo allenamento' })).toBeVisible();
-    expect((await storedArchive(page))?.sessions).toHaveLength(4);
-    // la chiave del PoC si legge soltanto
-    expect(await page.evaluate(() => localStorage.getItem('bodytracker.archivio.v1'))).toBe(POC_BACKUP);
-  });
 });
 
 test('US-02 con le sole schede A/B già presenti non chiede di scegliere: il PoC non le sostituisce', async ({ page }) => {
   await page.goto('welcome/');
-  await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
+  await (await hydrated(page.getByRole('button', { name: 'Inizia con le schede di esempio' }))).click();
   await page.getByRole('link', { name: 'Impostazioni', exact: true }).click();
   await chooseFile(page, 'Importa backup', 'poc.json', POC_BACKUP);
   await expect(sheet(page).getByText('4 nuovi, 0 già presenti su questo dispositivo')).toBeVisible();

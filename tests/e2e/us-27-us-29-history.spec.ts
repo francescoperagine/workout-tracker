@@ -105,7 +105,7 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     await expectPage(page, '');
   });
 
-  test('US-27 un allenamento in corso sta in cima, con "Riprendi"', async ({ page }) => {
+  test('US-27 un allenamento in corso sta in cima e porta all’allenamento; "Riprendi" è solo nella mini-barra', async ({ page }) => {
     await seedArchive(
       page,
       archiveWith({
@@ -117,8 +117,9 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     );
     await page.goto('history/');
 
-    const riprendi = page.getByRole('link', { name: 'Riprendi' });
+    const riprendi = page.getByRole('link', { name: /^Sessione di adesso/ });
     await expect(riprendi).toBeVisible();
+    await expect(page.getByText('Riprendi', { exact: true })).toHaveCount(1);
     await expect(page.getByText('In corso · iniziato alle 18:00')).toBeVisible();
     // sopra l’elenco, che resta sotto
     expect((await riprendi.boundingBox())!.y).toBeLessThan((await page.getByRole('heading', { name: 'Ottobre 2026' }).boundingBox())!.y);
@@ -245,7 +246,7 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await expect(items).toHaveCount(3);
     await expect(items.nth(0)).toContainText('1 ottobre');
     await expect(items.nth(0)).toContainText('R 140 × 2 · 55 × 8');
-    await expect(items.nth(0)).toContainText('1 serie · 1RM 69,75 kg · volume 440 kg');
+    await expect(items.nth(0)).toContainText('1 serie · 1RM 69,5 kg · volume 440 kg');
     await expect(items.nth(2)).toContainText('20 agosto');
     await expect(items.nth(2)).toContainText('R 100 × 5 · 50 × 8');
   });
@@ -288,11 +289,11 @@ test.describe('US-28 i progressi di un esercizio', () => {
     // le frecce scorrono i valori
     await plot(page).focus();
     await page.keyboard.press('ArrowLeft');
-    await expect(readout(page)).toContainText('63,25 kg');
+    await expect(readout(page)).toContainText('63,5 kg');
     await page.keyboard.press('End');
     await expect(readout(page)).toContainText('80 kg');
     await page.keyboard.press('Home');
-    await expect(readout(page)).toContainText('81,75 kg');
+    await expect(readout(page)).toContainText('81,5 kg');
   });
 
   test('US-28 la variante ha i suoi progressi, separati da quelli dell’esercizio previsto', async ({ page }) => {
@@ -385,9 +386,10 @@ test.describe('US-29 i record nell’elenco', () => {
     await page.goto('history/');
 
     const row = (name: string) => page.getByRole('link', { name: new RegExp(`^${name}`) });
-    // carico, 1RM stimato e volume tutti migliori
-    await expect(row('Allenamento del 1 ottobre')).toContainText('3 record');
-    // il carico più alto, ma con una sola ripetizione: un record solo (al singolare)
+    // carico, 1RM stimato e volume tutti migliori: si contano gli esercizi con un record, non le misure
+    await expect(row('Allenamento del 1 ottobre')).toContainText('Record');
+    await expect(row('Allenamento del 1 ottobre')).not.toContainText('esercizi');
+    // il carico più alto, ma con una sola ripetizione
     await expect(row('Allenamento del 5 ottobre')).toContainText('Record');
     // la prima volta non batte niente
     await expect(row('Allenamento del 15 settembre')).not.toContainText('record');

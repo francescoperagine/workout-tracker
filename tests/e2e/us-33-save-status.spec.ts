@@ -38,6 +38,18 @@ test.describe('US-33 stato del salvataggio', () => {
     expect((await storedArchive(page))?.settings.weightUnit).toBe('lb');
   });
 
+  test('US-33 con modifiche non salvate il browser avvisa prima di chiudere la pagina', async ({ page }) => {
+    await seedArchive(page, archiveWith());
+    await page.goto('settings/');
+    await failWrites(page, true);
+    await page.getByRole('radio', { name: 'lb' }).check();
+    await expect(saveBar(page)).toContainText('Non salvato');
+    const dialog = page.waitForEvent('dialog');
+    await page.close({ runBeforeUnload: true });
+    expect((await dialog).type()).toBe('beforeunload');
+    await (await dialog).dismiss();
+  });
+
   test('US-33 senza modifiche in sospeso una scheda adotta il diario cambiato in un’altra', async ({ page, context }) => {
     await seedArchive(page, archiveWith());
     await page.goto('settings/');

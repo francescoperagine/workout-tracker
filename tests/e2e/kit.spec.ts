@@ -1,12 +1,9 @@
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { hydrated } from './helpers';
 
 // Componenti del design system su /kit. I test delle storie vere arrivano con le pagine (step 3–7).
 
-// /kit ha molte isole: un clic prima dell'idratazione cade sull'HTML statico e non fa nulla
-async function hydrated(button: Locator) {
-  await expect(button.locator('xpath=ancestor::astro-island[1]')).not.toHaveAttribute('ssr');
-  return button;
-}
+// /kit ha molte isole: un clic prima dell'idratazione cade sull'HTML statico e non fa nulla (hydrated)
 
 test('/kit: la spunta su una riga vuota conferma il precedente e apre il recupero', async ({ page }) => {
   await page.goto('kit/');

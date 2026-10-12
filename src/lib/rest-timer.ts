@@ -5,7 +5,7 @@
 // fa parte del diario (PIANO.md, "Modello dati v2").
 import { blocksOf } from './archive/routine-edit';
 import { exerciseName } from './archive/catalog';
-import { plannedEntry, previousExercise, previousSets, setNumbers } from './archive/workout';
+import { plannedEntry, previousExercise, previousSets, setNumbers, suggestedSets } from './archive/workout';
 import type { Archive, Session } from './archive/types';
 import { formatWeight } from './units';
 
@@ -145,7 +145,8 @@ export function nextSetText(
   const { exercise, set } = next;
   const index = exercise.sets.indexOf(set);
   const number = setNumbers(exercise.sets)[index];
-  const previous = previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null)[index];
+  // i valori che la spunta confermerebbe: il precedente, con il peso della serie sopra se c'è (suggestedSets)
+  const previous = suggestedSets(exercise, previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null))[index];
   const entry = plannedEntry(archive, session, exercise);
   const kg = set.kg ?? previous?.kg ?? (exercise.variantOf || set.type === 'warmup' ? null : (entry?.loadMin ?? null));
   const reps = set.reps ?? previous?.reps ?? (set.type === 'warmup' ? null : entry?.reps || null);

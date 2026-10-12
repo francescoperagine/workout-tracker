@@ -67,6 +67,7 @@
     setSessionDate,
     summarizeSession,
     switchExercise,
+    undoSwitch,
     toDateKey,
     type Archive,
     type RemovedSession,
@@ -143,9 +144,8 @@
   let variantOpen = $state(false);
   let detailsOpen = $state(false);
   let optionsOpen = $state(false);
-  let pendingVariant: { exerciseId: string; choice: VariantChoice } | null = $state(null);
-  let variantConfirmOpen = $state(false);
   let discardOpen = $state(false);
+  let finishOpen = $state(false);
 
   let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
 
@@ -223,25 +223,32 @@
     variantOpen = true;
   }
 
-  function applyVariant(exerciseId: string, choice: VariantChoice) {
-    if (!session) return;
-    const sessionId = session.id;
-    touched = exerciseId;
-    edit((a) => {
-      const resolved = resolve(a, choice);
-      return switchExercise(resolved.archive, sessionId, exerciseId, resolved.id);
-    });
-  }
-
-  function pickVariant(choice: VariantChoice) {
+  // Cambio di esercizio (US-14): nessuna conferma. Le serie spuntate restano all'esercizio fatto e
+  // la variante continua sotto; i valori solo scritti si svuotano. Con qualcosa da perdere c'è "Annulla".
+  async function pickVariant(choice: VariantChoice) {
     const exercise = find(variantFor);
-    if (!exercise) return;
+    if (!session || !exercise) return;
     if (choice.kind === 'existing' && choice.id === exercise.exerciseId) return;
-    // con valori già inseriti si chiede conferma: le serie si svuotano (come nel PoC)
-    if (exerciseHasValues(exercise)) {
-      pendingVariant = { exerciseId: exercise.id, choice };
-      variantConfirmOpen = true;
-    } else applyVariant(exercise.id, choice);
+    const sessionId = session.id;
+    const before = $state.snapshot(exercise) as SessionExercise;
+    const from = exerciseName(store.archive, exercise.exerciseId);
+    let added: string | null = null;
+    let to = '';
+    const ok = edit((a) => {
+      const resolved = resolve(a, choice);
+      to = exerciseName(resolved.archive, resolved.id);
+      const result = switchExercise(resolved.archive, sessionId, exercise.id, resolved.id);
+      added = result.added;
+      return result.archive;
+    });
+    if (!ok) return;
+    touched = added ?? exercise.id;
+    const undo = () => edit((a) => undoSwitch(a, sessionId, before, added));
+    if (added) notify(`Le serie fatte restano a ${from}; continui con ${to}.`, 'Annulla', undo);
+    else if (exerciseHasValues(before)) notify(`${to} al posto di ${from}: i valori scritti si sono svuotati.`, 'Annulla', undo);
+    if (!added) return;
+    await tick();
+    document.getElementById(`exercise-${added}`)?.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
   async function removeExercise(id: string) {
@@ -376,6 +383,17 @@
   function askDiscard() {
     if (session && (detail || sessionHasData(session))) discardOpen = true;
     else discard();
+  }
+
+  // "Termina" è pieno solo quando ogni serie è spuntata; prima chiede conferma, perché un tocco sbagliato
+  // nella zona del pollice chiuderebbe l'allenamento e il recupero (critique dello step 9)
+  const pendingSets = $derived(session ? session.exercises.flatMap((e) => e.sets).filter((s) => s.completedAt === null).length : 0);
+  const pendingExercises = $derived(session ? session.exercises.filter((e) => e.sets.some((s) => s.completedAt === null)).length : 0);
+  const finishReady = $derived(!!session && pendingSets === 0 && sessionHasData(session));
+
+  function askFinish() {
+    if (session && pendingSets && sessionHasData(session)) finishOpen = true;
+    else finish();
   }
 
   function finish() {
@@ -533,6 +551,9 @@
       >
         <Plus aria-hidden="true" />Aggiungi esercizio
       </button>
+      {#if exercises.length >= LIMITS.exercisesPerSession}
+        <p class="hint mt-0">Al massimo {LIMITS.exercisesPerSession} esercizi per allenamento.</p>
+      {/if}
     {/if}
 
     <div class="more">
@@ -595,7 +616,7 @@
       {/snippet}
       {#snippet action()}
         {#if session}
-          <button type="button" class="btn btn-primary" onclick={finish}>Termina</button>
+          <button type="button" class={['btn', finishReady ? 'btn-primary' : 'btn-secondary']} onclick={askFinish}>Termina</button>
         {:else if store.state === 'unreadable'}
           <a href={appUrl('/settings#data')} class="btn btn-secondary">Recupera</a>
         {/if}
@@ -666,13 +687,12 @@
 </BottomSheet>
 
 <ConfirmDialog
-  bind:open={variantConfirmOpen}
-  title="Cambiare esercizio?"
-  text={pendingVariant
-    ? `Le serie già inserite per ${exerciseName(store.archive, find(pendingVariant.exerciseId)?.exerciseId ?? '')} si svuotano, perché il carico si riferisce a quell’esercizio.`
-    : ''}
-  confirmLabel="Cambia e svuota"
-  onconfirm={() => pendingVariant && applyVariant(pendingVariant.exerciseId, pendingVariant.choice)}
+  bind:open={finishOpen}
+  title="Terminare l’allenamento?"
+  text={`${pendingSets === 1 ? 'Resta 1 serie da fare' : `Restano ${pendingSets} serie da fare`}${pendingExercises > 1 ? ` in ${pendingExercises} esercizi` : ''}. Le serie fatte sono salvate, e dal riepilogo puoi riaprire l’allenamento.`}
+  confirmLabel="Termina"
+  danger={false}
+  onconfirm={finish}
 />
 
 <ConfirmDialog
@@ -772,7 +792,10 @@
   .bar {
     position: fixed;
     inset-inline: 0;
-    bottom: calc(var(--bottom-bars-base) + env(safe-area-inset-bottom));
+    /* /workout non ha la tab bar (step 9): la barra sta in fondo e copre da sé l'area sicura */
+    bottom: var(--bottom-bars-base);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-shell);
     z-index: 20;
   }
   .elapsed {

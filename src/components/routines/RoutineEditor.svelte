@@ -309,6 +309,9 @@
         >
           <Plus aria-hidden="true" />Aggiungi esercizio
         </button>
+        {#if exercises.length >= LIMITS.exercisesPerRoutine}
+          <p class="hint mt-0">Al massimo {LIMITS.exercisesPerRoutine} esercizi per scheda.</p>
+        {/if}
       {/if}
     </section>
 

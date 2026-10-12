@@ -49,7 +49,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Gerarchia: nome esercizio (tocco = approfondimento) → variante → target (ripetizioni, carico, recupero) → righe serie → "Aggiungi serie".
 - Campi: tastiera numerica, decimale per il peso; ≥ 48px; cifre ≥ 20px tabulari (P3). Toccare "precedente" copia peso e ripetizioni nella riga.
 - "Aggiungi serie" riprende il peso dell'ultima serie con ripetizioni vuote. Rimuovere una serie con valori mostra "Annulla" per qualche secondo (P4).
-- Cambio variante con valori già inseriti: conferma, poi le serie si svuotano (comportamento del PoC); "precedente" si riferisce alla variante scelta.
+- Cambio variante: dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla»; "precedente" si riferisce alla variante scelta.
 - Il selettore variante (foglio dal basso) ha le alternative della scheda più "Altro esercizio…": un campo di testo per scrivere l'esercizio fatto al posto di quello previsto, con i nomi simili del catalogo come suggerimento. Un nome nuovo diventa un esercizio personalizzato; la scheda non cambia. Il modello è già su `/kit`.
 - Barra fissa in basso con safe area: durata, stato del salvataggio (`role=status`), "Termina". Le azioni frequenti restano nella metà inferiore (P2).
 - Ricaricare, chiudere o bloccare riporta esattamente qui, alla stessa posizione (P5). Avviso `beforeunload` solo con modifiche non salvate.
@@ -59,6 +59,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Isola Svelte persistente tra le pagine (`transition:persist`), dati in kg anche se l'utente usa lb.
 - **Deciso:** la spunta su una riga vuota conferma i valori precedenti (1 tocco, come Strong); senza precedente una riga vuota non si spunta.
 - **Deciso:** il riepilogo è una schermata a sé dopo "Termina".
+- **Deciso (step 9, critique dei flussi):** l'allenamento è una modalità, non una sezione: niente tab bar su `/workout` (a 320×568 si vedevano 1,5 righe serie), «Torna a Oggi» nell'intestazione, rientro dalla mini-barra o da «Riprendi». «Termina» è secondario finché resta una serie da fare e allora chiede conferma; pieno (lime) quando tutto è spuntato. Il segnaposto di una riga vuota prende il peso della serie sopra, se scritto in questa sessione, e la spunta conferma quello.
 - Superserie (US-09, US-25), note sul carico (US-16), approfondimento (US-19) e più sessioni nello stesso giorno (US-20) sono M. Riordino degli esercizi in sessione (US-15) e data e nome modificabili anche in corso (US-27) sono criteri confermati.
 - Fuori ambito v1: calcolatore dei dischi, calcolatore di riscaldamento, note per singola serie.
 - Il builder non deve inventare: testi degli approfondimenti (oggi vuoti), regole di calcolo dei record oltre a quelle del piano.

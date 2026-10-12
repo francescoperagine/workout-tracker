@@ -30,9 +30,10 @@ function dayPoint(date: string, value: number): ExercisePoint {
 }
 
 describe('US-28 formula di Epley', () => {
-  it('US-28 con una ripetizione l’1RM è il carico, altrimenti è kg × (1 + rip / 30)', () => {
+  it('US-28 con una ripetizione l’1RM è il carico, altrimenti è kg × (1 + rip / 30) al mezzo chilo', () => {
     expect(epley(100, 1)).toBe(100);
-    expect(epley(100, 10)).toBeCloseTo(133.333);
+    expect(epley(100, 10)).toBe(133.5);
+    expect(epley(42.5, 8)).toBe(54);
     expect(EPLEY_MAX_REPS).toBe(12);
   });
 });

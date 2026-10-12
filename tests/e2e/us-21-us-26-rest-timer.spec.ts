@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BASE_CATALOG } from '../../src/data/catalog';
 import { DEFAULT_SETTINGS, startSession, starterRoutines, type Archive, type Session } from '../../src/lib/archive';
 import { REST_TIMER_KEY } from '../../src/lib/rest-timer';
-import { archiveWith, expectPage, seedArchive, sheet } from './helpers';
+import { archiveWith, expectPage, seedArchive, sheet, finishWorkout } from './helpers';
 
 // Timer di recupero (step 7): US-21 recupero alla spunta, US-22 −15 s / +15 s / Salta e spunta tolta,
 // US-23 timer ridotto, US-24 avvisi di fine (suono, vibrazione, schermo acceso), US-25 superserie,
@@ -110,11 +110,13 @@ test.describe('US-21 recupero alla spunta', () => {
     await expect(overlay).toContainText('Prossima Squat bilanciere · serie 2 · 40 kg × 8');
     const level = overlay.locator('.level');
     const full = (await level.boundingBox())!.height;
+    // vuoto, il livello arriva al bordo superiore dei comandi (step 9), non al fondo dello schermo
+    const dock = (await overlay.locator('.dock').boundingBox())!.height;
 
     await page.clock.runFor(30_000);
     await expect(overlay.locator('.timer-digits')).toHaveText('Mancano 1:30');
-    // il livello scende con il tempo: tre quarti di quello pieno
-    expect((await level.boundingBox())!.height).toBeCloseTo(full * 0.75, 0);
+    // il livello scende con il tempo: tre quarti del tratto tra i comandi e l'intestazione
+    expect((await level.boundingBox())!.height).toBeCloseTo(dock + (full - dock) * 0.75, 0);
     // l'istante di fine è salvato nella sua chiave
     expect(JSON.parse((await storedTimer(page))!)).toMatchObject({ end: NOW.getTime() + 120_000, duration: 120, minimized: false });
   });
@@ -184,7 +186,7 @@ test.describe('US-22 allungare, accorciare, saltare', () => {
 
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await timer(page).getByRole('button', { name: 'Riduci', exact: true }).click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
     await expect(reducedBar(page)).toHaveCount(0);
     expect(await storedTimer(page)).toBeNull();
@@ -220,6 +222,8 @@ test.describe('US-23 timer ridotto', () => {
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await timer(page).getByRole('button', { name: 'Riduci', exact: true }).click();
     const tabs = page.getByRole('navigation', { name: 'Sezioni' });
+    // l'allenamento non ha la tab bar (step 9): si passa da Oggi
+    await page.getByRole('link', { name: 'Torna a Oggi' }).click();
     await tabs.getByRole('link', { name: 'Calendario' }).click();
     await expectPage(page, 'calendar/');
     const bar = reducedBar(page);
@@ -249,6 +253,7 @@ test.describe('US-23 timer ridotto', () => {
     await startFromToday(page, withHistory());
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await timer(page).getByRole('button', { name: 'Riduci', exact: true }).click();
+    await page.getByRole('link', { name: 'Torna a Oggi' }).click();
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Schede' }).click();
     await page.clock.runFor(20_000);
     await page.getByRole('link', { name: 'Torna all’allenamento: Scheda A' }).click();
@@ -300,7 +305,7 @@ test.describe('US-24 fine del recupero', () => {
     await expect.poll(async () => (await alerts(page)).wakeLocks).toBe(1);
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await timer(page).getByRole('button', { name: 'Salta il recupero' }).click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
     await expect.poll(async () => (await alerts(page)).released).toBe(1);
   });

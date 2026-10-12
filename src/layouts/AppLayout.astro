@@ -21,12 +21,14 @@ interface Props {
   description?: string;
   /** voce attiva della tab bar; nessuna nelle Impostazioni */
   tab?: TabId;
-  /** false nelle schermate senza navigazione (primo avvio) */
+  /** false nelle schermate senza navigazione (primo avvio) e nell'allenamento in corso, che è una modalità */
   showTabs?: boolean;
   showHeader?: boolean;
   showSettings?: boolean;
   /** false dove la pagina mostra da sé lo stato del salvataggio (allenamento attivo) */
   showArchiveStatus?: boolean;
+  /** ritorno nell'intestazione, per le pagine senza tab bar */
+  back?: { href: string; label: string };
 }
 
 const {
@@ -39,6 +41,7 @@ const {
   showHeader = true,
   showSettings = true,
   showArchiveStatus = true,
+  back,
 } = Astro.props;
 
 // Altezza della tab bar (56px più il filo superiore), senza l'area sicura che la tab bar aggiunge da sé
@@ -48,7 +51,7 @@ const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
 
 <Base title={`${title} · Workout Tracker`} description={description} bodyStyle={`--bottom-bars-base: ${barsBelow}px; --bottom-bars-height: ${barsBelow}px`}>
   <ClientRouter slot="head" />
-  {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} />}
+  {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} back={back} />}
 
   <main class="mx-auto w-full max-w-2xl px-4 pt-6 pb-[calc(var(--bottom-bars-height)+env(safe-area-inset-bottom)+2rem)]">
     <slot />

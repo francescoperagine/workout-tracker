@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ensureExercise } from './catalog';
 import { fromDateKey } from './dates';
-import { convertPocArchive, readPocKey } from './poc-import';
-import { ArchiveError, POC_ARCHIVE_KEY, emptyArchive } from './types';
+import { convertPocArchive } from './poc-import';
+import { ArchiveError, emptyArchive } from './types';
 import { validateArchive } from './validation';
 
 // Backup sintetico nel formato di "Esporta" del PoC (finché non c'è un backup reale dell'utente).
@@ -97,11 +97,5 @@ describe('US-02 import del backup del PoC', () => {
     expect(() => convertPocArchive({ versione: 1 })).toThrow('Formato di backup non riconosciuto.');
     expect(() => convertPocArchive([])).toThrow(ArchiveError);
     expect(() => convertPocArchive({ versione: 1, allenamenti: new Array(10_001).fill(null) })).toThrow('10.000');
-  });
-
-  it('lettura diretta della chiave del PoC sulla stessa origine', () => {
-    expect(readPocKey({ getItem: (k) => (k === POC_ARCHIVE_KEY ? backupText : null) })).toBe(backupText);
-    expect(readPocKey({ getItem: () => null })).toBeNull();
-    expect(readPocKey({ getItem: () => { throw new Error('negato'); } })).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { starterRoutines } from '../../src/lib/archive';
-import { archiveWith, expectPage, seedArchive, session, sheet, storedArchive } from './helpers';
+import { archiveWith, expectPage, seedArchive, session, sheet, storedArchive, finishWorkout } from './helpers';
 
 // Calendario (step 5): US-04 settimana tipo, US-05 settimana e mese con lo stato dei giorni,
 // US-06 eccezione per una sola data. "Oggi" è fissato con page.clock: giovedì 8 ottobre 2026; la
@@ -184,8 +184,9 @@ test.describe('US-06 eccezione per una sola data', () => {
 
     // venerdì: Scheda A al posto di B, solo per questa data
     await dayRow(page, /^venerdì 9 ottobre/).click();
-    await expect(sheet(page).getByRole('radio', { name: /^Come la settimana tipo/ })).toBeChecked();
-    await sheet(page).getByRole('radio', { name: 'Scheda A, solo per questa data' }).check();
+    await expect(sheet(page).getByRole('group', { name: 'Solo il 9 ottobre' })).toBeVisible();
+    await expect(sheet(page).getByRole('radio', { name: /^Come ogni venerdì/ })).toBeChecked();
+    await sheet(page).getByRole('radio', { name: 'Scheda A', exact: true }).check();
     await expect.poll(async () => (await storedArchive(page))?.overrides).toEqual({ '2026-10-09': 'routine-a' });
     await sheet(page).getByRole('button', { name: 'Chiudi' }).click();
     await expect(dayRow(page, /^venerdì 9 ottobre: Scheda A, in programma, solo per questa data$/)).toContainText('solo per questa data');
@@ -196,7 +197,7 @@ test.describe('US-06 eccezione per una sola data', () => {
 
     // oggi diventa riposo: Oggi lo dice e propone "Allenati comunque"
     await dayRow(page, /^giovedì 8 ottobre/).click();
-    await sheet(page).getByRole('radio', { name: 'Riposo, solo per questa data' }).check();
+    await sheet(page).getByRole('radio', { name: 'Riposo', exact: true }).check();
     await sheet(page).getByRole('button', { name: 'Chiudi' }).click();
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Oggi' }).click();
     await expect(page.getByText('Oggi riposo, solo per oggi')).toBeVisible();
@@ -204,7 +205,7 @@ test.describe('US-06 eccezione per una sola data', () => {
 
     // tornare alla settimana tipo toglie l'eccezione
     await page.goto('calendar/?date=2026-10-08');
-    await sheet(page).getByRole('radio', { name: /^Come la settimana tipo/ }).check();
+    await sheet(page).getByRole('radio', { name: /^Come ogni giovedì/ }).check();
     await expect.poll(async () => (await storedArchive(page))?.overrides).toEqual({ '2026-10-09': 'routine-a' });
     expect((await storedArchive(page))?.schedule).toEqual({ thu: 'routine-a', fri: 'routine-b' });
   });
@@ -224,7 +225,21 @@ test.describe('US-06 eccezione per una sola data', () => {
     await page.getByRole('link', { name: 'Torna al calendario' }).click();
     await expectPage(page, 'calendar/');
     await expect(sheet(page).getByRole('heading', { name: 'venerdì 9 ottobre' })).toBeVisible();
-    await expect(sheet(page).getByRole('radio', { name: 'Scheda C, solo per questa data' })).toBeChecked();
+    await expect(sheet(page).getByRole('radio', { name: 'Scheda C', exact: true })).toBeChecked();
+  });
+
+  test('US-04 dal foglio di un giorno futuro si cambia prima la settimana tipo: «Ogni martedì»', async ({ page }) => {
+    await seedArchive(page, archiveWith({ routines: starterRoutines() }));
+    await page.goto('calendar/?date=2026-10-13');
+    const weekly = sheet(page).getByRole('combobox', { name: 'Ogni martedì' });
+    await expect(weekly).toHaveValue('__nothing');
+    await weekly.selectOption({ label: 'Scheda B' });
+    await expect.poll(async () => (await storedArchive(page))?.schedule).toEqual({ tue: 'routine-b' });
+    expect((await storedArchive(page))?.overrides).toEqual({});
+    // la data segue la settimana tipo
+    await expect(sheet(page).getByRole('radio', { name: /^Come ogni martedì/ })).toBeChecked();
+    await sheet(page).getByRole('button', { name: 'Chiudi' }).click();
+    await expect(dayRow(page, /^martedì 13 ottobre: Scheda B, in programma$/)).toBeVisible();
   });
 
   test('US-06 dal foglio del giorno si arriva alla settimana tipo', async ({ page }) => {
@@ -275,7 +290,7 @@ test.describe('US-11 e US-20 avviare e registrare dal calendario', () => {
 
     await page.getByRole('textbox', { name: 'Peso serie 1, kg' }).first().fill('50');
     await page.getByRole('button', { name: 'Segna serie 1 come fatta' }).first().click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
 
     await page.goto('calendar/?date=2026-10-06');

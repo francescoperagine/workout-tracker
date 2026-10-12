@@ -19,6 +19,7 @@
     plannedEntry,
     previousExercise,
     previousSets,
+    suggestedSets,
     replaceSet,
     setExerciseNotes,
     setNumbers,
@@ -83,6 +84,7 @@
   const entry = $derived(plannedEntry(archive, session, exercise));
   const previous = $derived(previousExercise(archive, session, exercise.exerciseId));
   const rawPrevious = $derived(previousSets(exercise, previous?.exercise ?? null));
+  const suggested = $derived(suggestedSets(exercise, rawPrevious));
   const numbers = $derived(setNumbers(exercise.sets));
   const done = $derived(exercise.sets.length > 0 && exercise.sets.every((s) => s.completedAt !== null));
   const id = $derived(`exercise-${exercise.id}`);
@@ -141,15 +143,15 @@
     return patch(set, { reps: Number(clean) });
   }
 
-  function onCheck(set: SessionSet, previousSet: PreviousSet | null): CheckResult {
+  function onCheck(set: SessionSet, suggestion: PreviousSet | null): CheckResult {
     ontouch();
     if (set.completedAt !== null) {
       edit((a) => updateSet(a, session.id, exercise.id, set.id, { completedAt: null }));
       return;
     }
-    const completed = completedSet(set, previousSet, Date.now());
+    const completed = completedSet(set, suggestion, Date.now());
     // senza ripetizioni la riga non si spunta: il cursore va al primo campo vuoto (US-12)
-    if (!completed) return set.kg === null && previousSet?.kg == null ? 'kg' : 'reps';
+    if (!completed) return set.kg === null && suggestion?.kg == null ? 'kg' : 'reps';
     if (edit((a) => replaceSet(a, session.id, exercise.id, completed))) onchecked(set.id);
   }
 
@@ -216,11 +218,13 @@
         </div>
         {#each exercise.sets as set, i (set.id)}
           {@const previousSet = rawPrevious[i]}
+          {@const suggestion = suggested[i]}
           <SetRow
             id={`set-${set.id}`}
             number={numbers[i]}
             type={set.type}
             previous={shown(previousSet)}
+            suggestion={shown(suggestion)}
             kg={weightText(set.kg)}
             reps={set.reps === null ? '' : String(set.reps)}
             done={set.completedAt !== null}
@@ -234,7 +238,7 @@
             oncopy={() => previousSet && patch(set, { kg: previousSet.kg, reps: previousSet.reps })}
             onkg={(text) => onKg(set, text)}
             onreps={(text) => onReps(set, text)}
-            oncheck={() => onCheck(set, previousSet)}
+            oncheck={() => onCheck(set, suggestion)}
           />
         {/each}
       </div>
@@ -242,6 +246,9 @@
       <button type="button" class="btn btn-text add-set" onclick={add} disabled={exercise.sets.length >= LIMITS.setsPerExercise}>
         <Plus aria-hidden="true" />Aggiungi serie
       </button>
+      {#if exercise.sets.length >= LIMITS.setsPerExercise}
+        <p class="hint mt-0">Al massimo {LIMITS.setsPerExercise} serie per esercizio.</p>
+      {/if}
 
       {#if noteOpen || exercise.notes}
         <LiveField

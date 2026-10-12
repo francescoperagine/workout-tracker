@@ -1,8 +1,14 @@
+<script lang="ts" module>
+  const RULE = '__weekly';
+  const REST = '__rest';
+</script>
+
 <script lang="ts">
   // Foglio di un giorno del calendario: gli allenamenti di quella data (US-05) e cosa prevede, con
   // l'eccezione per quella sola data (US-06): come la settimana tipo, riposo o un'altra scheda.
   // Oggi si avvia l'allenamento, in un giorno passato se ne registra uno fatto, da oggi in poi si crea una
-  // scheda nuova e la si assegna alla data. Ogni scelta si salva subito; la settimana tipo si cambia nella sezione della pagina.
+  // scheda nuova e la si assegna alla data. Ogni scelta si salva subito. Da oggi in poi viene prima la
+  // settimana tipo di quel giorno ("Ogni giovedì", US-04), poi l'eccezione per la sola data (US-06).
   import { navigate } from 'astro:transitions/client';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import BottomSheet from '../ui/BottomSheet.svelte';
@@ -14,12 +20,13 @@
     sessionInProgress,
     setDateOverride,
     setSessionDate,
+    setWeeklyDay,
     startSession,
     summarizeSession,
     weeklyValue,
     type Archive,
   } from '../../lib/archive';
-  import { formatClock, formatElapsed, formatLongDay, plural } from '../../lib/format';
+  import { WEEKDAY_LONG, formatClock, formatElapsed, formatLongDay, formatOnDay, plural } from '../../lib/format';
   import { appUrl } from '../../lib/paths';
   import { STATUS_LOOK } from './day-status';
 
@@ -39,10 +46,23 @@
 
   const day = $derived(date ? dayInfo(archive, date, today) : null);
   const weekly = $derived(day ? weeklyValue(archive, day.weekday) : undefined);
-  // la scelta uguale alla settimana tipo è già "Come la settimana tipo"
-  const routines = $derived(activeRoutines(archive).filter((r) => r.id !== weekly));
-  const RULE = '__weekly';
-  const REST = '__rest';
+  const active = $derived(activeRoutines(archive));
+  // la scelta uguale alla settimana tipo è già "Come ogni …"
+  const routines = $derived(active.filter((r) => r.id !== weekly));
+  const NOTHING = '__nothing';
+  const weeklySelect = $derived(weekly === undefined ? NOTHING : weekly === null ? REST : weekly);
+  // settimana tipo verso una scheda archiviata o sparita: resta visibile come scelta attuale
+  const staleWeekly = $derived(
+    typeof weekly === 'string' && !active.some((r) => r.id === weekly)
+      ? (archive.routines.find((r) => r.id === weekly)?.name ?? 'Scheda eliminata')
+      : null,
+  );
+
+  function chooseWeekly(value: string) {
+    if (!day) return;
+    const weekday = day.weekday;
+    edit((a) => setWeeklyDay(a, weekday, value === NOTHING ? undefined : value === REST ? null : value));
+  }
 
   const current = $derived.by(() => {
     if (!date) return RULE;
@@ -167,25 +187,41 @@
         <p class="status muted">Nessun allenamento registrato.</p>
       {/if}
 
+      {#if !day.isPast}
+        <div class="weekly">
+          <label for="day-weekly" class="label">Ogni {WEEKDAY_LONG[day.weekday]}</label>
+          <select id="day-weekly" class="field" value={weeklySelect} onchange={(event) => chooseWeekly(event.currentTarget.value)}>
+            <option value={NOTHING}>Niente</option>
+            <option value={REST}>Riposo</option>
+            {#each active as routine (routine.id)}
+              <option value={routine.id}>{routine.name}</option>
+            {/each}
+            {#if staleWeekly}
+              <option value={weeklySelect} disabled>{staleWeekly}</option>
+            {/if}
+          </select>
+        </div>
+      {/if}
+
       <fieldset class="choices">
-        <legend class="legend">{day.isPast ? 'Era in programma' : 'In programma'}</legend>
+        <legend class="legend">{day.isPast ? 'Era in programma' : `Solo ${formatOnDay(day.date, today)}`}</legend>
         <label class="choice">
           <input class="radio" type="radio" name="day-plan" value={RULE} checked={current === RULE} onchange={() => choose(RULE)} />
           <span class="choice-text">
-            <span>Come la settimana tipo</span>
+            <span>{day.isPast ? 'Come la settimana tipo' : `Come ogni ${WEEKDAY_LONG[day.weekday]}`}</span>
             <span class="meta">{weeklyLabel}</span>
           </span>
         </label>
         {#if weekly !== null}
           <label class="choice">
             <input class="radio" type="radio" name="day-plan" value={REST} checked={current === REST} onchange={() => choose(REST)} />
-            <span>Riposo, solo per questa data</span>
+            <span>Riposo</span>
           </label>
         {/if}
         {#each routines as routine (routine.id)}
           <label class="choice">
             <input class="radio" type="radio" name="day-plan" value={routine.id} checked={current === routine.id} onchange={() => choose(routine.id)} />
-            <span>{routine.name}, solo per questa data</span>
+            <span>{routine.name}</span>
           </label>
         {/each}
         {#if staleOverride}
@@ -285,6 +321,11 @@
   .legend {
     margin-bottom: 0.5rem;
     font-weight: 700;
+  }
+  .weekly {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
   .choice-text {
     display: flex;

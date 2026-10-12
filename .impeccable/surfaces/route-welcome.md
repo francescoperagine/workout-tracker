@@ -35,7 +35,7 @@ Storie: US-01, US-02 (ingresso all'import del PoC), US-11 (passaggio a Oggi). Pr
 ## States and ranges
 
 - Primo avvio; ritorno dopo "Parti da zero" (non viene più mostrata); import riuscito (anteprima e conferma nel flusso di import, poi Oggi); import fallito (errore leggibile, nessun dato toccato).
-- Se l'app è pubblicata sulla stessa origine del PoC e la chiave `bodytracker.archivio.v1` esiste: proposta in evidenza "Ho trovato il diario della versione precedente: importalo".
+- Il diario del PoC si importa dal suo file di backup con "Importa un backup" (la lettura diretta della sua chiave è stata tolta allo step 9: il PoC non è mai stato pubblicato).
 
 ## Interaction and layout
 

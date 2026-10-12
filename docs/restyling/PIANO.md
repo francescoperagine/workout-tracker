@@ -139,34 +139,34 @@ Costo basso, perché la regola è unica: **i dati si salvano sempre in unità me
 
 **Import del PoC**
 - Da file di backup, la funzione "Esporta" del PoC.
-- Se la nuova app è pubblicata sulla **stessa origine** del PoC, anche lettura diretta della chiave `bodytracker.archivio.v1`, con anteprima e conferma.
+- ~~Lettura diretta della chiave `bodytracker.archivio.v1` sulla stessa origine~~: tolta allo step 9 (decisione dell'utente del 12 ottobre 2026), perché il PoC non è mai stato pubblicato e la stessa origine non si dà mai. L'import resta dal file.
 
 ## Assorbimento del PoC
 
 Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTracker/`. La colonna "Step" indica dove viene realizzata; lo step finale la verifica con un test e2e.
 
-| Funzione del PoC | Nella nuova app | Step |
-| --- | --- | --- |
-| Avvio da scheda A/B o allenamento libero | Avvio da qualsiasi scheda (A/B come dati iniziali) o libero | 5 |
-| Più allenamenti nella stessa data, data e nome modificabili | Uguale | 6 |
-| Aggiungi esercizio dal catalogo con ricerca, o nome libero | Uguale, con ricerca nel catalogo | 4, 6 |
-| Pesi decimali, note per esercizio (peso totale, per manubrio, macchina) | Uguale; l'unità della scheda ("per manubrio") è mostrata accanto ai kg | 6 |
-| "Aggiungi serie" riprende il peso della serie precedente, ripetizioni vuote | Uguale | 6 |
-| Varianti con conferma e svuotamento delle serie se ci sono valori | Uguale | 6 |
-| Indicazioni della scheda (ripetizioni, partenza, recupero) sull'esercizio | Uguale, dai campi della voce di scheda | 6 |
-| Riferimento all'ultima sessione conclusa della stessa variante | Colonna "precedente" per serie | 6 |
-| Spunta dell'esercizio completato | Spunta **per serie** (come Strong); esercizio completato quando tutte le serie sono spuntate | 6 |
-| Concludi e riapri l'allenamento; "aggiungi almeno un esercizio prima di concludere" | Uguale, più il riepilogo | 6 |
-| Storico con modifica delle sessioni concluse, eliminazione con conferma | Uguale | 8 |
-| Approfondimento esercizio (descrizione, immagine locale sicura, passaggi, attenzione, fonti) | Foglio dal basso; stessa regola sui percorsi delle immagini (niente domini esterni né SVG incorporati) | 6 |
-| Stato "Salvato su questo dispositivo", "Salva ora" per riprovare, errore di quota con dati tenuti in memoria | Uguale nella barra fissa | 2, 6 |
-| Avviso prima di chiudere con modifiche non salvate (`beforeunload`) | Uguale | 6 |
-| Protezione tra schede: se il diario cambia altrove, blocco e richiesta di ricaricare | Uguale, con `revision` | 2 |
-| Archivio illeggibile: niente sovrascrittura, download del contenuto originale | Uguale | 2, 3 |
-| Export JSON; import con validazione completa, limite 10 MB e 10.000 allenamenti, scelta tra mantenere o sostituire gli ID già presenti | Uguale per il formato v2; il formato v1 del PoC viene convertito | 2, 3 |
-| Limiti 100 esercizi per sessione e 100 serie per esercizio, lunghezze massime dei testi | Uguale | 2 |
-| Testi su privacy e limiti (dati per origine, navigazione privata, backup) | Sezione Dati e privacy, aggiornata per la PWA | 3 |
-| `PRODUCT.md`, `DESIGN.md`, `design.json` del PoC | Spostati in radice con `git mv`, poi aggiornati da Impeccable | 0, 1 |
+| Funzione del PoC | Nella nuova app | Step | e2e (step 9) |
+| --- | --- | --- | --- |
+| Avvio da scheda A/B o allenamento libero | Avvio da qualsiasi scheda (A/B come dati iniziali) o libero | 5 | `us-11-us-17-today` (US-11 suggerita, allenamento libero) |
+| Più allenamenti nella stessa data, data e nome modificabili | Uguale | 6 | `us-12-us-20-workout` (US-20), `us-27-us-29-history` (US-27 nome e data) |
+| Aggiungi esercizio dal catalogo con ricerca, o nome libero | Uguale, con ricerca nel catalogo | 4, 6 | `us-12-us-20-workout` (US-15 aggiungi, US-14 «Altro esercizio…»), `us-07-us-10-routines` (US-07 nome a mano) |
+| Pesi decimali, note per esercizio (peso totale, per manubrio, macchina) | Uguale; l'unità della scheda ("per manubrio") è mostrata accanto ai kg | 6 | `us-12-us-20-workout` (US-12 «42,5», US-16 nota) |
+| "Aggiungi serie" riprende il peso della serie precedente, ripetizioni vuote | Uguale | 6 | `us-12-us-20-workout` (US-15 «Aggiungi serie») |
+| Varianti con conferma e svuotamento delle serie se ci sono valori | Uguale fino allo step 8; dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla» | 6, 9 | `us-12-us-20-workout` (US-14, dallo step 9 senza conferma: le serie fatte restano, «Annulla») |
+| Indicazioni della scheda (ripetizioni, partenza, recupero) sull'esercizio | Uguale, dai campi della voce di scheda | 6 | `us-12-us-20-workout` (US-12 indicazioni della scheda) |
+| Riferimento all'ultima sessione conclusa della stessa variante | Colonna "precedente" per serie | 6 | `us-12-us-20-workout` (US-12 precedente, US-14 per variante) |
+| Spunta dell'esercizio completato | Spunta **per serie** (come Strong); esercizio completato quando tutte le serie sono spuntate | 6 | `us-12-us-20-workout` (US-12 spunta per serie) |
+| Concludi e riapri l'allenamento; "aggiungi almeno un esercizio prima di concludere" | Uguale, più il riepilogo | 6 | `us-12-us-20-workout` (US-18 riepilogo, «Riapri», senza serie non conclude) |
+| Storico con modifica delle sessioni concluse, eliminazione con conferma | Uguale | 8 | `us-27-us-29-history` (US-27 dettaglio, eliminazione con «Annulla») |
+| Approfondimento esercizio (descrizione, immagine locale sicura, passaggi, attenzione, fonti) | Foglio dal basso; stessa regola sui percorsi delle immagini (niente domini esterni né SVG incorporati) | 6 | `us-12-us-20-workout` (US-19); la regola delle immagini in Vitest (`safeImagePath`), perché il catalogo non ha immagini |
+| Stato "Salvato su questo dispositivo", "Salva ora" per riprovare, errore di quota con dati tenuti in memoria | Uguale nella barra fissa | 2, 6 | `us-33-save-status` (spazio esaurito, «Salva ora») |
+| Avviso prima di chiudere con modifiche non salvate (`beforeunload`) | Uguale | 6 | `us-33-save-status` (avviso prima di chiudere) |
+| Protezione tra schede: se il diario cambia altrove, blocco e richiesta di ricaricare | Uguale, con `revision` | 2 | `us-33-save-status` (conflitto tra schede) |
+| Archivio illeggibile: niente sovrascrittura, download del contenuto originale | Uguale | 2, 3 | `us-33-save-status` (archivio illeggibile) |
+| Export JSON; import con validazione completa, limite 10 MB e 10.000 allenamenti, scelta tra mantenere o sostituire gli ID già presenti | Uguale per il formato v2; il formato v1 del PoC viene convertito | 2, 3 | `us-32-backup`, `us-02-import-poc` |
+| Limiti 100 esercizi per sessione e 100 serie per esercizio, lunghezze massime dei testi | Uguale | 2 | `us-12-us-20-workout` (US-15 100 serie); lunghezze e 100 esercizi in Vitest (`validation`, `workout`) |
+| Testi su privacy e limiti (dati per origine, navigazione privata, backup) | Sezione Dati e privacy, aggiornata per la PWA | 3 | `us-03-pwa` (7 giorni, installazione), `us-01-welcome` |
+| `PRODUCT.md`, `DESIGN.md`, `design.json` del PoC | Spostati in radice con `git mv`, poi aggiornati da Impeccable | 0, 1 | — (documenti, nessun comportamento) |
 
 ## Regole di comportamento chiave
 
@@ -182,7 +182,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
   - in una **superserie** il recupero parte solo dopo la serie dell'ultimo esercizio del gruppo, mentre le spunte intermedie spostano il focus all'esercizio successivo;
   - durata 0 = nessun timer;
   - togliere la spunta durante il recupero annulla il timer.
-- **Varianti:** stessa regola del PoC. Se la variante ha già valori, il cambio chiede conferma e svuota le serie; lo storico tiene traccia di variante ed esercizio base.
+- **Varianti:** dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla». Lo storico tiene traccia di variante ed esercizio base.
   - Oltre alle alternative della scheda, "Altro esercizio…" accetta un nome scritto a mano. Se corrisponde (senza maiuscole, spazi e accenti) a un esercizio del catalogo si usa quello; altrimenti si crea un esercizio personalizzato in `catalogo`, riusato le volte successive. La voce di sessione ha `esercizioId` del sostituto e `varianteDi` dell'esercizio previsto.
 - **Sessioni:** più sessioni nello stesso giorno sono possibili. Una sola sessione "in corso" alla volta; concludere mostra un riepilogo (durata, serie, volume, record).
 
@@ -374,6 +374,22 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - **`/kit` fuori dalla build pubblicata** ma disponibile ai test (`tests/e2e/kit.spec.ts`, `tests/e2e/us-30-themes.spec.ts`): scegliere il meccanismo (es. pagina generata solo se è impostato un flag come `WT_KIT=1`, che `playwright.config.ts` imposta per la sua build) e registrarlo in `AGENTS.md` e in questo piano.
 - **Verifica dei nomi:** nessun riferimento a «BodyTracker»/`bodytracker` nel repository, tranne il formato d'import del PoC `bodytracker.archivio.v1` (chiave, codice e fixture dei test).
 - **Verifica:** detector a 0 su tutte le pagine nei due temi, suite Playwright verde, Lighthouse PWA/accessibilità, build alla radice provata su `workout-tracker.francescoperagine.workers.dev`, più la suite con `WT_BASE=/workout-tracker/`; nessun riferimento residuo a `BodyTracker/` nel repository.
+
+- **Stato (12 ottobre 2026):** fatto, in attesa delle prove dell'utente sull'app installata e dei passi del «Rilascio». Prima dello step (risposte dell'utente del 12 ottobre 2026): storico, progressi e suono corretto non ancora provati in palestra; decisioni aperte dello step 8 tutte confermate; `readPocKey` da togliere.
+  - **PoC eliminato:** `BodyTracker/` tolta (resta nella cronologia git); privacy, limiti e approfondimenti del catalogo del suo `LEGGIMI.md` nel `README.md`. Tolti anche la lettura diretta della chiave del PoC (`readPocKey`, il pannello del primo avvio e quello di Dati e privacy: il PoC non è mai stato pubblicato), il modulo `conversion.ts` (serviva solo a convertire una volta le schede A/B; `DEFAULT_SETS` e `DEFAULT_WARMUP_REST` passano a `types.ts`) e il confronto di `seed-data.test.ts` con il file del PoC (l'elenco `POC_IDS` resta e ora blocca anche l'ordine). Il formato `bodytracker.archivio.v1` resta come file da importare. «BodyTracker» resta solo nella storia del restyling (questo piano, `ANALISI.md`, `BRIEF.md`), che racconta l'eliminazione.
+  - **Assorbimento del PoC:** ogni riga della tabella ha il suo e2e (colonna aggiunta). Nuovi: indicazioni della scheda sull'esercizio e limite di 100 serie (`us-12-us-20-workout`), avviso `beforeunload` con modifiche non salvate (`us-33-save-status`). La regola delle immagini dell'approfondimento resta in Vitest: il catalogo non ha immagini.
+  - **`/kit`** (decisione 14): `src/pages/kit.astro` diventa `_kit.astro` (Astro non la genera) e l'integrazione `kitPage` di `astro.config.mjs` la inietta come `/kit` solo con `npm run dev` o con `WT_KIT=1`; `playwright.config.ts` imposta `WT_KIT=1` per la build dei test (`webServer.env`). La build pubblicata non ha né la pagina né i suoi chunk.
+  - **Critique dei flussi di USER-STORIES.md §4** (due valutazioni separate: revisione di design su 57 schermate e detector): 29/40. Detector a 0 su `src/` e sulle pagine con dati; nessuno sbordo orizzontale a 390 e 320, anche con nomi lunghi al massimo. Correzioni decise dall'utente:
+    - **Variante a metà esercizio (P1):** niente più «Cambia e svuota». Le serie spuntate restano all'esercizio fatto, la variante continua in una voce subito sotto con le serie da fare (stessi target della voce, `plannedEntry` tratta voci consecutive con lo stesso previsto come una sola); senza serie spuntate la variante prende il posto. In entrambi i casi «Annulla» (`switchExercise` restituisce la voce aggiunta, `undoSwitch`).
+    - **«Termina»:** secondario finché resta una serie da fare, e allora chiede conferma («Restano 23 serie da fare in 8 esercizi…»); pieno quando tutto è spuntato.
+    - **Allenamento senza tab bar:** è una modalità; «Torna a Oggi» nell'intestazione (`back` di `AppLayout`/`AppHeader`), rientro dalla mini-barra o da «Riprendi». A 320×568 si vedono 3 righe serie invece di 1,5.
+    - **Timer:** livello `#3d6b47` (2,6:1 sul guscio, prima 1,65:1) con filo lime di 6px; vuoto si ferma sopra le lastre, così negli ultimi secondi non sparisce dietro i comandi; sul livello «Prossima» e «Riduci» in `shell-foreground`.
+    - **Settimana tipo prima:** nel foglio di un giorno da oggi in poi, «Ogni martedì» (menu) prima di «Solo il 13 ottobre» (Come ogni martedì, Riposo, le schede).
+    - **Suggerimento dalla serie sopra:** segnaposto e spunta di una riga vuota prendono il peso dell'ultima serie sopra dello stesso genere scritta in questa sessione (`suggestedSets`), le ripetizioni restano la volta scorsa; vale anche per «Prossima» nel timer.
+    - **Piccole:** record dello Storico contati per esercizio («Record in 3 esercizi»), 1RM stimato al mezzo chilo, l'allenamento in corso nello Storico è una riga «In corso» (un solo «Riprendi», nella mini-barra), bersagli ≥ 44px (numero della serie, «Pianifica la settimana», «Come sono conservati i dati»), sfumatura sopra «Inizia allenamento» quando la pagina scorre sotto.
+  - **Harden:** a 100 serie (o 100 esercizi) il pulsante disattivato dice perché; nomi al limite (120 caratteri) vanno a capo senza sbordare; link dentro le frasi sottolineati (WCAG 1.4.1).
+  - **Lighthouse** (build di produzione, telefono): prestazioni 99–100, accessibilità 100 (Calendario 96: i giorni hanno un nome accessibile più lungo del testo visibile, «mar 13» → «martedì 13 ottobre: …», tenuto apposta), buone pratiche 100. La categoria PWA non esiste più in Lighthouse 12: l'installabilità è coperta da `us-03-pwa`.
+  - **Resta da verificare:** il deploy con l'app aperta in allenamento (vedi «Rischi»): non riprodotto; una pagina aperta che dopo un deploy chiede un chunk vecchio non più in cache darebbe errore solo offline. Raccomandazione: non pushare mentre ci si allena, e rimandare l'attivazione della nuova versione solo se capita davvero.
 
 ### Rilascio
 

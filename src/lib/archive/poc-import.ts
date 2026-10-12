@@ -1,5 +1,5 @@
-// Import del diario del PoC (`bodytracker.archivio.v1`, US-02): da file di backup ("Esporta" del PoC)
-// o dalla lettura diretta della sua chiave sulla stessa origine. È una funzione permanente dell'app.
+// Import del diario del PoC (`bodytracker.archivio.v1`, US-02): da file di backup ("Esporta" del PoC).
+// È una funzione permanente dell'app.
 // I campi letti (allenamenti, esercizi, varianteId, …) sono quelli del formato del PoC, in italiano.
 //
 // Il file deve avere la struttura del PoC (versione 1, elenco degli allenamenti, al massimo 10.000);
@@ -13,7 +13,6 @@ import {
   ArchiveError,
   DEFAULT_SETTINGS,
   LIMITS,
-  POC_ARCHIVE_KEY,
   emptyArchive,
   type Archive,
   type Routine,
@@ -33,15 +32,6 @@ export interface PocConversion {
   archive: Archive;
   discarded: Discarded[];
   warnings: string[];
-}
-
-/** Lettura diretta della chiave del PoC (stessa origine). null se non c'è. */
-export function readPocKey(store: Pick<Storage, 'getItem'> | undefined = globalThis.localStorage): string | null {
-  try {
-    return store?.getItem(POC_ARCHIVE_KEY) ?? null;
-  } catch {
-    return null;
-  }
 }
 
 type Obj = Record<string, unknown>;

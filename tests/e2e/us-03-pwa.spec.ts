@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { archiveWith, seedArchive } from './helpers';
+import { archiveWith, seedArchive, hydrated } from './helpers';
 
 // US-03: installabile e usabile offline dopo la prima visita, senza richieste a domini esterni (P6).
 // Il service worker è bloccato negli altri test (playwright.config.ts): qui si riattiva.
@@ -51,7 +51,7 @@ test.describe('US-03 app installabile e offline', () => {
       if (url.origin !== app.origin || !url.pathname.startsWith(app.pathname)) outside.push(request.url());
     });
     await page.goto('');
-    await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
+    await (await hydrated(page.getByRole('button', { name: 'Inizia con le schede di esempio' }))).click();
     await expect(page.getByRole('button', { name: 'Inizia allenamento' })).toBeVisible();
     for (const name of ['Calendario', 'Schede', 'Storico']) await page.getByRole('link', { name, exact: true }).click();
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Oggi' }).click();

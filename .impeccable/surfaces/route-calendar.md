@@ -45,3 +45,4 @@ L'utente controlla se è in linea con il programma ("ho saltato giovedì?") e, o
 ## Constraints and open decisions
 
 - **Deciso:** la vista mese compatta è nella v1, accanto alla settimana scorrevole (che resta la vista principale su telefono).
+- **Deciso (step 9, critique dei flussi):** nel foglio di un giorno da oggi in poi viene prima la settimana tipo di quel giorno («Ogni martedì», un menu che salva subito: US-04 è M), poi l'eccezione per la sola data («Solo il 13 ottobre»: «Come ogni martedì», «Riposo», le schede).

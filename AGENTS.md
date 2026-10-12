@@ -5,12 +5,7 @@ Guida per agenti di codice che lavorano su questo repository.
 ## Panoramica
 
 Workout Tracker è un diario di allenamento in palestra, con interfaccia in **italiano**.
-Il repository contiene due cose distinte:
-
-| Percorso | Cosa è | Stato |
-| --- | --- | --- |
-| `src/`, `public/`, config in radice | App **Astro 7 + Svelte 5 + Tailwind CSS 4** (package `astro-bodytracker-starter`) | In sviluppo attivo, è il target principale |
-| `BodyTracker/` | PoC: pacchetto statico HTML/CSS/JS senza build (`palestra/`) e `LEGGIMI.md` | Da assorbire nell'app radice e **da eliminare** a fine restyling. Non viene importato né compilato da Astro |
+Il repository contiene una sola app statica **Astro 7 + Svelte 5 + Tailwind CSS 4** (package `workout-tracker`) nella radice. Il PoC statico che la precedeva (`BodyTracker/`) è stato assorbito ed eliminato allo step 9: resta nella cronologia git e, come formato d'import, il suo backup (`bodytracker.archivio.v1`).
 
 Tutti i dati dell'utente restano nel browser (`localStorage`): nessun backend, database, account o chiamata API. Mantieni questo vincolo, a meno che non venga chiesto esplicitamente di cambiarlo.
 
@@ -18,7 +13,7 @@ Tutti i dati dell'utente restano nel browser (`localStorage`): nessun backend, d
 
 ```sh
 npm install        # oppure npm ci
-npm run dev        # dev server su http://localhost:4321
+npm run dev        # dev server su http://localhost:4321 (con /kit)
 npm run build      # sito statico in dist/, con il service worker (dist/sw.js)
 WT_BASE=/workout-tracker/ npm run build   # build in un sotto-percorso (WT_SITE cambia il dominio)
 npm run preview
@@ -37,6 +32,7 @@ Non ci sono linter né formatter configurati. Per verificare una modifica: `npm 
 - **Nomi dei test:** i test e2e di una storia cominciano con il suo ID (`US-12 registra una serie copiando il precedente`).
 - **Percorsi nei test:** sempre relativi (`page.goto('settings/')`, `''` per Oggi), mai assoluti (`'/settings'`): sono risolti rispetto a `baseURL`, che include `WT_BASE`. Aiuti comuni (archivio di prova, scelta di un file, foglio aperto) in `tests/e2e/helpers.ts`.
 - **Service worker nei test:** bloccato nella config (`serviceWorkers: 'block'`), riattivato solo nei test della PWA (`us-03-pwa.spec.ts`).
+- **`/kit` nei test:** la pagina esiste solo con `npm run dev` o con `WT_KIT=1`; la config di Playwright imposta `WT_KIT=1` per la sua build (`webServer.env`). Un `astro preview` di una build senza `WT_KIT` non ha `/kit`.
 - **Server dei test:** con `reuseExistingServer` un `astro preview` già attivo sulla porta 4322 viene riusato così com'è: se passi da una build con `WT_BASE` a una senza, fermalo prima.
 - **`astro preview` in Astro 7:** quando gira sotto un agente parte in background e restituisce subito il controllo (`npx astro preview stop` per fermarlo, `status` e `logs` per controllarlo). Con `--ignore-lock` resta in primo piano: lo usa la config di Playwright.
 - **Pagine con `_`:** Astro ignora i file in `src/pages/` il cui nome comincia con `_` (non generano una route).
@@ -47,20 +43,20 @@ Non ci sono linter né formatter configurati. Per verificare una modifica: `npm 
 - **Ogni push su `main` va in produzione.** Si lavora solo su `main`, mai su rami `claude/...`; si pusha solo con i controlli dello step verdi.
 - Fino alla fine del restyling l'app vive solo su `https://workout-tracker.francescoperagine.workers.dev` (non elencata, pagine `noindex`), per installarla sul telefono e fare le prove in palestra. Al rilascio (fine step 9) si collega `workout-tracker.francescoperagine.com` e il sito personale la elenca in Projects.
 - I dati del browser sono per origine: al passaggio di dominio si esporta un backup su `workers.dev` e lo si importa sul dominio nuovo.
-- `/kit` (pagina interna del design system) non deve stare nella build pubblicata, ma restare disponibile ai test e2e: il meccanismo si decide e si registra nello step 9.
+- `/kit` (pagina interna del design system) non è nella build pubblicata: `src/pages/_kit.astro` è ignorata dal routing di Astro e la piccola integrazione `kitPage` di `astro.config.mjs` la inietta come `/kit` solo con `npm run dev` o con `WT_KIT=1` (build dei test e2e).
 
 ## Struttura dell'app Astro
 
 ```
-astro.config.mjs        site e base da WT_SITE e WT_BASE (default: https://workout-tracker.francescoperagine.com, /), output statico, Svelte, Tailwind, integrazione del service worker
+astro.config.mjs        site e base da WT_SITE e WT_BASE (default: https://workout-tracker.francescoperagine.com, /), output statico, Svelte, Tailwind, integrazione del service worker, /kit solo in dev o con WT_KIT=1
 svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
-playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322, baseURL con WT_BASE
+playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322 (build con WT_KIT=1), baseURL con WT_BASE
 scripts/make-icons.mjs  icone della PWA (public/icons/) dal disegno del favicon
 src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js, con importScripts di public/sw-push.js (handler push e notificationclick, predisposizione Web Push)
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
-src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), RestTimerHost persistente (timer di recupero), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus
+src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), RestTimerHost persistente (timer di recupero), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus, back (ritorno nell'intestazione, per le pagine senza tab bar)
 src/lib/paths.ts        appUrl(path) e BASE: ogni link e risorsa passa da qui (percorso base, barra finale delle pagine); joinBase, isCurrentPath (con test)
 src/lib/theme.ts        temi: THEME_REGISTRY (unico elenco: system, light, dark, con etichette Sistema/Chiaro/Scuro; i temi futuri si aggiungono qui e in src/styles/themes/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave workout-tracker.theme, readTheme, applyTheme, saveTheme, themeBootScript (riapplica il tema anche a ogni navigazione del ClientRouter; con test)
 src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esportato da index.ts:
@@ -73,9 +69,8 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry)
   calendar.ts           calendario (step 5): addDays, weekStart, weekDates, monthWeeks, dayInfo (stato del giorno: done, in-progress, skipped, planned, rest, empty), setWeeklyDay, setDateOverride, staleWeeklyDays
   sessions.ts           sessioni (step 5): startSession (da scheda o libero, una sola in corso), reopenSession, finishSession (almeno un esercizio e un valore), removeSession/restoreSession, summarizeSession, currentExercise, lastFinishedSession
-  workout.ts            allenamento attivo (step 6): previousExercise/previousSets (precedente per variante e per posizione tra riscaldamento e serie di lavoro), completedSet (spunta che conferma il precedente), nextSet (serie da fare, alternanza in superserie), plannedEntry (voce della scheda), serie ed esercizi in sessione con "Annulla", switchExercise (variante), note, nome e data, loadRecords, workoutSummary
-  conversion.ts         testi del PoC → v2: restSeconds, splitLoad, routineFromPoc
-  poc-import.ts         convertPocArchive (backup del PoC, con scarti e avvisi), readPocKey
+  workout.ts            allenamento attivo (step 6): previousExercise/previousSets (precedente per variante e per posizione tra riscaldamento e serie di lavoro), completedSet (spunta che conferma il precedente), nextSet (serie da fare, alternanza in superserie), plannedEntry (voce della scheda), suggestedSets (segnaposto e spunta: il precedente con il peso della serie sopra), serie ed esercizi in sessione con "Annulla", switchExercise (variante: con serie spuntate quelle restano e la variante continua in una voce sotto) e undoSwitch, note, nome e data, loadRecords, workoutSummary
+  poc-import.ts         convertPocArchive (file di backup del PoC, con scarti e avvisi)
   backup.ts             exportArchive, readBackup (v2 o PoC), previewImport, mergeImport (keep/replace)
   progress.ts           progressi (step 8): exerciseHistory (un punto per sessione conclusa: carico massimo, 1RM Epley solo serie normali fino a 12 rip, volume; riscaldamento escluso, varianti separate), personalRecords, pointsInPeriod (3m, 1y, all), exercisesDone, sessionRecords (record di carico, 1RM e volume di una sessione)
 src/lib/rest-timer.ts   timer di recupero (step 7), logica pura: REST_TIMER_KEY, RestTimerState, startRest, shiftRest (±15 s), restRemaining/restFraction/restOverFor, restAfterCheck (quale recupero parte: riscaldamento, 0, superserie a fine giro), restIsStale (spunta tolta, sessione conclusa), crossedThreshold (annunci a 30, 10, 0), nextSetText, parseRestTimer (con test a orologio finto)
@@ -89,7 +84,7 @@ src/lib/units.ts        kg/lb e m/ft: fromKg/toKg, fromMeters/toMeters, parseWei
 src/lib/format.ts       testi per l'utente: plural, formatDateKey, formatTimestamp, formatPeriod e withPreposition ("all’8 settembre"), formatDuration ("1:30"), speakDuration, formatWeekdays ("lun, gio"), formatDayMonth; dallo step 5 formatRelativeDay ("giovedì", "12 giorni fa"), formatOnDay ("l’8 settembre"), formatElapsed ("1 h 05 min"), formatClock, formatWeekRange, formatMonth, formatLongDay (con test)
 src/lib/device.ts       isIos, isStandalone, canVibrate, ultimo backup (workout-tracker.lastBackup), downloadText
 src/lib/pwa.ts          registerServiceWorker (scope = percorso base, solo in produzione), invito all'installazione trattenuto (listenForInstallPrompt, canPromptInstall, promptInstall, evento bt:installable)
-src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starter-routines.ts (A/B convertite); test di parità con il PoC in seed-data.test.ts
+src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati) e starter-routines.ts (A/B convertite); seed-data.test.ts blocca l'elenco degli ID (POC_IDS)
 tests/fixtures/         synthetic-poc-backup.json (formato "Esporta" del PoC), usato da Vitest e dagli e2e
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
 public/icons/           icone della PWA (192, 512, maskable 512, apple-touch 180)
@@ -101,18 +96,18 @@ src/pages/
   routines.astro        Schede (/routines): elenco con crea, duplica, rinomina, riordina, archivia, elimina
   routine.astro         editor di una scheda (/routine?id=…)
   calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
-  workout.astro         allenamento in corso (/workout, step 6); ?summary=<id> mostra il riepilogo di una sessione appena conclusa
+  workout.astro         allenamento in corso (/workout, step 6), senza tab bar (è una modalità: «Torna a Oggi» nell'intestazione); ?summary=<id> mostra il riepilogo di una sessione appena conclusa
   history.astro         Storico (/history, step 8): allenamenti per mese, ?view=exercises l'elenco degli esercizi fatti
   session.astro         dettaglio modificabile di un allenamento concluso (/session?id=…, &date= se si arriva dal calendario): Workout con detail
   exercise.astro        progressi di un esercizio (/exercise?id=…): record, grafico, cronologia
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
-  kit.astro             /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione e dal precache
+  _kit.astro            /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione, dal precache e dalla build pubblicata (solo dev e WT_KIT=1)
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
                         LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento
 src/components/shell/RestTimerHost.svelte  timer di recupero nel guscio (transition:persist): finestra a tutto schermo su ogni pagina, annunci alle soglie, wake lock
-src/components/data/ImportFlow.svelte      importazione (file v2/PoC o chiave del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
+src/components/data/ImportFlow.svelte      importazione (file v2 o backup del PoC): anteprima, mantieni/sostituisci, riepilogo con gli scartati
 src/components/settings/  SettingsPage (tema, unità, allenamento, guida «Come funziona»), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
 src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
@@ -142,7 +137,6 @@ src/components/kit/     isole dimostrative usate solo da /kit
 | Chiave | Forma | Note |
 | --- | --- | --- |
 | `workout-tracker.archive.v2` | `Archive` di `src/lib/archive/types.ts` (`version: 2`, `revision`, `catalog`, `routines`, `schedule`, `overrides`, `sessions`, `settings`) | Il diario. Si legge e si scrive **solo** con `ArchiveRepository` (`archiveStore()` nelle isole). Pesi in kg, distanze in metri. Assente = primo avvio (`isNew`) |
-| `bodytracker.archivio.v1` | Archivio del PoC (campi in italiano) | Solo lettura, per l'import diretto sulla stessa origine (`readPocKey`). Nome e formato sono del PoC e non cambiano |
 | `workout-tracker.theme` | `light` \| `dark` (assente = sistema) | Preferenza del dispositivo, fuori dall'archivio (`src/lib/theme.ts`) |
 | `workout-tracker.lastBackup` | timestamp in ms | Ultimo backup esportato da questo browser (`src/lib/device.ts`), mostrato in Dati e privacy |
 | `workout-tracker.restTimer` | `RestTimerState` di `src/lib/rest-timer.ts` (sessione, voce, serie, `start`, `end`, `duration`, `warmup`, `minimized`, `alerted`) | Il recupero in corso, fuori dall'archivio perché cambia spesso. Assente = nessun recupero. Si legge e si scrive solo con `restTimer()` |
@@ -166,7 +160,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 - **Lingua:** il codice è in **inglese** (nomi di file e cartelle, route, identificatori, tipi, campi del modello dati, chiavi di storage, token e classi CSS, id degli elementi). È in **italiano** tutto ciò che vede l'utente: testo dell'interfaccia, `title`/`description`, etichette accessibili, messaggi di errore e di stato; date formattate con `toLocaleDateString('it-IT', …)`. Restano in italiano anche commenti, documentazione e nomi dei test (cominciano con l'ID della storia), e i dati esterni: gli ID degli esercizi del PoC e i campi del suo formato di backup.
 - **Date nei test e2e:** il browser dei test è in `Europe/Rome` (`timezoneId`), Node no: per fissare "oggi" con `page.clock.setFixedTime` usa un istante con il fuso esplicito (`new Date('2026-10-08T18:30:00+02:00')`).
 - Le route seguono i nomi dei file: `/settings`, `/calendar`, `/routines`, `/routine?id=`, `/history`, `/session?id=`, `/exercise?id=`, `/workout`, `/welcome` (vedi BRIEF.md).
-- Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showTabs={false}` e `showHeader={false}` solo sul primo avvio). `/kit` usa `Base`.
+- Ogni pagina dell'app usa `AppLayout` (con `tab` per la voce attiva della tab bar; `showHeader={false}` solo sul primo avvio, `showTabs={false}` sul primo avvio e sull'allenamento in corso, che ha `back` verso Oggi). `/kit` usa `Base`.
 - **Design system (step 1):** il codice nuovo usa solo i token di `DESIGN.md`, definiti in `@theme` in `global.css`, e i componenti base. Mai colori della palette di default di Tailwind (`bg-blue-600`, `text-gray-500`, …) né valori letterali.
   - Colori di contenuto, che cambiano col tema: `bg-background`, `bg-surface`, `bg-field`, `text-foreground`, `text-muted`, `border-line`, `border-line-strong`, `bg-accent`/`text-on-accent`, `text-accent-text`, `bg-done`, `text-danger`, `bg-warning-bg`. Sono `light-dark()`: niente varianti `dark:`.
   - Guscio, uguale nei due temi (intestazione, barra di salvataggio, tab bar, timer): classe `.shell` più i token `shell-*` e `level`. Dentro `.shell` i token di contenuto si risolvono nella variante scura.
@@ -181,23 +175,20 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 ## Limiti noti
 
-- Storico e progressi sono completi dallo step 8. L'allenamento attivo è completo dallo step 6, il timer di recupero dallo step 7. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
+- Lo step 9 ha rifinito i flussi (critique, audit, harden, polish di Impeccable): vedi lo «Stato» dello step 9 in PIANO.md. Storico e progressi sono completi dallo step 8. L'allenamento attivo è completo dallo step 6, il timer di recupero dallo step 7. Le Schede sono complete dallo step 4 (riordino solo con frecce: il trascinamento è rimandato).
 - Gli avvisi di fine recupero arrivano solo con l'app aperta: il Web Push è solo predisposto (handler in `public/sw-push.js`, importato da `sw.js`), senza server né permessi (`docs/restyling/WEB-PUSH.md`).
 - Test dello step 6 (`us-12-us-20-workout`): le schede non hanno recupero (`rest: 0`), perché spuntano più serie di fila e il timer le coprirebbe. Nei test del timer l'orologio è fermo (`page.clock.install` più `pauseAt`) e scorre con `runFor`/`fastForward`.
 - La vecchia app (`bb-*`: home, pagina del giorno, `/about`, `src/scripts/`) è stata rimossa allo step 3, senza migrazione (decisione 6 del piano).
 - Il service worker trova nel precache solo gli URL delle pagine con la barra finale (`/settings/`); un indirizzo scritto a mano senza barra, offline, non si apre. I link dell'app hanno sempre la barra.
 - Test e2e: uno per storia (`us-01-welcome`, `us-02-import-poc`, `us-03-pwa`, `us-04-us-06-calendar`, `us-07-us-10-routines`, `us-11-us-17-today`, `us-12-us-20-workout`, `us-21-us-24-training-settings`, `us-21-us-26-rest-timer`, `us-27-us-29-history`, `us-30-themes`, `us-31-units`, `us-32-backup`, `us-33-save-status`), più lo smoke test del guscio (`smoke.spec.ts`) e i componenti di `/kit` (`kit.spec.ts`). Ogni nuova storia porta il suo test.
 
-## Riferimento: `BodyTracker/`
+## Il PoC
 
-- `BodyTracker/LEGGIMI.md`: funzionalità e vincoli di privacy della versione statica (salvataggio a ogni modifica con stato visibile, esportazione e importazione con unione e deduplicazione, protezione da sovrascritture tra schede, gestione dell'errore di quota, schede A/B, varianti, catalogo esercizi con ID stabili).
-- `BodyTracker/palestra/esercizi.js`: catalogo esercizi (`window.catalogoEsercizi`) e schede iniziali (`window.schedeIniziali`).
+Il PoC statico (`BodyTracker/`) è stato eliminato allo step 9, dopo la verifica della tabella "Assorbimento del PoC" in `docs/restyling/PIANO.md` (ogni riga con un e2e). Privacy, limiti e approfondimenti del catalogo del suo `LEGGIMI.md` sono nel `README.md`. Il suo formato di backup (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) resta supportato **solo come file da importare** (`poc-import.ts`, fixture `tests/fixtures/synthetic-poc-backup.json`): è l'unico posto dove resta il nome `bodytracker`. La lettura diretta della sua chiave nel `localStorage` è stata tolta (il PoC non è mai stato pubblicato).
 
-Il PoC è la specifica delle funzioni da portare nell'app Astro: alla fine del restyling deve restare solo l'app nella radice, con le funzioni di entrambi. La tabella "Assorbimento del PoC" in `docs/restyling/PIANO.md` elenca cosa portare. Non sviluppare nuove funzioni in `BodyTracker/`. Il suo formato dati (`bodytracker.archivio.v1`, campi in italiano, `versione: 1`) resta supportato dall'app radice solo come formato di importazione.
+## Restyling
 
-## Restyling in corso
-
-È previsto un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi e ricerche sono in `docs/restyling/ANALISI.md`, il piano a step con le decisioni prese in `docs/restyling/PIANO.md`, scena d'uso, principi UX e user story in `docs/restyling/USER-STORIES.md`, il punto di ripartenza in `docs/restyling/HANDOFF.md`: leggili prima di toccare la UI. I brief delle superfici sono indicizzati in `docs/restyling/BRIEF.md`.
+Il restyling (step 0–9) è concluso il 12 ottobre 2026; restano il rilascio sul dominio e le correzioni dopo le prove sull'app installata (`docs/restyling/HANDOFF.md`). È stato un restyling completo dell'app Astro, mobile first e basato su [Impeccable](https://github.com/pbakaus/impeccable), che porta nell'app il mondo visivo del PoC e aggiunge schede vere e un timer di recupero. Analisi e ricerche sono in `docs/restyling/ANALISI.md`, il piano a step con le decisioni prese in `docs/restyling/PIANO.md`, scena d'uso, principi UX e user story in `docs/restyling/USER-STORIES.md`, il punto di ripartenza in `docs/restyling/HANDOFF.md`: leggili prima di toccare la UI. I brief delle superfici sono indicizzati in `docs/restyling/BRIEF.md`.
 
 ### Impeccable nel repository
 

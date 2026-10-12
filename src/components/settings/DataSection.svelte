@@ -9,7 +9,7 @@
   import ImportFlow from '../data/ImportFlow.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
-  import { backupFileName, emptyArchive, exportArchive, readPocKey, type Archive } from '../../lib/archive';
+  import { backupFileName, emptyArchive, exportArchive, type Archive } from '../../lib/archive';
   import { downloadText, isIos, isStandalone, readLastBackup, saveLastBackup } from '../../lib/device';
   import { formatTimestamp, plural } from '../../lib/format';
 
@@ -30,7 +30,6 @@
 
   let lastBackup: number | null = $state(readLastBackup());
   let persisted: boolean | null = $state(null);
-  let pocText: string | null = $state(readPocKey());
   let showIosWarning = $state(false);
   let confirmClear = $state(false);
   let importFlow: ImportFlow;
@@ -139,16 +138,6 @@
       dalla versione precedente dell’app.
     </p>
   </div>
-
-  {#if pocText}
-    <div class="panel flex flex-col gap-3">
-      <h3 class="subhead">Diario della versione precedente</h3>
-      <p class="m-0 text-muted">Su questo dispositivo c’è il diario della versione precedente dell’app. Puoi importarlo qui, con un’anteprima prima di confermare.</p>
-      <button type="button" class="btn btn-secondary self-start" onclick={() => pocText && importFlow.importText(pocText)}>
-        <Upload aria-hidden="true" />Importa il diario precedente
-      </button>
-    </div>
-  {/if}
 
   <div class="panel flex flex-col gap-3">
     <h3 class="subhead">Cancella il diario</h3>

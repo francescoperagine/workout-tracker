@@ -47,6 +47,7 @@
   }: Props = $props();
 
   let dialog: HTMLDialogElement | undefined = $state();
+  let dockHeight = $state(0);
 
   const go = $derived(remaining === 0);
   const final = $derived(remaining > 0 && remaining <= 10);
@@ -73,8 +74,13 @@
 
 {#snippet screen()}
   <div class="screen" class:go class:final>
-    <!-- il livello pieno si ferma sotto l'intestazione, così la linea lime non la attraversa -->
-    <div class="level" style:height={`calc(${go ? 0 : fraction} * (100% - 4.5rem))`} aria-hidden="true"></div>
+    <!-- il livello pieno si ferma sotto l'intestazione, così la linea lime non la attraversa; vuoto arriva al
+         bordo superiore dei comandi, così negli ultimi secondi non scende dietro le lastre (step 9) -->
+    <div
+      class="level"
+      style:height={go ? '0' : `calc(${dockHeight}px + ${fraction} * (100% - 4.5rem - ${dockHeight}px))`}
+      aria-hidden="true"
+    ></div>
     <div class="head">
       <span>{heading}</span>
       {#if !go}
@@ -97,6 +103,7 @@
         {/if}
       </p>
     </div>
+    <div class="dock" bind:offsetHeight={dockHeight}>
     <div class="controls">
       {#if go}
         <button type="button" class="plate wide" onclick={onskip}>Chiudi</button>
@@ -109,6 +116,7 @@
     {#if !go}
       <button type="button" class="btn btn-text minimize" onclick={onminimize}>Riduci</button>
     {/if}
+    </div>
     <p class="sr-only" role="status" aria-live="assertive">{announcement}</p>
   </div>
 {/snippet}
@@ -155,7 +163,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: max(0.5rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+    padding: max(0.5rem, env(safe-area-inset-top)) 1rem 0;
     overflow: hidden;
     background: var(--color-shell);
     color: var(--color-shell-foreground);
@@ -164,7 +172,7 @@
     position: absolute;
     inset: auto 0 0;
     background: var(--color-level);
-    border-top: 4px solid var(--color-shell-accent);
+    border-top: 6px solid var(--color-shell-accent);
   }
   /* Ultimi 10 s: le cifre passano all'accento, preludio allo schermo lime di "Vai" */
   .final .timer-digits {
@@ -176,8 +184,16 @@
   }
   .head,
   .center,
-  .controls {
+  .dock {
     position: relative;
+  }
+  /* comandi e "Riduci" stanno sempre sul livello: l'area sicura in basso è dentro, così il livello vuoto
+     si ferma esattamente sopra le lastre */
+  .dock {
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.75rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
   .head {
     display: flex;
@@ -220,7 +236,8 @@
   .next-label {
     display: block;
     font-size: var(--text-sm);
-    color: var(--color-shell-muted);
+    /* sul livello il muted scende sotto 4,5:1: l'etichetta si distingue per dimensione */
+    color: var(--color-shell-foreground);
   }
   .controls {
     display: grid;
@@ -246,7 +263,7 @@
     align-self: center;
     margin-top: 0.25rem;
     padding: 0 1.5rem;
-    color: var(--color-shell-muted);
+    color: var(--color-shell-foreground);
   }
   .plate.wide {
     grid-column: 1 / -1;

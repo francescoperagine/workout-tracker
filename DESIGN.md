@@ -31,7 +31,7 @@ colors:
   shell-warning: "#ffe0bd"
   shell-warning-icon: "#ffc98f"
   shell-warning-line: "#846b4e"
-  level: "#2b4a36"
+  level: "#3d6b47"
   backdrop: "rgb(9 23 19 / 0.6)"
   shadow: "rgb(9 23 19 / 0.28)"
 typography:
@@ -362,7 +362,7 @@ Il verde resta il tema predefinito. Il guscio di un tema aggiuntivo può avere u
 - **Lime del guscio** (`shell-accent`): l'unico accento sul verde scuro: voce attiva della tab bar, primario sul guscio, link e pulsanti testuali sul guscio, icona "salvato", anello di focus sul guscio, filo superiore del livello, cifre negli ultimi dieci secondi, schermo "Vai". Al passaggio diventa **Lime chiaro** (`shell-accent-hover`).
 
 ### Secondary
-- **Verde livello** (`level`): solo per il livello del timer (a tutto schermo e nella barra ridotta). Un verde intermedio tra guscio e pannello, abbastanza diverso dal guscio da leggersi come "pieno" senza competere con le cifre.
+- **Verde livello** (`level`): solo per il livello del timer (a tutto schermo e nella barra ridotta). Un verde più chiaro del pannello, 2,6:1 sul guscio (step 9: prima 1,65:1, sparito alla luce del sole), così "pieno" si legge anche in palestra; il testo sul livello è `shell-foreground` (5,6:1), mai `shell-muted` (3,6:1).
 
 ### Tertiary
 - **Rosso mattone / Corallo** (`danger`): azioni distruttive e campi non validi; testo e bordo, mai riempimento pieno. Al passaggio, il pulsante distruttivo prende il **Rosato pericolo** (`danger-bg`).
@@ -527,7 +527,7 @@ Allineato a sinistra: icona `muted` da 28px, titolo, una frase che dice cosa com
 
 ### Timer di recupero (componente distintivo)
 Lo schermo è la clessidra.
-- **Schermo intero:** finestra modale a tutta altezza sul colore del guscio. Dietro a tutto, il livello `level` con filo superiore lime di 4px parte dal 100% dell'altezza e scende a scatti di un secondo, senza animazione continua. In testa "Recupero · 2:00" in `shell-muted` e l'icona Riduci da 48px; al centro le cifre timer in `shell-foreground` e sotto "Prossima" (etichetta a 14px) con esercizio, serie, peso × ripetizioni; in basso, nella zona del pollice, tre lastre da 64px (−15 s, +15 s, Salta) con 10px di stacco, e "Riduci" come pulsante testuale sotto. Esc riduce invece di chiudere.
+- **Schermo intero:** finestra modale a tutta altezza sul colore del guscio. Dietro a tutto, il livello `level` con filo superiore lime di 6px parte dal 100% dell'altezza (sotto l'intestazione) e scende a scatti di un secondo, senza animazione continua, fino al bordo superiore delle lastre: vuoto, il filo sta sopra i comandi, che restano sempre sul livello, e negli ultimi secondi non sparisce dietro di loro. In testa "Recupero · 2:00" in `shell-muted` e l'icona Riduci da 48px; al centro le cifre timer in `shell-foreground` e sotto "Prossima" (etichetta a 14px in `shell-foreground`) con esercizio, serie, peso × ripetizioni; in basso, nella zona del pollice, tre lastre da 64px (−15 s, +15 s, Salta) con 10px di stacco, e "Riduci" come pulsante testuale sotto. Esc riduce invece di chiudere.
 - **Ultimi 10 secondi:** le cifre diventano lime.
 - **Vai:** tutto lo schermo diventa lime, testo e icone in `shell-on-accent`, le cifre lasciano il posto alla parola "Vai", "Prossima" diventa "Adesso" e le lastre si fondono in un unico "Chiudi" verde inchiostro con testo lime. Si chiude da solo dopo 6 secondi.
 - **Ridotto:** barra del guscio alta 56px, sull'allenamento sopra la barra dell'allenamento, sulle altre pagine al posto della mini-barra; il livello qui si accorcia da destra verso sinistra (filo superiore lime di 3px), con icona timer, tempo in cifre e la prossima serie troncata in `shell-muted`. Un tocco riapre lo schermo intero; a fine recupero la barra diventa lime con "Vai".

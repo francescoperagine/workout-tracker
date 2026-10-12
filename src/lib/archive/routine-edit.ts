@@ -2,9 +2,8 @@
 // restituiscono uno nuovo, senza mutare quello ricevuto, come vuole repo.update().
 // Superserie: le voci consecutive con la stessa stringa in `group`. Dopo ogni modifica i gruppi si
 // normalizzano: un gruppo resta tale solo se le sue voci sono consecutive e almeno due.
-import { DEFAULT_SETS, DEFAULT_WARMUP_REST } from './conversion';
 import { nameKey } from './catalog';
-import { ArchiveError, LIMITS, WEEKDAYS, type Archive, type Routine, type RoutineExercise, type Settings, type Weekday } from './types';
+import { ArchiveError, DEFAULT_SETS, DEFAULT_WARMUP_REST, LIMITS, WEEKDAYS, type Archive, type Routine, type RoutineExercise, type Settings, type Weekday } from './types';
 
 /** Id nuovo e univoco in pratica: tempo più una parte casuale (non serve un id crittografico). */
 export function newId(prefix: string): string {

@@ -1,7 +1,4 @@
-import { readFileSync } from 'node:fs';
-import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
-import { routineFromPoc, type PocRoutineItem } from '../lib/archive/conversion';
 import { BASE_CATALOG } from './catalog';
 import { STARTER_ROUTINES } from './starter-routines';
 
@@ -11,6 +8,7 @@ const POC_IDS = ['squat-bilanciere', 'leg-press', 'squat-al-smith', 'goblet-squa
 
 describe('catalogo di base', () => {
   it('contiene tutti gli ID del PoC, invariati', () => {
+    expect(Object.keys(BASE_CATALOG)).toEqual(POC_IDS);
     for (const id of POC_IDS) {
       expect(BASE_CATALOG[id], id).toBeDefined();
       expect(BASE_CATALOG[id].id).toBe(id);
@@ -34,38 +32,8 @@ describe('catalogo di base', () => {
       }
     }
   });
-});
 
-// Confronto con il PoC finché esiste BodyTracker/ (step 9: questo blocco va tolto insieme alla cartella;
-// l'elenco POC_IDS qui sopra resta).
-describe('parità con BodyTracker/palestra/esercizi.js', () => {
-  type PocExercise = { id: string; nome: string; descrizione: string; immagine: string; testoAlternativo: string; passaggi: string[]; attenzione: string; fonti: { titolo: string; url: string }[] };
-  const context = { window: {} as { catalogoEsercizi: Record<string, PocExercise>; schedeIniziali: Record<string, PocRoutineItem[]> } };
-  runInNewContext(readFileSync(new URL('../../BodyTracker/palestra/esercizi.js', import.meta.url), 'utf8'), context);
-  const { catalogoEsercizi, schedeIniziali } = context.window;
-
-  it('il catalogo convertito ha gli stessi esercizi e gli stessi contenuti del PoC', () => {
-    expect(Object.keys(catalogoEsercizi)).toEqual(POC_IDS);
-    expect(Object.keys(BASE_CATALOG)).toEqual(POC_IDS);
-    for (const [id, e] of Object.entries(catalogoEsercizi)) {
-      expect(BASE_CATALOG[id]).toEqual({
-        id: e.id,
-        name: e.nome,
-        description: e.descrizione,
-        image: e.immagine,
-        imageAlt: e.testoAlternativo,
-        steps: [...e.passaggi],
-        caution: e.attenzione,
-        sources: e.fonti.map((f) => ({ title: f.titolo, url: f.url })),
-      });
-    }
-  });
-
-  it('le schede iniziali sono la conversione delle schede A/B del PoC', () => {
-    const expected = Object.entries(schedeIniziali).map(([letter, items]) => routineFromPoc(letter, JSON.parse(JSON.stringify(items))));
-    expect(STARTER_ROUTINES).toEqual(expected);
-  });
-
+  // schede A/B convertite dal PoC (eliminato allo step 9, resta nella cronologia git)
   it('A/B: recuperi, carichi e superserie come nel PoC', () => {
     const [a, b] = STARTER_ROUTINES;
     expect(a.exercises.map((e) => [e.id, e.rest, e.group])).toEqual([

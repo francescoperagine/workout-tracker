@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { archiveWith, seedArchive } from './helpers';
+import { archiveWith, hydrated, seedArchive } from './helpers';
 
 // US-30: tema chiaro, scuro o di sistema, applicato prima del primo disegno.
 const LIGHT_BACKGROUND = 'rgb(238, 242, 236)';
@@ -28,9 +28,9 @@ test.describe('US-30 tema chiaro, scuro o di sistema', () => {
   test('US-30 la scelta Scuro vale anche dopo il ricaricamento, con il sistema chiaro', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('kit/');
-    await page.getByRole('radio', { name: 'Scuro' }).check();
+    await (await hydrated(page.getByRole('radio', { name: 'Scuro' }))).check();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    expect(await backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
+    await expect.poll(() => backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
 
     // Lo script inline applica il tema prima del primo disegno: già al DOMContentLoaded
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -42,11 +42,11 @@ test.describe('US-30 tema chiaro, scuro o di sistema', () => {
   test('US-30 la scelta Chiaro vince sul sistema scuro, e Sistema torna a seguirlo', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('kit/');
-    await page.getByRole('radio', { name: 'Chiaro' }).check();
-    expect(await backgroundOf(page, 'body')).toBe(LIGHT_BACKGROUND);
+    await (await hydrated(page.getByRole('radio', { name: 'Chiaro' }))).check();
+    await expect.poll(() => backgroundOf(page, 'body')).toBe(LIGHT_BACKGROUND);
     await page.getByRole('radio', { name: 'Sistema' }).check();
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
-    expect(await backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
+    await expect.poll(() => backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
     expect(await page.evaluate(() => localStorage.getItem('workout-tracker.theme'))).toBeNull();
   });
 

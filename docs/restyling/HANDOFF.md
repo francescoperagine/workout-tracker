@@ -1,62 +1,38 @@
-# Handoff: restyling Workout Tracker, step 9
+# Handoff: Workout Tracker dopo lo step 9 (rilascio)
 
-Questo documento serve a riprendere il lavoro in una nuova conversazione. Contiene lo stato del repository, lo step 9 in dettaglio e le insidie dell'ambiente già incontrate.
+Questo documento serve a riprendere il lavoro in una nuova conversazione. Il restyling è finito (step 0–9); restano il rilascio, che fa Francesco, e le correzioni dopo le prove sull'app installata.
 
 ## Prompt da incollare nella nuova conversazione
 
-**Step 9**, dopo la conferma delle decisioni dello step 8:
+**Dopo il rilascio**, quando Francesco ha provato l'app installata:
 
-> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md`, `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief in `.impeccable/surfaces/`. L'app si chiama **Workout Tracker** ed è pubblicata a ogni push su `main` su `https://workout-tracker.francescoperagine.workers.dev`. Prima di cominciare, chiedimi l'esito delle prove sull'app installata dello storico e dei progressi (step 8) e del suono di fine recupero corretto, e le risposte alle decisioni aperte dello step 8 elencate in HANDOFF.md, e applica le correzioni. Poi esegui lo **step 9** del piano (rifinitura, eliminazione del PoC e rilascio): `critique`, `audit`, `harden` e `polish` di Impeccable sui flussi di USER-STORIES.md §4; verifica della tabella "Assorbimento del PoC" (ogni riga con un e2e verde); eliminazione di `BodyTracker/` con le parti utili di `LEGGIMI.md` nel `README.md`; `/kit` fuori dalla build pubblicata ma disponibile ai test; decisione sulla lettura diretta della chiave del PoC (`readPocKey`); verifica che non resti «BodyTracker» tranne il formato d'import `bodytracker.archivio.v1`; aggiornamento di `AGENTS.md` e `README.md`. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Un push su `main` è un deploy in produzione: pusha solo con `npm run check`, `npm test`, `npm run build` e le suite e2e verdi (anche con `WT_BASE=/workout-tracker/`). Fermati alla fine dello step per mostrarmi le schermate e le decisioni prese, con raccomandazioni per le decisioni aperte; poi i passi del «Rilascio» in PIANO.md.
+> Leggi `AGENTS.md`, `docs/restyling/HANDOFF.md`, `docs/restyling/PIANO.md` (step 9 e «Rilascio»), `docs/restyling/USER-STORIES.md`, `PRODUCT.md`, `DESIGN.md` e i brief in `.impeccable/surfaces/`. L'app si chiama **Workout Tracker**: è pubblicata a ogni push su `main` sul Worker Cloudflare `workout-tracker` (`https://workout-tracker.francescoperagine.workers.dev` e, dopo il rilascio, `https://workout-tracker.francescoperagine.com`). Prima di cominciare, chiedimi a che punto sono i passi del «Rilascio» in PIANO.md, l'esito delle prove sull'app installata (storico e progressi dello step 8, suono di fine recupero, e le correzioni dello step 9: variante a metà esercizio che tiene le serie fatte, «Termina» con conferma, allenamento senza tab bar, livello del timer, «Ogni martedì» nel foglio del giorno, peso suggerito dalla serie sopra) e le risposte alle decisioni aperte dello step 9 elencate in HANDOFF.md; poi applica le correzioni. Il codice è in inglese (file, route, identificatori, token CSS), i testi per l'utente in italiano: vedi "Lingua" in `AGENTS.md`. Lavora sempre e solo su `main`: niente branch né pull request, anche se la sessione ne propone uno; commit e push direttamente su `main`. Un push su `main` è un deploy in produzione: pusha solo con `npm run check`, `npm test`, `npm run build` e le suite e2e verdi (anche con `WT_BASE=/workout-tracker/`). Fermati alla fine per mostrarmi le schermate e le decisioni prese, con raccomandazioni per quelle aperte.
 
-## Stato a fine step 8 (12 ottobre 2026)
+## Stato a fine step 9 (12 ottobre 2026)
 
-Tutto è su `main`. Decisioni dello step nello «Stato» dello step 8 in PIANO.md; struttura e route in `AGENTS.md`.
+Tutto è su `main`. Dettagli nello «Stato» dello step 9 in PIANO.md; struttura, comandi e convenzioni in `AGENTS.md`.
 
-- **Prove in palestra (risposte del 12 ottobre 2026):** variante con la macchina occupata a posto; superserie non provate (l'utente fa al massimo le serie di avvicinamento); timer al sole e in penombra non provabili; solo Android (telefono di cinque anni), niente iPhone; suono udibile ma basso → onda quadra e volume più alto in `src/lib/rest-alert.ts`. Decisioni aperte dello step 7: confermate tutte le raccomandazioni.
-- **Storico e progressi:** `/history` (Allenamenti per mese e vista Esercizi), `/session?id=` (dettaglio modificabile: `Workout` con `detail`, nessun recupero, «Riapri», «Elimina» con conferma e «Annulla»), `/exercise?id=` (record, grafico `ProgressChart` in SVG, cronologia), calcoli in `src/lib/archive/progress.ts`, record di carico, 1RM e volume nel riepilogo (`sessionRecords`). Il foglio del giorno del calendario apre il dettaglio.
-- **Verifiche:** `npm run check` 0 errori, `npm test` 252 Vitest (18 nuovi in `progress.test.ts`), `npm run build` ok, `npm run test:e2e` 278 verdi e `WT_BASE=/workout-tracker/ npm run test:e2e` 278 verdi (28 nuovi in `us-27-us-29-history.spec.ts`, più il riepilogo di US-18 aggiornato ai record di 1RM), detector a 0 sui file toccati. Schermate a 390×844 e 320×568 nei due temi (Storico, Esercizi, dettaglio, pagina esercizio con grafico) mostrate all’utente.
+- **Prima dello step (risposte del 12 ottobre 2026):** storico, progressi e suono corretto non ancora provati sull'app installata; decisioni aperte dello step 8 tutte confermate; `readPocKey` da togliere.
+- **PoC eliminato** (`BodyTracker/`, `readPocKey`, `conversion.ts`, confronto con il file del PoC in `seed-data.test.ts`); `README.md` riscritto (privacy, limiti, sviluppo, pubblicazione, catalogo e approfondimenti). Il formato d'import `bodytracker.archivio.v1` resta.
+- **`/kit`** solo in dev o con `WT_KIT=1` (integrazione `kitPage` in `astro.config.mjs`, `webServer.env` in `playwright.config.ts`).
+- **Critique, audit, harden e polish** sui flussi di USER-STORIES.md §4, con le correzioni scelte dall'utente (variante che tiene le serie fatte con «Annulla», «Termina» con conferma e secondario finché resta una serie, niente tab bar sull'allenamento, livello del timer più visibile e sopra le lastre, «Ogni martedì» prima dell'eccezione, peso suggerito dalla serie sopra, record per esercizio, 1RM al mezzo chilo, un solo «Riprendi» nello Storico, bersagli ≥ 44px, link sottolineati nelle frasi).
+- **Verifiche:** `npm run check` 0 errori, `npm test` 226 Vitest, `npm run build` ok (senza `/kit`), `npm run test:e2e` 292 verdi e `WT_BASE=/workout-tracker/ npm run test:e2e` 292 verdi, detector a 0 su `src/`, Lighthouse (telefono) prestazioni 99–100, accessibilità 100 (Calendario 96), buone pratiche 100. Schermate dei flussi a 390×844 nei due temi e a 320×568 mostrate all'utente.
 
-## Decisioni aperte dello step 8 (da chiedere all'utente)
+## Decisioni aperte dello step 9 (da chiedere all'utente)
 
-1. **Periodo predefinito «3 mesi»** sul grafico. Raccomandazione: tenerlo (l'andamento recente è quello che conta in palestra); se lo storico è più corto, «Tutto» mostra lo stesso.
-2. **Un grafico con «Misura» invece di tre grafici uno sotto l'altro**, per non fare un cruscotto (anti-obiettivo del brief). Raccomandazione: tenerlo.
-3. **Dettaglio con gli esercizi compattati** («Mostra serie» per vedere e correggere le righe), come un esercizio fatto nell'allenamento. Raccomandazione: tenerlo: si legge tutta la sessione a colpo d'occhio e la correzione costa un tocco.
-4. **Record nella riga serie solo per il carico**; 1RM e volume solo nel riepilogo e nello Storico. Raccomandazione: tenerlo, perché un trofeo di volume a metà esercizio cambierebbe a ogni spunta.
-5. **Storico con la vista Esercizi** (non prevista dal brief, che entrava ai progressi solo dalla riga dell'esercizio e dal calendario). Raccomandazione: tenerla, risponde a «sto progredendo sulla panca?» senza cercare una sessione.
-6. **Esercizi a corpo libero:** nessun grafico (manca il carico) e il motivo al suo posto; ripetizioni nella cronologia. Raccomandazione: rimandare un grafico delle ripetizioni a quando servirà.
+1. **Numerazione dopo una variante a metà esercizio:** la variante è una voce nuova con il suo numero (lo squat fatto resta «1», la variante diventa «2», le voci dopo scalano) e il conteggio dice «1 di 9 esercizi fatti». Raccomandazione: tenerla, è quello che è successo davvero.
+2. **Nome accessibile dei giorni del calendario** più lungo del testo visibile («mar 13» → «martedì 13 ottobre: …», Lighthouse 96). Raccomandazione: tenerlo.
+3. **Deploy con l'app aperta in allenamento:** non riprodotto; un chunk vecchio tolto dalla cache darebbe errore solo offline. Raccomandazione: non pushare mentre ci si allena; intervenire solo se capita.
+4. **Proposte della critique non fatte:** segno sulla riga della serie da fare adesso, pulsanti ± per il peso, impostazione «Distanza» che oggi non ha effetto (decisione 9 del piano). Raccomandazione: aspettare le prove in palestra.
 
-## Stato dopo la correzione del calendario (12 ottobre 2026)
+## Rilascio (da PIANO.md)
 
-Specifica approvata il 12 ottobre 2026 (problema segnalato da Francesco sul telefono: la domenica la settimana lunedì–domenica era quasi tutta nel passato, il foglio del giorno non creava schede né avviava allenamenti, nessuna guida). Riassunto in PIANO.md, «Stato» dello step 5; brief `route-calendar.md` aggiornato.
+1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`.
+2. Esporta il backup su `workout-tracker.francescoperagine.workers.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
+3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria (azione che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco), seguendo le regole di quel repo.
+4. Da lì in poi ogni push su `main` è online.
 
-- **Vista settimana:** finestra di 7 giorni da oggi (`windowDates`, `windowStartFor` in `calendar.ts`, con Vitest), etichetta «Prossimi 7 giorni», frecce di 7 giorni, «Torna a oggi»; `?date=` sposta la finestra solo se la data cade fuori da quella di partenza. Vista mese e `WeekStrip` invariate; la vista mese ha la sua ancora, non più condivisa con la settimana.
-- **Foglio del giorno (`DaySheet`):** oggi «Inizia «Scheda X»» o «Inizia allenamento libero»; giorni passati «Registra un allenamento fatto» (`startSession` + `setSessionDate` in un solo `edit`); con un allenamento in corso solo «Riprendi l’allenamento in corso»; da oggi in poi «+ Nuova scheda» crea la scheda, la assegna alla data e apre `/routine?id=…&date=…`, dove il link di ritorno è «Torna al calendario».
-- **Senza schede:** pannello «Per pianificare serve una scheda.» con «Crea scheda» al posto dell'avviso sulla settimana tipo. **Suggerimento** sopra le righe fino al primo foglio aperto (chiave `workout-tracker.calendarHint`, in AGENTS.md).
-- **Impostazioni:** sezione «Come funziona» (`#s-guide`) prima di Dati e privacy. Etichette allineate all'interfaccia: il punto 4 dice «il precedente» (intestazione della colonna), il punto 5 «Cambia esercizio» (il pulsante vero) invece di «scegli una variante».
-- **Test:** `us-04-us-06-calendar` aggiornato alla finestra (i casi del 5–7 ottobre passano da «Settimana precedente») più 7 e2e nuovi (US-04, US-05 ×2, US-06, US-11 ×2, US-20) e uno della guida in `us-21-us-24-training-settings`. In `kit.spec.ts` i due test con un clic su un'isola ora aspettano l'idratazione (`hydrated()`): fallivano già prima della correzione con più worker, perché il clic cadeva sull'HTML statico.
-- **Verifiche:** `npm run check` exit 0 (0 errori), `npm test` exit 0 (234 Vitest), `npm run build` exit 0, `npm run test:e2e` exit 0 (250), `WT_BASE=/workout-tracker/ npm run test:e2e` exit 0 (250), `npx impeccable detect` sui file toccati exit 0. Schermate a 390×844 e 320×568 nei due temi (settimana, oggi, giorno futuro, giorno passato) mostrate all'utente.
-
-## Stato dopo la rinomina (11 ottobre 2026)
-
-- **Nome:** l'app si chiama **Workout Tracker** (breve «Workout» sotto l'icona), non più BodyTracker: decisione 12 di PIANO.md. Rinominati testi, manifest, titoli, chiavi di `localStorage` (`workout-tracker.archive.v2`, `.theme`, `.lastBackup`, `.restTimer`), nomi dei file di backup (`workout-tracker-AAAA-MM-GG.json`), variabili `WT_BASE`/`WT_SITE`, nome del pacchetto, sito predefinito `https://workout-tracker.francescoperagine.com`. Restano apposta il formato d'import del PoC `bodytracker.archivio.v1` e i percorsi della cartella `BodyTracker/`, che lo step 9 elimina.
-- **Pubblicazione** (decisioni 7, 10, 13 e sezione «Rilascio» di PIANO.md): Worker Cloudflare `workout-tracker` collegato al repository, ramo di produzione `main`, build dei rami diversi da `main` disattivate. Creato da Francesco dalla dashboard il 12 ottobre 2026 (un Worker con Workers Builds, non un progetto Pages; nessun file `wrangler` nel repository). Fino al rilascio l'app vive solo su `https://workout-tracker.francescoperagine.workers.dev`; il dominio e la voce nella pagina Projects del sito personale arrivano alla fine dello step 9.
-- **`/kit`** esce dalla build pubblicata allo step 9 (decisione 14), restando disponibile ai test.
-- Verifica dopo la rinomina: `npm run check` 0 errori, 232 Vitest, `npm run build` ok, 234 e2e verdi nella radice e con `WT_BASE=/workout-tracker/`.
-- **Rami:** Francesco ha approvato la cancellazione dei rami `claude/*` vecchi (già contenuti in `main`). Dal container cloud il proxy git rifiuta le cancellazioni: restano `claude/jolly-hawking-9tb1t4` e `claude/stoic-knuth-xd0bx6`, da cancellare in locale (`git push origin --delete …`) o da GitHub.
-
-## Stato a fine step 7 (10 ottobre 2026)
-
-Tutto è su `main`. Decisioni dello step 7 (e risposte dell'utente sulle decisioni dello step 6) nello "Stato" dello step 7 in PIANO.md; struttura, chiavi e convenzioni in `AGENTS.md`.
-
-- **Timer di recupero:** motore puro in `src/lib/rest-timer.ts` (istante di fine, ±15 s, quale recupero parte, superserie a fine giro, timer non più valido, soglie degli annunci, prossima serie), store in `src/lib/rest-timer.svelte.ts` (chiave `workout-tracker.restTimer`, scatti di 250 ms, `visibilitychange`, evento `storage`, avviso una volta sola, "Vai" chiuso dopo 6 s in vista), avvisi in `rest-alert.ts`, schermo acceso in `wake-lock.ts`, `RestNotifier` in `rest-notifier.ts`, handler `push`/`notificationclick` in `public/sw-push.js`.
-- **Componenti:** `RestTimer` (vista a tutto schermo, anche anteprima di `/kit`), `RestTimerBar` (ridotto, sopra la barra dell'allenamento e nella mini-barra con la freccia verso l'allenamento), `RestTimerHost` nel guscio (`transition:persist`). La mini-barra compare su Oggi solo con un recupero.
-- **Correzione dello step 6 (decisione 1 dell'utente):** il tocco sul numero della serie apre il foglio della serie (tipo e "Togli serie" per qualsiasi riga); il pulsante "Togli serie" sotto le righe non c'è più.
-- **Recupero predefinito:** una voce del PoC con recupero mancante o illeggibile prende il predefinito (prima 0 = nessun timer).
-- Verifica: 234 e2e verdi nella radice e con `WT_BASE=/workout-tracker/`, 232 Vitest, `astro check` pulito, detector a 0 su `src/`. Revisione finale di Impeccable fatta in linea (nessun agente): nessun elemento del Refuse list.
-
-## Step 9 in dettaglio
-
-Vedi «Step 9» e «Rilascio» in PIANO.md. Da ricordare: la prova sull'app installata è su Android (nessun iPhone disponibile), quindi i punti iOS della checklist di `docs/restyling/WEB-PUSH.md` restano non verificati; `readPocKey` (lettura diretta del PoC) è da togliere secondo la raccomandazione in «Da non dimenticare».
+Dopo il rilascio le pagine sono ancora `noindex` (decisione 12: la reperibilità viene dalla pagina Projects). I rami `claude/jolly-hawking-9tb1t4` e `claude/stoic-knuth-xd0bx6`, se esistono ancora, si cancellano in locale (`git push origin --delete …`) o da GitHub.
 
 ## Insidie dell'ambiente (container cloud)
 
@@ -78,7 +54,7 @@ Vedi «Step 9» e «Rilascio» in PIANO.md. Da ricordare: la prova sull'app inst
   Per il tema chiaro e scuro, ripetere con `/kit?theme=light` e `/kit?theme=dark`.
 - **Playwright:** installato anche globalmente (`$(npm root -g)/playwright`, 1.56), con Chromium in `/opt/pw-browsers`. Il progetto usa `@playwright/test` 1.64: lanciare gli e2e con `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:e2e` (e di nuovo con `WT_BASE=/workout-tracker/` davanti). Non eseguire `playwright install`. Per script di screenshot fuori dal repository: `NODE_PATH=$PWD/node_modules node script.cjs` (CommonJS, perché `NODE_PATH` non vale per gli ESM).
 - **Chiusura dei server:** se serve `pkill`, non usare `pkill -f "astro preview"`: il pattern corrisponde anche alla shell che esegue il comando e la termina. Usare `pkill -f "[a]stro preview"`, **da solo** nel comando: se nella stessa riga compare anche il testo `astro preview` (es. `npx astro preview stop; pkill …`), la shell viene terminata lo stesso.
-- **Avviso noto di `astro check`:** un hint su `BodyTracker/palestra/app.js` (`returnValue` deprecato). Va ignorato: il file sparirà allo step 9.
+- **`/kit` e `dist/`:** `/kit` esiste solo con `npm run dev` o `WT_KIT=1` (la build degli e2e). Dopo una suite con `WT_BASE` in `dist/` resta la build nel sotto-percorso: per misure sulla build di produzione (Lighthouse, schermate) rifare `npm run build` e riavviare `astro preview`.
 - **Detector:** a 0 su `src/` e sulle pagine renderizzate (`/welcome`, `/settings`, `/calendar`, `/kit` nei due temi). Sulle pagine senza archivio `/` porta a `/welcome`: per controllare Oggi serve un archivio nel browser. Lo stesso vale per `/routines` e `/routine?id=`: il detector apre un browser senza archivio e vede solo lo stato vuoto; le schermate con dati si controllano con uno script Playwright che mette un archivio nel `localStorage` (`addInitScript`) e fotografa a 390×844 e 320×568 nei due temi. Le note consultive (`flat-type-hierarchy`) non sono errori.
 - **Isole e build:** il rendering alla build esegue anche le isole `client:load`; se leggono l'archivio all'avvio la build fallisce ("L’archivio è disponibile solo nel browser"). Usare `client:only="svelte"` o leggere l'archivio in `onMount`.
 - **Detector e larghezza:** il detector misura le pagine a larghezza desktop: righe oltre 80 caratteri e controlli con bordo dentro un `.panel` (nested cards) compaiono lì e non a 390px.
@@ -93,12 +69,13 @@ Vedi «Step 9» e «Rilascio» in PIANO.md. Da ricordare: la prova sull'app inst
 - **Stack in basso:** non scrivere `--bottom-bars-height` a mano nelle pagine dell'app: usare `setBottomBar` (le isole ricreate si ridichiarano a ogni pagina, quelle persistenti restano).
 - **Playwright e anteprime:** un elemento `inert` viene comunque trovato da `getByRole`; nelle anteprime di `/kit` i controlli finti sono `div`, non `button`. Per l'overlay del timer usare `page.locator('dialog[open]')`.
 
+- **Clic prima dell'idratazione:** sotto carico (suite intera, desktop) un clic su un'isola appena caricata può cadere sull'HTML statico e perdersi. Nei test, per i controlli di isole `client:load` (tema di `/kit`, primo avvio) usare `hydrated()` di `tests/e2e/helpers.ts`.
+
 ## Da non dimenticare
 
-- **La UX conta più della grafica:** ogni scelta visiva va giudicata sulla scena d'uso (una mano, recuperi brevi, interruzioni, luce variabile) e sui principi P1–P10. Le scelte del design system vanno provate sui componenti reali dei flussi (riga serie, timer, barra di salvataggio), non su campioni astratti.
-- I test e2e portano l'ID della storia. Dopo gli step 6 e 7 è prevista una prova reale in palestra con l'utente.
-- Gli ID del catalogo esercizi del PoC (`BodyTracker/palestra/esercizi.js`) **non vanno cambiati**: lo storico dell'utente li usa.
-- Ogni funzione nella tabella "Assorbimento del PoC" deve avere un test e2e prima di eliminare `BodyTracker/`.
-- Il contratto di direzione (`## Direction contract`) va solo nei brief, mai nel codice o nel markup servito (new-work §5).
+- **La UX conta più della grafica:** ogni scelta visiva va giudicata sulla scena d'uso (una mano, recuperi brevi, interruzioni, luce variabile) e sui principi P1–P10, sui componenti reali dei flussi.
+- I test e2e portano l'ID della storia; ogni nuova storia porta il suo test.
+- Gli ID del catalogo esercizi (`src/data/catalog.ts`, `POC_IDS` in `seed-data.test.ts`) **non vanno cambiati**: lo storico e i backup del PoC li usano.
+- Il contratto di direzione (`## Direction contract`) va solo nei brief, mai nel codice o nel markup servito.
 - Aggiornare `AGENTS.md` quando cambiano struttura, comandi o convenzioni.
-- **Lettura diretta del PoC (`readPocKey`):** serviva se la nuova app fosse stata pubblicata sulla stessa origine del PoC, ma il PoC non è mai stato pubblicato. Allo step 9 decidere se toglierla con i testi che la citano (PIANO.md «Assorbimento del PoC», AGENTS.md, brief `route-welcome`); raccomandazione: toglierla, l'import da file resta.
+- I punti iOS della checklist di `docs/restyling/WEB-PUSH.md` restano non verificati (nessun iPhone disponibile).

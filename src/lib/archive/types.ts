@@ -3,8 +3,6 @@
 // in ingresso e in uscita (src/lib/units.ts).
 
 export const ARCHIVE_KEY = 'workout-tracker.archive.v2';
-/** Chiave del PoC: si legge soltanto, per l'import diretto sulla stessa origine */
-export const POC_ARCHIVE_KEY = 'bodytracker.archivio.v1';
 
 export const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 export type Weekday = (typeof WEEKDAYS)[number];
@@ -139,6 +137,10 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 /** Limiti del PoC, più quelli delle parti nuove (schede, catalogo personale). */
+/** Predefiniti di una voce di scheda nuova: serie e recupero di riscaldamento (s), modificabili nella scheda. */
+export const DEFAULT_SETS = 3;
+export const DEFAULT_WARMUP_REST = 60;
+
 export const LIMITS = {
   importBytes: 10 * 1024 * 1024,
   sessions: 10_000,

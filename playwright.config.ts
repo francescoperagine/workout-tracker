@@ -34,6 +34,8 @@ export default defineConfig({
     // --ignore-lock: tiene il server in primo piano anche quando Astro lo manderebbe in background (es. sotto un agente)
     command: `npm run build && npx astro preview --port ${port} --ignore-lock`,
     url: `http://localhost:${port}${base}`,
+    // la build dei test contiene anche /kit (kit.spec.ts, us-30-themes.spec.ts), esclusa da quella pubblicata
+    env: { WT_KIT: '1' },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

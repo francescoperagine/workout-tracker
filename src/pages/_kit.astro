@@ -1,6 +1,6 @@
 ---
 // Pagina interna del design system: tutti i componenti base nei due temi.
-// Fuori dalla navigazione, noindex, escluso dal precache del service worker. ?theme=light|dark forza il tema.
+// Fuori dalla navigazione, noindex, escluso dal precache e dalla build pubblicata (solo dev e WT_KIT=1, vedi astro.config.mjs). ?theme=light|dark forza il tema.
 import Base from '../layouts/Base.astro';
 import AppHeader from '../components/ui/AppHeader.astro';
 import TabBar from '../components/ui/TabBar.astro';
@@ -94,7 +94,7 @@ const weightUnits = [
       <div class="panel flex flex-col gap-3">
         <p class="text-page-title font-bold tracking-[-0.01em]">Scheda A · lunedì</p>
         <p class="text-xl leading-snug font-bold">Rematore manubri, petto su panca inclinata</p>
-        <p>Atkinson Hyperlegible Next, disegnato per distinguere ogni lettera a colpo d'occhio: Il1 O0 rn m.</p>
+        <p>Atkinson Hyperlegible Next, disegnato per distinguere ogni lettera a colpo d’occhio: Il1 O0 rn m.</p>
         <p class="label mb-0">Etichetta · recupero predefinito</p>
         <p class="digits">37,5 kg × 8 · 1:15 · 2.450 kg</p>
       </div>

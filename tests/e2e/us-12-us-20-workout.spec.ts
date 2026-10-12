@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { BASE_CATALOG } from '../../src/data/catalog';
 import { startSession, starterRoutines, type Archive, type Session } from '../../src/lib/archive';
-import { archiveWith, expectPage, seedArchive, sheet, storedArchive } from './helpers';
+import { archiveWith, expectPage, seedArchive, sheet, storedArchive, finishWorkout } from './helpers';
 
 // Allenamento attivo (step 6): US-12 righe serie e precedente (P1, conteggio dei tocchi), US-13 tipi
 // di serie, US-14 varianti, US-15 serie ed esercizi in sessione, US-16 note, US-17 ripresa e mini-barra,
@@ -79,10 +79,10 @@ test.describe('US-12 registrare le serie', () => {
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('6');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     expect((await running(page)).exercises[0].sets[0]).toMatchObject({ kg: 42.5, reps: 6, completedAt: NOW.getTime() });
-    // solo le ripetizioni: il peso viene dal precedente
+    // solo le ripetizioni: il peso viene dalla serie sopra (42,5), non dal precedente (40)
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 2' }).fill('7');
     await squat.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
-    expect((await running(page)).exercises[0].sets[1]).toMatchObject({ kg: 40, reps: 7 });
+    expect((await running(page)).exercises[0].sets[1]).toMatchObject({ kg: 42.5, reps: 7 });
 
     await squat.getByRole('button', { name: 'Annulla serie 1' }).click();
     expect((await running(page)).exercises[0].sets[0]).toMatchObject({ kg: 42.5, reps: 6, completedAt: null });
@@ -159,7 +159,7 @@ test.describe('US-13 tipi di serie', () => {
 });
 
 test.describe('US-14 varianti', () => {
-  test('US-14 macchina occupata: alternativa della scheda, con conferma e svuotamento; il precedente segue la variante', async ({ page }) => {
+  test('US-14 macchina occupata: le serie fatte restano, la variante continua sotto con il suo precedente; Annulla', async ({ page }) => {
     const alternative = SQUAT.alternatives[0];
     const past = pastSession('2026-10-06', 40, 8, (s) => {
       s.exercises[0].exerciseId = alternative;
@@ -176,18 +176,39 @@ test.describe('US-14 varianti', () => {
     await expect(sheet(page).getByRole('radio', { name: /^Squat bilanciere/ })).toBeChecked();
     await sheet(page).getByRole('radio', { name: name(alternative) }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
-    const confirm = page.getByRole('dialog', { name: 'Cambiare esercizio?' });
-    await expect(confirm).toContainText('Le serie già inserite per Squat bilanciere si svuotano');
-    await confirm.getByRole('button', { name: 'Cambia e svuota' }).click();
+    // nessuna conferma: la serie fatta resta allo squat, la variante prende le serie da fare
+    await expect(page.getByRole('dialog', { name: 'Cambiare esercizio?' })).toHaveCount(0);
+    await expect(page.getByText(`Le serie fatte restano a Squat bilanciere; continui con ${name(alternative)}.`)).toBeVisible();
 
     const variant = region(page, alternative);
     await expect(variant).toContainText('Al posto di Squat bilanciere');
-    await expect(variant.getByRole('button', { name: 'Copia il precedente: 100 × 8' })).toHaveCount(SQUAT.sets);
-    const stored = (await running(page)).exercises[0];
+    await expect(variant.getByRole('button', { name: 'Copia il precedente: 100 × 8' })).toHaveCount(SQUAT.sets - 1);
+    const [kept, stored] = (await running(page)).exercises;
+    expect(kept).toMatchObject({ exerciseId: SQUAT.exerciseId, variantOf: null });
+    expect(kept.sets.map((s) => [s.kg, s.reps])).toEqual([[60, 8]]);
     expect(stored).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
+    expect(stored.sets).toHaveLength(SQUAT.sets - 1);
     expect(stored.sets.every((s) => s.kg === null && s.reps === null && s.completedAt === null)).toBe(true);
     // la scheda non cambia
     expect((await storedArchive(page))!.routines[0].exercises[0].exerciseId).toBe(SQUAT.exerciseId);
+
+    // "Annulla" rimette l'esercizio com'era
+    await page.getByRole('button', { name: 'Annulla', exact: true }).click();
+    await expect(variant).toHaveCount(0);
+    expect((await running(page)).exercises[0].sets).toHaveLength(SQUAT.sets);
+  });
+
+  test('US-14 senza serie fatte la variante prende il posto dell’esercizio previsto, e si torna indietro', async ({ page }) => {
+    const alternative = SQUAT.alternatives[0];
+    await startFromToday(page, archiveWith({ routines: routines() }));
+    const squat = region(page, SQUAT.exerciseId);
+    await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('60');
+    await squat.getByRole('button', { name: 'Cambia esercizio' }).click();
+    await sheet(page).getByRole('radio', { name: name(alternative) }).check();
+    await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
+    await expect(page.getByText(`${name(alternative)} al posto di Squat bilanciere: i valori scritti si sono svuotati.`)).toBeVisible();
+    const variant = region(page, alternative);
+    expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
 
     // si torna all'esercizio previsto
     await variant.getByRole('button', { name: 'Cambia variante' }).click();
@@ -317,6 +338,7 @@ test.describe('US-17 ripresa e mini-barra', () => {
   test('US-17 dalle altre schermate una mini-barra riporta alla sessione; su Oggi c’è "Riprendi"', async ({ page }) => {
     await startFromToday(page, archiveWith({ routines: routines() }));
     await expect(page.getByRole('link', { name: /^Allenamento in corso/ })).toHaveCount(0);
+    await page.getByRole('link', { name: 'Torna a Oggi' }).click();
     await page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', { name: 'Calendario' }).click();
     await expectPage(page, 'calendar/');
     const mini = page.getByRole('link', { name: /^Allenamento in corso: Scheda A, da 0 min · Squat bilanciere/ });
@@ -361,10 +383,17 @@ test.describe('US-18 fine dell’allenamento', () => {
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await expect(squat.getByRole('button', { name: /^Annulla serie 1/ })).toBeVisible();
     await expect(squat.getByLabel('Copia il precedente: 40 × 8. Record di carico')).toBeVisible();
+    // la seconda serie, vuota, prende il peso scritto nella prima (45) e le ripetizioni della volta scorsa
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 2, kg' })).toHaveAttribute('placeholder', '45');
     await squat.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
     // un'ora dopo
     await page.clock.setFixedTime(new Date(NOW.getTime() + 65 * 60_000));
+    // restano serie da fare: "Termina" non è pieno e chiede conferma
+    await expect(page.getByRole('button', { name: 'Termina' })).toHaveClass(/btn-secondary/);
     await page.getByRole('button', { name: 'Termina' }).click();
+    const confirm = page.getByRole('dialog', { name: 'Terminare l’allenamento?' });
+    await expect(confirm).toContainText(`Restano ${A.exercises.reduce((n, e) => n + e.sets, 0) - 2} serie da fare in ${A.exercises.length} esercizi.`);
+    await confirm.getByRole('button', { name: 'Termina' }).click();
 
     await expect(page).toHaveURL(/\/workout\/\?summary=/);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
@@ -373,7 +402,7 @@ test.describe('US-18 fine dell’allenamento', () => {
     await expect(stats).toContainText('Durata 1 h 05 min');
     await expect(stats).toContainText('Esercizi 1');
     await expect(stats).toContainText('Serie 2');
-    await expect(stats).toContainText(`Volume ${45 * 8 + 40 * 8} kg`);
+    await expect(stats).toContainText(`Volume ${45 * 8 * 2} kg`);
     // stesse ripetizioni con più carico: record di carico e di 1RM stimato (45 × 8 → 57 kg); il volume no,
     // perché la volta scorsa tutte le serie erano fatte
     await expect(page.getByRole('heading', { name: 'Record battuti' })).toBeVisible();
@@ -414,7 +443,7 @@ test.describe('US-18 fine dell’allenamento', () => {
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('50');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('5');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Tienila sul telefono' })).toBeVisible();
     await page.getByRole('button', { name: 'Installa l’app' }).click();
     expect(await page.evaluate(() => (window as unknown as { prompted?: boolean }).prompted)).toBe(true);
@@ -427,7 +456,7 @@ test.describe('US-18 fine dell’allenamento', () => {
       window.dispatchEvent(event);
     });
     await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Tienila sul telefono' })).toHaveCount(0);
   });
@@ -451,7 +480,7 @@ test.describe('US-19 US-20 US-27 approfondimento, più sessioni, nome e data', (
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('50');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('5');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
-    await page.getByRole('button', { name: 'Termina' }).click();
+    await finishWorkout(page);
     await page.getByRole('link', { name: 'Fatto' }).click();
     await expectPage(page, '');
     await expect(page.getByText('Fatto oggi: Scheda A')).toBeVisible();
@@ -495,9 +524,10 @@ test.describe('US-33 P2 P3 barra fissa e misure', () => {
     const status = page.getByRole('status').filter({ hasText: 'Salvato' });
     await expect(status).toBeVisible();
     await expect(page.getByRole('paragraph').filter({ hasText: 'Durata: 25 min' })).toBeVisible();
+    // nessuna tab bar sotto (step 9): la barra è in fondo allo schermo, nella zona del pollice
     const termina = (await page.getByRole('button', { name: 'Termina' }).boundingBox())!;
-    const tabs = (await page.getByRole('navigation', { name: 'Sezioni' }).boundingBox())!;
-    expect(termina.y + termina.height).toBeLessThanOrEqual(tabs.y);
+    expect(termina.y + termina.height).toBeGreaterThan(page.viewportSize()!.height - 80);
+    expect(termina.y + termina.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     expect(termina.height).toBeGreaterThanOrEqual(48);
   });
 
@@ -522,4 +552,60 @@ test.describe('US-33 P2 P3 barra fissa e misure', () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     });
   }
+});
+
+// Righe della tabella "Assorbimento del PoC" (PIANO.md) senza un altro e2e: indicazioni della scheda
+// sull'esercizio e limite delle serie, come nel PoC.
+test.describe('US-12 US-15 funzioni del PoC', () => {
+  test('US-12 l’esercizio mostra le indicazioni della scheda: serie × ripetizioni, carico con l’unità, recupero', async ({ page }) => {
+    await startFromToday(page, archiveWith({ routines: starterRoutines() }));
+    await expect(region(page, SQUAT.exerciseId)).toContainText('3 × 6–8 · 45–50 kg · rec. 2:00');
+    const dumbbell = A.exercises.find((e) => e.unit === 'per manubrio')!;
+    await expect(region(page, dumbbell.exerciseId)).toContainText(`${dumbbell.loadMin}–${dumbbell.loadMax} kg per manubrio`);
+  });
+
+  test('US-15 con 100 serie "Aggiungi serie" è disattivato e il motivo è scritto', async ({ page }) => {
+    const archive = archiveWith({ routines: routines() });
+    const { session } = startSession(archive, 'routine-a', NOW.getTime() - 600_000);
+    const first = session.exercises[0];
+    first.sets = Array.from({ length: 100 }, (_, i) => ({ id: `set-${i}`, type: 'normal' as const, kg: null, reps: null, completedAt: null }));
+    await seedArchive(page, archiveWith({ routines: routines(), sessions: [session] }));
+    await page.goto('workout/');
+    const squat = region(page, SQUAT.exerciseId);
+    await expect(squat.getByRole('button', { name: 'Aggiungi serie' })).toBeDisabled();
+    await expect(squat.getByText('Al massimo 100 serie per esercizio.')).toBeVisible();
+  });
+});
+
+test.describe('US-17 US-18 allenamento come modalità (step 9)', () => {
+  test('US-17 senza tab bar sull’allenamento: si torna a Oggi dall’intestazione e la mini-barra riporta qui', async ({ page }) => {
+    await startFromToday(page, archiveWith({ routines: routines() }));
+    await expect(page.getByRole('navigation', { name: 'Sezioni' })).toHaveCount(0);
+    await page.getByRole('link', { name: 'Torna a Oggi' }).click();
+    await expectPage(page, '');
+    await expect(page.getByRole('navigation', { name: 'Sezioni' })).toBeVisible();
+    await page.getByRole('link', { name: 'Riprendi allenamento' }).click();
+    await expectPage(page, 'workout/');
+  });
+
+  test('US-18 con tutte le serie spuntate "Termina" è pieno e chiude senza chiedere', async ({ page }) => {
+    const archive = archiveWith({ routines: routines() });
+    const { session } = startSession(archive, 'routine-a', NOW.getTime() - 3_600_000);
+    session.exercises = session.exercises.slice(0, 1);
+    for (const set of session.exercises[0].sets) Object.assign(set, { kg: 40, reps: 8, completedAt: NOW.getTime() - 60_000 });
+    await seedArchive(page, archiveWith({ routines: routines(), sessions: [session] }));
+    await page.goto('workout/');
+    await expect(page.getByRole('button', { name: 'Termina' })).toHaveClass(/btn-primary/);
+    await finishWorkout(page);
+    await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();
+  });
+
+  test('US-18 "Termina" con serie da fare: "Annulla" lascia l’allenamento in corso', async ({ page }) => {
+    await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
+    await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
+    await page.getByRole('button', { name: 'Termina' }).click();
+    await page.getByRole('dialog', { name: 'Terminare l’allenamento?' }).getByRole('button', { name: 'Annulla' }).click();
+    await expect(page.getByRole('dialog', { name: 'Terminare l’allenamento?' })).toHaveCount(0);
+    expect((await running(page)).end).toBeNull();
+  });
 });

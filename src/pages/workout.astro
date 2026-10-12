@@ -2,10 +2,13 @@
 // Allenamento in corso (/workout, step 6: US-12…US-20): la sessione avviata da Oggi, con la barra
 // fissa di durata, salvataggio e "Termina". Con ?summary=<id> mostra il riepilogo di una sessione
 // appena conclusa. La barra di salvataggio del guscio non serve: la pagina mostra sempre la sua.
+// L'allenamento è una modalità, non una sezione: niente tab bar (più righe serie a 320×568, step 9),
+// si esce con "Torna a Oggi" nell'intestazione e si rientra dalla mini-barra o da "Riprendi".
 import AppLayout from '../layouts/AppLayout.astro';
 import Workout from '../components/workout/Workout.svelte';
+import { appUrl } from '../lib/paths';
 ---
 
-<AppLayout title="Allenamento" tab="today" showArchiveStatus={false}>
+<AppLayout title="Allenamento" showTabs={false} showArchiveStatus={false} back={{ href: appUrl('/'), label: 'Torna a Oggi' }}>
   <Workout client:only="svelte" />
 </AppLayout>

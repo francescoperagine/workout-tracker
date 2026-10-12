@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectPage, storedArchive } from './helpers';
+import { expectPage, storedArchive, hydrated } from './helpers';
 
 // US-01: al primo avvio una schermata breve dice cosa fa l'app e dove sono i dati; nessun account
 // e nessuna richiesta di permessi. Si vede una volta sola, finché nel browser non c'è un archivio.
@@ -30,7 +30,7 @@ test.describe('US-01 primo avvio', () => {
 
   test('US-01 "Inizia con le schede di esempio" carica A e B e porta a Oggi, una volta sola', async ({ page }) => {
     await page.goto('');
-    await page.getByRole('button', { name: 'Inizia con le schede di esempio' }).click();
+    await (await hydrated(page.getByRole('button', { name: 'Inizia con le schede di esempio' }))).click();
     await expectPage(page, '');
     // Oggi propone le schede di esempio, con la prima già selezionata (US-11)
     await expect(page.getByRole('radio', { name: /^Scheda A/ })).toBeChecked();
@@ -46,7 +46,7 @@ test.describe('US-01 primo avvio', () => {
 
   test('US-01 "Parti da zero" salva un diario vuoto e non mostra più il benvenuto', async ({ page }) => {
     await page.goto('');
-    await page.getByRole('button', { name: 'Parti da zero' }).click();
+    await (await hydrated(page.getByRole('button', { name: 'Parti da zero' }))).click();
     await expectPage(page, '');
     await expect(page.getByText('Non hai schede attive.', { exact: false })).toBeVisible();
     const archive = await storedArchive(page);

@@ -6,9 +6,12 @@ import type { Archive, Session, SessionSet } from './types';
 
 export const EPLEY_MAX_REPS = 12;
 
-/** 1RM stimato con la formula di Epley: kg × (1 + rip / 30); con 1 ripetizione è il carico stesso. */
+/**
+ * 1RM stimato con la formula di Epley: kg × (1 + rip / 30); con 1 ripetizione è il carico stesso.
+ * È una stima: arrotondata al mezzo chilo, perché "53,75 kg" promette una precisione che non ha.
+ */
 export function epley(kg: number, reps: number): number {
-  return reps === 1 ? kg : kg * (1 + reps / 30);
+  return reps === 1 ? kg : Math.round(kg * (1 + reps / 30) * 2) / 2;
 }
 
 /**

@@ -55,7 +55,7 @@
   --color-shell-warning: #ffe0bd;
   --color-shell-warning-icon: #ffc98f;
   --color-shell-warning-line: #846b4e;
-  --color-level: #2b4a36;
+  --color-level: #3d6b47;
   /* Fondale delle modali e ombra degli elementi sospesi: verde quasi nero del PoC */
   --color-backdrop: rgb(9 23 19 / 0.6);
   --color-shadow: rgb(9 23 19 / 0.28);
@@ -123,6 +123,10 @@
   a {
     color: var(--color-accent-text);
     text-underline-offset: 4px;
+  }
+  /* un link dentro una frase non si distingue dal testo solo per il colore (WCAG 1.4.1) */
+  p a:not(.btn) {
+    text-decoration: underline;
   }
   button,
   a,

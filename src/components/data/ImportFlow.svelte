@@ -1,6 +1,6 @@
 <script lang="ts">
   // Importazione di un backup (US-02, US-32), dalle Impostazioni e dal primo avvio:
-  // file (v2 o del PoC) o testo della chiave del PoC → anteprima con numero di allenamenti e periodo →
+  // file (v2 o del PoC) → anteprima con numero di allenamenti e periodo →
   // scelta "mantieni" o "sostituisci" se ci sono elementi già presenti → riepilogo con gli scartati.
   // Fino alla conferma nulla viene modificato; un file non valido lascia il diario com'è.
   import BottomSheet from '../ui/BottomSheet.svelte';
@@ -72,11 +72,6 @@
   export function pickFile() {
     input.value = '';
     input.click();
-  }
-
-  /** Importa un testo già letto (la chiave del PoC sulla stessa origine) */
-  export function importText(text: string) {
-    void start(async () => text);
   }
 
   function messageOf(e: unknown): string {
