@@ -395,7 +395,7 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 
 Dopo la chiusura dello step 9:
 
-- [ ] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`.
+- [x] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`. Fatto il 12 ottobre 2026 (dominio personalizzato del Worker, record DNS e certificato creati da Cloudflare).
 - [ ] 2. Esporta il backup su `workout-tracker.francescoperagine.workers.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
 - [ ] 3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria: azione nuova che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco. Segue le regole di quel repo.
 - [ ] 4. Da lì in poi ogni push su `main` è online.
