@@ -43,10 +43,10 @@ Non ci sono linter né formatter configurati. Per verificare una modifica: `npm 
 
 ## Pubblicazione
 
-- Progetto Cloudflare Pages separato `workout-tracker`, collegato a questo repository GitHub: ramo di produzione `main`, build `npm run build`, output `dist`, «Preview branches: None».
+- Worker Cloudflare separato `workout-tracker`, collegato a questo repository GitHub: ramo di produzione `main`, build `npm run build`, output `dist`, build dei rami diversi da `main` disattivate.
 - **Ogni push su `main` va in produzione.** Si lavora solo su `main`, mai su rami `claude/...`; si pusha solo con i controlli dello step verdi.
-- Fino alla fine del restyling l'app vive solo su `https://workout-tracker.pages.dev` (non elencata, pagine `noindex`), per installarla sul telefono e fare le prove in palestra. Al rilascio (fine step 9) si collega `workout-tracker.francescoperagine.com` e il sito personale la elenca in Projects.
-- I dati del browser sono per origine: al passaggio di dominio si esporta un backup su `pages.dev` e lo si importa sul dominio nuovo.
+- Fino alla fine del restyling l'app vive solo su `https://workout-tracker.francescoperagine.workers.dev` (non elencata, pagine `noindex`), per installarla sul telefono e fare le prove in palestra. Al rilascio (fine step 9) si collega `workout-tracker.francescoperagine.com` e il sito personale la elenca in Projects.
+- I dati del browser sono per origine: al passaggio di dominio si esporta un backup su `workers.dev` e lo si importa sul dominio nuovo.
 - `/kit` (pagina interna del design system) non deve stare nella build pubblicata, ma restare disponibile ai test e2e: il meccanismo si decide e si registra nello step 9.
 
 ## Struttura dell'app Astro

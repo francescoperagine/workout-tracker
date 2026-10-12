@@ -18,7 +18,7 @@ Scena d'uso, principi UX verificabili (P1–P10) e user story con priorità (US-
 | 4 | Ambito v1 | Oltre a calendario, schede e allenamento: **tipi di serie** e **grafici dei progressi** |
 | 5 | PWA | Installabile, **sempre usabile offline, privata**: nessuna richiesta esterna, font e icone inclusi nel sito, nessuna statistica |
 | 6 | Dati | Nessuna migrazione dal vecchio formato `bb-*`. **Import dei dati del PoC** (`bodytracker.archivio.v1`) come funzione permanente dell'app, per recuperare il tuo diario attuale |
-| 7 | Hosting | **Progetto Cloudflare Pages separato** `workout-tracker`, collegato al repository GitHub (ramo di produzione `main`, build `npm run build`, output `dist`, «Preview branches: None»). Fino alla fine del restyling solo su `https://workout-tracker.pages.dev` (non elencata, `noindex`), per le prove in palestra. Il percorso base resta configurabile (`WT_BASE`) |
+| 7 | Hosting | **Worker Cloudflare separato** (Workers Builds) `workout-tracker`, collegato al repository GitHub (ramo di produzione `main`, build `npm run build`, output `dist`, build dei rami diversi da `main` disattivate). Fino alla fine del restyling solo su `https://workout-tracker.francescoperagine.workers.dev` (non elencata, `noindex`), per le prove in palestra. Il percorso base resta configurabile (`WT_BASE`) |
 | 8 | Progetti | Resta solo l'app nella radice. **`BodyTracker/` viene eliminata** a fine restyling |
 | 9 | Impostazioni | **Tema** Sistema/Chiaro/Scuro e **unità di misura**: peso kg/lb, distanza m/ft (vedi "Unità di misura") |
 | 10 | Pubblicazione | Al rilascio (fine step 9) dominio `https://workout-tracker.francescoperagine.com`, elencato nella pagina Projects del sito personale. Ogni push su `main` è un deploy in produzione. Un sotto-percorso (es. `/workout-tracker/`) si prova con `WT_BASE` |
@@ -359,17 +359,17 @@ Ogni funzione del PoC deve esistere nell'app radice prima di eliminare `BodyTrac
 - Impeccable: `critique`, `audit`, `harden` (stati vuoti, errori, nomi lunghi, quota piena, conflitto tra schede), `polish`.
 - Verifica della tabella "Assorbimento del PoC": ogni riga deve avere un test e2e verde.
 - **Eliminazione di `BodyTracker/`** (resta nella cronologia git). Le parti ancora utili di `LEGGIMI.md` (privacy, limiti, aggiunta di approfondimenti al catalogo) confluiscono nel `README.md`.
-- Aggiornamento di `AGENTS.md` e `README.md` (comandi, pubblicazione su Cloudflare Pages, privacy, catalogo).
+- Aggiornamento di `AGENTS.md` e `README.md` (comandi, pubblicazione su un Worker Cloudflare, privacy, catalogo).
 - **`/kit` fuori dalla build pubblicata** ma disponibile ai test (`tests/e2e/kit.spec.ts`, `tests/e2e/us-30-themes.spec.ts`): scegliere il meccanismo (es. pagina generata solo se è impostato un flag come `WT_KIT=1`, che `playwright.config.ts` imposta per la sua build) e registrarlo in `AGENTS.md` e in questo piano.
 - **Verifica dei nomi:** nessun riferimento a «BodyTracker»/`bodytracker` nel repository, tranne il formato d'import del PoC `bodytracker.archivio.v1` (chiave, codice e fixture dei test).
-- **Verifica:** detector a 0 su tutte le pagine nei due temi, suite Playwright verde, Lighthouse PWA/accessibilità, build alla radice provata su `workout-tracker.pages.dev`, più la suite con `WT_BASE=/workout-tracker/`; nessun riferimento residuo a `BodyTracker/` nel repository.
+- **Verifica:** detector a 0 su tutte le pagine nei due temi, suite Playwright verde, Lighthouse PWA/accessibilità, build alla radice provata su `workout-tracker.francescoperagine.workers.dev`, più la suite con `WT_BASE=/workout-tracker/`; nessun riferimento residuo a `BodyTracker/` nel repository.
 
 ### Rilascio
 
 Dopo la chiusura dello step 9:
 
-- [ ] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al progetto Pages `workout-tracker`.
-- [ ] 2. Esporta il backup su `workout-tracker.pages.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
+- [ ] 1. Francesco collega il dominio `workout-tracker.francescoperagine.com` al Worker `workout-tracker`.
+- [ ] 2. Esporta il backup su `workout-tracker.francescoperagine.workers.dev` e lo importa sul dominio nuovo (i dati del browser sono per origine).
 - [ ] 3. Una sessione sul repo personal-website aggiunge la voce in Projects subito sotto Ordiria: azione nuova che apre l'app, `order: 1` con le altre voci spostate di uno, stato `testing`, gruppo App, figura ad acquerello generata da Francesco. Segue le regole di quel repo.
 - [ ] 4. Da lì in poi ogni push su `main` è online.
 
