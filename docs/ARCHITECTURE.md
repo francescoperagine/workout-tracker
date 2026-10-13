@@ -20,7 +20,7 @@ playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta
 scripts/make-icons.mjs  icone della PWA (public/icons/) dal disegno del favicon
 src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js, con importScripts di public/sw-push.js (handler push e notificationclick, predisposizione Web Push)
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
-src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, noindex, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
+src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, canonico, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
 src/layouts/AppLayout.astro  guscio dell'app: ClientRouter, AppHeader, <main>, stack in basso (WorkoutMiniBar persistente + ArchiveStatus + TabBar), RestTimerHost persistente (timer di recupero), registrazione del service worker. Props: title, heading, subtitle, description, tab, showTabs, showHeader, showSettings, showArchiveStatus, back (ritorno nell'intestazione, per le pagine senza tab bar)
 src/lib/paths.ts        appUrl(path) e BASE: ogni link e risorsa passa da qui (percorso base, barra finale delle pagine); joinBase, isCurrentPath (con test)
 src/lib/theme.ts        temi: THEME_REGISTRY (unico elenco: system, light, dark, con etichette Sistema/Chiaro/Scuro; i temi futuri si aggiungono qui e in src/styles/themes/<id>.css, vedi DESIGN.md "Aggiungere un tema"), chiave workout-tracker.theme, readTheme, applyTheme, saveTheme, themeBootScript (riapplica il tema anche a ogni navigazione del ClientRouter; con test)
@@ -123,7 +123,7 @@ src/components/kit/     isole dimostrative usate solo da /kit
 
 - Worker Cloudflare separato `workout-tracker`, solo asset statici, configurato in `wrangler.jsonc` (asset in `dist`, dominio personalizzato, `workers.dev` attivo). Workers Builds è collegato al repository (ramo `main`, build `npm run build`, deploy `npx wrangler deploy`): ogni push su `main` va online da solo. Un deploy a mano resta possibile con `npm run build && npx wrangler deploy` (wrangler è autenticato sul Mac di Francesco).
 - **Ogni push su `main` va in produzione.** Si lavora solo su `main`, mai su rami `claude/...`; si pusha solo con i controlli dello step verdi.
-- L'app è su `https://workout-tracker.francescoperagine.com` (dominio collegato il 12 ottobre 2026) e su `https://workout-tracker.francescoperagine.workers.dev`; le pagine restano `noindex`, il sito personale la elenca in Projects.
+- L'app è su `https://workout-tracker.francescoperagine.com` (dominio collegato il 12 ottobre 2026) e su `https://workout-tracker.francescoperagine.workers.dev`; le pagine sono indicizzabili con il canonico sul dominio (ADR-002), il sito personale la elenca in Projects.
 - I dati del browser sono per origine: il backup è già stato spostato da `workers.dev` al dominio (13 ottobre 2026); a ogni cambio di dominio si esporta e si reimporta.
 - `/kit` (pagina interna del design system) non è nella build pubblicata: `src/pages/_kit.astro` è ignorata dal routing di Astro e la piccola integrazione `kitPage` di `astro.config.mjs` la inietta come `/kit` solo con `npm run dev` o con `WT_KIT=1` (build dei test e2e).
 

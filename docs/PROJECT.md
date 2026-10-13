@@ -10,6 +10,7 @@ Qui c'è solo dove siamo e dove si va.
   spostato da `workers.dev` al dominio, voce nei Projects di personal-website (INC-119 di quel repo, stato
   `production`), Workers Builds collegato al repository: ogni push su `main` va online da solo.
 - **Governance:** adottata con INC-001 (`ai-governance-template` v6).
+- **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
 - **Feature attive:** nessuna (`features/` vuota).
 
 ## Focus attuale
@@ -19,15 +20,10 @@ fine recupero, e le correzioni dello step 9 (variante a metà esercizio che tien
 conferma, allenamento senza tab bar, livello del timer, «Ogni martedì» nel foglio del giorno, peso suggerito
 dalla serie sopra).
 
-Decisioni aperte dello step 9, da chiudere con Francesco (raccomandazione tra parentesi):
-
-1. **Numerazione dopo una variante a metà esercizio:** la variante è una voce nuova con il suo numero e il
-   conteggio dice «1 di 9 esercizi fatti» (tenerla: è quello che è successo davvero).
-2. **Nome accessibile dei giorni del calendario** più lungo del testo visibile, Lighthouse 96 (tenerlo).
-3. **Deploy con l'app aperta in allenamento:** non riprodotto; un chunk vecchio tolto dalla cache darebbe errore
-   solo offline (non pushare mentre ci si allena; intervenire solo se capita).
-4. **Proposte della critique non fatte:** segno sulla riga della serie da fare adesso, pulsanti ± per il peso,
-   impostazione «Distanza» che oggi non ha effetto (aspettare le prove in palestra).
+Le decisioni aperte dello step 9 sono chiuse come raccomandato (INC-002): la variante a metà esercizio resta
+una voce nuova con il suo numero, il nome accessibile dei giorni del calendario resta più lungo del testo
+visibile, nessun intervento sul deploy con l'app aperta (vedi limiti), le proposte della critique aspettano le
+prove in palestra (vedi direzione).
 
 ## Limiti noti
 
@@ -38,9 +34,11 @@ Decisioni aperte dello step 9, da chiudere con Francesco (raccomandazione tra pa
 - I punti iOS della checklist di `WEB-PUSH.md` (wake lock, sblocco dell'audio, vibrazione) non sono verificati:
   nessun iPhone disponibile.
 - Gli approfondimenti del catalogo sono vuoti: niente testi tecnici o consigli medici inventati.
-- Le pagine restano `noindex`: la reperibilità viene dalla pagina Projects del sito personale.
+- Un push mentre ci si allena con l'app aperta e offline potrebbe chiedere un chunk vecchio non più in cache
+  (non riprodotto): non pushare durante un allenamento, intervenire solo se capita.
 
 ## Direzione
 
 Nessuna milestone fissata. Candidati, solo se le prove li chiedono: server Web Push per gli avvisi ad app
-chiusa, riordino con trascinamento, le proposte della critique (decisione aperta 4).
+chiusa, riordino con trascinamento, le proposte della critique (segno sulla riga della serie da fare adesso, pulsanti ± per il peso,
+impostazione «Distanza» che oggi non ha effetto).

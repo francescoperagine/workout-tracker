@@ -3,6 +3,26 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-002
+
+Date: 2026-10-13
+
+Summary:
+**Pagine indicizzabili e decisioni dello step 9 chiuse.**
+Le pagine non sono più `noindex`: il progetto deve essere trovabile anche dai motori di ricerca. Il canonico
+punta al dominio, così la copia su `workers.dev` non risulta un duplicato. Le quattro decisioni aperte dello
+step 9 sono chiuse come raccomandato.
+
+Deliverables:
+- `src/layouts/Base.astro`: tolto `<meta name="robots" content="noindex, nofollow">`, aggiunto
+  `<link rel="canonical">` da `site`; commento di `src/pages/_kit.astro` allineato.
+- `tests/e2e/smoke.spec.ts`: ogni pagina non ha il meta `robots` e ha il canonico.
+- `docs/PROJECT.md`: decisioni aperte chiuse (variante con il suo numero, nome accessibile del calendario tenuto,
+  niente push durante un allenamento tra i limiti, proposte della critique nella direzione); tolto il limite `noindex`.
+- `PRODUCT.md`, `docs/ARCHITECTURE.md` aggiornati.
+
+ADR: ADR-002 (Accepted). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-001
 
 Date: 2026-10-13

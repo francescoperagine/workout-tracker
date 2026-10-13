@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { archiveWith, seedArchive } from './helpers';
 
-// Prova di base del guscio: le pagine si aprono, sono in italiano e non indicizzabili.
+// Prova di base del guscio: le pagine si aprono, sono in italiano, indicizzabili e con il canonico.
 // I test delle storie si chiamano con il loro ID (es. "US-12 registra una serie copiando il precedente").
 for (const path of ['', 'welcome/', 'settings/', 'calendar/', 'routines/', 'history/', 'workout/']) {
   test(`la pagina /${path} si apre senza errori`, async ({ page }) => {
@@ -10,7 +10,8 @@ for (const path of ['', 'welcome/', 'settings/', 'calendar/', 'routines/', 'hist
     await seedArchive(page, archiveWith());
     await page.goto(path);
     await expect(page.locator('html')).toHaveAttribute('lang', 'it');
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`^https://[^/]+/.*${path}$`));
     await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
     expect(errors).toEqual([]);
   });
