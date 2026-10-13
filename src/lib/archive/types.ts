@@ -1,4 +1,4 @@
-// Modello dati v2 dell'archivio (step 2). Vedi docs/restyling/PIANO.md, "Modello dati v2".
+// Modello dati v2 dell'archivio (step 2). Vedi docs/archive/restyling/PIANO.md, "Modello dati v2".
 // Regola delle unità: pesi sempre in kg e distanze in metri; la conversione avviene solo
 // in ingresso e in uscita (src/lib/units.ts).
 

@@ -350,7 +350,7 @@ Il meccanismo dei temi: nessun attributo su `<html>` significa "segui il sistema
 I temi sono un registro, non un elenco cablato: `THEME_REGISTRY` in `src/lib/theme.ts` è l'unica fonte, e da lì leggono lo script in linea di `Base.astro`, il selettore delle Impostazioni e i test. Un tema aggiuntivo (per esempio arancione su nero) è una **palette**: ridefinisce i token, non i componenti.
 
 1. Una voce nel registro: `orange: { label: 'Arancione', scheme: 'dark' }`. `scheme` è `light` o `dark` per un tema con un solo aspetto, `auto` se segue il sistema (allora i valori sono coppie `light-dark()`).
-2. Un file `src/styles/themes/orange.css`, importato in testa a `global.css`, con una sola regola `:root[data-theme="orange"] { color-scheme: dark; … }` che sovrascrive **tutti** i token di contenuto e del guscio (`shell-*`, `level`, `backdrop`, `shadow`). Il file resta fuori dai layer, così vince sui valori di `@theme`.
+2. Un file `orange.css` in `styles/themes/` (cartella nuova sotto `src/`), importato in testa a `global.css`, con una sola regola `:root[data-theme="orange"] { color-scheme: dark; … }` che sovrascrive **tutti** i token di contenuto e del guscio (`shell-*`, `level`, `backdrop`, `shadow`). Il file resta fuori dai layer, così vince sui valori di `@theme`.
 3. Le stesse soglie del sistema verde: testo ≥ 4,5:1 su fondo, superficie, campo e fatto; `line-strong` ≥ 3:1; testo su accento ≥ 4,5:1; cifre del timer leggibili sul guscio e sul livello. Il test del registro (`src/lib/theme.test.ts`) fallisce se un tema non ha la sua regola CSS o il suo `color-scheme`.
 4. I colori del tema vanno nel frontmatter di questo file e in `.impeccable/design.json`; `/kit` lo mostra da solo nel selettore.
 

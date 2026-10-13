@@ -1,6 +1,6 @@
 // Avviso di fine recupero dietro un'interfaccia (PIANO step 7, decisione 3): oggi l'implementazione è
 // locale, in primo piano (un timeout nella pagina). Domani un Web Push potrà avvisare anche con l'app
-// chiusa, con la stessa interfaccia: il contratto del server è in docs/restyling/WEB-PUSH.md, gli
+// chiusa, con la stessa interfaccia: il contratto del server è in docs/archive/restyling/WEB-PUSH.md, gli
 // handler `push` e `notificationclick` sono già nel service worker (public/sw-push.js).
 import type { RestTimerState } from './rest-timer';
 

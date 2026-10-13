@@ -10,7 +10,8 @@
     "check": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "docs:check": "DOCS_CHECK_DIRS='docs|src|features|tests|scripts|public' bash scripts/docs-check.sh"
   },
   "dependencies": {
     "@astrojs/svelte": "^9.0.1",

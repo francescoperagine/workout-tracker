@@ -34,11 +34,11 @@ npm run test:e2e   # Playwright sulla build (npx playwright install chromium la 
 
 `WT_BASE=/percorso/` costruisce l'app in un sotto-percorso, `WT_SITE` cambia il dominio. La pagina `/kit` esiste solo con `npm run dev` o con `WT_KIT=1` (la imposta la config di Playwright): la build pubblicata non la contiene.
 
-Struttura, convenzioni e decisioni sono in [AGENTS.md](AGENTS.md); prodotto e design in [PRODUCT.md](PRODUCT.md) e [DESIGN.md](DESIGN.md); la storia del restyling in [docs/restyling/](docs/restyling/).
+Struttura, convenzioni e decisioni sono in [AGENTS.md](AGENTS.md); prodotto e design in [PRODUCT.md](PRODUCT.md) e [DESIGN.md](DESIGN.md); la storia del restyling in [docs/archive/restyling/](docs/archive/restyling/).
 
 ## Pubblicazione
 
-Worker Cloudflare `workout-tracker`, solo asset statici, configurato in [wrangler.jsonc](wrangler.jsonc): `https://workout-tracker.francescoperagine.com` (e `workers.dev`). Deploy con `npm run build && npx wrangler deploy`, solo con check, test, build ed e2e verdi. Quando Workers Builds sarà collegato al repository (ramo `main`, build `npm run build`, deploy `npx wrangler deploy`), ogni push su `main` andrà in produzione da solo.
+Worker Cloudflare `workout-tracker`, solo asset statici, configurato in [wrangler.jsonc](wrangler.jsonc): `https://workout-tracker.francescoperagine.com` (e `workers.dev`). Workers Builds è collegato al repository: ogni push su `main` (build `npm run build`, deploy `npx wrangler deploy`) va in produzione da solo, quindi si pusha solo con check, test, build ed e2e verdi.
 
 ## Catalogo esercizi e approfondimenti
 
@@ -59,4 +59,4 @@ Gli approfondimenti («come si esegue») sono vuoti di proposito: non contengono
 },
 ```
 
-Usa spiegazioni corrette e immagini di cui hai i diritti. Le immagini sono file PNG, JPG, WebP, AVIF o GIF in `public/exercises/` (percorso relativo, senza `..`) o immagini raster incorporate; immagini su domini esterni e SVG non vengono caricati. Le fonti si aprono solo su azione dell'utente e devono essere indirizzi `http` o `https`.
+Usa spiegazioni corrette e immagini di cui hai i diritti. Le immagini sono file PNG, JPG, WebP, AVIF o GIF nella cartella `exercises/` di `public/` (percorso relativo, senza `..`) o immagini raster incorporate; immagini su domini esterni e SVG non vengono caricati. Le fonti si aprono solo su azione dell'utente e devono essere indirizzi `http` o `https`.

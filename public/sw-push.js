@@ -1,6 +1,6 @@
 // Predisposizione Web Push per il timer di recupero (step 7, decisione 3 del piano): handler pronti nel
 // service worker, nessun server. Oggi nessuno invia push: gli avvisi arrivano solo con l'app aperta.
-// Il contratto di un futuro endpoint è in docs/restyling/WEB-PUSH.md. Importato da sw.js
+// Il contratto di un futuro endpoint è in docs/archive/restyling/WEB-PUSH.md. Importato da sw.js
 // (workbox-build, importScripts), quindi gli URL sono relativi al percorso base del service worker.
 
 // Payload atteso (JSON): { "type": "rest-end", "title": "Recupero finito", "body": "Adesso: …", "tag": "<setId>" }

@@ -23,7 +23,7 @@ Il flusso essenziale di Strong (riga serie con "precedente", spunta che avvia il
 - Rete scarsa o assente in palestra: dopo la prima visita tutto deve funzionare offline.
 - Interruzioni continue: notifiche, macchina occupata, chiacchiere, schermo che si spegne. Chiudere, bloccare o ricaricare deve riportare esattamente alla sessione e al timer in corso.
 - Uso principale da telefono (riferimento 390×844, minimo 320×568), anche installata sulla schermata Home; desktop per pianificare e rivedere lo storico.
-- Pubblicata su `https://workout-tracker.francescoperagine.com` (Worker Cloudflare `workout-tracker`, deploy a ogni push su `main`). Durante le prove in palestra, fino alla fine del restyling, vive solo su `https://workout-tracker.francescoperagine.workers.dev` (non elencata, pagine `noindex`). `WT_BASE`/`WT_SITE` restano per provare la build in un sotto-percorso.
+- Pubblicata su `https://workout-tracker.francescoperagine.com` (Worker Cloudflare `workout-tracker`, deploy a ogni push su `main` con Workers Builds), anche su `https://workout-tracker.francescoperagine.workers.dev`; pagine `noindex`, elencata nei Projects del sito personale. `WT_BASE`/`WT_SITE` restano per provare la build in un sotto-percorso.
 
 ## Capabilities and Constraints
 - **Funzioni v1:** primo avvio con schede di esempio o da zero; schede con esercizi dal catalogo o liberi, serie, ripetizioni e carichi target (anche intervalli), recupero e recupero di riscaldamento, alternative, superserie; pianificazione settimanale con eccezioni per singola data; allenamento attivo con colonna "precedente", spunta per serie, tipi di serie (normale, riscaldamento, drop, cedimento), varianti, note sul carico, approfondimento dell'esercizio; timer di recupero a tutto schermo (−15 s, +15 s, Salta, Riduci); riepilogo di fine sessione con record; storico modificabile; grafici dei progressi (carico massimo, 1RM stimato, volume); impostazioni di tema, unità, recupero predefinito, suono e vibrazione; esportazione, importazione e import del backup del PoC.
@@ -42,7 +42,7 @@ Nome **Workout Tracker** (breve **Workout**, il nome sotto l'icona nella scherma
 - Schede reali A/B e catalogo esercizi con ID stabili, convertiti dal PoC in `src/data/starter-routines.ts` e `src/data/catalog.ts`. Gli ID non vanno cambiati: lo storico dell'utente e i backup del PoC li usano.
 - Gli approfondimenti del catalogo sono **vuoti**: non ci sono descrizioni, immagini o fonti verificate. Non vanno inventati testi tecnici o consigli medici.
 - Nessun backup reale dell'utente è ancora disponibile per provare l'import del PoC; fino ad allora si usa un backup sintetico.
-- Ricerche su concorrenti (Strong, Hevy) e vincoli del timer sul web in `docs/restyling/ANALISI.md`; scena d'uso, principi e user story in `docs/restyling/USER-STORIES.md`.
+- Ricerche su concorrenti (Strong, Hevy) e vincoli del timer sul web in `docs/archive/restyling/ANALISI.md`; scena d'uso, principi e user story in `docs/archive/restyling/USER-STORIES.md`.
 
 ## Product Principles
 - **Usabile con una mano, tra una serie e l'altra:** le azioni frequenti stanno nella zona del pollice e costano pochissimi tocchi.
