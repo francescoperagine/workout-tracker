@@ -2,6 +2,11 @@
   "name": "workout-tracker",
   "type": "module",
   "version": "0.0.1",
+  "author": {
+    "name": "Francesco Peragine",
+    "url": "https://francescoperagine.com"
+  },
+  "homepage": "https://workout-tracker.francescoperagine.com",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

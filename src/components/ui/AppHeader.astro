@@ -1,8 +1,9 @@
 ---
-// Intestazione del guscio: titolo della schermata, riga di stato e accesso alle Impostazioni; dove non
+// Intestazione del guscio: titolo della schermata, riga di stato, accesso a Info e Impostazioni; dove non
 // c'è la tab bar (allenamento in corso) anche il ritorno, a sinistra del titolo.
 import ChevronLeft from '@lucide/astro/icons/chevron-left';
-import SlidersHorizontal from '@lucide/astro/icons/sliders-horizontal';
+import CircleQuestionMark from '@lucide/astro/icons/circle-question-mark';
+import Settings from '@lucide/astro/icons/settings';
 import { appUrl } from '../../lib/paths';
 
 interface Props {
@@ -10,11 +11,13 @@ interface Props {
   subtitle?: string;
   /** false nelle schermate che non devono portare alle Impostazioni (es. le Impostazioni stesse) */
   showSettings?: boolean;
+  /** false nella pagina Info stessa */
+  showInfo?: boolean;
   /** link di ritorno a sinistra del titolo, con la sua etichetta accessibile */
   back?: { href: string; label: string };
 }
 
-const { title, subtitle, showSettings = true, back } = Astro.props;
+const { title, subtitle, showSettings = true, showInfo = true, back } = Astro.props;
 ---
 
 <header transition:animate="none" class="shell sticky top-0 z-20 border-b border-shell-line pt-[env(safe-area-inset-top)]">
@@ -33,9 +36,16 @@ const { title, subtitle, showSettings = true, back } = Astro.props;
     <div class="flex items-center gap-1">
       <slot name="actions" />
       {
+        showInfo && (
+          <a href={appUrl('/info')} class="btn btn-icon" aria-label="Informazioni">
+            <CircleQuestionMark size={22} aria-hidden="true" />
+          </a>
+        )
+      }
+      {
         showSettings && (
           <a href={appUrl('/settings')} class="btn btn-icon" aria-label="Impostazioni">
-            <SlidersHorizontal size={22} aria-hidden="true" />
+            <Settings size={22} aria-hidden="true" />
           </a>
         )
       }

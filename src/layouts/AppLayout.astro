@@ -27,6 +27,8 @@ interface Props {
   showTabs?: boolean;
   showHeader?: boolean;
   showSettings?: boolean;
+  /** false nella pagina Info */
+  showInfo?: boolean;
   /** false dove la pagina mostra da sé lo stato del salvataggio (allenamento attivo) */
   showArchiveStatus?: boolean;
   /** ritorno nell'intestazione, per le pagine senza tab bar */
@@ -43,6 +45,7 @@ const {
   showTabs = true,
   showHeader = true,
   showSettings = true,
+  showInfo = true,
   showArchiveStatus = true,
   back,
 } = Astro.props;
@@ -54,7 +57,7 @@ const barsBelow = showTabs ? TAB_BAR_HEIGHT : 0;
 
 <Base title={suffixTitle ? `${title} · Workout Tracker` : 'Workout Tracker'} description={description} bodyStyle={`--bottom-bars-base: ${barsBelow}px; --bottom-bars-height: ${barsBelow}px`}>
   <ClientRouter slot="head" />
-  {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} back={back} />}
+  {showHeader && <AppHeader title={heading} subtitle={subtitle} showSettings={showSettings} showInfo={showInfo} back={back} />}
 
   <main class="mx-auto w-full max-w-2xl px-4 pt-6 pb-[calc(var(--bottom-bars-height)+env(safe-area-inset-bottom)+2rem)]">
     <slot />

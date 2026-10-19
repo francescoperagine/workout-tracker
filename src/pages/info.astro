@@ -1,0 +1,89 @@
+---
+// Info sul progetto (US-34): cos'è, dove stanno i dati, chi l'ha fatto e come contattarlo.
+// Pagina statica, senza isole: nessuna richiesta di rete, solo link.
+// <!--email_off--> attorno al mailto: Cloudflare non deve riscriverlo (lo script che lo decodifica non è nel precache offline).
+import Download from '@lucide/astro/icons/download';
+import AppLayout from '../layouts/AppLayout.astro';
+import { appUrl } from '../lib/paths';
+---
+
+<AppLayout title="Info" description="Workout Tracker: cos’è, dove restano i dati, chi l’ha fatto e come contattarlo." showInfo={false}>
+  <div class="flex flex-col gap-10">
+    <section aria-labelledby="s-project" class="flex flex-col gap-3">
+      <h2 id="s-project" class="section-title">Il progetto</h2>
+      <div class="panel flex flex-col gap-3">
+        <p class="m-0">
+          Workout Tracker è un diario di allenamento per la palestra, pensato per il telefono tra una serie e l’altra: schede,
+          serie della volta precedente, timer di recupero e progressi.
+        </p>
+        <p class="m-0">
+          È gratuito e non serve un account. Non ci sono pubblicità né strumenti di tracciamento (analytics). Il codice è
+          pubblico su <a href="https://github.com/francescoperagine/workout-tracker">GitHub</a>.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="s-data" class="flex flex-col gap-3">
+      <h2 id="s-data" class="section-title">I tuoi dati</h2>
+      <div class="panel flex flex-col gap-3">
+        <p class="m-0">
+          Il diario resta solo su questo dispositivo, nel browser con cui usi l’app. Non c’è un server: nessuno, nemmeno io, può
+          vederlo o recuperarlo.
+        </p>
+        <p class="m-0">
+          Perdi il diario se svuoti i dati del sito dalle impostazioni del browser. Non lo ritrovi se cambi telefono o browser,
+          perché ognuno ha il suo. In navigazione privata sparisce alla chiusura.
+        </p>
+        <p class="m-0">
+          Su iPhone e iPad, Safari può cancellare i dati di un sito che non apri da 7 giorni. Non succede se aggiungi l’app alla
+          schermata Home:
+        </p>
+        <ul class="m-0 max-w-[56ch] list-disc space-y-2 pl-5">
+          <li><strong>iPhone e iPad (Safari):</strong> tocca Condividi, poi «Aggiungi alla schermata Home».</li>
+          <li><strong>Android (Chrome):</strong> apri il menu con i tre puntini, poi «Installa app» o «Aggiungi a schermata Home».</li>
+        </ul>
+      </div>
+      <div class="panel flex flex-col gap-3">
+        <p class="m-0">
+          Per non perdere nulla fai un backup ogni tanto, per esempio una volta al mese: è un file che resta tuo e puoi reimportarlo
+          qui o su un altro dispositivo.
+        </p>
+        <a href={appUrl('/settings#data')} class="btn btn-secondary self-start">
+          <Download aria-hidden="true" />Esporta un backup in Impostazioni
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="s-author" class="flex flex-col gap-3">
+      <h2 id="s-author" class="section-title">Chi l’ha fatto</h2>
+      <div class="panel flex flex-col gap-3">
+        <p class="m-0">Workout Tracker è fatto da <a href="https://francescoperagine.com">Francesco Peragine</a>.</p>
+        <p class="m-0">
+          Scrivimi per segnalare un problema, proporre un’idea o dirmi cosa non funziona. Racconta cosa è successo e, se puoi,
+          allega uno screenshot.
+        </p>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0">
+          <li>
+            Email: <!--email_off--><a class="underline" href="mailto:info@francescoperagine.com?subject=Workout%20Tracker"
+              >info@francescoperagine.com</a
+            ><!--/email_off-->
+          </li>
+          <li>LinkedIn: <a class="underline" href="https://linkedin.com/in/fperagine">linkedin.com/in/fperagine</a></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</AppLayout>
+
+<style>
+  p {
+    max-width: 56ch;
+  }
+  /* titolo di sezione nel contenuto: "Titolo pagina" di DESIGN.md */
+  .section-title {
+    margin: 0;
+    font-size: var(--text-page-title);
+    line-height: var(--text-page-title--line-height);
+    font-weight: 700;
+  }
+</style>

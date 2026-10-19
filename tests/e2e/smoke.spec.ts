@@ -3,7 +3,7 @@ import { archiveWith, seedArchive } from './helpers';
 
 // Prova di base del guscio: le pagine si aprono, sono in italiano, indicizzabili e con il canonico.
 // I test delle storie si chiamano con il loro ID (es. "US-12 registra una serie copiando il precedente").
-for (const path of ['', 'welcome/', 'settings/', 'calendar/', 'routines/', 'history/', 'workout/']) {
+for (const path of ['', 'welcome/', 'settings/', 'info/', 'calendar/', 'routines/', 'history/', 'workout/']) {
   test(`la pagina /${path} si apre senza errori`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));

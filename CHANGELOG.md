@@ -3,6 +3,29 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-003
+
+Date: 2026-10-19
+
+Summary:
+**Pagina Info con i contatti, ingranaggio per le Impostazioni, autore del repo.**
+Una pagina statica `/info/` dice cos'è il progetto, dove restano i dati (cosa li cancella, come installare
+l'app su iOS e Android, invito al backup) e chi l'ha fatto, con email e LinkedIn. Si apre dalla «?»
+nell'intestazione, accanto all'ingranaggio che sostituisce gli slider; la tab bar non cambia. La
+persistenza dello storage era già chiesta (`askPersistenceOnce`): nessuna modifica.
+
+Deliverables:
+- `src/pages/info.astro` (nuova, senza isole); mailto con solo l'oggetto «Workout Tracker», avvolto in
+  `<!--email_off-->` perché Cloudflare non lo riscriva.
+- `src/components/ui/AppHeader.astro`: icona `settings` al posto di `sliders-horizontal`, link «Informazioni»
+  (`circle-question-mark`) con la prop `showInfo`, passata da `src/layouts/AppLayout.astro`.
+- `src/layouts/Base.astro`: `<meta name="author">`; `package.json`: `author` e `homepage`; `README.md`: sezione «Autore».
+- `tests/e2e/us-34-info.spec.ts` (nuovo) e `/info/` nello smoke.
+- `DESIGN.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT.md` aggiornati; SPEC chiusa in
+  `docs/archive/features/INC-003_info-page.md`.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-002
 
 Date: 2026-10-13

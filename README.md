@@ -18,6 +18,10 @@ App: <https://workout-tracker.francescoperagine.com>
 
 L'import accetta anche i backup della prima versione statica dell'app (formato `bodytracker.archivio.v1`, file esportato da «Dati e privacy»): allenamenti, varianti ed esercizi liberi vengono convertiti, con un riepilogo degli elementi scartati.
 
+## Autore
+
+[Francesco Peragine](https://francescoperagine.com) · [LinkedIn](https://linkedin.com/in/fperagine)
+
 ## Sviluppo
 
 App statica **Astro 7** con isole **Svelte 5** e **Tailwind CSS 4**. Richiede Node.js.

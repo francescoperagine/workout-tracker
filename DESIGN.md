@@ -510,7 +510,7 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 - **Internal Padding:** fluida da 12px a 16px. Un solo livello: un pannello non contiene altri pannelli.
 
 ### Navigation
-- **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `shell-line`; titolo compatto troncato su una riga, riga di stato in `shell-muted` a 14px, a destra azioni facoltative e l'icona delle Impostazioni da 48px.
+- **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `shell-line`; titolo compatto troncato su una riga, riga di stato in `shell-muted` a 14px, a destra azioni facoltative, l'icona Informazioni (`circle-question-mark`, verso `/info`) e quella delle Impostazioni (`settings`, l'ingranaggio), da 48px.
 - **Mini-barra dell'allenamento:** sulle altre pagine (non sull'allenamento; su Oggi solo con un recupero in corso), sopra la tab bar: guscio alto 56px con filo `shell-line`, icona `circle-play` lime, nome della sessione (650) e "da 25 min · esercizio" in `shell-muted`, "Riprendi" lime con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`). Con un recupero in corso diventa il timer ridotto, con a destra una freccia da 56px (separata da un filo `shell-line`) che torna all'allenamento.
 - **Tab bar:** guscio in basso con filo superiore `shell-line`, quattro voci uguali (Oggi, Calendario, Schede, Storico) alte 56px, icona da 22px sopra l'etichetta a 12px. A riposo `shell-muted`, al passaggio `shell-foreground`; la voce attiva è lime e in grassetto, con `aria-current="page"`.
 

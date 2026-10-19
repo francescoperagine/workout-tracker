@@ -11,6 +11,7 @@ Qui c'è solo dove siamo e dove si va.
   `production`), Workers Builds collegato al repository: ogni push su `main` va online da solo.
 - **Governance:** adottata con INC-001 (`ai-governance-template` v6).
 - **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
+- **Pagina Info:** da INC-003, con i contatti dell'autore; la «?» dell'intestazione la apre, l'ingranaggio porta alle Impostazioni.
 - **Feature attive:** nessuna (`features/` vuota).
 
 ## Focus attuale

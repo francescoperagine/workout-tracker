@@ -58,6 +58,7 @@ src/pages/
   index.astro           Oggi (/): primo avvio se non c'è un archivio; settimana, schede da scegliere con la suggerita, Inizia/Riprendi, ultimo allenamento
   welcome.astro         primo avvio (/welcome): cosa fa, dove sono i dati, schede di esempio, da zero, importa
   settings.astro        Impostazioni e Dati e privacy (/settings)
+  info.astro            Info sul progetto, i dati e i contatti dell'autore (/info), statica; si apre dalla «?» dell'intestazione
   routines.astro        Schede (/routines): elenco con crea, duplica, rinomina, riordina, archivia, elimina
   routine.astro         editor di una scheda (/routine?id=…)
   calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
