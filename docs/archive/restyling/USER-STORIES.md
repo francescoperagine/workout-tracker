@@ -165,6 +165,11 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Rispetta P4, con gli stessi messaggi e comportamenti del PoC.
 - Archivio illeggibile: nessuna sovrascrittura, download del contenuto originale.
 
+**US-34 (S, INC-003).** Come utente, voglio una pagina Info raggiungibile dalla «?» dell'intestazione, per sapere cos'è l'app, dove restano i miei dati e come contattare chi l'ha fatta.
+- La «?» c'è in ogni pagina con intestazione tranne Info, dove resta l'ingranaggio; la tab bar non cambia.
+- Dice cosa cancella il diario, come aggiungere l'app alla schermata Home su iOS e Android, e porta all'export del backup in Impostazioni.
+- Contatti (email con oggetto «Workout Tracker», sito, LinkedIn) senza richieste di rete verso l'esterno.
+
 ## 4. Flussi principali da progettare per primi
 
 1. **Allenamento del giorno:** Oggi (scheda suggerita già selezionata, oppure una delle ultime 4) → Inizia → serie (precedente, spunta) → recupero a tutto schermo → serie successiva → … → Termina → riepilogo. Storie: US-11, 12, 21, 22, 18.
