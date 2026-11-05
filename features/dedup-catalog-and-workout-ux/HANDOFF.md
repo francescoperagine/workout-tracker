@@ -54,3 +54,25 @@ esercizio · 3 trascinamento · 4 selezione della cella · 5 icona. Solo `main`,
 Hermes: `/Users/thuls/.local/bin/hermes --yolo -z "<prompt autosufficiente>"` dalla radice del repo, solo per
 lavoro meccanico con specifica completa (screenshot sul telefono, tabella degli alias dopo il test di
 unicità). Leggi il diff di un worker prima di darlo per fatto.
+
+## Ripresa dall'incremento 5 (5 novembre 2026, dopo INC-007)
+
+Incrementi 2–4 fatti e committati: INC-005 (completa esercizio), INC-006 (trascinamento, ADR-003), INC-007
+(selezione della cella); esiti nella SPEC. Base della ripresa: il commit di questo handoff; nessun push.
+
+- **Foglio di confronto:** `screenshots/icon-compare.png` (non tracciato), rigenerabile con
+  `features/dedup-catalog-and-workout-ux/icon-variants.cjs` (comando in testa al file). A e B, ciascuna su bianco
+  con bordo grigio chiaro e su grigio molto scuro, a 16, 32, 48, 192, 512 più la maskable con il cerchio dell'80%.
+  I tagli 16–48 usano un master con tratti più pieni (dimensione ottica).
+- **Prima di applicare:** la scelta di Francesco (A o B, su bianco o su scuro). Poi l'ambito di SPEC §6,
+  incremento 5 «Dopo la scelta»: sorgente versionata in scripts/icon-source/, da creare (il master scelto, o lo script
+  che lo produce), `scripts/make-icons.mjs` che ne genera `public/icons/*`, `public/favicon.svg` e
+  apple-touch-icon; manifest `background_color`/`theme_color` a grigio molto scuro (controllare `SHELL` e
+  `<meta name="theme-color">` in `Base.astro`).
+- **Difetto noto della variante A:** a destra la barra sporge oltre il disco con una punta (resto del tratto
+  originale): da pulire se Francesco sceglie A.
+- **Telefono:** mai collegato in questa sessione (`adb devices` vuoto). Restano da fare la prova del
+  trascinamento (INC-006) e della selezione (INC-007) sul telefono, e lo screenshot del launcher
+  (`screenshots/4-icona-dopo.png`) dell'incremento 5.
+- **Chiusura** (SPEC §8) nell'incremento 5; il limite di `docs/PROJECT.md` sul riordino è già tolto (INC-006).
+  Cancellare anche `icon-variants.cjs` con la cartella della feature.
