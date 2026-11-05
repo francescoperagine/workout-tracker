@@ -13,6 +13,7 @@ Qui c'è solo dove siamo e dove si va.
 - **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
 - **Pagina Info:** da INC-003, con i contatti dell'autore; la «?» dell'intestazione la apre, l'ingranaggio porta alle Impostazioni.
 - **Catalogo e allenamento** (`dedup-catalog-and-workout-ux`, chiusa con INC-008): catalogo senza doppioni e valori dell'ultima volta (INC-004), completa esercizio (INC-005), trascinamento (INC-006, ADR-003), selezione delle celle (INC-007), icona dal bilanciere a pennello (INC-008, ADR-004); SPEC in `docs/archive/features/INC-008_dedup-catalog-and-workout-ux.md`.
+- **Card esercizio sfoltita** (`exercise-card-layout`, chiusa con INC-009): in testa solo maniglia, nome e ⋯, niente numero né obiettivo della scheda, «Completa» nell'intestazione delle righe, bordo accento sull'esercizio corrente, recupero dal menu ⋯ (US-40); SPEC in `docs/archive/features/INC-009_exercise-card-layout.md`.
 - **Feature attive:** nessuna.
 
 ## Focus attuale

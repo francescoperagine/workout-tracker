@@ -141,6 +141,10 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Vale per le celle delle serie e per carico e ripetizioni nell'editor della scheda, da tocco, mouse e tastiera; un secondo tocco nel campo attivo mette il cursore.
 - Nessun ± né selettore a ruota; tastiera numerica e virgola decimale come prima.
 
+**US-40 (S, INC-009).** Come utente, voglio cambiare il recupero di un esercizio dal suo menu, una volta per esercizio, perché valga per tutte le sue serie e anche la volta dopo.
+- Voce «Recupero · 1:30» nel menu ⋯ (non nella sessione conclusa), foglio con −15 s / +15 s da 0 a 60 minuti; ogni passo si salva subito, nessun «Salva».
+- Cambia la sessione e, se l'esercizio viene da una scheda, la sua voce; vale dalla prossima spunta, un recupero in corso non cambia.
+
 ### E5. Recupero
 
 **US-21 (M, step 7).** Come utente, voglio che alla spunta della serie parta il recupero a tutto schermo, per riposare il tempo giusto senza pensarci.

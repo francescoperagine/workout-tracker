@@ -7,7 +7,7 @@
 // - la spunta su una riga vuota conferma il precedente (1 tocco, P1);
 // - le serie di riscaldamento non hanno numero e non contano per volume e record.
 import { isValidDateKey } from './dates';
-import { blocksOf, moveInList, moveToIndex, newId, normalizeGroups } from './routine-edit';
+import { blocksOf, moveInList, moveToIndex, newId, normalizeGroups, updateEntry } from './routine-edit';
 import { ArchiveError, DEFAULT_SETS, DEFAULT_WARMUP_REST, LIMITS, SET_TYPES, type Archive, type RoutineExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 // ---------------------------------------------------------------------------------------------
@@ -416,6 +416,18 @@ export function undoSwitch(archive: Archive, sessionId: string, before: SessionE
 /** Nota sul carico (US-16): totale, per manubrio, macchina, regolazioni. */
 export function setExerciseNotes(archive: Archive, sessionId: string, exerciseId: string, notes: string): Archive {
   return withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, notes: notes.slice(0, LIMITS.notesLength) }));
+}
+
+/**
+ * Recupero dell'esercizio (US-40), uno per tutte le sue serie. Se l'esercizio viene da una scheda cambia
+ * anche la voce della scheda, così la volta dopo parte da lì; con una variante è la voce del posto previsto.
+ */
+export function setExerciseRest(archive: Archive, sessionId: string, exerciseId: string, rest: number): Archive {
+  if (!Number.isInteger(rest) || rest < 0 || rest > LIMITS.maxRest) throw new ArchiveError('Scegli un recupero valido.');
+  const changed = withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, rest }));
+  const session = archive.sessions.find((s) => s.id === sessionId)!;
+  const entry = plannedEntry(archive, session, session.exercises.find((e) => e.id === exerciseId)!);
+  return entry && session.routineId ? updateEntry(changed, session.routineId, entry.id, { rest }) : changed;
 }
 
 /** Nome della sessione, modificabile anche in corso (US-27) */

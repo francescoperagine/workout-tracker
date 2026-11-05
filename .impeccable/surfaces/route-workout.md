@@ -19,8 +19,8 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 - Una serie registrata in **1 tocco** se ripete la volta scorsa (la spunta su una riga vuota conferma i valori "precedente"), al massimo 2 campi più la spunta altrimenti (P1). Togliere la spunta annulla.
 - La spunta della serie avvia il recupero (vedi brief del timer).
-- Riordino (US-38, ADR-003): il numero della card è la maniglia (icona a sei punti sotto); premuta e trascinata, la lista passa alle righe del riordino e la riga resta sotto il dito; Su e Giù sulla maniglia spostano di un posto; «Sposta su/giù» anche nel foglio ⋯. L'intestazione «Superserie» ha la maniglia del gruppo intero.
-- «Completa esercizio» (US-37, doppia spunta accanto a ⋯ nell'intestazione della card): spunta in un tocco le serie con le ripetizioni; quelle senza restano da fare, in ambra (`warning-bg`, `warning-line`) con «Mancano le ripetizioni: serie N» sotto le righe. Un solo recupero, già ridotto, perché il timer a tutto schermo coprirebbe l'avviso con «Annulla».
+- Riordino (US-38, ADR-003): la maniglia (icona a sei punti) sta a sinistra del nome, nella stessa riga (INC-009); premuta e trascinata, la lista passa alle righe del riordino e la riga resta sotto il dito; Su e Giù sulla maniglia spostano di un posto; «Sposta su/giù» anche nel foglio ⋯. L'intestazione «Superserie» ha la maniglia del gruppo intero.
+- «Completa esercizio» (US-37, doppia spunta in accento nella riga delle intestazioni Serie · Precedente · kg · Rip, sopra le spunte delle righe, da INC-009): spunta in un tocco le serie con le ripetizioni; quelle senza restano da fare, in ambra (`warning-bg`, `warning-line`) con «Mancano le ripetizioni: serie N» sotto le righe. Un solo recupero, già ridotto, perché il timer a tutto schermo coprirebbe l'avviso con «Annulla».
 - Alla fine, "Termina" porta a un riepilogo: durata, esercizi, serie, volume, record battuti.
 - Contenuto reale: schede A/B del PoC. Esempio: "2a Panca piana bilanciere · 6–8 · 40 kg · recupero 60–75″" in superserie con "2b Rematore manubri, petto su panca inclinata · 8–10 · 12–14 kg per manubrio".
 
@@ -28,7 +28,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 - **Autorità visiva:** il mondo del PoC (verde, operativo), esteso a chiaro e scuro nello step 1. Questo brief non sceglie colori né font.
 - **Tesi di interazione:** la **riga serie è l'unità di lavoro**. `tipo/n · precedente · peso · rip · ✓`, con la spunta a destra nella zona del pollice. Tutto il resto (nomi, target, note) è contesto attorno alla riga.
-- **Esercizio corrente in evidenza:** il primo esercizio con serie non spuntate è quello "attivo": target, variante e precedente visibili senza aprire nulla (P7). Gli esercizi completati si compattano ma restano modificabili.
+- **Esercizio corrente in evidenza:** il primo esercizio con serie non spuntate è quello "attivo": variante e precedente visibili senza aprire nulla (P7), con il bordo accento sulla card; il target della scheda non si ripete sopra le righe serie (Francesco, 5 novembre 2026). Gli esercizi completati si compattano ma restano modificabili.
 - **Superserie:** gli esercizi del gruppo (2a/2b) sono visivamente legati; dopo la spunta di una serie di 2a il focus passa a 2b, e il recupero parte solo dopo l'ultimo del giro.
 
 ## Scope and boundaries
@@ -48,7 +48,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 ## Interaction and layout
 
 - Una colonna a 320–430 px; su desktop resta una colonna centrata (nessun layout a cruscotto).
-- Gerarchia: nome esercizio (tocco = approfondimento) → variante → target (ripetizioni, carico, recupero) → righe serie → "Aggiungi serie".
+- Gerarchia: maniglia e nome esercizio (tocco = approfondimento) → variante → righe serie con "Completa" nell'intestazione → "Aggiungi serie"; recupero, nota, cambio esercizio nel menu ⋯; l'esercizio corrente ha il bordo accent.
 - Campi: tastiera numerica, decimale per il peso; ≥ 48px; cifre ≥ 20px tabulari (P3); al tocco il contenuto è tutto selezionato e scrivere lo sostituisce (US-39), niente ± né ruota. Toccare "precedente" copia peso e ripetizioni nella riga.
 - "Aggiungi serie" riprende il peso dell'ultima serie con ripetizioni vuote. Rimuovere una serie con valori mostra "Annulla" per qualche secondo (P4).
 - Cambio variante: dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla»; "precedente" si riferisce alla variante scelta.

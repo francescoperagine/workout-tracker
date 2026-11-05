@@ -3,6 +3,42 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-009
+
+Date: 2026-11-06
+
+Summary:
+**Card dell'esercizio sfoltita e recupero dal menu (US-40), feature `exercise-card-layout` in un incremento.**
+In `/workout` la testa della card ha solo maniglia, nome e ⋯: tolti il numero («1», «2a»), la riga
+dell'obiettivo della scheda («3 × 8–12 · … · rec. 1:30») e il pulsante «Cambia esercizio» nel corpo (resta nel
+menu). «Distensioni manubri panca inclinata» sta in due righe anche a 320 px. L'esercizio corrente ha il bordo
+accento sul pannello al posto della pastiglia sul numero. «Completa esercizio» passa nella riga delle
+intestazioni, sopra le spunte, in accento. Il «—» senza precedente è centrato. Nuova voce «Recupero · 1:30» nel
+menu ⋯ (non sulla sessione conclusa): foglio con lo `Stepper` da 0 a 60 minuti a passi di 15 s, salvato a ogni
+passo nella sessione e, se l'esercizio viene da una scheda, nella sua voce.
+
+Deliverables:
+- `src/lib/archive/workout.ts`: `setExerciseRest` (sessione più voce della scheda via `plannedEntry` e
+  `updateEntry`, limiti validati), con i Vitest in `workout.test.ts`.
+- `src/components/workout/WorkoutExercise.svelte`: testa a tre colonne, maniglia senza numero con il bersaglio
+  nell'imbottitura, «Completa» nell'intestazione delle righe allineata alle colonne di `SetRow`; tolte le prop
+  `label` e `onvariant`.
+- `src/components/workout/Workout.svelte`: voce e foglio del recupero, classe `current` sul blocco con la serie
+  da fare adesso (`box-shadow` inset di 2px in `accent-text`).
+- `src/components/ui/SetRow.svelte`: «—» centrato.
+- e2e: nuovo `tests/e2e/us-40-exercise-rest.spec.ts`; `us-12-us-20-workout.spec.ts` cambia esercizio dal menu
+  ⋯ (anche la vecchia «Cambia variante») e verifica che l'obiettivo della scheda non compaia.
+- Documenti: US-40 in `docs/archive/restyling/USER-STORIES.md`; `.impeccable/surfaces/route-workout.md`
+  (gerarchia, maniglia, posto di «Completa», esercizio corrente); `DESIGN.md` (testa dell'esercizio, «Adesso»);
+  `docs/PROJECT.md`; SPEC in `docs/archive/features/INC-009_exercise-card-layout.md`, cartella cancellata.
+
+Limiti noti: in superserie il bordo accento è sul pannello del gruppo e non dice più quale tra 2a e 2b viene
+adesso (la pastiglia lo diceva); a 320 px i nomi da 42 caratteri della Scheda A («Rematore manubri, petto su
+panca inclinata», «Distensioni manubri seduto, schienale alto») vanno su tre righe, senza troncare; con una
+variante il recupero cambia la voce del posto previsto (SPEC §8).
+
+ADR: nessuna (scelte di prodotto prese da Francesco, scritte nella SPEC). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-008
 
 Date: 2026-11-05

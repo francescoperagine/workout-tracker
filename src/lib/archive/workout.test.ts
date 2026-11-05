@@ -29,6 +29,7 @@ import {
   replaceSet,
   restoreSessionExercise,
   restoreSet,
+  setExerciseRest,
   setNumbers,
   setSessionDate,
   switchExercise,
@@ -554,5 +555,34 @@ describe('US-38 riordino in sessione', () => {
     const next = nextSet(after)!;
     expect(next.exercise.exerciseId).toBe('distensioni-manubri-seduto-schienale-alto');
     expect(next.set.id).toBe(next.exercise.sets[0].id);
+  });
+});
+
+describe('US-40 recupero dal menu dell’esercizio', () => {
+  it('da una scheda cambia la sessione e la voce della scheda, senza mutare l’argomento', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const first = session.exercises[0];
+    const entry = plannedEntry(archive, session, first)!;
+    const before = structuredClone(archive);
+    const changed = setExerciseRest(archive, session.id, first.id, first.rest + 15);
+    expect(running(changed).exercises[0].rest).toBe(first.rest + 15);
+    expect(changed.routines.find((r) => r.id === 'routine-a')!.exercises.find((e) => e.id === entry.id)!.rest).toBe(first.rest + 15);
+    expect(archive).toEqual(before);
+  });
+
+  it('in un allenamento libero cambia solo la sessione', () => {
+    const { archive, session } = startSession(withAB(), null, NOW);
+    const added = addSessionExercise(archive, session.id, 'leg-press');
+    const changed = setExerciseRest(added.archive, session.id, added.exercise.id, 0);
+    expect(running(changed).exercises[0].rest).toBe(0);
+    expect(changed.routines).toBe(added.archive.routines);
+  });
+
+  it('un valore fuori dai limiti è un errore', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const first = session.exercises[0];
+    expect(() => setExerciseRest(archive, session.id, first.id, -15)).toThrow();
+    expect(() => setExerciseRest(archive, session.id, first.id, 3601)).toThrow();
+    expect(() => setExerciseRest(archive, session.id, first.id, 7.5)).toThrow();
   });
 });

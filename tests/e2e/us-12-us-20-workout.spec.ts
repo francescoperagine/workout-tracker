@@ -43,6 +43,12 @@ function region(page: Page, exerciseId: string): Locator {
 
 const running = async (page: Page) => (await storedArchive(page))!.sessions.find((s) => s.end === null)!;
 
+/** «Cambia esercizio» sta nel menu ⋯ della card (US-40), non nel suo corpo */
+async function changeExercise(page: Page, card: Locator) {
+  await card.getByRole('button', { name: /^Altre azioni: / }).click();
+  await sheet(page).getByRole('button', { name: 'Cambia esercizio' }).click();
+}
+
 /** Da Oggi: la suggerita è la Scheda A, un tocco su "Inizia allenamento" */
 async function startFromToday(page: Page, archive: Archive) {
   await seedArchive(page, archive);
@@ -173,7 +179,7 @@ test.describe('US-14 varianti', () => {
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('8');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
 
-    await squat.getByRole('button', { name: 'Cambia esercizio' }).click();
+    await changeExercise(page, squat);
     await expect(sheet(page).getByRole('radio', { name: /^Squat bilanciere/ })).toBeChecked();
     await sheet(page).getByRole('radio', { name: name(alternative) }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
@@ -205,7 +211,7 @@ test.describe('US-14 varianti', () => {
     await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
     await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).fill('60');
-    await squat.getByRole('button', { name: 'Cambia esercizio' }).click();
+    await changeExercise(page, squat);
     await sheet(page).getByRole('radio', { name: name(alternative) }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
     await expect(page.getByText(`${name(alternative)} al posto di Squat bilanciere: i valori scritti si sono svuotati.`)).toBeVisible();
@@ -213,7 +219,7 @@ test.describe('US-14 varianti', () => {
     expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
 
     // si torna all'esercizio previsto
-    await variant.getByRole('button', { name: 'Cambia variante' }).click();
+    await changeExercise(page, variant);
     await sheet(page).getByRole('radio', { name: /^Squat bilanciere/ }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
     await expect(region(page, SQUAT.exerciseId)).toBeVisible();
@@ -222,7 +228,7 @@ test.describe('US-14 varianti', () => {
 
   test('US-14 "Altro esercizio…" scritto a mano diventa un esercizio personalizzato', async ({ page }) => {
     await startFromToday(page, archiveWith({ routines: routines() }));
-    await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Cambia esercizio' }).click();
+    await changeExercise(page, region(page, SQUAT.exerciseId));
     await sheet(page).getByRole('radio', { name: 'Altro esercizio…' }).check();
     const field = sheet(page).getByRole('textbox', { name: 'Che esercizio fai al posto di quello previsto?' });
     await expect(field).toBeFocused();
@@ -559,11 +565,12 @@ test.describe('US-33 P2 P3 barra fissa e misure', () => {
 // Righe della tabella "Assorbimento del PoC" (PIANO.md) senza un altro e2e: indicazioni della scheda
 // sull'esercizio e limite delle serie, come nel PoC.
 test.describe('US-12 US-15 funzioni del PoC', () => {
-  test('US-12 l’esercizio mostra le indicazioni della scheda: serie × ripetizioni, carico con l’unità, recupero', async ({ page }) => {
+  test('US-12 la card non ripete le indicazioni della scheda: le righe serie bastano (US-40)', async ({ page }) => {
     await startFromToday(page, archiveWith({ routines: starterRoutines() }));
-    await expect(region(page, SQUAT.exerciseId)).toContainText('3 × 6–8 · 45–50 kg · rec. 2:00');
-    const dumbbell = A.exercises.find((e) => e.unit === 'per manubrio')!;
-    await expect(region(page, dumbbell.exerciseId)).toContainText(`${dumbbell.loadMin}–${dumbbell.loadMax} kg per manubrio`);
+    const squat = region(page, SQUAT.exerciseId);
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toBeVisible();
+    await expect(squat).not.toContainText('3 ×');
+    await expect(squat).not.toContainText('rec.');
   });
 
   test('US-15 con 100 serie "Aggiungi serie" è disattivato e il motivo è scritto', async ({ page }) => {

@@ -19,12 +19,14 @@
   import Link from '@lucide/svelte/icons/link';
   import NotebookPen from '@lucide/svelte/icons/notebook-pen';
   import Plus from '@lucide/svelte/icons/plus';
+  import Timer from '@lucide/svelte/icons/timer';
   import Trash from '@lucide/svelte/icons/trash';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import LiveField from '../ui/LiveField.svelte';
   import ReorderHandle from '../ui/ReorderHandle.svelte';
   import SaveBar, { type SaveBarStatus } from '../ui/SaveBar.svelte';
+  import Stepper from '../ui/Stepper.svelte';
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
   import ExerciseDetailsSheet from './ExerciseDetailsSheet.svelte';
@@ -63,6 +65,7 @@
     restoreSessionExercise,
     restoreSet,
     sessionHasData,
+    setExerciseRest,
     setHasValues,
     setNumbers,
     updateSet,
@@ -79,7 +82,7 @@
     type SessionExercise,
     type SetType,
   } from '../../lib/archive';
-  import { formatClock, formatElapsed, formatLongDay, formatOnDay, plural } from '../../lib/format';
+  import { formatClock, formatDuration, formatElapsed, formatLongDay, formatOnDay, plural, speakDuration } from '../../lib/format';
   import { formatWeight } from '../../lib/units';
   import { appUrl } from '../../lib/paths';
   import { setBottomBar } from '../../lib/bottom-bars';
@@ -150,6 +153,9 @@
   let variantOpen = $state(false);
   let detailsOpen = $state(false);
   let optionsOpen = $state(false);
+  let restFor: string | null = $state(null);
+  let restOpen = $state(false);
+  let restValue = $state(0);
   let discardOpen = $state(false);
   let finishOpen = $state(false);
 
@@ -298,7 +304,26 @@
     if (ok && undo) notify(`${name}: tolto dall’allenamento.`, 'Annulla', () => edit((a) => restoreSessionExercise(a, sessionId, undo)));
   }
 
-  function option(action: 'note' | 'details' | 'variant' | 'remove' | 'up' | 'down') {
+  // --- recupero dell'esercizio (US-40): uno per tutte le serie, anche nella voce della scheda; ogni passo
+  // si salva subito (P4) e vale dalla prossima spunta, un recupero in corso non cambia
+  const restLabel = (rest: number) => (rest === 0 ? 'nessuno' : formatDuration(rest));
+
+  function openRest(id: string) {
+    const exercise = find(id);
+    if (!exercise) return;
+    restFor = id;
+    restValue = exercise.rest;
+    restOpen = true;
+  }
+
+  function saveRest(rest: number) {
+    if (!session || !restFor) return;
+    const sessionId = session.id;
+    const exerciseId = restFor;
+    edit((a) => setExerciseRest(a, sessionId, exerciseId, rest));
+  }
+
+  function option(action: 'note' | 'details' | 'variant' | 'rest' | 'remove' | 'up' | 'down') {
     const id = optionsFor;
     optionsOpen = false;
     if (!id) return;
@@ -310,6 +335,7 @@
       detailsFor = id;
       detailsOpen = true;
     } else if (action === 'variant') openVariant(id);
+    else if (action === 'rest') openRest(id);
     else if (action === 'up' || action === 'down') void move(id, action === 'up' ? -1 : 1);
     else void removeExercise(id);
   }
@@ -528,6 +554,10 @@
   const variantEntry = $derived(session && variantExercise ? plannedEntry(store.archive, session, variantExercise) : null);
   const detailsExercise = $derived(find(detailsFor));
   const optionsExercise = $derived(find(optionsFor));
+  const restExercise = $derived(find(restFor));
+  const restRoutine = $derived(
+    session && restExercise && plannedEntry(store.archive, session, restExercise) ? store.archive.routines.find((r) => r.id === session.routineId) : undefined,
+  );
 </script>
 
 {#if store.state === 'unreadable'}
@@ -562,7 +592,14 @@
           {@const unit = unitStyle(drag, b, null)}
           <li
             id={`block-${block.entries[0].id}`}
-            class={['panel', 'block', block.entries.length > 1 && 'superset', drag && 'shifting', unit.dragged && 'dragged']}
+            class={[
+              'panel',
+              'block',
+              block.entries.length > 1 && 'superset',
+              !rows && block.entries.some((e) => e.id === next?.exercise.id) && 'current',
+              drag && 'shifting',
+              unit.dragged && 'dragged',
+            ]}
             style:transform={unit.transform}
           >
             {#if block.entries.length > 1}
@@ -615,7 +652,6 @@
                     archive={store.archive}
                     {session}
                     {exercise}
-                    label={labels[index]}
                     current={next?.exercise.id === exercise.id}
                     compact={isCompact(exercise)}
                     {records}
@@ -627,7 +663,6 @@
                     onchecked={(setId) => afterCheck(exercise.id, setId)}
                     oncompleted={(completed, at, missing) => afterComplete(exercise.id, completed, at, missing)}
                     onsetoptions={(setId) => openSet(exercise.id, setId)}
-                    onvariant={() => openVariant(exercise.id)}
                     ondetails={() => {
                       detailsFor = exercise.id;
                       detailsOpen = true;
@@ -768,6 +803,11 @@
       </li>
     {/if}
     <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
+    {#if optionsExercise && !detail}
+      <li>
+        <button type="button" class="option" onclick={() => option('rest')}><Timer size={20} aria-hidden="true" />Recupero · {restLabel(optionsExercise.rest)}</button>
+      </li>
+    {/if}
     {#if optionsExercise && exercises.length > 1}
       <li>
         <button type="button" class="option" disabled={!moveKind(exercises, optionsExercise.id, -1)} onclick={() => option('up')}>
@@ -782,6 +822,26 @@
     {/if}
     <li><button type="button" class="option danger" onclick={() => option('remove')}><Trash size={20} aria-hidden="true" />Togli dall’allenamento</button></li>
   </ul>
+</BottomSheet>
+
+<BottomSheet bind:open={restOpen} title={restExercise ? exerciseName(store.archive, restExercise.exerciseId) : ''}>
+  {#if restExercise}
+    <Stepper
+      label="Recupero"
+      hint={restRoutine
+        ? `Vale per tutte le serie di questo esercizio, anche nella scheda «${restRoutine.name}».`
+        : 'Vale per tutte le serie di questo esercizio.'}
+      bind:value={restValue}
+      min={0}
+      max={LIMITS.maxRest}
+      step={15}
+      format={(v) => (v === 0 ? 'Nessuno' : formatDuration(v))}
+      speak={(v) => (v === 0 ? 'Nessun recupero' : speakDuration(v))}
+      decrementLabel="−15 s"
+      incrementLabel="+15 s"
+      onchange={saveRest}
+    />
+  {/if}
 </BottomSheet>
 
 <BottomSheet bind:open={setOpen} title={setTarget?.title ?? ''}>
@@ -864,6 +924,10 @@
   .block {
     display: flex;
     flex-direction: column;
+  }
+  /* il blocco con la serie da fare adesso (P7): bordo accento disegnato dentro, niente salto di layout */
+  .block.current {
+    box-shadow: inset 0 0 0 2px var(--color-accent-text);
   }
   .superset-caption {
     display: flex;

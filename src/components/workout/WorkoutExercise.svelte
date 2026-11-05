@@ -1,9 +1,9 @@
 <script lang="ts">
-  // Un esercizio dell'allenamento attivo (brief route-workout): nome (tocco = approfondimento), target
-  // della scheda, variante, righe serie, "Aggiungi serie" e la nota sul carico. Ogni gesto salva subito
+  // Un esercizio dell'allenamento attivo (brief route-workout): maniglia, nome (tocco = approfondimento) e
+  // menu ⋯ in testa, variante, righe serie con "Completa" nell'intestazione, "Aggiungi serie" e la nota
+  // sul carico; recupero e cambio esercizio stanno nel menu (US-40). Ogni gesto salva subito
   // (P4). Fatto (tutte le serie spuntate) si compatta in una riga, ma resta modificabile.
   import { tick } from 'svelte';
-  import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
   import CheckCheck from '@lucide/svelte/icons/check-check';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import CircleCheck from '@lucide/svelte/icons/circle-check';
@@ -20,7 +20,6 @@
     completedSet,
     exerciseName,
     isValidSetValue,
-    plannedEntry,
     previousExercise,
     previousSets,
     suggestedSets,
@@ -34,15 +33,13 @@
     type SessionExercise,
     type SessionSet,
   } from '../../lib/archive';
-  import { formatDayMonth, formatDuration, plural, withPreposition } from '../../lib/format';
-  import { formatNumber, formatWeight, formatWeightRange, parseWeight, weightFieldValue } from '../../lib/units';
+  import { formatDayMonth, plural, withPreposition } from '../../lib/format';
+  import { formatNumber, formatWeight, parseWeight, weightFieldValue } from '../../lib/units';
 
   interface Props {
     archive: Archive;
     session: Session;
     exercise: SessionExercise;
-    /** "1", "2a"… */
-    label: string;
     /** contiene la serie da fare adesso (P7) */
     current: boolean;
     /** compattato perché fatto; il tocco su "Mostra serie" lo riapre */
@@ -60,10 +57,9 @@
     oncompleted: (completed: string[], at: number, missing: number) => void;
     /** tocco sull'indice della serie: foglio con tipo e "Togli serie" */
     onsetoptions: (setId: string) => void;
-    onvariant: () => void;
     ondetails: () => void;
     onoptions: () => void;
-    /** maniglia del riordino (US-38) sul numero; assente con un esercizio solo */
+    /** maniglia del riordino (US-38) a sinistra del nome; assente con un esercizio solo */
     handle?: { label: string; onstart: (event: PointerEvent) => void; onstep: (direction: -1 | 1) => void } | null;
   }
 
@@ -71,7 +67,6 @@
     archive,
     session,
     exercise,
-    label,
     current,
     compact,
     records,
@@ -82,7 +77,6 @@
     onchecked,
     oncompleted,
     onsetoptions,
-    onvariant,
     ondetails,
     onoptions,
     handle = null,
@@ -91,7 +85,6 @@
   const settings = $derived(archive.settings);
   const unit = $derived(settings.weightUnit);
   const name = $derived(exerciseName(archive, exercise.exerciseId));
-  const entry = $derived(plannedEntry(archive, session, exercise));
   const previous = $derived(previousExercise(archive, session, exercise.exerciseId));
   const rawPrevious = $derived(previousSets(exercise, previous?.exercise ?? null));
   const suggested = $derived(suggestedSets(exercise, rawPrevious));
@@ -118,17 +111,6 @@
   }
 
   const nbsp = (text: string) => text.replace(/ /g, ' ');
-
-  /** Target della scheda; con una variante il carico previsto non vale (era per l'altro esercizio) */
-  const target = $derived.by(() => {
-    const rest = exercise.rest === 0 ? 'nessun recupero' : `rec. ${formatDuration(exercise.rest)}`;
-    if (!entry) return nbsp(rest);
-    const load = exercise.variantOf ? '' : [formatWeightRange(entry.loadMin, entry.loadMax, settings), entry.unit].filter(Boolean).join(' ');
-    return [entry.reps ? `${entry.sets} × ${entry.reps}` : plural(entry.sets, 'serie', 'serie'), load, exercise.variantOf ? '' : entry.loadNote, rest]
-      .filter(Boolean)
-      .map(nbsp)
-      .join(' · ');
-  });
 
   const previousNote = $derived(previous?.exercise.notes.trim() ?? '');
   const previousWhen = $derived(previous ? withPreposition('di', formatDayMonth(previous.session.date, today)) : '');
@@ -211,15 +193,11 @@
 
 <section class="exercise" class:current aria-label={name} {id}>
   <div class="head">
-    <div class="lead">
-      {#if handle}
-        <ReorderHandle id={`handle-${exercise.id}`} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
-          <span class="order" aria-hidden="true">{label}</span>
-        </ReorderHandle>
-      {:else}
-        <span class="order" aria-hidden="true">{label}</span>
-      {/if}
-    </div>
+    {#if handle}
+      <div class="lead">
+        <ReorderHandle id={`handle-${exercise.id}`} label={handle.label} onstart={handle.onstart} onstep={handle.onstep} />
+      </div>
+    {/if}
     {#if current && !compact}<span class="sr-only">Adesso: </span>{/if}
     <div class="title">
       <h3>
@@ -233,7 +211,6 @@
           <span>{[plural(exercise.sets.length, 'serie', 'serie'), compactSummary].filter(Boolean).join(' · ')}</span>
         </p>
       {:else}
-        <p class="meta">{target}</p>
         {#if exercise.variantOf}
           <p class="meta">Al posto di {exerciseName(archive, exercise.variantOf)}</p>
         {/if}
@@ -242,16 +219,9 @@
         {/if}
       {/if}
     </div>
-    <div class="actions">
-      {#if !compact && !done}
-        <button type="button" class="btn btn-icon" aria-label={`Completa ${name}`} onclick={complete}>
-          <CheckCheck size={22} aria-hidden="true" />
-        </button>
-      {/if}
-      <button type="button" class="btn btn-icon" aria-haspopup="dialog" aria-label={`Altre azioni: ${name}`} onclick={onoptions}>
-        <Ellipsis size={22} aria-hidden="true" />
-      </button>
-    </div>
+    <button type="button" class="btn btn-icon more" aria-haspopup="dialog" aria-label={`Altre azioni: ${name}`} onclick={onoptions}>
+      <Ellipsis size={22} aria-hidden="true" />
+    </button>
   </div>
 
   {#if compact || done}
@@ -262,14 +232,19 @@
 
   {#if !compact}
     <div class="body" id={`${id}-sets`}>
-      <button type="button" class="btn btn-text variant" aria-haspopup="dialog" onclick={onvariant}>
-        <ArrowLeftRight aria-hidden="true" />
-        {exercise.variantOf ? 'Cambia variante' : 'Cambia esercizio'}
-      </button>
-
       <div class="sets">
-        <div class="column-heads" aria-hidden="true">
-          <span class="text-center">Serie</span><span>Precedente</span><span class="text-center">{unit}</span><span class="text-center">Rip</span><span></span>
+        <div class="column-heads">
+          <span class="text-center" aria-hidden="true">Serie</span>
+          <span aria-hidden="true">Precedente</span>
+          <span class="text-center" aria-hidden="true">{unit}</span>
+          <span class="text-center" aria-hidden="true">Rip</span>
+          {#if !done}
+            <button type="button" class="complete" aria-label={`Completa ${name}`} onclick={complete}>
+              <CheckCheck size={22} aria-hidden="true" />
+            </button>
+          {:else}
+            <span></span>
+          {/if}
         </div>
         {#each exercise.sets as set, i (set.id)}
           {@const previousSet = rawPrevious[i]}
@@ -334,22 +309,14 @@
     flex-direction: column;
     scroll-margin-block: 5rem calc(var(--bottom-bars-height) + 1rem);
   }
+  /* maniglia · nome · ⋯ su una riga; il nome prende tutto lo spazio che resta e va a capo a parola */
   .head {
     margin-top: -0.375rem;
     display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr) auto;
-    gap: 0 0.5rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: start;
   }
-  .order {
-    align-self: stretch;
-    padding-top: 0.625rem;
-    color: var(--color-accent-text);
-    font-size: var(--text-lg);
-    font-weight: 700;
-    text-align: center;
-  }
-  /* il titolo divide la prima riga con i pulsanti; target e note sotto prendono anche il loro spazio (320px) */
+  /* le righe sotto il nome (variante, nota, serie fatte) partono allineate al nome e passano sotto ⋯ */
   .title {
     display: contents;
   }
@@ -364,16 +331,21 @@
   .lead {
     grid-column: 1;
     grid-row: 1;
-    display: flex;
-    flex-direction: column;
+    width: 1.25rem;
+    margin-right: 0.5rem;
   }
+  /* bersaglio da 44px senza rubare larghezza al nome: sporge nell'imbottitura della card, e l'icona sta
+     centrata sulla prima riga del nome */
   .lead :global(.reorder-handle) {
-    padding-top: 0;
+    justify-content: center;
+    width: 2rem;
+    margin: -0.25rem 0 0 -0.75rem;
+    padding: 0;
   }
-  .actions {
-    display: flex;
+  .more {
     grid-column: 3;
     grid-row: 1;
+    margin-right: -0.5rem;
   }
   h3 {
     margin: 0;
@@ -390,7 +362,8 @@
     font-weight: 700;
     line-height: 1.3;
     text-align: left;
-    overflow-wrap: anywhere;
+    /* rete solo per una parola più lunga della riga */
+    overflow-wrap: break-word;
     cursor: pointer;
   }
   .name :global(svg) {
@@ -401,14 +374,6 @@
   }
   .name:hover :global(svg) {
     color: var(--color-accent-text);
-  }
-  /* l'esercizio della serie da fare adesso: il numero diventa una pastiglia piena (P7) */
-  .current .order {
-    margin-top: 0.5rem;
-    padding: 0.125rem 0;
-    border-radius: var(--radius-field);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
   }
   .meta {
     margin: 0;
@@ -428,25 +393,39 @@
   }
   .toggle {
     align-self: flex-start;
-    margin-left: 2.5rem;
   }
   .body {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
-  .variant {
-    align-self: flex-start;
-    margin-left: 2.5rem;
-    margin-top: -0.25rem;
-  }
+  /* stesse colonne della riga serie (SetRow), così "Completa" sta sopra le spunte */
   .column-heads {
     display: grid;
-    grid-template-columns: 2rem minmax(3.75rem, 1fr) minmax(3.25rem, 4.75rem) minmax(3rem, 4rem) 3rem;
+    grid-template-columns: 2.25rem minmax(3.75rem, 1fr) minmax(3.25rem, 4.75rem) minmax(3rem, 4rem) 3rem;
     gap: clamp(0.25rem, 1.6vw, 0.5rem);
+    align-items: end;
+    margin-inline: -0.375rem;
+    padding-inline: 0.375rem;
     padding-bottom: 0.25rem;
     color: var(--color-muted);
     font-size: var(--text-sm);
+  }
+  /* "Completa esercizio" (US-37): come la spunta di riga, ma in accento perché si legga come pulsante */
+  .complete {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1.5px solid var(--color-accent-text);
+    border-radius: var(--radius-field);
+    background: transparent;
+    color: var(--color-accent-text);
+    cursor: pointer;
+    transition: background-color 0.15s var(--ease-out-expo);
+  }
+  .complete:hover {
+    background: color-mix(in oklab, var(--color-surface) 90%, var(--color-accent));
   }
   .add-set {
     align-self: flex-start;

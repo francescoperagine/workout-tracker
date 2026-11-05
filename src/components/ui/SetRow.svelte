@@ -207,6 +207,10 @@
     font-size: var(--text-base);
     font-variant-numeric: tabular-nums;
   }
+  /* senza precedente il trattino sta al centro della cella; il testo del precedente resta a sinistra */
+  .previous.empty {
+    justify-content: center;
+  }
   .previous-text {
     min-width: 0;
     white-space: nowrap;
