@@ -3,6 +3,32 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-008
+
+Date: 2026-11-05
+
+Summary:
+**Nuova icona dal bilanciere a pennello, incremento 5 e chiusura di `dedup-catalog-and-workout-ux`.**
+L'icona non è più il manubrio identico a quello di Strong: è il bilanciere dell'illustrazione a pennello del sito
+(variante A scelta da Francesco), tratto carta su grigio molto scuro, nelle icone della PWA, nel favicon e
+nell'icona iOS. La schermata di avvio della PWA installata non è più verde. Fatte anche le prove sul telefono
+rimaste aperte: trascinamento (INC-006) e selezione della cella (INC-007) funzionano su Android.
+
+Deliverables:
+- `scripts/icon-source/barbell.svg` e `barbell-bold.svg` (sorgente vettoriale, la seconda per 16–48 px),
+  `scripts/make-icons.mjs` riscritto, rigenerati `public/icons/*` e `public/favicon.svg`.
+- `src/pages/manifest.webmanifest.ts`: `background_color` e `theme_color` `#1C1C1E`.
+- ADR-004; `docs/ARCHITECTURE.md`; `docs/PROJECT.md` (feature chiusa, palette nella direzione); `docs/todo.md`
+  (punti chiusi spuntati, punto della palette sostituito come concordato).
+- SPEC archiviata in `docs/archive/features/INC-008_dedup-catalog-and-workout-ux.md`, cartella della feature
+  cancellata (con lo strumento delle varianti, `icon-variants.cjs`).
+
+Limiti noti: il `<meta name="theme-color">` resta `#142321` (token `shell`, cambia con la palette); iOS non
+provato (nessun iPhone); MIUI mette la PWA appena installata nell'ultima pagina del launcher, quindi lo
+screenshot `screenshots/4-icona-dopo.png` non la mostra accanto a Strong.
+
+ADR: ADR-004. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-007
 
 Date: 2026-11-05

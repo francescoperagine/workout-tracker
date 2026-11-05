@@ -3,7 +3,7 @@
 Chi è il prodotto, per chi, con quali vincoli e principi: `PRODUCT.md` (nella radice, lo legge Impeccable).
 Qui c'è solo dove siamo e dove si va.
 
-## Stato (13 ottobre 2026)
+## Stato (5 novembre 2026)
 
 - **Restyling chiuso** (step 0–9, 12 ottobre 2026): storia, decisioni e user story in `docs/archive/restyling/`.
 - **Rilascio fatto:** dominio `workout-tracker.francescoperagine.com` collegato al Worker (12 ottobre), backup
@@ -12,7 +12,8 @@ Qui c'è solo dove siamo e dove si va.
 - **Governance:** adottata con INC-001 (`ai-governance-template` v6).
 - **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
 - **Pagina Info:** da INC-003, con i contatti dell'autore; la «?» dell'intestazione la apre, l'ingranaggio porta alle Impostazioni.
-- **Feature attive:** `dedup-catalog-and-workout-ux` (catalogo senza duplicati e default dall'ultima volta, completa esercizio, trascinamento, selezione delle celle, nuova icona): incrementi 1 (INC-004: alias, unione dei doppioni, valori dell'ultima volta), 2 (INC-005: completa esercizio), 3 (INC-006: trascinamento) e 4 (INC-007: selezione delle celle) fatti; resta l'icona (`features/dedup-catalog-and-workout-ux/`).
+- **Catalogo e allenamento** (`dedup-catalog-and-workout-ux`, chiusa con INC-008): catalogo senza doppioni e valori dell'ultima volta (INC-004), completa esercizio (INC-005), trascinamento (INC-006, ADR-003), selezione delle celle (INC-007), icona dal bilanciere a pennello (INC-008, ADR-004); SPEC in `docs/archive/features/INC-008_dedup-catalog-and-workout-ux.md`.
+- **Feature attive:** nessuna.
 
 ## Focus attuale
 
@@ -39,6 +40,6 @@ prove in palestra (vedi direzione).
 
 ## Direzione
 
-Nessuna milestone fissata. Candidati, solo se le prove li chiedono: server Web Push per gli avvisi ad app
-chiusa, riordino con trascinamento, le proposte della critique (segno sulla riga della serie da fare adesso, pulsanti ± per il peso,
-impostazione «Distanza» che oggi non ha effetto).
+Nessuna milestone fissata. **Prossima candidata: la palette nuova** (Francesco, 5 novembre 2026), al posto del verde: neutri inchiostro `#111111` / carta `#FAFAF7` / sfondo scuro `#1C1C1E`, card `#2A2A2D`; bordi decorativi `#E4E4E7` e `#3F3F46`, bordi degli input `#6B6B70` e `#A1A1AA` (min 3:1). Accento rosso: `#D0202E` pulsanti pieni con testo bianco e testo in tema chiaro, `#FF5C5C` testo e icone in tema scuro, `#EF3340` timer e indicatori, `#A8141F` premuto e distruttivo. Niente verde: serie completata = riempimento pieno neutro + spunta. Errori con lo stesso rosso + icona + testo. Grafici: rosso serie principale, grigio confronto. È una Feature (token di `DESIGN.md`, `global.css`, meta `theme-color`, `/kit`).
+
+Altri candidati, solo se le prove li chiedono: server Web Push per gli avvisi ad app chiusa, le proposte della critique (segno sulla riga della serie da fare adesso, pulsanti ± per il peso, impostazione «Distanza» che oggi non ha effetto).

@@ -1,6 +1,6 @@
 # SPEC — dedup-catalog-and-workout-ux
 
-**Livello:** Feature · **Stato:** incrementi 1–4 fatti (INC-004…INC-007), resta il 5 (icona) · **Base:** `main` a `c28692e` (INC-003)
+**Livello:** Feature · **Stato:** chiusa, incrementi 1–5 fatti (INC-004…INC-008) · **Base:** `main` a `c28692e` (INC-003)
 **Data del piano:** 5 novembre 2026 · **Origine:** `docs/todo.md` punti 1–4 + sessione con Francesco
 
 Chi ragiona ha scritto questa SPEC; una sessione nuova la esegue con `HANDOFF.md`. Le letture di codice qui
@@ -239,7 +239,9 @@ voce di `CHANGELOG.md` con `INC-XXX` letto dalla testa (`grep -m1 '^## INC-' CHA
   volta dopo il passaggio alle righe compatte; ascolto su `window` perché la maniglia premuta sparisce con la card.
 - **Telefono:** nessun dispositivo collegato (`adb devices` e `adb mdns services` vuoti). Provato al suo posto
   con tocchi veri via CDP (`Input.dispatchTouchEvent`) a 390×844 e 320×568, partendo dal quarto esercizio con la
-  pagina scorsa: la riga resta sotto il dito e il rilascio salva. La prova sul telefono resta da fare.
+  pagina scorsa: la riga resta sotto il dito e il rilascio salva. **Prova sul telefono fatta in INC-008**
+  (Xiaomi Mi 10T, Chrome, build in preview): trascinato «Squat bilanciere» dal primo posto sotto la superserie
+  con `adb shell input swipe`; ordine salvato, serie con i valori al loro posto, numerazione aggiornata (1a/1b, 2).
 - ADR-003. Il limite «Riordino … solo con le frecce» è tolto da `docs/PROJECT.md` già qui (dopo INC-006 era falso).
 
 ### Incremento 4 — Selezione automatica della cella (US-39)
@@ -258,7 +260,9 @@ voce di `CHANGELOG.md` con `INC-XXX` letto dalla testa (`grep -m1 '^## INC-' CHA
 - Sempre attiva in `SetInput`; in `LiveField` solo con `selectall` (carico, «Fino a» e ripetizioni dell'editor
   della scheda, demo di `/kit`): nomi e note non si selezionano.
 - **Telefono:** nessun dispositivo collegato; provato con un tocco vero via CDP nel progetto mobile degli e2e.
-  Resta da provare su Android e iOS veri.
+  **Android provato in INC-008** (Xiaomi Mi 10T, Chrome): kg 50, uscita dal campo, nuovo tocco → «50»
+  selezionato, digitando 60 la cella vale 60. Chrome mostra anche la sua barra di selezione (Taglia, Copia,
+  Incolla) sopra la riga: comportamento del sistema, accettato. iOS resta da provare (nessun iPhone).
 
 ### Incremento 5 — Icona (nessuna storia: asset)
 
@@ -279,6 +283,21 @@ Dopo l'incremento 3 e 4 (cambia solo asset e manifest).
 - **Telefono:** `adb reverse tcp:4321 tcp:4321` e la build in preview (il service worker esiste solo nella
   build); `localhost` è un contesto sicuro, quindi si può installare la PWA. Screenshot del launcher con la
   nuova icona accanto a Strong: `adb exec-out screencap -p > screenshots/4-icona-dopo.png`.
+
+**Esito (INC-008, 5 novembre 2026)**
+- **Scelta di Francesco:** variante A (solo bilanciere), tratto carta `#FAFAF7` su sfondo scuro `#1C1C1E`, i
+  neutri della palette che ha indicato; il passaggio dell'app dal verde alla nuova palette resta una feature a
+  parte (`docs/PROJECT.md`, «Direzione»). ADR-004.
+- **Sorgente versionata:** `scripts/icon-source/barbell.svg` (192/512, maskable, apple-touch) e
+  `barbell-bold.svg` (tratti più pieni, per il favicon a 16–48 px): i due master della variante A vettorializzati
+  con potrace, ripuliti dalle punte del tratto originale dentro i dischi (il difetto noto, a destra, e una più
+  piccola a sinistra). `scripts/make-icons.mjs` ne genera `public/icons/*` e `public/favicon.svg` (vettoriale).
+- **Manifest:** `background_color` e `theme_color` `#1C1C1E`. Il `<meta name="theme-color">` di `Base.astro`
+  resta `#142321`: è il token `shell` di `DESIGN.md` (intestazione e tab bar) e cambia con la palette.
+- **Telefono:** PWA installata da `localhost:4321` (dopo due ricariche, perché il service worker vecchio
+  serviva ancora l'icona verde). MIUI mette le app nuove nell'ultima pagina: `screenshots/4-icona-dopo.png` è la
+  pagina 5 con la nuova icona, `screenshots/4-icona-prima-launcher.png` la pagina 1 con Strong e la «Workout»
+  già installata (produzione, icona vecchia). La home di Francesco non è stata riordinata.
 
 ---
 

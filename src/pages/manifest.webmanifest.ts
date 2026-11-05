@@ -1,9 +1,11 @@
 // Manifest della PWA (US-03), generato alla build per usare il percorso base (WT_BASE) in
-// start_url, scope e icone. I colori sono quelli del guscio, uguali nei due temi.
+// start_url, scope e icone. I colori sono lo sfondo dell'icona (grigio molto scuro), uguali nei due temi:
+// la schermata di avvio non è più verde. Il <meta name="theme-color"> di Base.astro resta sul token shell
+// (#142321) finché non cambia la palette dell'app, e a pagina aperta prevale lui.
 import type { APIRoute } from 'astro';
 import { BASE, appUrl } from '../lib/paths';
 
-const SHELL = '#142321';
+const SHELL = '#1C1C1E';
 
 export const GET: APIRoute = () => {
   const manifest = {

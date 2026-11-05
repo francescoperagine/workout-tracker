@@ -17,7 +17,8 @@ astro.config.mjs        site e base da WT_SITE e WT_BASE (default: https://worko
 svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
 playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322 (build con WT_KIT=1), baseURL con WT_BASE
-scripts/make-icons.mjs  icone della PWA (public/icons/) dal disegno del favicon
+scripts/make-icons.mjs  icone della PWA (public/icons/) e public/favicon.svg dalla sorgente in scripts/icon-source/ (ADR-004)
+scripts/icon-source/    bilanciere a pennello vettoriale: barbell.svg (192/512, maskable, apple-touch), barbell-bold.svg (favicon, 16–48 px)
 src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js, con importScripts di public/sw-push.js (handler push e notificationclick, predisposizione Web Push)
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, canonico, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
@@ -56,7 +57,7 @@ src/lib/pwa.ts          registerServiceWorker (scope = percorso base, solo in pr
 src/data/               catalog.ts (BASE_CATALOG, ID del PoC invariati, con gli alias di ogni esercizio) e starter-routines.ts (A/B convertite); seed-data.test.ts blocca l'elenco degli ID (POC_IDS)
 tests/fixtures/         synthetic-poc-backup.json (formato "Esporta" del PoC) e workout-tracker-2026-11-05.json (diario vero di Francesco, con i doppioni del catalogo), usati da Vitest e dagli e2e; sola lettura
 public/fonts/           Atkinson Hyperlegible Next, woff2 variabile del sottoinsieme latino (da @fontsource-variable 5.3.0) e licenza OFL
-public/icons/           icone della PWA (192, 512, maskable 512, apple-touch 180)
+public/icons/           icone della PWA (192, 512, maskable 512, apple-touch 180), generate da scripts/make-icons.mjs
 public/sw-push.js       handler push e notificationclick del service worker (timer di recupero, nessun server)
 src/pages/
   index.astro           Oggi (/): primo avvio se non c'è un archivio; settimana, schede da scegliere con la suggerita, Inizia/Riprendi, ultimo allenamento
