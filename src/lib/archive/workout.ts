@@ -7,7 +7,7 @@
 // - la spunta su una riga vuota conferma il precedente (1 tocco, P1);
 // - le serie di riscaldamento non hanno numero e non contano per volume e record.
 import { isValidDateKey } from './dates';
-import { blocksOf, moveInList, newId, normalizeGroups } from './routine-edit';
+import { blocksOf, moveInList, moveToIndex, newId, normalizeGroups } from './routine-edit';
 import { ArchiveError, DEFAULT_SETS, DEFAULT_WARMUP_REST, LIMITS, SET_TYPES, type Archive, type RoutineExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 // ---------------------------------------------------------------------------------------------
@@ -350,6 +350,14 @@ export function restoreSessionExercise(archive: Archive, sessionId: string, remo
 }
 
 /** Riordino in sessione (US-15), con le stesse regole delle schede per le superserie. */
+/** Riordino con il trascinamento o con Su/Giù sulla maniglia (US-38), vedi `moveToIndex` */
+export function moveSessionExerciseTo(archive: Archive, sessionId: string, exerciseId: string, target: number, whole = false): Archive {
+  const list = archive.sessions.find((s) => s.id === sessionId)?.exercises;
+  if (!list) throw new ArchiveError('Questo allenamento non esiste più.');
+  const moved = moveToIndex(list, exerciseId, target, whole);
+  return moved === list ? archive : withExercises(archive, sessionId, () => moved);
+}
+
 export function moveSessionExercise(archive: Archive, sessionId: string, exerciseId: string, direction: -1 | 1): Archive {
   const list = archive.sessions.find((s) => s.id === sessionId)?.exercises;
   if (!list) throw new ArchiveError('Questo allenamento non esiste più.');

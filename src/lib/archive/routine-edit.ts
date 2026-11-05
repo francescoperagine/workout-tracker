@@ -342,6 +342,55 @@ export function moveInList<T extends { id: string; group: string | null }>(exerc
   return blocks.flatMap((block) => block.entries);
 }
 
+/**
+ * Unità che si sposta trascinando la maniglia (US-38): la voce dentro la sua superserie, oppure il blocco
+ * (voce singola, o superserie intera con `whole`). `index` e `count` contano le unità tra cui si muove.
+ */
+export function reorderUnit<T extends { id: string; group: string | null }>(
+  exercises: readonly T[],
+  entryId: string,
+  whole = false,
+): { index: number; count: number; inGroup: boolean } | null {
+  const blocks = blocksOf(exercises);
+  const b = blocks.findIndex((block) => block.entries.some((e) => e.id === entryId));
+  if (b < 0) return null;
+  const entries = blocks[b].entries;
+  if (entries.length > 1 && !whole) return { index: entries.findIndex((e) => e.id === entryId), count: entries.length, inGroup: true };
+  return { index: b, count: blocks.length, inGroup: false };
+}
+
+/**
+ * Sposta l'unità di `reorderUnit` al posto `target` tra le sue unità (riordino con il trascinamento e con
+ * Su/Giù sulla maniglia, US-38): una voce in superserie resta dentro il gruppo, un blocco non entra in
+ * un'altra superserie, nessun `group` cambia. `target` fuori dai limiti va al bordo; stesso posto o id
+ * sconosciuto → lo stesso array.
+ */
+export function moveToIndex<T extends { id: string; group: string | null }>(exercises: readonly T[], entryId: string, target: number, whole = false): T[] {
+  const unit = reorderUnit(exercises, entryId, whole);
+  if (!unit) return exercises as T[];
+  const to = Math.max(0, Math.min(unit.count - 1, Math.trunc(target)));
+  if (to === unit.index) return exercises as T[];
+  const move = <U>(list: readonly U[]): U[] => {
+    const next = [...list];
+    const [moved] = next.splice(unit.index, 1);
+    next.splice(to, 0, moved);
+    return next;
+  };
+  const blocks = blocksOf(exercises);
+  if (unit.inGroup) {
+    const b = blocks.findIndex((block) => block.entries.some((e) => e.id === entryId));
+    return blocks.flatMap((block, i) => (i === b ? move(block.entries) : block.entries));
+  }
+  return move(blocks).flatMap((block) => block.entries);
+}
+
+export function moveEntryTo(archive: Archive, routineId: string, entryId: string, target: number, whole = false): Archive {
+  const list = findRoutine(archive, routineId)?.exercises;
+  if (!list) throw new ArchiveError('Questa scheda non esiste più.');
+  const moved = moveToIndex(list, entryId, target, whole);
+  return moved === list ? archive : withExercises(archive, routineId, () => moved);
+}
+
 export function moveEntry(archive: Archive, routineId: string, entryId: string, direction: -1 | 1): Archive {
   const list = findRoutine(archive, routineId)?.exercises;
   if (!list) throw new ArchiveError('Questa scheda non esiste più.');

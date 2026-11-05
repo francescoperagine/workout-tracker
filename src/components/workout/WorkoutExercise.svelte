@@ -11,6 +11,7 @@
   import Info from '@lucide/svelte/icons/info';
   import Plus from '@lucide/svelte/icons/plus';
   import LiveField from '../ui/LiveField.svelte';
+  import ReorderHandle from '../ui/ReorderHandle.svelte';
   import SetRow, { formatPrevious, type CheckResult, type Previous } from '../ui/SetRow.svelte';
   import {
     LIMITS,
@@ -62,6 +63,8 @@
     onvariant: () => void;
     ondetails: () => void;
     onoptions: () => void;
+    /** maniglia del riordino (US-38) sul numero; assente con un esercizio solo */
+    handle?: { label: string; onstart: (event: PointerEvent) => void; onstep: (direction: -1 | 1) => void } | null;
   }
 
   let {
@@ -82,6 +85,7 @@
     onvariant,
     ondetails,
     onoptions,
+    handle = null,
   }: Props = $props();
 
   const settings = $derived(archive.settings);
@@ -207,7 +211,15 @@
 
 <section class="exercise" class:current aria-label={name} {id}>
   <div class="head">
-    <span class="order" aria-hidden="true">{label}</span>
+    <div class="lead">
+      {#if handle}
+        <ReorderHandle id={`handle-${exercise.id}`} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
+          <span class="order" aria-hidden="true">{label}</span>
+        </ReorderHandle>
+      {:else}
+        <span class="order" aria-hidden="true">{label}</span>
+      {/if}
+    </div>
     {#if current && !compact}<span class="sr-only">Adesso: </span>{/if}
     <div class="title">
       <h3>
@@ -330,6 +342,7 @@
     align-items: start;
   }
   .order {
+    align-self: stretch;
     padding-top: 0.625rem;
     color: var(--color-accent-text);
     font-size: var(--text-lg);
@@ -348,8 +361,14 @@
     grid-column: 2;
     grid-row: 1;
   }
-  .order {
+  .lead {
+    grid-column: 1;
     grid-row: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .lead :global(.reorder-handle) {
+    padding-top: 0;
   }
   .actions {
     display: flex;

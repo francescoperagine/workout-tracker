@@ -12,7 +12,7 @@ Qui c'è solo dove siamo e dove si va.
 - **Governance:** adottata con INC-001 (`ai-governance-template` v6).
 - **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
 - **Pagina Info:** da INC-003, con i contatti dell'autore; la «?» dell'intestazione la apre, l'ingranaggio porta alle Impostazioni.
-- **Feature attive:** `dedup-catalog-and-workout-ux` (catalogo senza duplicati e default dall'ultima volta, completa esercizio, trascinamento, selezione delle celle, nuova icona): incrementi 1 (INC-004: alias, unione dei doppioni, valori dell'ultima volta) e 2 (INC-005: completa esercizio) fatti, restano trascinamento, selezione delle celle e icona (`features/dedup-catalog-and-workout-ux/`).
+- **Feature attive:** `dedup-catalog-and-workout-ux` (catalogo senza duplicati e default dall'ultima volta, completa esercizio, trascinamento, selezione delle celle, nuova icona): incrementi 1 (INC-004: alias, unione dei doppioni, valori dell'ultima volta), 2 (INC-005: completa esercizio) e 3 (INC-006: trascinamento) fatti; restano selezione delle celle e icona (`features/dedup-catalog-and-workout-ux/`).
 
 ## Focus attuale
 
@@ -30,7 +30,6 @@ prove in palestra (vedi direzione).
 
 - Gli avvisi di fine recupero arrivano solo con l'app aperta: il Web Push è solo predisposto (handler in
   `public/sw-push.js`, contratto in `docs/archive/restyling/WEB-PUSH.md`), senza server né permessi.
-- Riordino di schede ed esercizi solo con le frecce: il trascinamento è rimandato.
 - Offline si aprono solo gli URL delle pagine con la barra finale (`/settings/`): i link dell'app la hanno sempre.
 - I punti iOS della checklist di `WEB-PUSH.md` (wake lock, sblocco dell'audio, vibrazione) non sono verificati:
   nessun iPhone disponibile.

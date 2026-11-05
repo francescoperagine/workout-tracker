@@ -1,6 +1,6 @@
 # SPEC — dedup-catalog-and-workout-ux
 
-**Livello:** Feature · **Stato:** incrementi 1 (INC-004) e 2 (INC-005) fatti, poi 3–5 · **Base:** `main` a `c28692e` (INC-003)
+**Livello:** Feature · **Stato:** incrementi 1 (INC-004), 2 (INC-005) e 3 (INC-006) fatti, poi 4–5 · **Base:** `main` a `c28692e` (INC-003)
 **Data del piano:** 5 novembre 2026 · **Origine:** `docs/todo.md` punti 1–4 + sessione con Francesco
 
 Chi ragiona ha scritto questa SPEC; una sessione nuova la esegue con `HANDOFF.md`. Le letture di codice qui
@@ -228,6 +228,19 @@ voce di `CHANGELOG.md` con `INC-XXX` letto dalla testa (`grep -m1 '^## INC-' CHA
 - **Test:** unitari su `moveToIndex` (singoli, gruppo intero, dentro il gruppo, bordi, id sconosciuto, stesso
   indice = stessa lista). E2E `US-38 …` con tastiera e con puntatore simulato (Playwright mouse con maniglia).
   Prova obbligatoria sul telefono (è il rischio: layout che cambia sotto il dito).
+
+**Esito (INC-006, 5 novembre 2026)**
+- `moveToIndex(list, id, target, whole = false)`: il quarto parametro è la maniglia dell'intestazione
+  «Superserie» (gruppo intero); `reorderUnit` dice tra quante unità si muove. `target` si limita ai bordi.
+- **Maniglia sul numero** dell'esercizio (icona `GripVertical` sotto), non una terza icona nell'intestazione;
+  nell'editor della scheda sta accanto al pulsante che apre la voce (niente pulsanti annidati). Etichetta
+  «Sposta {nome}: trascina, o frecce su e giù» (con «Riordina…» collideva con il pulsante «Riordina» negli e2e).
+- Le righe che fanno posto si muovono con `transform`, l'ordine si salva solo al rilascio; centri misurati una
+  volta dopo il passaggio alle righe compatte; ascolto su `window` perché la maniglia premuta sparisce con la card.
+- **Telefono:** nessun dispositivo collegato (`adb devices` e `adb mdns services` vuoti). Provato al suo posto
+  con tocchi veri via CDP (`Input.dispatchTouchEvent`) a 390×844 e 320×568, partendo dal quarto esercizio con la
+  pagina scorsa: la riga resta sotto il dito e il rilascio salva. La prova sul telefono resta da fare.
+- ADR-003. Il limite «Riordino … solo con le frecce» è tolto da `docs/PROJECT.md` già qui (dopo INC-006 era falso).
 
 ### Incremento 4 — Selezione automatica della cella (US-39)
 

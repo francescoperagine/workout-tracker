@@ -29,7 +29,7 @@ L'utente cambia programma ogni qualche settimana, di solito a casa o in panchina
 
 ## Scope and boundaries
 
-- Dentro: elenco, editor, ricerca nel catalogo con creazione di un esercizio personalizzato, riordino con frecce accessibili (trascinamento facoltativo), raggruppamento in superserie, archivio.
+- Dentro: elenco, editor, ricerca nel catalogo con creazione di un esercizio personalizzato, riordino con trascinamento dalla maniglia sul numero (US-38, INC-006) e con frecce accessibili, raggruppamento in superserie, archivio.
 - **Anti-obiettivi:** wizard a più passi; campi obbligatori oltre all'esercizio; riordino solo con trascinamento; perdita di modifiche se si esce (salvataggio a ogni modifica, P4).
 
 ## States and ranges
@@ -47,4 +47,4 @@ L'utente cambia programma ogni qualche settimana, di solito a casa o in panchina
 ## Constraints and open decisions
 
 - Il builder non deve cambiare gli ID del catalogo del PoC né inventare esercizi o descrizioni.
-- **Deciso:** la superserie è indispensabile (US-09 è M): con le schede reali 6 voci su 8 sono in superserie. Il riordino con trascinamento resta facoltativo e rimandabile; le frecce accessibili sono obbligatorie.
+- **Deciso:** la superserie è indispensabile (US-09 è M): con le schede reali 6 voci su 8 sono in superserie. Il riordino con trascinamento è arrivato con US-38 (INC-006, ADR-003); le frecce accessibili restano obbligatorie.

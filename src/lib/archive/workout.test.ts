@@ -16,6 +16,7 @@ import {
   finishedCount,
   loadRecords,
   moveSessionExercise,
+  moveSessionExerciseTo,
   nextSet,
   nextSetType,
   suggestedSets,
@@ -493,5 +494,65 @@ describe('US-37 completa esercizio', () => {
     const { archive: done, completed } = completeExercise(cleared, session.id, target.id, NOW);
     expect(completed).toHaveLength(5);
     expect(setsOf(done, session.id, target.id).every((s) => s.completedAt === NOW)).toBe(true);
+  });
+});
+
+describe('US-38 riordino in sessione', () => {
+  it('sposta un esercizio e lascia le serie fatte com’erano', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const single = session.exercises[0];
+    const logged = updateSet(archive, session.id, single.id, single.sets[0].id, { kg: 40, reps: 8, completedAt: NOW + 1 });
+    const moved = moveSessionExerciseTo(logged, session.id, single.id, 1);
+    const after = running(moved);
+    // il blocco singolo scavalca la superserie
+    expect(after.exercises.slice(0, 3).map((e) => e.id)).toEqual([session.exercises[1].id, session.exercises[2].id, single.id]);
+    // le serie sono le stesse, con la spunta al suo posto
+    const kept = after.exercises.find((e) => e.id === single.id)!;
+    const before = running(logged).exercises.find((e) => e.id === single.id)!;
+    expect(kept.sets).toEqual(before.sets);
+    expect(kept.sets[0]).toMatchObject({ kg: 40, reps: 8, completedAt: NOW + 1 });
+  });
+
+  it('stesso posto o esercizio sconosciuto: l’archivio non cambia', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const single = session.exercises[0];
+    expect(moveSessionExerciseTo(archive, session.id, single.id, 0)).toBe(archive);
+    expect(moveSessionExerciseTo(archive, session.id, 'nope', 2)).toBe(archive);
+  });
+
+  it('plannedEntry: con lo stesso esercizio due volte conta la k-esima voce della sessione', () => {
+    // la scheda A con lo stesso squat al primo e al quarto posto
+    const routines = starterRoutines();
+    const [first, second] = [routines[0].exercises[0], routines[0].exercises[3]];
+    routines[0].exercises[3] = { ...second, exerciseId: first.exerciseId };
+    const { archive, session } = startSession({ ...emptyArchive(), routines }, 'routine-a', NOW);
+    const [firstSquat, , , secondSquat] = session.exercises;
+    expect(firstSquat.exerciseId).toBe(first.exerciseId);
+    expect(secondSquat.exerciseId).toBe(first.exerciseId);
+    // la k-esima voce della sessione con quell'esercizio è la k-esima della scheda
+    expect(plannedEntry(archive, session, firstSquat)?.id).toBe(first.id);
+    expect(plannedEntry(archive, session, secondSquat)?.id).toBe(second.id);
+
+    // scambiando le due voci, la prima della sessione è quella che prima veniva dopo
+    const swapped = moveSessionExerciseTo(archive, session.id, secondSquat.id, 0);
+    const after = running(swapped);
+    expect(after.exercises[0].id).toBe(secondSquat.id);
+    expect(after.exercises[1].id).toBe(firstSquat.id);
+    expect(plannedEntry(swapped, after, after.exercises[0])?.id).toBe(first.id);
+  });
+
+  it('nextSet: dopo il riordino tocca alla prima serie da fare nel nuovo ordine', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const single = session.exercises[0];
+    let a = archive;
+    for (const s of single.sets) a = updateSet(a, session.id, single.id, s.id, { reps: 8, completedAt: NOW + 1 });
+    expect(nextSet(running(a))?.exercise.id).toBe(session.exercises[1].id);
+
+    // il blocco finito scende sotto la superserie di panca e rematore
+    const after = running(moveSessionExerciseTo(a, session.id, single.id, 2));
+    expect(after.exercises.map((e) => e.id).slice(0, 4)).toEqual([session.exercises[1].id, session.exercises[2].id, session.exercises[3].id, single.id]);
+    const next = nextSet(after)!;
+    expect(next.exercise.exerciseId).toBe('distensioni-manubri-seduto-schienale-alto');
+    expect(next.set.id).toBe(next.exercise.sets[0].id);
   });
 });

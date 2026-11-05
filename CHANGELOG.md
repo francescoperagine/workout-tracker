@@ -3,6 +3,41 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-006
+
+Date: 2026-11-05
+
+Summary:
+**Riordino con il trascinamento (US-38), incremento 3 di `dedup-catalog-and-workout-ux`.**
+Il numero di ogni esercizio, nell'allenamento e nell'editor della scheda, è una maniglia (icona a sei punti
+sotto il numero). Premuta e trascinata, la lista passa alle righe del riordino, la pagina scorre finché la riga
+è sotto il dito, le altre fanno posto e ai bordi la pagina scorre da sola; l'ordine si salva al rilascio,
+`Esc` annulla. In una superserie la maniglia di una voce la sposta solo dentro il gruppo, quella
+sull'intestazione «Superserie» sposta il gruppo intero; nessun gruppo cambia. Con il focus sulla maniglia Su e
+Giù spostano di un posto e lo annunciano («{nome}: posizione 3 di 7.»). Nel foglio ⋯ della sessione ci sono
+«Sposta su» e «Sposta giù»; restano le frecce di «Riordina». Nessuna libreria (ADR-003).
+
+Deliverables:
+- `src/lib/archive/routine-edit.ts`: `reorderUnit`, `moveToIndex`, `moveEntryTo`; `src/lib/archive/workout.ts`:
+  `moveSessionExerciseTo`.
+- `src/lib/reorder.ts`: `dropIndex`, `shiftFor`, `edgeSpeed`, `unitStyle` e il gesto `startDrag`;
+  `src/components/ui/ReorderHandle.svelte`, mostrata in `/kit` (`KitReorder.svelte`).
+- `Workout.svelte`, `WorkoutExercise.svelte` (maniglia sul numero), `RoutineEditor.svelte`, `EntryEditor.svelte`
+  (maniglia accanto al pulsante che apre la voce, non dentro).
+- Test Vitest `src/lib/reorder.test.ts`, `routine-edit.test.ts` (`moveToIndex`: singoli, gruppo intero, dentro
+  il gruppo, bordi, id sconosciuto, 100 voci), `workout.test.ts` (serie fatte intatte, `plannedEntry` con lo
+  stesso esercizio due volte, `nextSet` dopo il riordino); e2e `tests/e2e/us-38-drag-reorder.spec.ts` (mouse,
+  `Esc`, tastiera, superserie, foglio ⋯, editor della scheda).
+- `docs/adr/ADR-003-trascinamento-senza-libreria.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT.md` (tolto il limite
+  «solo con le frecce»), brief `route-workout.md` e `route-routines.md`, SPEC (esito), registro delle storie (US-38).
+
+Limiti noti: **la prova sul telefono non è stata fatta** (nessun dispositivo collegato via adb): il gesto è
+provato con tocchi veri via CDP a 390×844 e 320×568. Con lo stesso esercizio due volte nella scheda, il target
+segue la posizione (k-esima voce), anche dopo il riordino. Lo spazio che si apre durante il gesto ha l'altezza
+della riga trascinata.
+
+ADR: ADR-003. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-005
 
 Date: 2026-11-05

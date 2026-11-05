@@ -13,6 +13,7 @@
   import EntryEditor from './EntryEditor.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
   import LiveField from '../ui/LiveField.svelte';
+  import ReorderHandle from '../ui/ReorderHandle.svelte';
   import Toast from '../ui/Toast.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import {
@@ -28,6 +29,8 @@
     isValidDateKey,
     linkedToPrevious,
     moveEntry,
+    moveEntryTo,
+    reorderUnit,
     moveKind,
     orderLabels,
     removeEntry,
@@ -40,6 +43,7 @@
   } from '../../lib/archive';
   import { plural } from '../../lib/format';
   import { appUrl } from '../../lib/paths';
+  import { startDrag, unitStyle, type DragState } from '../../lib/reorder';
 
   const store = archiveStore();
   const urlParams = new URLSearchParams(location.search);
@@ -170,6 +174,57 @@
     (same && !same.disabled ? same : other)?.focus();
   }
 
+  // --- trascinamento e Su/Giù sulla maniglia (US-38), come nell'allenamento ------------------------
+  let drag: (DragState & { id: string }) | null = $state(null);
+  const rows = $derived(reordering || drag !== null);
+  const handleId = (id: string, whole: boolean) => (whole ? `handle-group-${id}` : `handle-${id}`);
+  const entryName = (id: string) => exerciseName(store.archive, exercises.find((e) => e.id === id)?.exerciseId ?? '');
+  const unitName = (id: string, whole: boolean) => (whole ? `La superserie con ${entryName(id)}` : entryName(id));
+
+  function handleFor(id: string, whole = false) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (!routine || routine.archived || !unit || unit.count < 2) return null;
+    return {
+      label: `Sposta ${whole ? `la superserie con ${entryName(id)}` : entryName(id)}: trascina, o frecce su e giù`,
+      onstart: (event: PointerEvent) => beginDrag(id, whole, event),
+      onstep: (direction: -1 | 1) => void step(id, whole, direction),
+    };
+  }
+
+  function beginDrag(id: string, whole: boolean, event: PointerEvent) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (drag || !unit || unit.count < 2) return;
+    const blockKey = blocks.find((b) => b.entries.some((e) => e.id === id))!.entries[0].id;
+    expandedId = null;
+    drag = { id, inGroup: unit.inGroup, block: blockKey, view: null };
+    startDrag({
+      event,
+      ready: tick(),
+      from: unit.index,
+      units: () => [...document.querySelectorAll<HTMLElement>(unit.inGroup ? `#block-${blockKey} .entry-item` : 'ol.blocks > li.block')],
+      onupdate: (view) => {
+        if (drag) drag.view = view;
+      },
+      ondrop: (target) => {
+        drag = null;
+        if (target === unit.index || !edit((a) => moveEntryTo(a, routineId, id, target, whole))) return;
+        announcement = `${unitName(id, whole)}: posizione ${target + 1} di ${unit.count}.`;
+      },
+      oncancel: () => (drag = null),
+    });
+  }
+
+  async function step(id: string, whole: boolean, direction: -1 | 1) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (!unit) return;
+    const to = unit.index + direction;
+    if (to < 0 || to >= unit.count) return;
+    if (!edit((a) => moveEntryTo(a, routineId, id, to, whole))) return;
+    announcement = `${unitName(id, whole)}: posizione ${to + 1} di ${unit.count}.`;
+    await tick();
+    document.getElementById(handleId(id, whole))?.focus();
+  }
+
   // --- scheda ---------------------------------------------------------------------------------
   function onNameInput(text: string): string | void {
     if (!text.trim()) return 'Scrivi il nome della scheda.';
@@ -241,18 +296,37 @@
         </p>
       {:else}
         <ol class="blocks">
-          {#each blocks as block (block.entries[0].id)}
-            <li class="block" class:superset={block.entries.length > 1}>
+          {#each blocks as block, b (block.entries[0].id)}
+            {@const groupHandle = block.entries.length > 1 ? handleFor(block.entries[0].id, true) : null}
+            {@const unit = unitStyle(drag, b, null)}
+            <li
+              id={`block-${block.entries[0].id}`}
+              class={['block', block.entries.length > 1 && 'superset', drag && 'shifting', unit.dragged && 'dragged']}
+              style:transform={unit.transform}
+            >
               {#if block.entries.length > 1}
-                <p class="superset-caption"><Link size={16} aria-hidden="true" />Superserie · {plural(block.entries.length, 'esercizio', 'esercizi')}</p>
+                <div class="superset-caption">
+                  {#if groupHandle}
+                    <ReorderHandle id={handleId(block.entries[0].id, true)} label={groupHandle.label} onstart={groupHandle.onstart} onstep={groupHandle.onstep} />
+                  {/if}
+                  <p><Link size={16} aria-hidden="true" />Superserie · {plural(block.entries.length, 'esercizio', 'esercizi')}</p>
+                </div>
               {/if}
               <ol class="entries" aria-label={block.entries.length > 1 ? 'Superserie' : undefined}>
                 {#each block.entries as entry, i (entry.id)}
                   {@const index = block.start + i}
-                  <li class="entry-item">
-                    {#if reordering}
+                  {@const handle = handleFor(entry.id)}
+                  {@const inner = unitStyle(drag, i, block.entries[0].id)}
+                  <li class={['entry-item', drag && 'shifting', inner.dragged && 'dragged']} style:transform={inner.transform}>
+                    {#if rows}
                       <div class="reorder-row">
-                        <span class="order" aria-hidden="true">{labels[index]}</span>
+                        {#if handle}
+                          <ReorderHandle id={handleId(entry.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
+                            <span class="order" aria-hidden="true">{labels[index]}</span>
+                          </ReorderHandle>
+                        {:else}
+                          <span class="order" aria-hidden="true">{labels[index]}</span>
+                        {/if}
                         <span class="min-w-0 grow font-semibold">{exerciseName(store.archive, entry.exerciseId)}</span>
                         <button
                           type="button"
@@ -289,6 +363,7 @@
                         {edit}
                         onpick={(mode) => openPicker({ kind: mode, entryId: entry.id })}
                         onremove={() => remove(entry.id)}
+                        {handle}
                       />
                     {/if}
                   </li>
@@ -300,7 +375,7 @@
       {/if}
       <p class="sr-only" role="status">{announcement}</p>
 
-      {#if !routine.archived && !reordering}
+      {#if !routine.archived && !rows}
         <button
           type="button"
           id="add-exercise"
@@ -364,12 +439,37 @@
   .superset-caption {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: 0.5rem;
     margin: 0;
-    padding: 0.5rem 0 0 0.75rem;
+    padding: 0.5rem 0 0 0.25rem;
     color: var(--color-accent-text);
     font-size: var(--text-sm);
     font-weight: 600;
+  }
+  .superset-caption p {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+  }
+  .superset-caption :global(.reorder-handle) {
+    width: 2rem;
+  }
+  /* durante il trascinamento le altre righe fanno posto scorrendo; quella trascinata segue il dito */
+  .shifting {
+    position: relative;
+    background: var(--color-background);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shifting:not(.dragged) {
+      transition: transform 0.18s var(--ease-out-expo);
+    }
+  }
+  .dragged {
+    z-index: 2;
+    border-radius: var(--radius-field);
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 2px;
   }
   /* la superserie si legge come un blocco: un filo nella colonna del numero unisce ogni voce alla successiva */
   .superset .entry-item {

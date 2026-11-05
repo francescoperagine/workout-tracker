@@ -7,6 +7,7 @@
   import X from '@lucide/svelte/icons/x';
   import Trash from '@lucide/svelte/icons/trash';
   import LiveField from '../ui/LiveField.svelte';
+  import ReorderHandle from '../ui/ReorderHandle.svelte';
   import Stepper from '../ui/Stepper.svelte';
   import Switch from '../ui/Switch.svelte';
   import {
@@ -37,9 +38,11 @@
     edit: (change: (archive: Archive) => Archive) => boolean;
     onpick: (mode: 'replace' | 'alternative') => void;
     onremove: () => void;
+    /** maniglia del riordino (US-38) accanto alla riga; assente con una voce sola o in sola lettura */
+    handle?: { label: string; onstart: (event: PointerEvent) => void; onstep: (direction: -1 | 1) => void } | null;
   }
 
-  let { archive, routineId, entry, label, index, linked, expanded, readonly = false, ontoggle, edit, onpick, onremove }: Props = $props();
+  let { archive, routineId, entry, label, index, linked, expanded, readonly = false, ontoggle, edit, onpick, onremove, handle = null }: Props = $props();
 
   const settings = $derived(archive.settings);
   const unit = $derived(settings.weightUnit);
@@ -117,15 +120,22 @@
       </div>
     </div>
   {:else}
-    <button type="button" class="row toggle" id={`${base}-toggle`} aria-expanded={expanded} aria-controls={`${base}-editor`} onclick={ontoggle}>
-      <span class="order" aria-hidden="true">{label}</span>
-      <span class="text">
-        <span class="name"><span class="sr-only">{label}. </span>{name}</span>
-        <span class="summary">{summary}</span>
-        {#if details}<span class="summary">{details}</span>{/if}
-      </span>
-      <span class="chevron" aria-hidden="true"><ChevronDown size={22} /></span>
-    </button>
+    <div class="head" class:handled={handle}>
+      {#if handle}
+        <ReorderHandle id={`handle-${entry.id}`} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
+          <span class="order" aria-hidden="true">{label}</span>
+        </ReorderHandle>
+      {/if}
+      <button type="button" class="row toggle" id={`${base}-toggle`} aria-expanded={expanded} aria-controls={`${base}-editor`} onclick={ontoggle}>
+        {#if !handle}<span class="order" aria-hidden="true">{label}</span>{/if}
+        <span class="text">
+          <span class="name"><span class="sr-only">{label}. </span>{name}</span>
+          <span class="summary">{summary}</span>
+          {#if details}<span class="summary">{details}</span>{/if}
+        </span>
+        <span class="chevron" aria-hidden="true"><ChevronDown size={22} /></span>
+      </button>
+    </div>
   {/if}
 
   {#if expanded && !readonly}
@@ -264,6 +274,22 @@
     min-height: 56px;
     padding: 0.5rem 0;
     text-align: left;
+  }
+  /* con la maniglia il numero sta nella maniglia, fuori dal pulsante che apre la voce (niente pulsanti annidati) */
+  .head.handled {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+  }
+  .handled .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .handled :global(.reorder-handle) {
+    margin-top: 0.375rem;
+  }
+  .handled .order {
+    align-self: stretch;
   }
   .toggle {
     border: 0;

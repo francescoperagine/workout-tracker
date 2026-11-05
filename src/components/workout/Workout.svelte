@@ -23,6 +23,7 @@
   import BottomSheet from '../ui/BottomSheet.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import LiveField from '../ui/LiveField.svelte';
+  import ReorderHandle from '../ui/ReorderHandle.svelte';
   import SaveBar, { type SaveBarStatus } from '../ui/SaveBar.svelte';
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
@@ -47,6 +48,8 @@
     loadRecords,
     moveKind,
     moveSessionExercise,
+    moveSessionExerciseTo,
+    reorderUnit,
     nextSet,
     orderLabels,
     plannedEntry,
@@ -80,6 +83,7 @@
   import { formatWeight } from '../../lib/units';
   import { appUrl } from '../../lib/paths';
   import { setBottomBar } from '../../lib/bottom-bars';
+  import { startDrag, unitStyle, type DragState } from '../../lib/reorder';
 
   let { detail = false }: { detail?: boolean } = $props();
 
@@ -294,7 +298,7 @@
     if (ok && undo) notify(`${name}: tolto dall’allenamento.`, 'Annulla', () => edit((a) => restoreSessionExercise(a, sessionId, undo)));
   }
 
-  function option(action: 'note' | 'details' | 'variant' | 'remove') {
+  function option(action: 'note' | 'details' | 'variant' | 'remove' | 'up' | 'down') {
     const id = optionsFor;
     optionsOpen = false;
     if (!id) return;
@@ -306,6 +310,7 @@
       detailsFor = id;
       detailsOpen = true;
     } else if (action === 'variant') openVariant(id);
+    else if (action === 'up' || action === 'down') void move(id, action === 'up' ? -1 : 1);
     else void removeExercise(id);
   }
 
@@ -376,6 +381,65 @@
     const same = document.getElementById(`move-${id}-${direction}`) as HTMLButtonElement | null;
     const other = document.getElementById(`move-${id}-${-direction}`) as HTMLButtonElement | null;
     (same && !same.disabled ? same : other)?.focus();
+  }
+
+  // --- trascinamento e Su/Giù sulla maniglia (US-38) ------------------------------------------------
+  // Appena parte il gesto la lista passa alle righe del riordino, così sta tutta nello schermo; si salva
+  // solo al rilascio. `whole`: la maniglia dell'intestazione «Superserie» sposta l'intero gruppo.
+  let drag: (DragState & { id: string }) | null = $state(null);
+  const rows = $derived(reordering || drag !== null);
+  const handleId = (id: string, whole: boolean) => (whole ? `handle-group-${id}` : `handle-${id}`);
+
+  function unitName(id: string, whole: boolean): string {
+    const name = exerciseName(store.archive, find(id)?.exerciseId ?? '');
+    return whole ? `La superserie con ${name}` : name;
+  }
+
+  function handleFor(id: string, whole = false) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (!unit || unit.count < 2) return null;
+    const name = whole ? `la superserie con ${exerciseName(store.archive, find(id)!.exerciseId)}` : exerciseName(store.archive, find(id)!.exerciseId);
+    return {
+      label: `Sposta ${name}: trascina, o frecce su e giù`,
+      onstart: (event: PointerEvent) => beginDrag(id, whole, event),
+      onstep: (direction: -1 | 1) => void step(id, whole, direction),
+    };
+  }
+
+  function beginDrag(id: string, whole: boolean, event: PointerEvent) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (!session || drag || !unit || unit.count < 2) return;
+    const sessionId = session.id;
+    const blockKey = blocks.find((b) => b.entries.some((e) => e.id === id))!.entries[0].id;
+    drag = { id, inGroup: unit.inGroup, block: blockKey, view: null };
+    startDrag({
+      event,
+      ready: tick(),
+      from: unit.index,
+      units: () => [...document.querySelectorAll<HTMLElement>(unit.inGroup ? `#block-${blockKey} > .entry` : 'ol.blocks > li.block')],
+      onupdate: (view) => {
+        if (drag) drag.view = view;
+      },
+      ondrop: (target) => {
+        drag = null;
+        if (target === unit.index || !edit((a) => moveSessionExerciseTo(a, sessionId, id, target, whole))) return;
+        announcement = `${unitName(id, whole)}: posizione ${target + 1} di ${unit.count}.`;
+        void tick().then(() => document.getElementById(`exercise-${id}`)?.scrollIntoView({ block: 'nearest' }));
+      },
+      oncancel: () => (drag = null),
+    });
+  }
+
+  async function step(id: string, whole: boolean, direction: -1 | 1) {
+    const unit = reorderUnit(exercises, id, whole);
+    if (!session || !unit) return;
+    const to = unit.index + direction;
+    if (to < 0 || to >= unit.count) return;
+    const sessionId = session.id;
+    if (!edit((a) => moveSessionExerciseTo(a, sessionId, id, to, whole))) return;
+    announcement = `${unitName(id, whole)}: posizione ${to + 1} di ${unit.count}.`;
+    await tick();
+    document.getElementById(handleId(id, whole))?.focus();
   }
 
   // --- sessione ----------------------------------------------------------------------------------
@@ -486,24 +550,43 @@
     </div>
 
     {#if exercises.length}
-      {#if reordering}
+      {#if reordering && !drag}
         <div class="reorder-head">
           <p class="m-0 text-muted">Sposta gli esercizi con le frecce.</p>
           <button type="button" class="btn btn-primary" onclick={() => (reordering = false)}>Fine</button>
         </div>
       {/if}
       <ol class="blocks" aria-label="Esercizi">
-        {#each blocks as block (block.entries[0].id)}
-          <li class={['panel', 'block', block.entries.length > 1 && 'superset']}>
+        {#each blocks as block, b (block.entries[0].id)}
+          {@const groupHandle = block.entries.length > 1 ? handleFor(block.entries[0].id, true) : null}
+          {@const unit = unitStyle(drag, b, null)}
+          <li
+            id={`block-${block.entries[0].id}`}
+            class={['panel', 'block', block.entries.length > 1 && 'superset', drag && 'shifting', unit.dragged && 'dragged']}
+            style:transform={unit.transform}
+          >
             {#if block.entries.length > 1}
-              <p class="superset-caption"><Link size={16} aria-hidden="true" />Superserie · {plural(block.entries.length, 'esercizio', 'esercizi')}</p>
+              <div class="superset-caption">
+                {#if groupHandle}
+                  <ReorderHandle id={handleId(block.entries[0].id, true)} label={groupHandle.label} onstart={groupHandle.onstart} onstep={groupHandle.onstep} />
+                {/if}
+                <p><Link size={16} aria-hidden="true" />Superserie · {plural(block.entries.length, 'esercizio', 'esercizi')}</p>
+              </div>
             {/if}
             {#each block.entries as exercise, j (exercise.id)}
               {@const index = block.start + j}
-              <div class="entry">
-                {#if reordering}
+              {@const handle = handleFor(exercise.id)}
+              {@const inner = unitStyle(drag, j, block.entries[0].id)}
+              <div class={['entry', drag && 'shifting', inner.dragged && 'dragged']} style:transform={inner.transform}>
+                {#if rows}
                   <div class="reorder-row">
-                    <span class="order" aria-hidden="true">{labels[index]}</span>
+                    {#if handle}
+                      <ReorderHandle id={handleId(exercise.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
+                        <span class="order" aria-hidden="true">{labels[index]}</span>
+                      </ReorderHandle>
+                    {:else}
+                      <span class="order" aria-hidden="true">{labels[index]}</span>
+                    {/if}
                     <span class="reorder-name">{exerciseName(store.archive, exercise.exerciseId)}</span>
                     <button
                       type="button"
@@ -538,6 +621,7 @@
                     {records}
                     {today}
                     {edit}
+                    {handle}
                     ontouch={() => (touched = exercise.id)}
                     ontoggle={() => toggle(exercise)}
                     onchecked={(setId) => afterCheck(exercise.id, setId)}
@@ -568,7 +652,7 @@
       </div>
     {/if}
 
-    {#if !reordering}
+    {#if !rows}
       <button
         type="button"
         id="add-exercise"
@@ -684,6 +768,18 @@
       </li>
     {/if}
     <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
+    {#if optionsExercise && exercises.length > 1}
+      <li>
+        <button type="button" class="option" disabled={!moveKind(exercises, optionsExercise.id, -1)} onclick={() => option('up')}>
+          <ArrowUp size={20} aria-hidden="true" />Sposta su
+        </button>
+      </li>
+      <li>
+        <button type="button" class="option" disabled={!moveKind(exercises, optionsExercise.id, 1)} onclick={() => option('down')}>
+          <ArrowDown size={20} aria-hidden="true" />Sposta giù
+        </button>
+      </li>
+    {/if}
     <li><button type="button" class="option danger" onclick={() => option('remove')}><Trash size={20} aria-hidden="true" />Togli dall’allenamento</button></li>
   </ul>
 </BottomSheet>
@@ -772,11 +868,36 @@
   .superset-caption {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
+    gap: 0.5rem;
     margin: 0 0 0.25rem;
     color: var(--color-accent-text);
     font-size: var(--text-sm);
     font-weight: 600;
+  }
+  .superset-caption p {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+  }
+  .superset-caption :global(.reorder-handle) {
+    width: 2rem;
+  }
+  /* durante il trascinamento le altre righe fanno posto scorrendo; quella trascinata segue il dito */
+  .shifting {
+    position: relative;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .shifting:not(.dragged) {
+      transition: transform 0.18s var(--ease-out-expo);
+    }
+  }
+  .dragged {
+    z-index: 2;
+    border-radius: var(--radius-field);
+    background: var(--color-surface);
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 2px;
   }
   .entry + .entry {
     margin-top: 0.75rem;

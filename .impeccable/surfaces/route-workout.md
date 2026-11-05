@@ -19,6 +19,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 - Una serie registrata in **1 tocco** se ripete la volta scorsa (la spunta su una riga vuota conferma i valori "precedente"), al massimo 2 campi più la spunta altrimenti (P1). Togliere la spunta annulla.
 - La spunta della serie avvia il recupero (vedi brief del timer).
+- Riordino (US-38, ADR-003): il numero della card è la maniglia (icona a sei punti sotto); premuta e trascinata, la lista passa alle righe del riordino e la riga resta sotto il dito; Su e Giù sulla maniglia spostano di un posto; «Sposta su/giù» anche nel foglio ⋯. L'intestazione «Superserie» ha la maniglia del gruppo intero.
 - «Completa esercizio» (US-37, doppia spunta accanto a ⋯ nell'intestazione della card): spunta in un tocco le serie con le ripetizioni; quelle senza restano da fare, in ambra (`warning-bg`, `warning-line`) con «Mancano le ripetizioni: serie N» sotto le righe. Un solo recupero, già ridotto, perché il timer a tutto schermo coprirebbe l'avviso con «Annulla».
 - Alla fine, "Termina" porta a un riepilogo: durata, esercizi, serie, volume, record battuti.
 - Contenuto reale: schede A/B del PoC. Esempio: "2a Panca piana bilanciere · 6–8 · 40 kg · recupero 60–75″" in superserie con "2b Rematore manubri, petto su panca inclinata · 8–10 · 12–14 kg per manubrio".

@@ -9,14 +9,17 @@ import {
   linkWithPrevious,
   linkedToPrevious,
   moveEntry,
+  moveEntryTo,
   moveKind,
   moveRoutine,
+  moveToIndex,
   normalizeGroups,
   normalizeReps,
   orderLabels,
   removeAlternative,
   removeEntry,
   renameRoutine,
+  reorderUnit,
   restoreEntry,
   restoreRoutine,
   routineLastDone,
@@ -258,5 +261,93 @@ describe('US-07 riordino con le frecce', () => {
     expect(moveKind(list(), '1', -1)).toBeNull();
     expect(moveKind(list(), '4', 1)).toBeNull();
     expect(moveEntry(a, 'r', '4', 1)).toBe(a);
+  });
+});
+
+describe('US-38 moveToIndex', () => {
+  type Unit = { id: string; group: string | null };
+  // blocchi: [a] [b c] [d] [e]
+  const base = (): Unit[] => [
+    { id: 'a', group: null },
+    { id: 'b', group: '1' },
+    { id: 'c', group: '1' },
+    { id: 'd', group: null },
+    { id: 'e', group: null },
+  ];
+  const ids = (list: Unit[]) => list.map((x) => x.id);
+  const groupsById = (list: Unit[]) => Object.fromEntries(list.map((x) => [x.id, x.group]));
+  const unchangedGroups = (list: Unit[]) => expect(groupsById(list)).toEqual(groupsById(base()));
+
+  it('una voce singola scende di due blocchi', () => {
+    const result = moveToIndex(base(), 'a', 2);
+    expect(ids(result)).toEqual(['b', 'c', 'd', 'a', 'e']);
+    unchangedGroups(result);
+  });
+
+  it('una voce singola va in cima', () => {
+    const result = moveToIndex(base(), 'e', 0);
+    expect(ids(result)).toEqual(['e', 'a', 'b', 'c', 'd']);
+    unchangedGroups(result);
+  });
+
+  it('la superserie intera va in fondo e le sue voci restano vicine e in ordine', () => {
+    const result = moveToIndex(base(), 'c', 3, true);
+    expect(ids(result)).toEqual(['a', 'd', 'e', 'b', 'c']);
+    expect(groupsById(result)).toEqual({ a: null, d: null, e: null, b: '1', c: '1' });
+  });
+
+  it('una voce dentro la superserie si sposta solo dentro il gruppo', () => {
+    const result = moveToIndex(base(), 'c', 0);
+    expect(ids(result)).toEqual(['a', 'c', 'b', 'd', 'e']);
+    unchangedGroups(result);
+  });
+
+  it('dentro il gruppo un posto oltre la fine vale l’ultimo del gruppo', () => {
+    const result = moveToIndex(base(), 'b', 9);
+    expect(ids(result)).toEqual(['a', 'c', 'b', 'd', 'e']);
+    unchangedGroups(result);
+  });
+
+  it('un posto negativo o enorme va al bordo', () => {
+    expect(ids(moveToIndex(base(), 'd', -3))).toEqual(['d', 'a', 'b', 'c', 'e']);
+    expect(ids(moveToIndex(base(), 'a', 99))).toEqual(['b', 'c', 'd', 'e', 'a']);
+    // il posto è troncato: 2.9 vale 2
+    expect(ids(moveToIndex(base(), 'e', 2.9))).toEqual(['a', 'b', 'c', 'e', 'd']);
+  });
+
+  it('stesso posto o id sconosciuto restituiscono lo stesso array', () => {
+    const list = base();
+    expect(moveToIndex(list, 'b', 0)).toBe(list);
+    expect(moveToIndex(list, 'c', 1)).toBe(list);
+    expect(moveToIndex(list, 'c', 1, true)).toBe(list);
+    expect(moveToIndex(list, 'zzz', 0)).toBe(list);
+  });
+
+  it('reorderUnit dice indice e numero di unità tra cui si muove', () => {
+    const list = base();
+    expect(reorderUnit(list, 'a')).toEqual({ index: 0, count: 4, inGroup: false });
+    expect(reorderUnit(list, 'b')).toEqual({ index: 0, count: 2, inGroup: true });
+    expect(reorderUnit(list, 'c')).toEqual({ index: 1, count: 2, inGroup: true });
+    expect(reorderUnit(list, 'c', true)).toEqual({ index: 1, count: 4, inGroup: false });
+    expect(reorderUnit(list, 'zzz')).toBeNull();
+  });
+
+  it('in una lista di 100 voci la prima va in fondo', () => {
+    const many: Unit[] = Array.from({ length: 100 }, (_, i) => ({ id: `x${i}`, group: null }));
+    const result = moveToIndex(many, 'x0', 99);
+    expect(result).toHaveLength(100);
+    expect(result[0].id).toBe('x1');
+    expect(result.at(-1)!.id).toBe('x0');
+  });
+
+  it('moveEntryTo riordina la scheda e l’archivio resta valido', () => {
+    const a = archive({ routines: [routine('r', [entry('1'), entry('2', 'g'), entry('3', 'g'), entry('4')])] });
+    const after = moveEntryTo(a, 'r', '1', 1);
+    expect(ids(exercisesOf(after))).toEqual(['2', '3', '1', '4']);
+    expect(groups(exercisesOf(after))).toEqual(['g', 'g', null, null]);
+    expect(() => validateArchive(after)).not.toThrow();
+    // stessa posizione o id sconosciuto: l'archivio non cambia
+    expect(moveEntryTo(a, 'r', '1', 0)).toBe(a);
+    expect(moveEntryTo(a, 'r', 'zzz', 2)).toBe(a);
   });
 });

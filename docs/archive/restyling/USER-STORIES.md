@@ -132,6 +132,11 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Spunta le serie con le ripetizioni (il peso può mancare) e lascia da fare, evidenziate e dette per nome, quelle senza; nessun valore inventato.
 - Un solo recupero, dall'ultima serie spuntata, già ridotto; l'avviso con «Annulla» toglie solo quelle spunte e ferma il recupero.
 
+**US-38 (M, INC-006).** Come utente, voglio riordinare gli esercizi trascinandoli, nell'allenamento e nella scheda, per seguire l'ordine in cui trovo libere le macchine.
+- Maniglia sul numero dell'esercizio; appena parte il gesto la lista passa alle righe compatte e la riga resta sotto il dito; ai bordi la pagina scorre da sola; si salva al rilascio, `Esc` annulla.
+- Superserie: la maniglia dell'intestazione sposta il gruppo intero, quella di una voce la sposta solo dentro il gruppo.
+- Con la tastiera Su e Giù sulla maniglia spostano di un posto, con l'annuncio della posizione; restano le frecce di «Riordina» e c'è «Sposta su/giù» nel foglio ⋯.
+
 ### E5. Recupero
 
 **US-21 (M, step 7).** Come utente, voglio che alla spunta della serie parta il recupero a tutto schermo, per riposare il tempo giusto senza pensarci.

@@ -31,7 +31,7 @@ src/lib/archive/        archivio v2 (step 2), un modulo per argomento, tutto esp
   repository.ts         ArchiveRepository (revisione, quota, illeggibile, conflitto tra schede, subscribe), sharedArchive, requestPersistence
   catalog.ts            catalogo base + personalizzati: nameKey, findByName e suggestExercises su nome e alias (chiavi del catalogo base calcolate una volta), ensureExercise (US-14); mergeExercise e mergeImpact (US-35: unione di un personalizzato in un altro esercizio, in tutte le sessioni e le schede); exerciseDetails, safeImagePath, safeSources (approfondimento, US-19)
   routines.ts           withStarterRoutines, planFor, sessionInProgress, quickStart (US-11: ultime 4 schede e suggerita)
-  routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry)
+  routine-edit.ts       modifica delle schede (step 4): crea, duplica, rinomina, riordina, archivia, elimina con "Annulla"; voci, alternative, superserie (blocksOf, orderLabels, normalizeGroups, linkWithPrevious, moveEntry; reorderUnit/moveToIndex/moveEntryTo per il trascinamento, US-38)
   calendar.ts           calendario (step 5): addDays, weekStart, weekDates, monthWeeks, dayInfo (stato del giorno: done, in-progress, skipped, planned, rest, empty), setWeeklyDay, setDateOverride, staleWeeklyDays
   sessions.ts           sessioni (step 5): startSession (da scheda o libero, una sola in corso; serie precompilate dall'ultima volta, US-36), reopenSession, finishSession (almeno un esercizio e una serie spuntata), removeSession/restoreSession, summarizeSession, currentExercise, lastFinishedSession
   workout.ts            allenamento attivo (step 6): previousExercise/previousSets (precedente per variante e per posizione tra riscaldamento e serie di lavoro; contano solo le serie spuntate), defaultSets/prefillSets (US-36: valori veri dell'ultima volta nelle serie di un esercizio che entra in sessione, da spuntare), completedSet (spunta che conferma il precedente), completeExercise/undoCompleteExercise (US-37: spunta in un tocco le serie con le ripetizioni, «Annulla» solo su quelle), nextSet (serie da fare, alternanza in superserie), plannedEntry (voce della scheda), suggestedSets (segnaposto e spunta: il precedente con il peso della serie sopra), serie ed esercizi in sessione con "Annulla", switchExercise (variante: con serie spuntate quelle restano e la variante continua in una voce sotto) e undoSwitch, note, nome e data, loadRecords, workoutSummary
@@ -42,6 +42,8 @@ src/lib/rest-timer.ts   timer di recupero (step 7), logica pura: REST_TIMER_KEY,
 src/lib/rest-timer.svelte.ts  restTimer(): store unico del timer (stato salvato a ogni cambiamento, scatti di 250 ms, visibilitychange, evento storage, avviso di fine una volta sola, "Vai" chiuso dopo 6 s in vista); afterCheck, shift, stop, minimize, expand
 src/lib/rest-alert.ts   unlockAudio (dentro la spunta), suono di fine con AudioContext, vibrazione, alertRestEnd(settings)
 src/lib/rest-notifier.ts  RestNotifier (schedule/cancel) e localRestNotifier: predisposizione Web Push (contratto in docs/archive/restyling/WEB-PUSH.md)
+src/lib/reorder.ts      trascinamento senza libreria (US-38, ADR-003): dropIndex, shiftFor, edgeSpeed, unitStyle (pure, con test) e startDrag
+                        (Pointer Events su window, ancoraggio dopo il passaggio alle righe compatte, scorrimento ai bordi, Esc annulla)
 src/lib/wake-lock.ts    keepScreenOn(on): schermo acceso durante l'allenamento in corso
 src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce(); avviso beforeunload con modifiche solo in memoria
 src/lib/bottom-bars.ts  setBottomBar(id, altezza, persistente): somma le barre in basso in --bottom-bars-height (base della pagina in --bottom-bars-base)
@@ -69,7 +71,8 @@ src/pages/
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   _kit.astro            /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione, dal precache e dalla build pubblicata (solo dev e WT_KIT=1)
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
-                        LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog (.svelte)
+                        LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog, ReorderHandle (maniglia del
+                        riordino sul numero dell'esercizio, US-38) (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento
 src/components/shell/RestTimerHost.svelte  timer di recupero nel guscio (transition:persist): finestra a tutto schermo su ogni pagina, annunci alle soglie, wake lock

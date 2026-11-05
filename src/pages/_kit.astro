@@ -9,6 +9,7 @@ import RestTimer from '../components/workout/RestTimer.svelte';
 import RestTimerBar from '../components/workout/RestTimerBar.svelte';
 import KitTheme from '../components/kit/KitTheme.svelte';
 import KitSetRows from '../components/kit/KitSetRows.svelte';
+import KitReorder from '../components/kit/KitReorder.svelte';
 import KitSaveBars from '../components/kit/KitSaveBars.svelte';
 import KitOverlays from '../components/kit/KitOverlays.svelte';
 import SegmentedControl from '../components/ui/SegmentedControl.svelte';
@@ -148,6 +149,14 @@ const weightUnits = [
         Spunta su una riga vuota: conferma il precedente e parte il recupero. Tocco sul numero: cambia tipo (R, D, C); nell’allenamento apre il foglio della serie, con “Togli serie”.
       </p>
       <KitSetRows client:load />
+    </section>
+
+    <section aria-labelledby="s-reorder" class="flex flex-col gap-3">
+      <h2 id="s-reorder" class="text-page-title font-bold">Maniglia di riordino</h2>
+      <p class="text-muted">
+        Il numero dell’esercizio è la maniglia: si preme e si trascina; nell’allenamento la lista passa alle righe compatte. Con il focus, Su e Giù spostano di un posto.
+      </p>
+      <KitReorder client:load />
     </section>
 
     <section aria-labelledby="s-timer" class="flex flex-col gap-3">
