@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { starterRoutines } from './routines';
 import { currentExercise, finishSession, sessionHasData, startSession } from './sessions';
-import { mergeExercise, safeImagePath } from './catalog';
+import { exerciseName, mergeExercise, safeImagePath } from './catalog';
 import { exerciseHistory, exercisesDone } from './progress';
 import { validateArchive } from './validation';
 import { emptyArchive, type Archive, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
@@ -10,6 +10,8 @@ import {
   addSessionExercise,
   addSet,
   completedSet,
+  completeExercise,
+  undoCompleteExercise,
   defaultSets,
   finishedCount,
   loadRecords,
@@ -394,5 +396,102 @@ describe('US-36 default dall’ultima esecuzione', () => {
     const next = startSession(ended, 'routine-a', NOW + DAY);
     expect(previousSets(next.session.exercises[0], previousExercise(next.archive, next.session, 'squat-bilanciere')!.exercise)).toEqual([{ kg: 70, reps: 8 }, null, null]);
     expect(values(next.session.exercises[0].sets)).toEqual([[70, 8], [70, 8], [70, 8]]);
+  });
+});
+
+describe('US-37 completa esercizio', () => {
+  const setsOf = (archive: Archive, sessionId: string, exerciseId: string) =>
+    archive.sessions.find((s) => s.id === sessionId)!.exercises.find((e) => e.id === exerciseId)!.sets;
+
+  it('completa solo le serie con le ripetizioni e lascia i valori com’erano', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false), set('2', 60, 8, false), set('3', 70, null, false), set('4', 80, null, false)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const { archive: done, completed } = completeExercise(archive, 's', 'e1', NOW);
+    expect(completed).toEqual(['1', '2']);
+    const sets = setsOf(done, 's', 'e1');
+    expect(sets.map((s) => s.completedAt)).toEqual([NOW, NOW, null, null]);
+    expect(values(sets)).toEqual([[50, 10], [60, 8], [70, null], [80, null]]);
+  });
+
+  it('tutte le serie spuntate prendono lo stesso completedAt', () => {
+    const at = NOW + 5_000;
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false), set('2', null, 8, false), set('3', 70, 6, false)]);
+    const { archive, completed } = completeExercise(withAB([finished('s', '2026-10-10', [e])]), 's', 'e1', at);
+    expect(completed).toEqual(['1', '2', '3']);
+    expect(setsOf(archive, 's', 'e1').map((s) => s.completedAt)).toEqual([at, at, at]);
+  });
+
+  it('una serie a corpo libero (kg nullo) si spunta lo stesso', () => {
+    const e = exercise('e1', 'trazioni', [set('1', null, 12, false)]);
+    const { archive, completed } = completeExercise(withAB([finished('s', '2026-10-10', [e])]), 's', 'e1', NOW);
+    expect(completed).toEqual(['1']);
+    expect(setsOf(archive, 's', 'e1')[0]).toMatchObject({ kg: null, reps: 12, completedAt: NOW });
+  });
+
+  it('senza serie valide non cambia niente e restituisce lo stesso archivio', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, null, false), set('2', null, null, false)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const result = completeExercise(archive, 's', 'e1', NOW);
+    expect(result.completed).toEqual([]);
+    expect(result.archive).toBe(archive);
+  });
+
+  it('le serie già spuntate tengono il loro completedAt e non si ricompletano', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10), set('2', 60, 8, false)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const { archive: done, completed } = completeExercise(archive, 's', 'e1', NOW);
+    expect(completed).toEqual(['2']);
+    expect(setsOf(done, 's', 'e1').map((s) => s.completedAt)).toEqual([NOW - DAY, NOW]);
+  });
+
+  it('non muta l’archivio passato', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false), set('2', 60, 8, false)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const copy = structuredClone(archive);
+    completeExercise(archive, 's', 'e1', NOW);
+    expect(archive).toEqual(copy);
+  });
+
+  it('annulla toglie la spunta solo alle serie di quel tocco', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false), set('2', 60, 8, false), set('3', 70, 6)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const { archive: done, completed } = completeExercise(archive, 's', 'e1', NOW);
+    const undone = undoCompleteExercise(done, 's', 'e1', completed, NOW);
+    expect(setsOf(undone, 's', 'e1').map((s) => s.completedAt)).toEqual([null, null, NOW - DAY]);
+  });
+
+  it('annulla dopo una modifica nel frattempo non tocca la serie rispuntata né i valori cambiati', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false), set('2', 60, 8, false), set('3', 70, 6, false)]);
+    const archive = withAB([finished('s', '2026-10-10', [e])]);
+    const { archive: done, completed } = completeExercise(archive, 's', 'e1', NOW);
+    const cleared = updateSet(done, 's', 'e1', '1', { completedAt: null });
+    const reticked = updateSet(cleared, 's', 'e1', '1', { completedAt: NOW + 1_000 });
+    const edited = updateSet(reticked, 's', 'e1', '2', { reps: 12 });
+    const undone = undoCompleteExercise(edited, 's', 'e1', completed, NOW);
+    const sets = setsOf(undone, 's', 'e1');
+    expect(sets.map((s) => s.completedAt)).toEqual([NOW + 1_000, null, null]);
+    expect(sets[1].reps).toBe(12);
+  });
+
+  it('un esercizio che non è nella sessione è un errore', () => {
+    const e = exercise('e1', 'squat-bilanciere', [set('1', 50, 10, false)]);
+    expect(() => completeExercise(withAB([finished('s', '2026-10-10', [e])]), 's', 'nope', NOW)).toThrow();
+  });
+
+  it('fixture: la leg press del 26 ottobre si spunta tutta insieme', () => {
+    const base = fixture();
+    const session = base.sessions.find((s) => s.date === '2026-10-26')!;
+    const target = session.exercises.find((e) => exerciseName(base, e.exerciseId).toLowerCase().includes('leg press'))!;
+    const cleared: Archive = {
+      ...base,
+      sessions: base.sessions.map((s) =>
+        s.id === session.id
+          ? { ...s, exercises: s.exercises.map((e) => (e.id === target.id ? { ...e, sets: e.sets.map((x) => ({ ...x, completedAt: null })) } : e)) }
+          : s,
+      ),
+    };
+    const { archive: done, completed } = completeExercise(cleared, session.id, target.id, NOW);
+    expect(completed).toHaveLength(5);
+    expect(setsOf(done, session.id, target.id).every((s) => s.completedAt === NOW)).toBe(true);
   });
 });

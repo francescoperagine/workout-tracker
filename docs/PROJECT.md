@@ -12,7 +12,7 @@ Qui c'è solo dove siamo e dove si va.
 - **Governance:** adottata con INC-001 (`ai-governance-template` v6).
 - **Indicizzazione:** pagine indicizzabili da INC-002 (ADR-002), canonico sul dominio.
 - **Pagina Info:** da INC-003, con i contatti dell'autore; la «?» dell'intestazione la apre, l'ingranaggio porta alle Impostazioni.
-- **Feature attive:** `dedup-catalog-and-workout-ux` (catalogo senza duplicati e default dall'ultima volta, completa esercizio, trascinamento, selezione delle celle, nuova icona): incremento 1 fatto (INC-004: alias, unione dei doppioni, valori dell'ultima volta), restano completa esercizio, trascinamento, selezione delle celle e icona (`features/dedup-catalog-and-workout-ux/`).
+- **Feature attive:** `dedup-catalog-and-workout-ux` (catalogo senza duplicati e default dall'ultima volta, completa esercizio, trascinamento, selezione delle celle, nuova icona): incrementi 1 (INC-004: alias, unione dei doppioni, valori dell'ultima volta) e 2 (INC-005: completa esercizio) fatti, restano trascinamento, selezione delle celle e icona (`features/dedup-catalog-and-workout-ux/`).
 
 ## Focus attuale
 

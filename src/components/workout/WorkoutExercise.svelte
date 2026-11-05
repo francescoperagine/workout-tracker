@@ -4,6 +4,8 @@
   // (P4). Fatto (tutte le serie spuntate) si compatta in una riga, ma resta modificabile.
   import { tick } from 'svelte';
   import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
+  import CheckCheck from '@lucide/svelte/icons/check-check';
+  import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import CircleCheck from '@lucide/svelte/icons/circle-check';
   import Ellipsis from '@lucide/svelte/icons/ellipsis';
   import Info from '@lucide/svelte/icons/info';
@@ -13,6 +15,7 @@
   import {
     LIMITS,
     addSet,
+    completeExercise,
     completedSet,
     exerciseName,
     isValidSetValue,
@@ -52,6 +55,8 @@
     ontoggle: () => void;
     /** dopo una spunta: chi gestisce l'elenco avvia il recupero e sposta l'attenzione alla serie successiva */
     onchecked: (setId: string) => void;
+    /** dopo "Completa esercizio" (US-37): serie appena spuntate, il loro `completedAt`, quante restano senza ripetizioni */
+    oncompleted: (completed: string[], at: number, missing: number) => void;
     /** tocco sull'indice della serie: foglio con tipo e "Togli serie" */
     onsetoptions: (setId: string) => void;
     onvariant: () => void;
@@ -72,6 +77,7 @@
     ontouch,
     ontoggle,
     onchecked,
+    oncompleted,
     onsetoptions,
     onvariant,
     ondetails,
@@ -88,6 +94,14 @@
   const numbers = $derived(setNumbers(exercise.sets));
   const done = $derived(exercise.sets.length > 0 && exercise.sets.every((s) => s.completedAt !== null));
   const id = $derived(`exercise-${exercise.id}`);
+
+  // serie lasciate senza spunta da "Completa esercizio" perché senza ripetizioni (US-37): evidenziate
+  // finché non si modificano o si spuntano
+  let flagged: string[] = $state([]);
+  const missing = $derived(exercise.sets.filter((s) => flagged.includes(s.id) && s.completedAt === null));
+  const unflag = (setId: string) => {
+    if (flagged.includes(setId)) flagged = flagged.filter((id) => id !== setId);
+  };
 
   let noteOpen = $state(false);
   let noteField: { focus(select?: boolean): void } | undefined = $state();
@@ -127,6 +141,7 @@
 
   function patch(set: SessionSet, change: Partial<Omit<SessionSet, 'id'>>): boolean {
     ontouch();
+    unflag(set.id);
     return edit((a) => updateSet(a, session.id, exercise.id, set.id, change));
   }
 
@@ -145,6 +160,7 @@
 
   function onCheck(set: SessionSet, suggestion: PreviousSet | null): CheckResult {
     ontouch();
+    unflag(set.id);
     if (set.completedAt !== null) {
       edit((a) => updateSet(a, session.id, exercise.id, set.id, { completedAt: null }));
       return;
@@ -155,11 +171,31 @@
     if (edit((a) => replaceSet(a, session.id, exercise.id, completed))) onchecked(set.id);
   }
 
+  /** "Completa esercizio" (US-37): le serie con le ripetizioni si spuntano, le altre si evidenziano */
+  function complete() {
+    ontouch();
+    const at = Date.now();
+    let completed: string[] = [];
+    if (!edit((a) => {
+      const result = completeExercise(a, session.id, exercise.id, at);
+      completed = result.completed;
+      return result.archive;
+    })) return;
+    const empty = exercise.sets.filter((s) => s.completedAt === null && s.reps === null && !completed.includes(s.id));
+    flagged = empty.map((s) => s.id);
+    oncompleted(completed, at, empty.length);
+  }
+
   // --- serie ----------------------------------------------------------------------------------
   function add() {
     ontouch();
     edit((a) => addSet(a, session.id, exercise.id).archive);
   }
+
+  const setLabel = (set: SessionSet) => {
+    const i = exercise.sets.indexOf(set);
+    return set.type === 'warmup' ? 'riscaldamento' : `serie ${numbers[i]}`;
+  };
 
   const compactSummary = $derived(
     exercise.sets
@@ -194,9 +230,16 @@
         {/if}
       {/if}
     </div>
-    <button type="button" class="btn btn-icon" aria-haspopup="dialog" aria-label={`Altre azioni: ${name}`} onclick={onoptions}>
-      <Ellipsis size={22} aria-hidden="true" />
-    </button>
+    <div class="actions">
+      {#if !compact && !done}
+        <button type="button" class="btn btn-icon" aria-label={`Completa ${name}`} onclick={complete}>
+          <CheckCheck size={22} aria-hidden="true" />
+        </button>
+      {/if}
+      <button type="button" class="btn btn-icon" aria-haspopup="dialog" aria-label={`Altre azioni: ${name}`} onclick={onoptions}>
+        <Ellipsis size={22} aria-hidden="true" />
+      </button>
+    </div>
   </div>
 
   {#if compact || done}
@@ -230,6 +273,7 @@
             done={set.completedAt !== null}
             {unit}
             record={records.has(set.id)}
+            flagged={missing.includes(set)}
             typeMenu
             ontype={() => {
               ontouch();
@@ -242,6 +286,13 @@
           />
         {/each}
       </div>
+
+      <p class="missing" role="status">
+        {#if missing.length}
+          <CircleAlert size={16} aria-hidden="true" />
+          <span>Mancano le ripetizioni: {missing.map((s) => setLabel(s)).join(', ')}.</span>
+        {/if}
+      </p>
 
       <button type="button" class="btn btn-text add-set" onclick={add} disabled={exercise.sets.length >= LIMITS.setsPerExercise}>
         <Plus aria-hidden="true" />Aggiungi serie
@@ -274,8 +325,8 @@
   .head {
     margin-top: -0.375rem;
     display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr) 48px;
-    gap: 0.25rem 0.5rem;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    gap: 0 0.5rem;
     align-items: start;
   }
   .order {
@@ -285,8 +336,25 @@
     font-weight: 700;
     text-align: center;
   }
+  /* il titolo divide la prima riga con i pulsanti; target e note sotto prendono anche il loro spazio (320px) */
   .title {
+    display: contents;
+  }
+  .title > * {
+    grid-column: 2 / -1;
     min-width: 0;
+  }
+  .title > h3 {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .order {
+    grid-row: 1;
+  }
+  .actions {
+    display: flex;
+    grid-column: 3;
+    grid-row: 1;
   }
   h3 {
     margin: 0;
@@ -363,6 +431,21 @@
   }
   .add-set {
     align-self: flex-start;
+  }
+  .missing {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
+    margin: 0;
+    color: var(--color-warning);
+    font-size: var(--text-sm);
+  }
+  .missing:empty {
+    display: none;
+  }
+  .missing :global(svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
   .exercise :global(.live-field) {
     margin-top: 0.5rem;

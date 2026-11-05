@@ -98,6 +98,7 @@
       reps={s.reps}
       done={s.done}
       record={i === 0}
+      flagged={i === 3 && !s.reps && !s.done}
       ontype={() => (s.type = CYCLE[(CYCLE.indexOf(s.type) + 1) % CYCLE.length])}
       oncopy={() => s.previous && ((s.kg = s.previous.kg), (s.reps = s.previous.reps))}
       onkg={(text) => void (s.kg = text)}

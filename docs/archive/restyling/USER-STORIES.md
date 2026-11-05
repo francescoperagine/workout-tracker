@@ -119,6 +119,19 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 **US-20 (M, step 6).** Come utente, voglio fare più sessioni nello stesso giorno (es. mattina e sera).
 - Una sola sessione "in corso" alla volta; le altre dello stesso giorno restano nello storico.
 
+**US-35 (M, INC-004).** Come utente, voglio che ogni esercizio esista una volta sola nel catalogo, per non ritrovarmi lo storico diviso tra due nomi.
+- Gli esercizi di base hanno alias (nome inglese, varianti italiane): la ricerca li trova e un nome scritto che corrisponde a un alias usa l'esercizio esistente («Esiste già «…»: usa questo»).
+- Un esercizio personalizzato si unisce a un altro dal foglio del catalogo; la conferma dice quanti allenamenti e schede cambiano e che non si annulla.
+
+**US-36 (M, INC-004).** Come utente, voglio trovare già scritti kg e ripetizioni dell'ultima volta che ho fatto un esercizio, per dover solo spuntare.
+- Valori veri, da spuntare: contano solo le serie spuntate (precedente, storico, record, concludere l'allenamento).
+- Senza storico le righe restano vuote, con il peso della serie sopra come segnaposto.
+
+**US-37 (M, INC-005).** Come utente, voglio completare un esercizio in un tocco, per non spuntare le serie una per una quando sono andate come scritto.
+- Pulsante nell'intestazione della card (doppia spunta, accanto a ⋯), assente quando l'esercizio è fatto.
+- Spunta le serie con le ripetizioni (il peso può mancare) e lascia da fare, evidenziate e dette per nome, quelle senza; nessun valore inventato.
+- Un solo recupero, dall'ultima serie spuntata, già ridotto; l'avviso con «Annulla» toglie solo quelle spunte e ferma il recupero.
+
 ### E5. Recupero
 
 **US-21 (M, step 7).** Come utente, voglio che alla spunta della serie parta il recupero a tutto schermo, per riposare il tempo giusto senza pensarci.

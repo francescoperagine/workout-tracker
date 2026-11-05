@@ -1,6 +1,6 @@
 # SPEC — dedup-catalog-and-workout-ux
 
-**Livello:** Feature · **Stato:** incremento 1 fatto (INC-004), poi 2–5 · **Base:** `main` a `c28692e` (INC-003)
+**Livello:** Feature · **Stato:** incrementi 1 (INC-004) e 2 (INC-005) fatti, poi 3–5 · **Base:** `main` a `c28692e` (INC-003)
 **Data del piano:** 5 novembre 2026 · **Origine:** `docs/todo.md` punti 1–4 + sessione con Francesco
 
 Chi ragiona ha scritto questa SPEC; una sessione nuova la esegue con `HANDOFF.md`. Le letture di codice qui
@@ -187,6 +187,21 @@ voce di `CHANGELOG.md` con `INC-XXX` letto dalla testa (`grep -m1 '^## INC-' CHA
 - **Test:** completamento parziale, nessun set valido, tutto già completato, annulla (anche dopo una modifica
   nel frattempo: ripristina solo i set toccati), stesso `completedAt`, kg nullo. Caso dalla fixture: 2026-10-26
   leg press, 5 set completati in un colpo. E2E `US-37 …`.
+
+**Esito (INC-005, 5 novembre 2026)**
+- `completeExercise` e `undoCompleteExercise(archive, sessionId, exerciseId, setIds, at)` in `workout.ts`:
+  «Annulla» toglie la spunta solo alle serie con `completedAt === at`, quindi non a una rispuntata a mano.
+- **Recupero già ridotto** dopo «Completa» (`restTimer().afterCheck(…, minimized)`): il timer a tutto schermo è
+  un `showModal()` e copriva l'avviso con «Annulla» e le righe evidenziate. La durata resta quella di
+  `restAfterCheck` sull'ultima serie spuntata. Scelta di interazione da rivedere con Francesco sul telefono.
+- Evidenziazione: `SetRow` con `flagged` (`warning-bg`, `warning-line`) più il testo «Mancano le ripetizioni:
+  serie N» con `CircleAlert` e `role="status"` sotto le righe. Si spegne a ogni modifica o spunta della serie.
+- Avviso: «{nome}: K serie spuntate[, M senza ripetizioni].» con «Annulla»; senza serie valide «{nome}:
+  nessuna serie con ripetizioni.» senza azione.
+- Header: target e note sotto il titolo occupano anche la colonna dei pulsanti (`display: contents` sul
+  contenitore del titolo); a 320×568 il nome lungo va su una riga in più, il target no.
+- Storie chiuse registrate in `docs/archive/restyling/USER-STORIES.md` (US-35, US-36, US-37), su richiesta di
+  Francesco del 5 novembre: vale al posto della regola della §4 «non nel file archiviato».
 
 ### Incremento 3 — Riordino con il trascinamento (US-38)
 

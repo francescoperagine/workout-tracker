@@ -41,6 +41,8 @@
     unit?: 'kg' | 'lb';
     /** record di carico battuto con questa serie (US-29) */
     record?: boolean;
+    /** lasciata da fare da "Completa esercizio" perché senza ripetizioni (US-37); il testo lo dice chi la usa */
+    flagged?: boolean;
     /** il tocco sull'indice apre un foglio con tipo e azioni della serie, invece di passare al tipo successivo */
     typeMenu?: boolean;
     ontype?: () => void;
@@ -61,6 +63,7 @@
     done = false,
     unit = 'kg',
     record = false,
+    flagged = false,
     typeMenu = false,
     ontype,
     oncopy,
@@ -100,7 +103,7 @@
   }
 </script>
 
-<div class="row" class:done {id}>
+<div class="row" class:done class:flagged {id}>
   <button
     type="button"
     class="type"
@@ -167,6 +170,10 @@
   }
   .row.done {
     background: var(--color-done);
+  }
+  .row.flagged {
+    background: var(--color-warning-bg);
+    box-shadow: inset 0 0 0 1px var(--color-warning-line);
   }
   .type {
     position: relative;

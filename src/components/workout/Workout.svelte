@@ -69,6 +69,7 @@
     summarizeSession,
     switchExercise,
     undoSwitch,
+    undoCompleteExercise,
     toDateKey,
     type Archive,
     type RemovedSession,
@@ -184,15 +185,35 @@
   const find = (id: string | null) => (id ? exercises.find((e) => e.id === id) : undefined);
 
   // --- serie spuntata: parte il recupero (US-21, US-25) e l'attenzione passa alla serie successiva ---
-  async function afterCheck(exerciseId: string, setId: string) {
+  async function afterCheck(exerciseId: string, setId: string, minimized = false) {
     // dentro il gesto della spunta: sblocca anche l'audio del suono di fine
     // una sessione conclusa si corregge e basta: nessun recupero (step 8)
     if (!session || detail) return;
-    timer.afterCheck(session.id, exerciseId, setId);
+    timer.afterCheck(session.id, exerciseId, setId, minimized);
     await tick();
     if (!next) return;
     const row = document.getElementById(`set-${next.set.id}`);
     row?.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+
+  // --- "Completa esercizio" (US-37): un solo recupero, dall'ultima serie spuntata, già ridotto perché il
+  // timer a tutto schermo coprirebbe l'avviso con "Annulla" e le serie evidenziate; "Annulla" toglie solo
+  // quelle spunte e ferma il recupero che hanno avviato
+  function afterComplete(exerciseId: string, completed: string[], at: number, missing: number) {
+    const exercise = find(exerciseId);
+    if (!session || !exercise) return;
+    const name = exerciseName(store.archive, exercise.exerciseId);
+    if (!completed.length) {
+      notify(`${name}: nessuna serie con ripetizioni.`);
+      return;
+    }
+    const sessionId = session.id;
+    void afterCheck(exerciseId, completed.at(-1)!, true);
+    const left = missing ? `, ${missing} senza ripetizioni` : '';
+    notify(`${name}: ${plural(completed.length, 'serie spuntata', 'serie spuntate')}${left}.`, 'Annulla', () => {
+      if (timer.state && completed.includes(timer.state.setId)) timer.stop();
+      edit((a) => undoCompleteExercise(a, sessionId, exerciseId, completed, at));
+    });
   }
 
   // --- esercizi ----------------------------------------------------------------------------------
@@ -520,6 +541,7 @@
                     ontouch={() => (touched = exercise.id)}
                     ontoggle={() => toggle(exercise)}
                     onchecked={(setId) => afterCheck(exercise.id, setId)}
+                    oncompleted={(completed, at, missing) => afterComplete(exercise.id, completed, at, missing)}
                     onsetoptions={(setId) => openSet(exercise.id, setId)}
                     onvariant={() => openVariant(exercise.id)}
                     ondetails={() => {

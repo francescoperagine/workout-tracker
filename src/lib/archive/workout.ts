@@ -229,6 +229,30 @@ export function updateSet(archive: Archive, sessionId: string, exerciseId: strin
   return replaceSet(archive, sessionId, exerciseId, { ...set, ...patch });
 }
 
+/**
+ * "Completa esercizio" (US-37): spunta in un colpo le serie con le ripetizioni (il peso può mancare,
+ * corpo libero), tutte con lo stesso `completedAt`. Le serie senza ripetizioni restano da fare: nessun
+ * valore inventato. `completed` sono gli id delle serie appena spuntate, nell'ordine; vuoto = archivio invariato.
+ */
+export function completeExercise(archive: Archive, sessionId: string, exerciseId: string, now: number): { archive: Archive; completed: string[] } {
+  const exercise = archive.sessions.find((s) => s.id === sessionId)?.exercises.find((e) => e.id === exerciseId);
+  if (!exercise) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
+  const completed = exercise.sets.filter((s) => s.reps !== null && s.completedAt === null).map((s) => s.id);
+  if (!completed.length) return { archive, completed };
+  return {
+    archive: withSets(archive, sessionId, exerciseId, (sets) => sets.map((s) => (completed.includes(s.id) ? { ...s, completedAt: now } : s))),
+    completed,
+  };
+}
+
+/**
+ * "Annulla" dopo "Completa esercizio": toglie la spunta solo alle serie di quel tocco (`at` è il loro
+ * `completedAt`); una serie tolta, o spuntata di nuovo a mano nel frattempo, resta com'è.
+ */
+export function undoCompleteExercise(archive: Archive, sessionId: string, exerciseId: string, setIds: readonly string[], at: number): Archive {
+  return withSets(archive, sessionId, exerciseId, (sets) => sets.map((s) => (setIds.includes(s.id) && s.completedAt === at ? { ...s, completedAt: null } : s)));
+}
+
 /** Tipo successivo, toccando l'indice della serie: 1 → R → D → C → 1 (US-13) */
 export function nextSetType(type: SetType): SetType {
   return SET_TYPES[(SET_TYPES.indexOf(type) + 1) % SET_TYPES.length];

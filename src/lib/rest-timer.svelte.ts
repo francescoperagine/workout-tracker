@@ -69,14 +69,16 @@ class RestTimerStore {
   /**
    * Dopo una spunta riuscita (US-21): parte il recupero della serie, oppure nessuno (0, giro di
    * superserie non finito). Una spunta senza recupero chiude quello in corso: si è ripreso a lavorare.
-   * Va chiamata dentro il gesto, perché sblocca l'audio del suono di fine.
+   * Va chiamata dentro il gesto, perché sblocca l'audio del suono di fine. `minimized`: parte già
+   * ridotto, per lasciare in vista un avviso con "Annulla" (Completa esercizio, US-37).
    */
-  afterCheck(sessionId: string, exerciseId: string, setId: string): void {
+  afterCheck(sessionId: string, exerciseId: string, setId: string, minimized = false): void {
     unlockAudio();
     const session = this.#archive.repo.archive.sessions.find((s) => s.id === sessionId);
     const rest = session ? restAfterCheck(session, exerciseId, setId) : null;
     const now = Date.now();
-    const next = rest ? startRest({ sessionId, exerciseId, setId }, rest, now) : null;
+    const started = rest ? startRest({ sessionId, exerciseId, setId }, rest, now) : null;
+    const next = started && minimized ? { ...started, minimized: true } : started;
     if (this.state && this.state.setId !== next?.setId) void this.#notifier.cancel(this.state.setId);
     this.now = now;
     this.#set(next);

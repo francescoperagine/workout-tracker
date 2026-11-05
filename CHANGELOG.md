@@ -3,6 +3,40 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-005
+
+Date: 2026-11-05
+
+Summary:
+**Completa esercizio in un tocco (US-37), incremento 2 di `dedup-catalog-and-workout-ux`.**
+Nell'intestazione di ogni esercizio non ancora fatto, accanto a ⋯, la doppia spunta «Completa {nome}» spunta
+in un colpo tutte le serie con le ripetizioni (il peso può mancare, corpo libero), con lo stesso istante. Le
+serie senza ripetizioni restano da fare: la riga diventa ambra e sotto le righe compare «Mancano le
+ripetizioni: serie N» (annunciato), finché non si modificano o si spuntano; nessun valore inventato. Parte un
+solo recupero, dall'ultima serie spuntata, già ridotto nella barra: il timer a tutto schermo è un dialogo
+modale e coprirebbe l'avviso con «Annulla» e le righe evidenziate. «Annulla» toglie la spunta solo alle serie
+di quel tocco (non a una rispuntata a mano nel frattempo) e ferma il recupero. Senza serie completabili
+l'avviso dice «nessuna serie con ripetizioni».
+
+Deliverables:
+- `src/lib/archive/workout.ts`: `completeExercise`, `undoCompleteExercise`.
+- `src/components/workout/WorkoutExercise.svelte`: pulsante nell'intestazione, righe evidenziate e messaggio
+  `role="status"`; target e note sotto il titolo prendono tutta la larghezza (a 320px non vanno a capo per il
+  pulsante in più). `src/components/ui/SetRow.svelte`: stato `flagged`, mostrato in `/kit`
+  (`KitSetRows.svelte`).
+- `src/components/workout/Workout.svelte`: recupero, avviso e «Annulla»; `src/lib/rest-timer.svelte.ts`:
+  `afterCheck(…, minimized)`.
+- Test Vitest in `workout.test.ts` (parziale, nessuna serie valida, tutto già fatto, stesso `completedAt`, kg
+  nullo, annulla anche dopo una modifica, fixture: leg press del 26 ottobre); e2e
+  `tests/e2e/us-37-complete-exercise.spec.ts`.
+- `docs/ARCHITECTURE.md`, brief `.impeccable/surfaces/route-workout.md`, SPEC (esito), registro delle storie
+  `docs/archive/restyling/USER-STORIES.md` (US-35, US-36, US-37).
+
+Limiti noti: dopo «Completa» il recupero non si apre a tutto schermo; il timer grande si apre dalla barra.
+Un esercizio senza storico ha le righe vuote: il pulsante dice soltanto che mancano le ripetizioni.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-004
 
 Date: 2026-11-05
