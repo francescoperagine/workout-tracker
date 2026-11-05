@@ -137,6 +137,10 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Superserie: la maniglia dell'intestazione sposta il gruppo intero, quella di una voce la sposta solo dentro il gruppo.
 - Con la tastiera Su e Giù sulla maniglia spostano di un posto, con l'annuncio della posizione; restano le frecce di «Riordina» e c'è «Sposta su/giù» nel foglio ⋯.
 
+**US-39 (S, INC-007).** Come utente, voglio che toccando kg o ripetizioni il valore sia già selezionato, per sostituirlo scrivendo senza cancellarlo prima.
+- Vale per le celle delle serie e per carico e ripetizioni nell'editor della scheda, da tocco, mouse e tastiera; un secondo tocco nel campo attivo mette il cursore.
+- Nessun ± né selettore a ruota; tastiera numerica e virgola decimale come prima.
+
 ### E5. Recupero
 
 **US-21 (M, step 7).** Come utente, voglio che alla spunta della serie parta il recupero a tutto schermo, per riposare il tempo giusto senza pensarci.

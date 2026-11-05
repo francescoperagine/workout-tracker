@@ -165,13 +165,14 @@
         label="Ripetizioni"
         hint="Un numero o un intervallo, per esempio 8 o 6-8."
         placeholder="es. 6–8"
+        selectall
         value={entry.reps}
         oninput={(text) => void patch({ reps: normalizeReps(text) })}
       />
 
       <div class="pair">
-        <LiveField id={`${base}-load-min`} label={`Carico (${unit})`} inputmode="decimal" value={minText} oninput={onMinInput} />
-        <LiveField id={`${base}-load-max`} label={`Fino a (${unit})`} inputmode="decimal" placeholder="facoltativo" value={maxText} oninput={onMaxInput} />
+        <LiveField id={`${base}-load-min`} label={`Carico (${unit})`} inputmode="decimal" selectall value={minText} oninput={onMinInput} />
+        <LiveField id={`${base}-load-max`} label={`Fino a (${unit})`} inputmode="decimal" selectall placeholder="facoltativo" value={maxText} oninput={onMaxInput} />
       </div>
 
       <div class="pair">

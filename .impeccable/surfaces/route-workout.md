@@ -49,7 +49,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 - Una colonna a 320–430 px; su desktop resta una colonna centrata (nessun layout a cruscotto).
 - Gerarchia: nome esercizio (tocco = approfondimento) → variante → target (ripetizioni, carico, recupero) → righe serie → "Aggiungi serie".
-- Campi: tastiera numerica, decimale per il peso; ≥ 48px; cifre ≥ 20px tabulari (P3). Toccare "precedente" copia peso e ripetizioni nella riga.
+- Campi: tastiera numerica, decimale per il peso; ≥ 48px; cifre ≥ 20px tabulari (P3); al tocco il contenuto è tutto selezionato e scrivere lo sostituisce (US-39), niente ± né ruota. Toccare "precedente" copia peso e ripetizioni nella riga.
 - "Aggiungi serie" riprende il peso dell'ultima serie con ripetizioni vuote. Rimuovere una serie con valori mostra "Annulla" per qualche secondo (P4).
 - Cambio variante: dallo step 9 (decisione dell'utente del 12 ottobre 2026) nessuna conferma: le serie già spuntate restano all'esercizio fatto e la variante continua in una voce subito sotto con le serie da fare; senza serie spuntate la variante prende il posto e i valori scritti si svuotano; in entrambi i casi «Annulla»; "precedente" si riferisce alla variante scelta.
 - Il selettore variante (foglio dal basso) ha le alternative della scheda più "Altro esercizio…": un campo di testo per scrivere l'esercizio fatto al posto di quello previsto, con i nomi simili del catalogo come suggerimento. Un nome nuovo diventa un esercizio personalizzato; la scheda non cambia. Il modello è già su `/kit`.

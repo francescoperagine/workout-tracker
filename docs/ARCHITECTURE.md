@@ -44,6 +44,8 @@ src/lib/rest-alert.ts   unlockAudio (dentro la spunta), suono di fine con AudioC
 src/lib/rest-notifier.ts  RestNotifier (schedule/cancel) e localRestNotifier: predisposizione Web Push (contratto in docs/archive/restyling/WEB-PUSH.md)
 src/lib/reorder.ts      trascinamento senza libreria (US-38, ADR-003): dropIndex, shiftFor, edgeSpeed, unitStyle (pure, con test) e startDrag
                         (Pointer Events su window, ancoraggio dopo il passaggio alle righe compatte, scorrimento ai bordi, Esc annulla)
+src/lib/select-on-focus.ts  azione `use:selectOnFocus` (US-39): al focus seleziona tutto, ripete al fotogramma dopo (tocco su
+                        Android/iOS) e scarta il primo mouseup; in SetInput e nei LiveField con `selectall`
 src/lib/wake-lock.ts    keepScreenOn(on): schermo acceso durante l'allenamento in corso
 src/lib/archive-store.svelte.ts  archiveStore(): vista reattiva (rune) del repository condiviso, per le isole Svelte; askPersistenceOnce(); avviso beforeunload con modifiche solo in memoria
 src/lib/bottom-bars.ts  setBottomBar(id, altezza, persistente): somma le barre in basso in --bottom-bars-height (base della pagina in --bottom-bars-base)
@@ -71,7 +73,7 @@ src/pages/
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   _kit.astro            /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione, dal precache e dalla build pubblicata (solo dev e WT_KIT=1)
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
-                        LiveField (campo che salva a ogni battuta), SaveBar, Toast, BottomSheet, ConfirmDialog, ReorderHandle (maniglia del
+                        LiveField (campo che salva a ogni battuta; `selectall` per i numerici), SaveBar, Toast, BottomSheet, ConfirmDialog, ReorderHandle (maniglia del
                         riordino sul numero dell'esercizio, US-38) (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento

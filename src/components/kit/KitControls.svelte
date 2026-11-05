@@ -29,7 +29,7 @@
     decrementLabel="−15 s"
     incrementLabel="+15 s"
   />
-  <LiveField id="kit-load" label="Carico (kg)" inputmode="decimal" hint={`Salvato: ${load || 'nessun carico'}`} value={load} oninput={onLoadInput} />
+  <LiveField id="kit-load" label="Carico (kg)" inputmode="decimal" selectall hint={`Salvato: ${load || 'nessun carico'}`} value={load} oninput={onLoadInput} />
   <div class="flex flex-col gap-1 border-t border-line pt-3">
     <Switch label="Suono a fine recupero" bind:checked={sound} />
     <Switch label="Vibrazione a fine recupero" hint="Questo dispositivo non permette la vibrazione dal browser." bind:checked={vibration} disabled />

@@ -1,6 +1,6 @@
 # SPEC — dedup-catalog-and-workout-ux
 
-**Livello:** Feature · **Stato:** incrementi 1 (INC-004), 2 (INC-005) e 3 (INC-006) fatti, poi 4–5 · **Base:** `main` a `c28692e` (INC-003)
+**Livello:** Feature · **Stato:** incrementi 1–4 fatti (INC-004…INC-007), resta il 5 (icona) · **Base:** `main` a `c28692e` (INC-003)
 **Data del piano:** 5 novembre 2026 · **Origine:** `docs/todo.md` punti 1–4 + sessione con Francesco
 
 Chi ragiona ha scritto questa SPEC; una sessione nuova la esegue con `HANDOFF.md`. Le letture di codice qui
@@ -250,6 +250,15 @@ voce di `CHANGELOG.md` con `INC-XXX` letto dalla testa (`grep -m1 '^## INC-' CHA
   `onfocus` + `requestAnimationFrame`/`setSelectionRange` e provarlo sul telefono. Non rompere la tastiera
   numerica (`inputmode`) né la gestione del decimale con la virgola.
 - **Test:** e2e `US-39 …` (focus → il valore digitato sostituisce quello vecchio, kg e reps). Prova sul telefono.
+
+**Esito (INC-007, 5 novembre 2026)**
+- Un'azione sola, `use:selectOnFocus` (`src/lib/select-on-focus.ts`): `setSelectionRange` al focus e di nuovo con
+  `requestAnimationFrame`; il primo `mouseup` dopo il focus si scarta (con il mouse toglierebbe la selezione),
+  quindi un secondo tocco nel campo attivo mette il cursore.
+- Sempre attiva in `SetInput`; in `LiveField` solo con `selectall` (carico, «Fino a» e ripetizioni dell'editor
+  della scheda, demo di `/kit`): nomi e note non si selezionano.
+- **Telefono:** nessun dispositivo collegato; provato con un tocco vero via CDP nel progetto mobile degli e2e.
+  Resta da provare su Android e iOS veri.
 
 ### Incremento 5 — Icona (nessuna storia: asset)
 

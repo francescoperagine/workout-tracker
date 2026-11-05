@@ -4,6 +4,7 @@
   // `oninput` salva e restituisce un messaggio d'errore se il testo non è valido: allora il testo resta
   // visibile con l'errore, e il valore salvato non cambia.
   import type { HTMLInputAttributes } from 'svelte/elements';
+  import { selectOnFocus } from '../../lib/select-on-focus';
 
   interface Props extends Omit<HTMLInputAttributes, 'value' | 'oninput' | 'id'> {
     id: string;
@@ -12,10 +13,12 @@
     value: string;
     hint?: string;
     multiline?: boolean;
+    /** al focus seleziona tutto, così scrivere sostituisce (campi numerici, US-39) */
+    selectall?: boolean;
     oninput: (text: string) => string | void;
   }
 
-  let { id, label, value, hint, multiline = false, oninput, ...rest }: Props = $props();
+  let { id, label, value, hint, multiline = false, selectall = false, oninput, ...rest }: Props = $props();
 
   let text = $state('');
   let focused = $state(false);
@@ -63,6 +66,7 @@
       autocomplete="off"
       bind:this={element}
       bind:value={text}
+      use:selectOnFocus={selectall}
       aria-invalid={error ? 'true' : undefined}
       aria-describedby={describedBy}
       oninput={handleInput}

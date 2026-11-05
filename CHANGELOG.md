@@ -3,6 +3,31 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-007
+
+Date: 2026-11-05
+
+Summary:
+**Selezione automatica della cella (US-39), incremento 4 di `dedup-catalog-and-workout-ux`.**
+Toccando kg o ripetizioni di una serie il contenuto è tutto selezionato: scrivere sostituisce il valore
+precompilato senza cancellarlo prima. Vale da tocco, mouse e tastiera (anche con Invio da kg a ripetizioni), e
+nell'editor della scheda per carico, «Fino a» e ripetizioni; un secondo tocco nel campo già attivo mette il
+cursore dove si tocca. Tastiera numerica e virgola decimale come prima; niente ± né selettore a ruota.
+
+Deliverables:
+- `src/lib/select-on-focus.ts`: azione `use:selectOnFocus` (selezione al focus, ripetuta al fotogramma dopo
+  perché su Android e iOS il tocco la annulla, primo `mouseup` scartato).
+- `src/components/ui/SetInput.svelte` (sempre), `src/components/ui/LiveField.svelte` (prop `selectall`), usata
+  in `EntryEditor.svelte` e nella demo di `/kit` (`KitControls.svelte`).
+- e2e `tests/e2e/us-39-select-cell.spec.ts` (clic, tastiera, secondo tocco, tocco vero via CDP, editor della
+  scheda e nome non selezionato).
+- `docs/ARCHITECTURE.md`, `docs/PROJECT.md`, brief `route-workout.md`, SPEC (esito), registro delle storie (US-39).
+
+Limiti noti: **la prova sul telefono non è stata fatta** (nessun dispositivo collegato via adb): il tocco è
+provato via CDP (`Input.dispatchTouchEvent`) nel Chromium dei test, non su iOS.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-006
 
 Date: 2026-11-05

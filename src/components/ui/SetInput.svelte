@@ -3,7 +3,9 @@
   // il valore della volta scorsa come segnaposto. Salva a ogni battuta come LiveField: mentre ha il
   // focus il testo resta com'è, fuori dal focus torna al valore salvato. `oninput` restituisce false
   // se il testo non è un numero valido: allora il campo lo segnala e il valore salvato non cambia.
+  // Al focus il contenuto è tutto selezionato: scrivere sostituisce il valore (US-39).
   import type { HTMLInputAttributes } from 'svelte/elements';
+  import { selectOnFocus } from '../../lib/select-on-focus';
 
   interface Props extends Omit<HTMLInputAttributes, 'value' | 'oninput'> {
     /** valore salvato, come testo da mostrare */
@@ -50,6 +52,7 @@
   aria-invalid={invalid ? 'true' : undefined}
   bind:value={text}
   bind:this={input}
+  use:selectOnFocus
   oninput={handleInput}
   onfocus={() => (focused = true)}
   onblur={() => (focused = false)}
