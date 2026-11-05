@@ -289,6 +289,8 @@ test.describe('US-11 e US-20 avviare e registrare dal calendario', () => {
     expect(started).toMatchObject({ routineId: 'routine-b', date: '2026-10-06', end: null });
 
     await page.getByRole('textbox', { name: 'Peso serie 1, kg' }).first().fill('50');
+    // per concludere serve una serie spuntata, e la spunta vuole le ripetizioni (US-36)
+    await page.getByRole('textbox', { name: 'Ripetizioni serie 1' }).first().fill('8');
     await page.getByRole('button', { name: 'Segna serie 1 come fatta' }).first().click();
     await finishWorkout(page);
     await expect(page.getByRole('heading', { name: 'Allenamento concluso' })).toBeVisible();

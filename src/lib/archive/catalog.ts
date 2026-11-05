@@ -24,24 +24,35 @@ export function nameKey(name: string): string {
 export interface CatalogEntry {
   id: string;
   name: string;
+  /** altri nomi (solo gli esercizi di base ne hanno) */
+  aliases: readonly string[];
   custom: boolean;
+}
+
+const BASE_ENTRIES: readonly CatalogEntry[] = Object.values(BASE_CATALOG).map((e) => ({ id: e.id, name: e.name, aliases: e.aliases, custom: false }));
+
+/** Parole di nome e alias di ogni esercizio di base, calcolate una volta sola */
+const BASE_WORDS = new Map(BASE_ENTRIES.map((e) => [e.id, [e.name, ...e.aliases].map(words)]));
+
+/** Parole del nome e di ogni alias: [nome, ...alias] */
+function entryWords(entry: CatalogEntry): string[][] {
+  return (!entry.custom && BASE_WORDS.get(entry.id)) || [entry.name, ...entry.aliases].map(words);
 }
 
 /** Tutti gli esercizi, prima quelli di base nell'ordine del catalogo, poi i personalizzati per nome. */
 export function availableExercises(archive: Pick<Archive, 'catalog'>): CatalogEntry[] {
-  const base = Object.values(BASE_CATALOG).map((e) => ({ id: e.id, name: e.name, custom: false }));
   const custom = Object.values(archive.catalog)
     .filter((e) => !(e.id in BASE_CATALOG))
-    .map((e) => ({ id: e.id, name: e.name, custom: true }))
+    .map((e) => ({ id: e.id, name: e.name, aliases: [], custom: true }))
     .sort((a, b) => a.name.localeCompare(b.name, 'it'));
-  return [...base, ...custom];
+  return [...BASE_ENTRIES, ...custom];
 }
 
 export function findExercise(archive: Pick<Archive, 'catalog'>, id: string): CatalogEntry | null {
   const base = BASE_CATALOG[id];
-  if (base) return { id, name: base.name, custom: false };
+  if (base) return { id, name: base.name, aliases: base.aliases, custom: false };
   const custom = archive.catalog[id];
-  return custom ? { id, name: custom.name, custom: true } : null;
+  return custom ? { id, name: custom.name, aliases: [], custom: true } : null;
 }
 
 /** Nome da mostrare; un id sconosciuto (es. un backup di una versione futura) resta leggibile. */
@@ -49,11 +60,11 @@ export function exerciseName(archive: Pick<Archive, 'catalog'>, id: string): str
   return findExercise(archive, id)?.name ?? id;
 }
 
-/** Corrispondenza esatta sulla chiave; vince l'esercizio di base. */
+/** Corrispondenza esatta sulla chiave del nome o di un alias; vince l'esercizio di base. */
 export function findByName(archive: Pick<Archive, 'catalog'>, name: string): CatalogEntry | null {
   const key = nameKey(name);
   if (!key) return null;
-  return availableExercises(archive).find((e) => nameKey(e.name) === key) ?? null;
+  return availableExercises(archive).find((e) => entryWords(e).some((w) => w.join('') === key)) ?? null;
 }
 
 /**
@@ -67,12 +78,15 @@ export function suggestExercises(archive: Pick<Archive, 'catalog'>, text: string
   const key = typed.join('');
   const scored: { entry: CatalogEntry; score: number }[] = [];
   for (const entry of availableExercises(archive)) {
-    const name = words(entry.name);
-    const entryKey = name.join('');
+    // il punteggio migliore tra il nome e gli alias: "romanian" trova "Stacco rumeno bilanciere"
     let score = 0;
-    if (entryKey === key) score = 3;
-    else if (entryKey.startsWith(key)) score = 2;
-    else if (typed.every((t) => name.some((w) => w.startsWith(t)))) score = 1;
+    for (const name of entryWords(entry)) {
+      const entryKey = name.join('');
+      if (entryKey === key) score = 3;
+      else if (entryKey.startsWith(key)) score = Math.max(score, 2);
+      else if (typed.every((t) => name.some((w) => w.startsWith(t)))) score = Math.max(score, 1);
+      if (score === 3) break;
+    }
     if (score) scored.push({ entry, score });
   }
   // sort è stabile: a pari punteggio resta l'ordine del catalogo
@@ -97,8 +111,8 @@ export interface EnsureResult {
 }
 
 /**
- * US-14: restituisce l'esercizio che corrisponde al nome scritto a mano, o lo crea come
- * personalizzato. Non modifica l'archivio ricevuto. Il nome salvato è quello scritto, ripulito
+ * US-14: restituisce l'esercizio che corrisponde al nome scritto a mano (anche a un suo alias), o lo
+ * crea come personalizzato. Non modifica l'archivio ricevuto. Il nome salvato è quello scritto, ripulito
  * dagli spazi in eccesso.
  */
 export function ensureExercise(archive: Archive, typedName: string): EnsureResult {
@@ -115,8 +129,65 @@ export function ensureExercise(archive: Archive, typedName: string): EnsureResul
   const created: CustomExercise = { id, name };
   return {
     archive: { ...archive, catalog: { ...archive.catalog, [id]: created } },
-    exercise: { id, name, custom: true },
+    exercise: { id, name, aliases: [], custom: true },
     created: true,
+  };
+}
+
+/** Controlla un'unione e restituisce l'esercizio che resta; errore con un messaggio per l'utente. */
+function checkMerge(archive: Pick<Archive, 'catalog'>, absorbedId: string, intoId: string): CatalogEntry {
+  if (absorbedId in BASE_CATALOG) throw new ArchiveError('Un esercizio predefinito non si può unire a un altro.');
+  if (!(absorbedId in archive.catalog)) throw new ArchiveError('Questo esercizio personalizzato non esiste più.');
+  if (absorbedId === intoId) throw new ArchiveError('Scegli un esercizio diverso.');
+  const into = findExercise(archive, intoId);
+  if (!into) throw new ArchiveError('L’esercizio scelto non esiste più.');
+  return into;
+}
+
+/**
+ * US-35: unisce un esercizio personalizzato a un altro (di base o personalizzato), che resta. Tutte le
+ * sessioni (anche quella in corso) e tutte le schede (anche archiviate) passano a `intoId`; l'assorbito
+ * sparisce dal catalogo. Non si annulla: il nome assorbito di un personalizzato si perde.
+ */
+export function mergeExercise(archive: Archive, absorbedId: string, intoId: string): Archive {
+  checkMerge(archive, absorbedId, intoId);
+  const to = (id: string) => (id === absorbedId ? intoId : id);
+  const sessions = archive.sessions.map((session) => {
+    if (!session.exercises.some((e) => e.exerciseId === absorbedId || e.variantOf === absorbedId)) return session;
+    return {
+      ...session,
+      exercises: session.exercises.map((e) => {
+        if (e.exerciseId !== absorbedId && e.variantOf !== absorbedId) return e;
+        const exerciseId = to(e.exerciseId);
+        const variantOf = e.variantOf === null ? null : to(e.variantOf);
+        // una variante di sé stesso non è più una variante
+        return { ...e, exerciseId, variantOf: variantOf === exerciseId ? null : variantOf };
+      }),
+    };
+  });
+  const routines = archive.routines.map((routine) => {
+    if (!routine.exercises.some((e) => e.exerciseId === absorbedId || e.alternatives.includes(absorbedId))) return routine;
+    return {
+      ...routine,
+      exercises: routine.exercises.map((e) => {
+        if (e.exerciseId !== absorbedId && !e.alternatives.includes(absorbedId)) return e;
+        const exerciseId = to(e.exerciseId);
+        // niente doppioni e niente alternativa uguale all'esercizio della voce
+        const alternatives = [...new Set(e.alternatives.map(to))].filter((id) => id !== exerciseId);
+        return { ...e, exerciseId, alternatives };
+      }),
+    };
+  });
+  const catalog = { ...archive.catalog };
+  delete catalog[absorbedId];
+  return { ...archive, catalog, sessions, routines };
+}
+
+/** Quante sessioni e schede cambierebbe `mergeExercise`, per il testo della conferma. */
+export function mergeImpact(archive: Pick<Archive, 'sessions' | 'routines'>, absorbedId: string): { sessions: number; routines: number } {
+  return {
+    sessions: archive.sessions.filter((s) => s.exercises.some((e) => e.exerciseId === absorbedId || e.variantOf === absorbedId)).length,
+    routines: archive.routines.filter((r) => r.exercises.some((e) => e.exerciseId === absorbedId || e.alternatives.includes(absorbedId))).length,
   };
 }
 

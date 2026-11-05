@@ -4,7 +4,7 @@
 import { toDateKey } from './dates';
 import { newId } from './routine-edit';
 import { sessionInProgress } from './routines';
-import { nextSet } from './workout';
+import { nextSet, prefillSets } from './workout';
 import { ArchiveError, LIMITS, type Archive, type Session, type SessionExercise } from './types';
 
 export const FREE_SESSION_NAME = 'Allenamento libero';
@@ -21,14 +21,17 @@ function checkNoneInProgress(archive: Pick<Archive, 'sessions'>) {
 
 /**
  * Inizia un allenamento adesso. Da una scheda: una voce di sessione per ogni voce della scheda, con
- * superserie e recuperi della scheda e tante serie vuote quante le serie target (i valori della volta
- * scorsa arrivano come suggerimento allo step 6). Senza scheda (`null`): allenamento libero, vuoto.
+ * superserie e recuperi della scheda e tante serie quante le serie target, precompilate con i valori
+ * dell'ultima volta e da spuntare (US-36). Senza scheda (`null`): allenamento libero, vuoto.
  */
 export function startSession(archive: Archive, routineId: string | null, now: number): SessionResult {
   checkNoneInProgress(archive);
   if (archive.sessions.length >= LIMITS.sessions) throw new ArchiveError(`Il limite è ${LIMITS.sessions.toLocaleString('it-IT')} allenamenti.`);
   let name = FREE_SESSION_NAME;
   let exercises: SessionExercise[] = [];
+  const date = toDateKey(new Date(now));
+  // la sessione nuova serve già per cercare l'ultima volta di ogni esercizio, prima di lei
+  const draft: Session = { id: newId('session'), date, routineId, name, start: now, end: null, exercises };
   if (routineId !== null) {
     const routine = archive.routines.find((r) => r.id === routineId);
     if (!routine) throw new ArchiveError('Questa scheda non esiste più.');
@@ -42,16 +45,21 @@ export function startSession(archive: Archive, routineId: string | null, now: nu
       rest: entry.rest,
       warmupRest: entry.warmupRest,
       notes: '',
-      sets: Array.from({ length: Math.min(entry.sets, LIMITS.setsPerExercise) }, () => ({
-        id: newId('set'),
-        type: 'normal' as const,
-        kg: null,
-        reps: null,
-        completedAt: null,
-      })),
+      sets: prefillSets(
+        archive,
+        draft,
+        entry.exerciseId,
+        Array.from({ length: Math.min(entry.sets, LIMITS.setsPerExercise) }, () => ({
+          id: newId('set'),
+          type: 'normal' as const,
+          kg: null,
+          reps: null,
+          completedAt: null,
+        })),
+      ),
     }));
   }
-  const session: Session = { id: newId('session'), date: toDateKey(new Date(now)), routineId, name, start: now, end: null, exercises };
+  const session: Session = { ...draft, name, exercises };
   return { archive: { ...archive, sessions: [...archive.sessions, session] }, session };
 }
 
@@ -65,8 +73,8 @@ export function reopenSession(archive: Archive, id: string): Archive {
 }
 
 /**
- * Conclude la sessione in corso; come nel PoC serve almeno un esercizio, e (step 6) almeno un valore,
- * così il calendario non mostra "fatto" per un allenamento vuoto.
+ * Conclude la sessione in corso; come nel PoC serve almeno un esercizio, e (step 6) almeno una serie
+ * spuntata, così il calendario non mostra "fatto" per un allenamento vuoto o di soli precompilati (US-36).
  */
 export function finishSession(archive: Archive, id: string, now: number): Archive {
   const session = archive.sessions.find((s) => s.id === id);
@@ -99,9 +107,12 @@ export function restoreSession(archive: Archive, removed: RemovedSession): Archi
   return { ...archive, sessions };
 }
 
-/** true se la sessione ha almeno un valore o una spunta (annullarla perderebbe qualcosa) */
+/**
+ * true se la sessione ha almeno una serie spuntata: annullarla perderebbe qualcosa, e si può concludere.
+ * I valori soli non bastano: dall'US-36 arrivano precompilati dall'ultima volta.
+ */
 export function sessionHasData(session: Session): boolean {
-  return session.exercises.some((e) => e.sets.some((s) => s.kg !== null || s.reps !== null || s.completedAt !== null));
+  return session.exercises.some((e) => e.sets.some((s) => s.completedAt !== null));
 }
 
 export interface SessionSummary {

@@ -40,6 +40,7 @@
     addSessionExercise,
     blocksOf,
     ensureExercise,
+    mergeExercise,
     exerciseHasValues,
     exerciseName,
     finishSession,
@@ -224,7 +225,8 @@
   }
 
   // Cambio di esercizio (US-14): nessuna conferma. Le serie spuntate restano all'esercizio fatto e
-  // la variante continua sotto; i valori solo scritti si svuotano. Con qualcosa da perdere c'è "Annulla".
+  // la variante continua sotto; i valori solo scritti lasciano il posto a quelli dell'ultima volta con
+  // l'esercizio nuovo (US-36), o si svuotano. Con qualcosa da perdere c'è "Annulla".
   async function pickVariant(choice: VariantChoice) {
     const exercise = find(variantFor);
     if (!session || !exercise) return;
@@ -234,17 +236,21 @@
     const from = exerciseName(store.archive, exercise.exerciseId);
     let added: string | null = null;
     let to = '';
+    let refilled = false;
     const ok = edit((a) => {
       const resolved = resolve(a, choice);
       to = exerciseName(resolved.archive, resolved.id);
       const result = switchExercise(resolved.archive, sessionId, exercise.id, resolved.id);
       added = result.added;
+      const after = result.archive.sessions.find((s) => s.id === sessionId)?.exercises.find((e) => e.id === exercise.id);
+      refilled = !added && !!after && exerciseHasValues(after);
       return result.archive;
     });
     if (!ok) return;
     touched = added ?? exercise.id;
     const undo = () => edit((a) => undoSwitch(a, sessionId, before, added));
     if (added) notify(`Le serie fatte restano a ${from}; continui con ${to}.`, 'Annulla', undo);
+    else if (refilled) notify(`${to} al posto di ${from}: valori dell’ultima volta con ${to}.`, 'Annulla', undo);
     else if (exerciseHasValues(before)) notify(`${to} al posto di ${from}: i valori scritti si sono svuotati.`, 'Annulla', undo);
     if (!added) return;
     await tick();
@@ -625,7 +631,7 @@
   </div>
 {/if}
 
-<ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={store.archive} onpick={addExercise} />
+<ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={store.archive} onpick={addExercise} onmerge={(from, to) => edit((a) => mergeExercise(a, from, to))} />
 
 {#if variantExercise}
   <VariantSheet

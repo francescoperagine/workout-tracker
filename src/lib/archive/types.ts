@@ -17,6 +17,8 @@ export type DistanceUnit = 'm' | 'ft';
 export interface CatalogExercise {
   id: string;
   name: string;
+  /** altri nomi con cui si cerca o si scrive l'esercizio (inglese, varianti italiane); mai uguali al nome */
+  aliases: string[];
   description: string;
   image: string;
   imageAlt: string;

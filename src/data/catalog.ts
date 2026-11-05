@@ -10,6 +10,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'squat-bilanciere': {
     id: 'squat-bilanciere',
     name: 'Squat bilanciere',
+    aliases: ['Squat', 'Back squat', 'Barbell squat'],
     description: '',
     image: '',
     imageAlt: '',
@@ -20,6 +21,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'leg-press': {
     id: 'leg-press',
     name: 'Leg press',
+    aliases: ['Pressa', 'Pressa orizzontale'],
     description: '',
     image: '',
     imageAlt: '',
@@ -30,6 +32,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'squat-al-smith': {
     id: 'squat-al-smith',
     name: 'Squat al Smith',
+    aliases: ['Smith machine squat', 'Squat Smith'],
     description: '',
     image: '',
     imageAlt: '',
@@ -40,6 +43,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'goblet-squat': {
     id: 'goblet-squat',
     name: 'Goblet squat',
+    aliases: ['Squat goblet'],
     description: '',
     image: '',
     imageAlt: '',
@@ -50,6 +54,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'panca-piana-bilanciere': {
     id: 'panca-piana-bilanciere',
     name: 'Panca piana bilanciere',
+    aliases: ['Panca piana', 'Bench press', 'Barbell bench press'],
     description: '',
     image: '',
     imageAlt: '',
@@ -60,6 +65,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'chest-press': {
     id: 'chest-press',
     name: 'Chest press',
+    aliases: ['Macchina pettorali', 'Chest press machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -70,6 +76,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'panca-piana-manubri': {
     id: 'panca-piana-manubri',
     name: 'Panca piana manubri',
+    aliases: ['Dumbbell bench press', 'Panca manubri'],
     description: '',
     image: '',
     imageAlt: '',
@@ -80,6 +87,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'rematore-manubri-petto-su-panca-inclinata': {
     id: 'rematore-manubri-petto-su-panca-inclinata',
     name: 'Rematore manubri, petto su panca inclinata',
+    aliases: ['Chest supported dumbbell row', 'Rematore manubri panca inclinata'],
     description: '',
     image: '',
     imageAlt: '',
@@ -90,6 +98,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'rematore-al-cavo-basso': {
     id: 'rematore-al-cavo-basso',
     name: 'Rematore al cavo basso',
+    aliases: ['Low cable row', 'Pulley basso'],
     description: '',
     image: '',
     imageAlt: '',
@@ -100,6 +109,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'row-machine-con-appoggio': {
     id: 'row-machine-con-appoggio',
     name: 'Row machine con appoggio',
+    aliases: ['Chest supported row machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -110,6 +120,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'hip-thrust-bilanciere': {
     id: 'hip-thrust-bilanciere',
     name: 'Hip thrust bilanciere',
+    aliases: ['Barbell hip thrust', "Spinta d'anca bilanciere"],
     description: '',
     image: '',
     imageAlt: '',
@@ -120,6 +131,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'hip-thrust-machine': {
     id: 'hip-thrust-machine',
     name: 'Hip thrust machine',
+    aliases: ["Spinta d'anca macchina"],
     description: '',
     image: '',
     imageAlt: '',
@@ -130,6 +142,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'glute-bridge-con-manubrio': {
     id: 'glute-bridge-con-manubrio',
     name: 'Glute bridge con manubrio',
+    aliases: ['Dumbbell glute bridge', 'Ponte glutei manubrio'],
     description: '',
     image: '',
     imageAlt: '',
@@ -140,6 +153,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'pull-through-al-cavo': {
     id: 'pull-through-al-cavo',
     name: 'Pull-through al cavo',
+    aliases: ['Cable pull through'],
     description: '',
     image: '',
     imageAlt: '',
@@ -150,6 +164,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'distensioni-manubri-seduto-schienale-alto': {
     id: 'distensioni-manubri-seduto-schienale-alto',
     name: 'Distensioni manubri seduto, schienale alto',
+    aliases: ['Seated dumbbell shoulder press', 'Shoulder press manubri'],
     description: '',
     image: '',
     imageAlt: '',
@@ -160,6 +175,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'shoulder-press-machine': {
     id: 'shoulder-press-machine',
     name: 'Shoulder press machine',
+    aliases: ['Macchina spalle', 'Lento avanti macchina'],
     description: '',
     image: '',
     imageAlt: '',
@@ -170,6 +186,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'curl-manubri-su-panca-inclinata': {
     id: 'curl-manubri-su-panca-inclinata',
     name: 'Curl manubri su panca inclinata',
+    aliases: ['Incline dumbbell curl'],
     description: '',
     image: '',
     imageAlt: '',
@@ -180,6 +197,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'curl-al-cavo-basso': {
     id: 'curl-al-cavo-basso',
     name: 'Curl al cavo basso',
+    aliases: ['Low cable curl', 'Cable curl'],
     description: '',
     image: '',
     imageAlt: '',
@@ -190,6 +208,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'curl-ez': {
     id: 'curl-ez',
     name: 'Curl EZ',
+    aliases: ['EZ bar curl', 'Curl bilanciere EZ'],
     description: '',
     image: '',
     imageAlt: '',
@@ -200,6 +219,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'alzate-laterali': {
     id: 'alzate-laterali',
     name: 'Alzate laterali',
+    aliases: ['Lateral raise', 'Dumbbell lateral raise'],
     description: '',
     image: '',
     imageAlt: '',
@@ -210,6 +230,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'alzate-al-cavo': {
     id: 'alzate-al-cavo',
     name: 'Alzate al cavo',
+    aliases: ['Cable lateral raise'],
     description: '',
     image: '',
     imageAlt: '',
@@ -220,6 +241,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'macchina-laterali': {
     id: 'macchina-laterali',
     name: 'Macchina laterali',
+    aliases: ['Lateral raise machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -230,6 +252,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'standing-calf': {
     id: 'standing-calf',
     name: 'Standing calf',
+    aliases: ['Standing calf raise', 'Calf in piedi'],
     description: '',
     image: '',
     imageAlt: '',
@@ -240,6 +263,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'calf-alla-leg-press': {
     id: 'calf-alla-leg-press',
     name: 'Calf alla leg press',
+    aliases: ['Leg press calf raise'],
     description: '',
     image: '',
     imageAlt: '',
@@ -250,6 +274,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'calf-monopodalico-con-manubrio': {
     id: 'calf-monopodalico-con-manubrio',
     name: 'Calf monopodalico con manubrio',
+    aliases: ['Single leg dumbbell calf raise'],
     description: '',
     image: '',
     imageAlt: '',
@@ -260,6 +285,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'stacco-rumeno-bilanciere': {
     id: 'stacco-rumeno-bilanciere',
     name: 'Stacco rumeno bilanciere',
+    aliases: ['Stacco rumeno', 'Romanian deadlift', 'RDL', 'Barbell romanian deadlift'],
     description: '',
     image: '',
     imageAlt: '',
@@ -270,6 +296,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'stacco-rumeno-manubri': {
     id: 'stacco-rumeno-manubri',
     name: 'Stacco rumeno manubri',
+    aliases: ['Dumbbell romanian deadlift'],
     description: '',
     image: '',
     imageAlt: '',
@@ -280,6 +307,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'hyperextension-45-con-disco': {
     id: 'hyperextension-45-con-disco',
     name: 'Hyperextension 45° con disco',
+    aliases: ['Back extension', 'Iperestensioni'],
     description: '',
     image: '',
     imageAlt: '',
@@ -290,6 +318,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'distensioni-manubri-panca-inclinata': {
     id: 'distensioni-manubri-panca-inclinata',
     name: 'Distensioni manubri panca inclinata',
+    aliases: ['Incline dumbbell press', 'Panca inclinata manubri'],
     description: '',
     image: '',
     imageAlt: '',
@@ -300,6 +329,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'incline-chest-press': {
     id: 'incline-chest-press',
     name: 'Incline chest press',
+    aliases: ['Macchina pettorali inclinata'],
     description: '',
     image: '',
     imageAlt: '',
@@ -310,6 +340,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'panca-inclinata-al-smith': {
     id: 'panca-inclinata-al-smith',
     name: 'Panca inclinata al Smith',
+    aliases: ['Smith incline bench press'],
     description: '',
     image: '',
     imageAlt: '',
@@ -320,6 +351,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'lat-machine-presa-prona': {
     id: 'lat-machine-presa-prona',
     name: 'Lat machine presa prona',
+    aliases: ['Lat pulldown', 'Lat machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -330,6 +362,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'trazioni-assistite-o-negative': {
     id: 'trazioni-assistite-o-negative',
     name: 'Trazioni assistite o negative',
+    aliases: ['Assisted pull up', 'Trazioni assistite'],
     description: '',
     image: '',
     imageAlt: '',
@@ -340,6 +373,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'lat-monobraccio-al-cavo': {
     id: 'lat-monobraccio-al-cavo',
     name: 'Lat monobraccio al cavo',
+    aliases: ['Single arm lat pulldown'],
     description: '',
     image: '',
     imageAlt: '',
@@ -350,6 +384,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'leg-press-piedi-a-meta-pedana': {
     id: 'leg-press-piedi-a-meta-pedana',
     name: 'Leg press, piedi a metà pedana',
+    aliases: ['Leg press mid platform'],
     description: '',
     image: '',
     imageAlt: '',
@@ -360,6 +395,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'hack-squat': {
     id: 'hack-squat',
     name: 'Hack squat',
+    aliases: ['Hack squat machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -370,6 +406,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'leg-extension': {
     id: 'leg-extension',
     name: 'Leg extension',
+    aliases: ['Estensioni gambe', 'Leg extension machine'],
     description: '',
     image: '',
     imageAlt: '',
@@ -380,6 +417,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'rematore-seduto-al-cavo-basso': {
     id: 'rematore-seduto-al-cavo-basso',
     name: 'Rematore seduto al cavo basso',
+    aliases: ['Seated cable row'],
     description: '',
     image: '',
     imageAlt: '',
@@ -390,6 +428,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'rematore-manubrio-monobraccio-con-appoggio': {
     id: 'rematore-manubrio-monobraccio-con-appoggio',
     name: 'Rematore manubrio monobraccio con appoggio',
+    aliases: ['One arm dumbbell row', 'Single arm dumbbell row'],
     description: '',
     image: '',
     imageAlt: '',
@@ -400,6 +439,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'row-machine': {
     id: 'row-machine',
     name: 'Row machine',
+    aliases: ['Macchina rematore', 'Machine row'],
     description: '',
     image: '',
     imageAlt: '',
@@ -410,6 +450,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'french-press-ez': {
     id: 'french-press-ez',
     name: 'French press EZ',
+    aliases: ['EZ bar skull crusher', 'Skull crusher EZ'],
     description: '',
     image: '',
     imageAlt: '',
@@ -420,6 +461,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'pushdown-ai-cavi': {
     id: 'pushdown-ai-cavi',
     name: 'Pushdown ai cavi',
+    aliases: ['Triceps pushdown', 'Pushdown'],
     description: '',
     image: '',
     imageAlt: '',
@@ -430,6 +472,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'french-press-con-manubrio': {
     id: 'french-press-con-manubrio',
     name: 'French press con manubrio',
+    aliases: ['Dumbbell skull crusher', 'Overhead dumbbell triceps extension'],
     description: '',
     image: '',
     imageAlt: '',

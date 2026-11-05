@@ -26,7 +26,7 @@
   const lastTime = $derived.by(() => {
     if (!previous) return '';
     const sets = previous.exercise.sets
-      .filter((s) => s.reps !== null || s.kg !== null)
+      .filter((s) => s.completedAt !== null)
       .map((s) => [s.kg === null ? '' : formatWeight(s.kg, archive.settings), s.reps === null ? '' : `${s.reps} rip`].filter(Boolean).join(' × '));
     return sets.join(' · ');
   });

@@ -46,12 +46,13 @@ export interface PreviousExercise {
 }
 
 /**
- * L'esercizio fatto l'ultima volta (US-12, US-16): nella sessione conclusa più recente prima di
- * `session`, la prima voce con lo stesso esercizio che ha almeno un valore.
+ * L'esercizio fatto l'ultima volta (US-12, US-16, US-36): nella sessione conclusa più recente prima di
+ * `session`, la prima voce con lo stesso esercizio che ha almeno una serie spuntata. È l'unica ricerca
+ * nello storico per esercizio: i valori precompilati e mai spuntati non contano come fatti.
  */
 export function previousExercise(archive: Pick<Archive, 'sessions'>, session: Session, exerciseId: string): PreviousExercise | null {
   for (const s of finishedBefore(archive, session)) {
-    const exercise = s.exercises.find((e) => e.exerciseId === exerciseId && e.sets.some(setHasValues));
+    const exercise = s.exercises.find((e) => e.exerciseId === exerciseId && e.sets.some((set) => set.completedAt !== null));
     if (exercise) return { session: s, exercise };
   }
   return null;
@@ -65,7 +66,7 @@ export interface PreviousSet {
 /**
  * "Precedente" per ogni serie: la serie nella stessa posizione tra quelle dello stesso genere
  * (riscaldamento o di lavoro), così aggiungere un riscaldamento non sposta i confronti. null se
- * l'ultima volta non c'era o era vuota.
+ * l'ultima volta non c'era o non era stata spuntata.
  */
 export function previousSets(current: Pick<SessionExercise, 'sets'>, previous: Pick<SessionExercise, 'sets'> | null): (PreviousSet | null)[] {
   if (!previous) return current.sets.map(() => null);
@@ -75,12 +76,45 @@ export function previousSets(current: Pick<SessionExercise, 'sets'>, previous: P
   let n = 0;
   return current.sets.map((set) => {
     const match = set.type === 'warmup' ? warmups[w++] : work[n++];
-    return match && setHasValues(match) ? { kg: match.kg, reps: match.reps } : null;
+    return match && match.completedAt !== null ? { kg: match.kg, reps: match.reps } : null;
   });
 }
 
 /**
- * Valori suggeriti per i campi vuoti (segnaposto e spunta di una riga vuota): il precedente, ma con il
+ * Valori di partenza delle serie di un esercizio che entra in sessione (US-36): la serie i prende kg e
+ * ripetizioni della serie i dello stesso genere (riscaldamento o di lavoro) spuntata l'ultima volta; se
+ * l'ultima volta ce n'erano meno ripete l'ultima, quelle in più si ignorano. Senza storico, vuote.
+ * `types` è il genere di ogni serie; un numero vale altrettante serie normali.
+ */
+export function defaultSets(types: number | readonly SetType[], previous: Pick<SessionExercise, 'sets'> | null): PreviousSet[] {
+  const list: readonly SetType[] = typeof types === 'number' ? Array.from({ length: types }, () => 'normal') : types;
+  const done = previous?.sets.filter((s) => s.completedAt !== null) ?? [];
+  const warmups = done.filter((s) => s.type === 'warmup');
+  const work = done.filter((s) => s.type !== 'warmup');
+  let w = 0;
+  let n = 0;
+  return list.map((type) => {
+    const pool = type === 'warmup' ? warmups : work;
+    const match = pool[Math.min(type === 'warmup' ? w++ : n++, pool.length - 1)];
+    return { kg: match?.kg ?? null, reps: match?.reps ?? null };
+  });
+}
+
+/**
+ * Le serie di un esercizio che entra in `session`, con i valori veri dell'ultima volta (`defaultSets`)
+ * e nessuna spunta: id e genere restano quelli delle serie ricevute.
+ */
+export function prefillSets(archive: Pick<Archive, 'sessions'>, session: Session, exerciseId: string, sets: readonly SessionSet[]): SessionSet[] {
+  const values = defaultSets(
+    sets.map((s) => s.type),
+    previousExercise(archive, session, exerciseId)?.exercise ?? null,
+  );
+  return sets.map((s, i) => ({ ...s, ...values[i], completedAt: null }));
+}
+
+/**
+ * Valori suggeriti per i campi vuoti (segnaposto e spunta di una riga vuota): resta solo per le righe
+ * senza valori, perché dall'US-36 un esercizio con storico entra già precompilato. Il precedente, ma con il
  * peso dell'ultima serie sopra dello stesso genere (riscaldamento o di lavoro) che ne ha uno in questa
  * sessione. Così, salendo da 40 a 42,5 kg, basta scriverlo nella prima serie (step 9). Le ripetizioni
  * restano quelle della volta scorsa; senza precedente, quelle della serie sopra.
@@ -242,15 +276,16 @@ export function restoreSet(archive: Archive, sessionId: string, removed: Removed
 
 /**
  * Esercizio aggiunto durante la sessione (US-15): tante serie (e dello stesso tipo) quante l'ultima
- * volta, così ogni riga ha il suo precedente; senza storico 3 serie. Recuperi dell'ultima volta,
- * altrimenti quello predefinito delle Impostazioni.
+ * volta, così ogni riga ha il suo precedente, con i valori dell'ultima volta (US-36); senza storico 3
+ * serie vuote. Recuperi dell'ultima volta, altrimenti quello predefinito delle Impostazioni.
  */
 export function addSessionExercise(archive: Archive, sessionId: string, exerciseId: string): { archive: Archive; exercise: SessionExercise } {
   const session = archive.sessions.find((s) => s.id === sessionId);
   if (!session) throw new ArchiveError('Questo allenamento non esiste più.');
   if (session.exercises.length >= LIMITS.exercisesPerSession) throw new ArchiveError(`Il limite è ${LIMITS.exercisesPerSession} esercizi per allenamento.`);
   const previous = previousExercise(archive, session, exerciseId)?.exercise;
-  const types: SetType[] = previous ? previous.sets.map((s) => s.type) : Array.from({ length: DEFAULT_SETS }, () => 'normal');
+  const types: SetType[] = (previous ? previous.sets.map((s) => s.type) : Array.from({ length: DEFAULT_SETS }, () => 'normal' as const)).slice(0, LIMITS.setsPerExercise);
+  const values = defaultSets(types, previous ?? null);
   const exercise: SessionExercise = {
     id: newId('exercise'),
     exerciseId,
@@ -259,7 +294,7 @@ export function addSessionExercise(archive: Archive, sessionId: string, exercise
     rest: previous?.rest ?? archive.settings.defaultRest,
     warmupRest: previous?.warmupRest ?? DEFAULT_WARMUP_REST,
     notes: '',
-    sets: types.slice(0, LIMITS.setsPerExercise).map((type) => ({ id: newId('set'), type, kg: null, reps: null, completedAt: null })),
+    sets: types.map((type, i) => ({ id: newId('set'), type, ...values[i], completedAt: null })),
   };
   return { archive: withExercises(archive, sessionId, (list) => [...list, exercise]), exercise };
 }
@@ -301,23 +336,27 @@ export function moveSessionExercise(archive: Archive, sessionId: string, exercis
 /**
  * Passa a una variante o a un altro esercizio (US-14), solo per questa sessione. `variantOf` resta
  * l'esercizio previsto (null se si torna a quello).
- * - Senza serie spuntate l'esercizio cambia sul posto: le serie restano (numero e tipo) ma si svuotano,
- *   perché i valori scritti si riferivano all'esercizio di prima.
+ * - Senza serie spuntate l'esercizio cambia sul posto: le serie restano (numero e tipo) ma prendono i
+ *   valori dell'ultima volta con l'esercizio nuovo (US-36), o si svuotano senza storico, perché i valori
+ *   scritti si riferivano all'esercizio di prima.
  * - Con serie già spuntate (macchina occupata a metà, step 9) quelle restano all'esercizio fatto, che
  *   perde solo le serie da fare; l'esercizio scelto continua in una voce nuova subito sotto, con le
- *   serie rimaste vuote (almeno una). `added` è l'id della voce nuova, null se il cambio è sul posto.
+ *   serie rimaste (almeno una), precompilate allo stesso modo. `added` è l'id della voce nuova, null
+ *   se il cambio è sul posto.
  * L'interfaccia offre "Annulla" con `undoSwitch`.
  */
 export function switchExercise(archive: Archive, sessionId: string, exerciseId: string, newExerciseId: string): { archive: Archive; added: string | null } {
-  const exercise = archive.sessions.find((s) => s.id === sessionId)?.exercises.find((e) => e.id === exerciseId);
-  if (!exercise) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
+  const session = archive.sessions.find((s) => s.id === sessionId);
+  const exercise = session?.exercises.find((e) => e.id === exerciseId);
+  if (!session || !exercise) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
   if (exercise.exerciseId === newExerciseId) return { archive, added: null };
+  const prefill = (sets: SessionSet[]) => prefillSets(archive, session, newExerciseId, sets);
   const planned = exercise.variantOf ?? exercise.exerciseId;
   const variantOf = newExerciseId === planned ? null : planned;
   const empty = (s: SessionSet): SessionSet => ({ ...s, kg: null, reps: null, completedAt: null });
   const done = exercise.sets.filter((s) => s.completedAt !== null);
   if (!done.length) {
-    return { archive: withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, exerciseId: newExerciseId, variantOf, sets: e.sets.map(empty) })), added: null };
+    return { archive: withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, exerciseId: newExerciseId, variantOf, sets: prefill(e.sets.map(empty)) })), added: null };
   }
   const rest = exercise.sets.filter((s) => s.completedAt === null).map(empty);
   const added: SessionExercise = {
@@ -326,7 +365,7 @@ export function switchExercise(archive: Archive, sessionId: string, exerciseId: 
     exerciseId: newExerciseId,
     variantOf,
     notes: '',
-    sets: rest.length ? rest : [{ id: newId('set'), type: 'normal', kg: null, reps: null, completedAt: null }],
+    sets: prefill(rest.length ? rest : [{ id: newId('set'), type: 'normal', kg: null, reps: null, completedAt: null }]),
   };
   return {
     archive: withExercises(archive, sessionId, (list) => {

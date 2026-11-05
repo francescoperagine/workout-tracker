@@ -22,6 +22,7 @@
     addEntry,
     blocksOf,
     ensureExercise,
+    mergeExercise,
     exerciseName,
     findRoutine,
     isValidDateKey,
@@ -330,7 +331,14 @@
     {/if}
   </div>
 
-  <ExercisePicker bind:open={pickerOpen} title={pickerTitle} catalog={store.archive} exclude={pickerExclude} {onpick} />
+  <ExercisePicker
+    bind:open={pickerOpen}
+    title={pickerTitle}
+    catalog={store.archive}
+    exclude={pickerExclude}
+    {onpick}
+    onmerge={(from, to) => edit((a) => mergeExercise(a, from, to))}
+  />
 {/if}
 
 <Toast message={toast?.message ?? null} action={toast?.action} onaction={toast?.onaction} onclose={() => (toast = null)} />

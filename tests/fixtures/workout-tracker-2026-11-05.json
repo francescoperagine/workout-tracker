@@ -1,0 +1,1931 @@
+{
+  "version": 2,
+  "revision": 318,
+  "catalog": {
+    "custom-leg-curl": {
+      "id": "custom-leg-curl",
+      "name": "Leg curl"
+    },
+    "custom-estensioni-tricipiti-sopra-la-testa-al-cavo": {
+      "id": "custom-estensioni-tricipiti-sopra-la-testa-al-cavo",
+      "name": "Estensioni tricipiti sopra la testa al cavo"
+    },
+    "custom-stacco-da-terra": {
+      "id": "custom-stacco-da-terra",
+      "name": "Stacco da terra"
+    },
+    "custom-curl-manubri": {
+      "id": "custom-curl-manubri",
+      "name": "Curl manubri"
+    },
+    "custom-leg-curl-seduto": {
+      "id": "custom-leg-curl-seduto",
+      "name": "Leg curl seduto"
+    },
+    "custom-romanian-deadlift": {
+      "id": "custom-romanian-deadlift",
+      "name": "Romanian deadlift"
+    },
+    "custom-deadlift": {
+      "id": "custom-deadlift",
+      "name": "Deadlift"
+    }
+  },
+  "routines": [
+    {
+      "id": "routine-a",
+      "name": "Scheda A",
+      "notes": "",
+      "archived": false,
+      "exercises": [
+        {
+          "id": "a-1",
+          "exerciseId": "squat-bilanciere",
+          "alternatives": [
+            "leg-press-piedi-a-meta-pedana"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "8–12",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 120,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-2",
+          "exerciseId": "panca-piana-bilanciere",
+          "alternatives": [
+            "panca-piana-manubri",
+            "chest-press"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "8–12",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 90,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-3",
+          "exerciseId": "rematore-manubri-petto-su-panca-inclinata",
+          "alternatives": [
+            "rematore-al-cavo-basso"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "8–12",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 90,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-4",
+          "exerciseId": "custom-leg-curl",
+          "alternatives": [],
+          "group": null,
+          "sets": 2,
+          "reps": "10–15",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-5",
+          "exerciseId": "custom-estensioni-tricipiti-sopra-la-testa-al-cavo",
+          "alternatives": [
+            "french-press-con-manubrio",
+            "french-press-ez"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "10–15",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-6",
+          "exerciseId": "alzate-laterali",
+          "alternatives": [
+            "alzate-al-cavo",
+            "macchina-laterali"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "12–20",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        },
+        {
+          "id": "a-7",
+          "exerciseId": "standing-calf",
+          "alternatives": [
+            "calf-alla-leg-press"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "10–20",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        }
+      ]
+    },
+    {
+      "id": "routine-b",
+      "name": "Scheda B",
+      "notes": "",
+      "archived": false,
+      "exercises": [
+        {
+          "id": "b-1",
+          "exerciseId": "custom-stacco-da-terra",
+          "alternatives": [
+            "stacco-rumeno-bilanciere"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "6–8",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 150,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-2",
+          "exerciseId": "distensioni-manubri-panca-inclinata",
+          "alternatives": [
+            "incline-chest-press"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "8–12",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 90,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-3",
+          "exerciseId": "lat-machine-presa-prona",
+          "alternatives": [
+            "trazioni-assistite-o-negative"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "8–12",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 90,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-4",
+          "exerciseId": "leg-press-piedi-a-meta-pedana",
+          "alternatives": [
+            "squat-bilanciere",
+            "goblet-squat"
+          ],
+          "group": null,
+          "sets": 3,
+          "reps": "10–15",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 90,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-5",
+          "exerciseId": "custom-curl-manubri",
+          "alternatives": [
+            "curl-ez",
+            "curl-al-cavo-basso",
+            "curl-manubri-su-panca-inclinata"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "10–15",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-6",
+          "exerciseId": "alzate-laterali",
+          "alternatives": [
+            "alzate-al-cavo",
+            "macchina-laterali"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "12–20",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        },
+        {
+          "id": "b-7",
+          "exerciseId": "standing-calf",
+          "alternatives": [
+            "calf-alla-leg-press"
+          ],
+          "group": null,
+          "sets": 2,
+          "reps": "10–20",
+          "loadMin": null,
+          "loadMax": null,
+          "loadNote": "",
+          "unit": "",
+          "rest": 60,
+          "warmupRest": 60
+        }
+      ]
+    }
+  ],
+  "schedule": {},
+  "overrides": {},
+  "sessions": [
+    {
+      "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76",
+      "date": "2026-10-02",
+      "routineId": "routine-b",
+      "name": "Scheda B",
+      "start": 1790935200000,
+      "end": 1790935200000,
+      "exercises": [
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-1",
+          "exerciseId": "stacco-rumeno-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-1-s1",
+              "type": "normal",
+              "kg": 20,
+              "reps": 10,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-1-s2",
+              "type": "normal",
+              "kg": 35,
+              "reps": 10,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-1-s3",
+              "type": "normal",
+              "kg": 30,
+              "reps": 10,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-2",
+          "exerciseId": "distensioni-manubri-panca-inclinata",
+          "variantOf": null,
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-2-s1",
+              "type": "normal",
+              "kg": 10,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-2-s2",
+              "type": "normal",
+              "kg": 10,
+              "reps": 10,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-2-s3",
+              "type": "normal",
+              "kg": 10,
+              "reps": 12,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-3",
+          "exerciseId": "lat-machine-presa-prona",
+          "variantOf": null,
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-3-s1",
+              "type": "normal",
+              "kg": 25,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-3-s2",
+              "type": "normal",
+              "kg": 32,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-3-s3",
+              "type": "normal",
+              "kg": 25,
+              "reps": 15,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-4",
+          "exerciseId": "goblet-squat",
+          "variantOf": "leg-press-piedi-a-meta-pedana",
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-4-s1",
+              "type": "normal",
+              "kg": 30,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-4-s2",
+              "type": "normal",
+              "kg": 40,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-4-s3",
+              "type": "normal",
+              "kg": 40,
+              "reps": 12,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-5",
+          "exerciseId": "rematore-seduto-al-cavo-basso",
+          "variantOf": null,
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-5-s1",
+              "type": "normal",
+              "kg": 15,
+              "reps": 25,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-5-s2",
+              "type": "normal",
+              "kg": 12,
+              "reps": 32,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-5-s3",
+              "type": "normal",
+              "kg": 10,
+              "reps": 39,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-5-s4",
+              "type": "normal",
+              "kg": 8,
+              "reps": 32,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-6",
+          "exerciseId": "french-press-ez",
+          "variantOf": null,
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-6-s1",
+              "type": "normal",
+              "kg": 11,
+              "reps": 15,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-6-s2",
+              "type": "normal",
+              "kg": 16,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-6-s3",
+              "type": "normal",
+              "kg": 16,
+              "reps": 12,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-7",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-7-s1",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-7-s2",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-7-s3",
+              "type": "normal",
+              "kg": 8,
+              "reps": 10,
+              "completedAt": 1790935200000
+            }
+          ]
+        },
+        {
+          "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-8",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-8-s1",
+              "type": "normal",
+              "kg": 40,
+              "reps": 15,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-8-s2",
+              "type": "normal",
+              "kg": 40,
+              "reps": 12,
+              "completedAt": 1790935200000
+            },
+            {
+              "id": "f5100b65-10ba-4c15-b34f-27e38e3c8f76-8-s3",
+              "type": "normal",
+              "kg": 40,
+              "reps": 10,
+              "completedAt": 1790935200000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "93699965-4e61-4835-9e49-9f204efeb56f",
+      "date": "2026-10-05",
+      "routineId": "routine-a",
+      "name": "Scheda A",
+      "start": 1791194400001,
+      "end": 1791194400001,
+      "exercises": [
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-1",
+          "exerciseId": "squat-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "Romanian deadlift prime 3 / leg press ",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s1",
+              "type": "normal",
+              "kg": 20,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s2",
+              "type": "normal",
+              "kg": 30,
+              "reps": 8,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s3",
+              "type": "normal",
+              "kg": 35,
+              "reps": 8,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s4",
+              "type": "normal",
+              "kg": 32,
+              "reps": 10,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s5",
+              "type": "normal",
+              "kg": 45,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-1-s6",
+              "type": "normal",
+              "kg": 59,
+              "reps": 9,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-2",
+          "exerciseId": "panca-piana-bilanciere",
+          "variantOf": null,
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-2-s1",
+              "type": "normal",
+              "kg": 20,
+              "reps": 10,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-2-s2",
+              "type": "normal",
+              "kg": 40,
+              "reps": 8,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-2-s3",
+              "type": "normal",
+              "kg": 50,
+              "reps": 6,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-2-s4",
+              "type": "normal",
+              "kg": 40,
+              "reps": 9,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-3",
+          "exerciseId": "rematore-al-cavo-basso",
+          "variantOf": "rematore-manubri-petto-su-panca-inclinata",
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-3-s1",
+              "type": "normal",
+              "kg": 27.3,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-3-s2",
+              "type": "normal",
+              "kg": 41.3,
+              "reps": 8,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-3-s3",
+              "type": "normal",
+              "kg": 34.3,
+              "reps": 10,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-4",
+          "exerciseId": "hip-thrust-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-4-s1",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-5",
+          "exerciseId": "shoulder-press-machine",
+          "variantOf": "distensioni-manubri-seduto-schienale-alto",
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-5-s1",
+              "type": "normal",
+              "kg": 14,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-5-s2",
+              "type": "normal",
+              "kg": 23,
+              "reps": 9,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-5-s3",
+              "type": "normal",
+              "kg": 18,
+              "reps": 10,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-6",
+          "exerciseId": "curl-manubri-su-panca-inclinata",
+          "variantOf": null,
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "Curl manubri ",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-6-s1",
+              "type": "normal",
+              "kg": 7,
+              "reps": 10,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-6-s2",
+              "type": "normal",
+              "kg": 9,
+              "reps": 10,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-6-s3",
+              "type": "normal",
+              "kg": 10,
+              "reps": 10,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-7",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-7-s1",
+              "type": "normal",
+              "kg": 5,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-7-s2",
+              "type": "normal",
+              "kg": 7,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-7-s3",
+              "type": "normal",
+              "kg": 9,
+              "reps": 12,
+              "completedAt": 1791194400001
+            }
+          ]
+        },
+        {
+          "id": "93699965-4e61-4835-9e49-9f204efeb56f-8",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "Lat machine",
+          "sets": [
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-8-s1",
+              "type": "normal",
+              "kg": 18,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-8-s2",
+              "type": "normal",
+              "kg": 32,
+              "reps": 12,
+              "completedAt": 1791194400001
+            },
+            {
+              "id": "93699965-4e61-4835-9e49-9f204efeb56f-8-s3",
+              "type": "normal",
+              "kg": 39,
+              "reps": 10,
+              "completedAt": 1791194400001
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0",
+      "date": "2026-10-08",
+      "routineId": "routine-b",
+      "name": "Scheda B",
+      "start": 1791453600002,
+      "end": 1791453600002,
+      "exercises": [
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-1",
+          "exerciseId": "stacco-rumeno-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-1-s1",
+              "type": "normal",
+              "kg": 20,
+              "reps": 10,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-1-s2",
+              "type": "normal",
+              "kg": 30,
+              "reps": 10,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-1-s3",
+              "type": "normal",
+              "kg": 35,
+              "reps": 10,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-2",
+          "exerciseId": "incline-chest-press",
+          "variantOf": "distensioni-manubri-panca-inclinata",
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-2-s1",
+              "type": "normal",
+              "kg": 18,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-2-s2",
+              "type": "normal",
+              "kg": 23,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-2-s3",
+              "type": "normal",
+              "kg": 29,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-2-s4",
+              "type": "normal",
+              "kg": 36,
+              "reps": 8,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-3",
+          "exerciseId": "lat-machine-presa-prona",
+          "variantOf": null,
+          "group": "2",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-3-s1",
+              "type": "normal",
+              "kg": 27.3,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-3-s2",
+              "type": "normal",
+              "kg": 41.3,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-3-s3",
+              "type": "normal",
+              "kg": 32,
+              "reps": 15,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-4",
+          "exerciseId": "leg-press-piedi-a-meta-pedana",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-4-s1",
+              "type": "normal",
+              "kg": 39,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-4-s2",
+              "type": "normal",
+              "kg": 52,
+              "reps": 13,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-4-s3",
+              "type": "normal",
+              "kg": 73,
+              "reps": 11,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-5",
+          "exerciseId": "rematore-seduto-al-cavo-basso",
+          "variantOf": null,
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-5-s1",
+              "type": "normal",
+              "kg": 27.3,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-5-s2",
+              "type": "normal",
+              "kg": 34.3,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-5-s3",
+              "type": "normal",
+              "kg": 47.3,
+              "reps": 8,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-6",
+          "exerciseId": "french-press-ez",
+          "variantOf": null,
+          "group": "4",
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-6-s1",
+              "type": "normal",
+              "kg": 16,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-6-s2",
+              "type": "normal",
+              "kg": 16,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-6-s3",
+              "type": "normal",
+              "kg": 16,
+              "reps": 16,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-7",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-7-s1",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-7-s2",
+              "type": "normal",
+              "kg": 8,
+              "reps": 13,
+              "completedAt": 1791453600002
+            },
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-7-s3",
+              "type": "normal",
+              "kg": 10,
+              "reps": 8,
+              "completedAt": 1791453600002
+            }
+          ]
+        },
+        {
+          "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-8",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": "5",
+          "rest": 45,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "84fa0527-9d4b-4309-808f-dd52cbe58ab0-8-s1",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "session-mv5566sc4vhv7d",
+      "date": "2026-10-12",
+      "routineId": "routine-a",
+      "name": "Scheda A",
+      "start": 1791802880217,
+      "end": 1791807015305,
+      "exercises": [
+        {
+          "id": "exercise-mv5566sbi7bmhq",
+          "exerciseId": "leg-press-piedi-a-meta-pedana",
+          "variantOf": "squat-bilanciere",
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566sbkeps3m",
+              "type": "normal",
+              "kg": 39,
+              "reps": 15,
+              "completedAt": 1791804327111
+            },
+            {
+              "id": "set-mv5566sbd28obt",
+              "type": "normal",
+              "kg": 52,
+              "reps": 12,
+              "completedAt": 1791804428702
+            },
+            {
+              "id": "set-mv5566sb8ufegp",
+              "type": "normal",
+              "kg": 73,
+              "reps": 10,
+              "completedAt": 1791804561011
+            },
+            {
+              "id": "set-mv566pnlxoscg6",
+              "type": "normal",
+              "kg": 73,
+              "reps": 10,
+              "completedAt": 1791804671453
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566sbxvufco",
+          "exerciseId": "chest-press",
+          "variantOf": "panca-piana-bilanciere",
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566sbr7siu3",
+              "type": "normal",
+              "kg": 35,
+              "reps": 12,
+              "completedAt": 1791804880518
+            },
+            {
+              "id": "set-mv5566sbkt3h9r",
+              "type": "normal",
+              "kg": 45,
+              "reps": 10,
+              "completedAt": 1791805028187
+            },
+            {
+              "id": "set-mv5566sbtleipy",
+              "type": "normal",
+              "kg": 62,
+              "reps": 8,
+              "completedAt": 1791805179901
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566sckuc6lu",
+          "exerciseId": "rematore-al-cavo-basso",
+          "variantOf": "rematore-manubri-petto-su-panca-inclinata",
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566scqeotud",
+              "type": "normal",
+              "kg": 32,
+              "reps": 15,
+              "completedAt": 1791805355819
+            },
+            {
+              "id": "set-mv5566scj2qakv",
+              "type": "normal",
+              "kg": 45,
+              "reps": 10,
+              "completedAt": 1791805497143
+            },
+            {
+              "id": "set-mv5566scn7z4k6",
+              "type": "normal",
+              "kg": 52,
+              "reps": 6,
+              "completedAt": 1791805636108
+            },
+            {
+              "id": "set-mv56taj19997v0",
+              "type": "normal",
+              "kg": 39,
+              "reps": 6,
+              "completedAt": 1791805645403
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566sc9n5ey0",
+          "exerciseId": "custom-leg-curl-seduto",
+          "variantOf": "custom-leg-curl",
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566sc2uqqp3",
+              "type": "normal",
+              "kg": 45,
+              "reps": 12,
+              "completedAt": 1791805921363
+            },
+            {
+              "id": "set-mv5566scsxctat",
+              "type": "normal",
+              "kg": 55,
+              "reps": 15,
+              "completedAt": 1791806043120
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566scf1i0tn",
+          "exerciseId": "french-press-ez",
+          "variantOf": "custom-estensioni-tricipiti-sopra-la-testa-al-cavo",
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566scfkiit3",
+              "type": "normal",
+              "kg": 16,
+              "reps": 12,
+              "completedAt": 1791806685018
+            },
+            {
+              "id": "set-mv5566sc4bh5u3",
+              "type": "normal",
+              "kg": 21,
+              "reps": 10,
+              "completedAt": 1791807009523
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566sc9vppkf",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566sctw0rid",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1791806200718
+            },
+            {
+              "id": "set-mv5566scew8fm7",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1791806311365
+            },
+            {
+              "id": "set-mv579ya4e6x8xb",
+              "type": "normal",
+              "kg": 8,
+              "reps": 13,
+              "completedAt": 1791806417531
+            }
+          ]
+        },
+        {
+          "id": "exercise-mv5566scezd08m",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mv5566scdkzua3",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mv5566scrmi6uu",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "session-mvp7kqaop29qo4",
+      "date": "2026-10-26",
+      "routineId": "routine-b",
+      "name": "Scheda B",
+      "start": 1793016241438,
+      "end": 1793019295953,
+      "exercises": [
+        {
+          "id": "exercise-mvp7kqanhy0eu1",
+          "exerciseId": "distensioni-manubri-panca-inclinata",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqan8u9eu2",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793018259639
+            },
+            {
+              "id": "set-mvp7kqana8qyra",
+              "type": "normal",
+              "kg": 10,
+              "reps": 12,
+              "completedAt": 1793018468327
+            },
+            {
+              "id": "set-mvp7kqankbhs68",
+              "type": "normal",
+              "kg": 12,
+              "reps": 12,
+              "completedAt": 1793018632594
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp7kqan23j7tl",
+          "exerciseId": "lat-machine-presa-prona",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqan9jep9l",
+              "type": "normal",
+              "kg": 27.3,
+              "reps": 12,
+              "completedAt": 1793017170856
+            },
+            {
+              "id": "set-mvp7kqanvihqd1",
+              "type": "normal",
+              "kg": 41.25,
+              "reps": 12,
+              "completedAt": 1793017324456
+            },
+            {
+              "id": "set-mvp7kqan60yu30",
+              "type": "normal",
+              "kg": 41.25,
+              "reps": 12,
+              "completedAt": 1793017502587
+            },
+            {
+              "id": "set-mvp8bu369t43bn",
+              "type": "normal",
+              "kg": 34.3,
+              "reps": 10,
+              "completedAt": 1793017659155
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp7kqan0mav5y",
+          "exerciseId": "leg-press-piedi-a-meta-pedana",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqanab2yj3",
+              "type": "normal",
+              "kg": 25,
+              "reps": 12,
+              "completedAt": 1793018318120
+            },
+            {
+              "id": "set-mvp7kqaneslr2m",
+              "type": "normal",
+              "kg": 39,
+              "reps": 12,
+              "completedAt": 1793018320968
+            },
+            {
+              "id": "set-mvp7kqany9slmm",
+              "type": "normal",
+              "kg": 52,
+              "reps": 10,
+              "completedAt": 1793018322447
+            },
+            {
+              "id": "set-mvp8seyy4of2v8",
+              "type": "normal",
+              "kg": 66,
+              "reps": 10,
+              "completedAt": 1793018323526
+            },
+            {
+              "id": "set-mvp8slkxkl0omr",
+              "type": "normal",
+              "kg": 79,
+              "reps": 8,
+              "completedAt": 1793018326388
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp7kqanv3jhyc",
+          "exerciseId": "custom-curl-manubri",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqanf451bw",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1793017773487
+            },
+            {
+              "id": "set-mvp7kqanmpjp5p",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793017936934
+            },
+            {
+              "id": "set-mvp8nsprwe506w",
+              "type": "normal",
+              "kg": 10,
+              "reps": 8,
+              "completedAt": 1793018070532
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp7kqanamhzrx",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqanerr5ib",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1793018740982
+            },
+            {
+              "id": "set-mvp7kqanp33pe4",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793019134064
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp7kqanjcf79g",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp7kqanwb46ok",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvp7kqaooy9uqv",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvp92o7c1d8rgf",
+          "exerciseId": "squat-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvp92o7csjcp3o",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvp92o7ckwbwp3",
+              "type": "normal",
+              "kg": 30,
+              "reps": 10,
+              "completedAt": 1793018878369
+            },
+            {
+              "id": "set-mvp92o7cy6m9fc",
+              "type": "normal",
+              "kg": 50,
+              "reps": 10,
+              "completedAt": 1793019057060
+            },
+            {
+              "id": "set-mvp92o7cndswf5",
+              "type": "normal",
+              "kg": 60,
+              "reps": 8,
+              "completedAt": 1793019288271
+            },
+            {
+              "id": "set-mvp92o7c1cjp5b",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvp92o7cmfqv0h",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "session-mvv5roz8e0dt5g",
+      "date": "2026-11-04",
+      "routineId": "routine-a",
+      "name": "Scheda A",
+      "start": 1793376004146,
+      "end": 1793868473716,
+      "exercises": [
+        {
+          "id": "exercise-mvv5roz71dyj3o",
+          "exerciseId": "custom-romanian-deadlift",
+          "variantOf": "squat-bilanciere",
+          "group": null,
+          "rest": 120,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz7v9voad",
+              "type": "normal",
+              "kg": 20,
+              "reps": 15,
+              "completedAt": 1793797113382
+            },
+            {
+              "id": "set-mvv5roz75vy94t",
+              "type": "normal",
+              "kg": 25,
+              "reps": 12,
+              "completedAt": 1793797265532
+            },
+            {
+              "id": "set-mvv5roz7vxx5an",
+              "type": "normal",
+              "kg": 30,
+              "reps": 10,
+              "completedAt": 1793797402907
+            },
+            {
+              "id": "set-mw24ql3ekchqnc",
+              "type": "normal",
+              "kg": 35,
+              "reps": 10,
+              "completedAt": 1793797547426
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz7tpv5on",
+          "exerciseId": "panca-piana-bilanciere",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz8pkp613",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz8usgb78",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz8lbugld",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz8wb54j3",
+          "exerciseId": "rematore-manubri-petto-su-panca-inclinata",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz82y8ot6",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz8odkdfk",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz8meucd2",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz85gficq",
+          "exerciseId": "custom-leg-curl",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz80vgw4u",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz8hsfm5m",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz8o0j8hj",
+          "exerciseId": "custom-estensioni-tricipiti-sopra-la-testa-al-cavo",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz8gmixsc",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz87m4ybh",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz8aoad4g",
+          "exerciseId": "alzate-laterali",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz8gyuecj",
+              "type": "normal",
+              "kg": 6,
+              "reps": 12,
+              "completedAt": 1793797657679
+            },
+            {
+              "id": "set-mvv5roz8b6cjhr",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793797758505
+            },
+            {
+              "id": "set-mw24xuubw2xtfv",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793797876618
+            }
+          ]
+        },
+        {
+          "id": "exercise-mvv5roz8zlhuw4",
+          "exerciseId": "standing-calf",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mvv5roz8zrf8z7",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            },
+            {
+              "id": "set-mvv5roz880jehg",
+              "type": "normal",
+              "kg": null,
+              "reps": null,
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": "exercise-mw253fgis2o4m2",
+          "exerciseId": "custom-deadlift",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mw253fgi0jys5v",
+              "type": "normal",
+              "kg": 30,
+              "reps": 10,
+              "completedAt": 1793798144312
+            },
+            {
+              "id": "set-mw253fgix2b2ax",
+              "type": "normal",
+              "kg": 50,
+              "reps": 8,
+              "completedAt": 1793798304428
+            },
+            {
+              "id": "set-mw253fgin2lpd5",
+              "type": "normal",
+              "kg": 50,
+              "reps": 10,
+              "completedAt": 1793798477737
+            },
+            {
+              "id": "set-mw25gkqnioi34e",
+              "type": "normal",
+              "kg": 50,
+              "reps": 10,
+              "completedAt": 1793798750631
+            }
+          ]
+        },
+        {
+          "id": "exercise-mw25j2fhg0848j",
+          "exerciseId": "custom-curl-manubri",
+          "variantOf": null,
+          "group": null,
+          "rest": 60,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mw25j2fizyuczh",
+              "type": "normal",
+              "kg": 8,
+              "reps": 10,
+              "completedAt": 1793798873270
+            },
+            {
+              "id": "set-mw25j2fiibyg1n",
+              "type": "normal",
+              "kg": 8,
+              "reps": 12,
+              "completedAt": 1793799042690
+            },
+            {
+              "id": "set-mw25j2fi5ng7w0",
+              "type": "normal",
+              "kg": 8,
+              "reps": 10,
+              "completedAt": 1793799195373
+            }
+          ]
+        },
+        {
+          "id": "exercise-mw25u4jnplhlpy",
+          "exerciseId": "rematore-al-cavo-basso",
+          "variantOf": null,
+          "group": null,
+          "rest": 90,
+          "warmupRest": 60,
+          "notes": "",
+          "sets": [
+            {
+              "id": "set-mw25u4jnqgy5jq",
+              "type": "normal",
+              "kg": 25,
+              "reps": 12,
+              "completedAt": 1793799392435
+            },
+            {
+              "id": "set-mw25u4jnczidlt",
+              "type": "normal",
+              "kg": 32,
+              "reps": 14,
+              "completedAt": 1793799520963
+            },
+            {
+              "id": "set-mw25u4jnlq0ect",
+              "type": "normal",
+              "kg": 39,
+              "reps": 10,
+              "completedAt": 1793799672969
+            },
+            {
+              "id": "set-mw25u4jnhy1v9a",
+              "type": "normal",
+              "kg": 39,
+              "reps": 8,
+              "completedAt": 1793799831112
+            },
+            {
+              "id": "set-mw264b4vqe82al",
+              "type": "normal",
+              "kg": 32,
+              "reps": 10,
+              "completedAt": 1793799964564
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "weightUnit": "kg",
+    "distanceUnit": "m",
+    "defaultRest": 90,
+    "sound": true,
+    "vibration": true
+  },
+  "exportedAt": "2026-11-05T08:56:58.540Z"
+}

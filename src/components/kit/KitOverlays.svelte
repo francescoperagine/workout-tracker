@@ -4,6 +4,7 @@
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
+  import { emptyArchive, mergeExercise, type Archive } from '../../lib/archive';
 
   const variants = ['Panca piana bilanciere', 'Panca piana manubri', 'Chest press'];
   // demo: in app i suggerimenti vengono dal catalogo
@@ -16,8 +17,12 @@
   let other = $state('');
   let otherInput: HTMLInputElement | undefined = $state();
   let toast: string | null = $state(null);
-  // foglio del catalogo dell'editor delle schede: solo gli esercizi di base, nessun archivio
+  // foglio del catalogo dell'editor delle schede: un archivio finto con un doppione da unire (US-35)
   let pickerOpen = $state(false);
+  let kitArchive: Archive = $state.raw({
+    ...emptyArchive(),
+    catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift' } },
+  });
   let picked = $state('');
   const describe = (p: PickedExercise) => (p.kind === 'new' ? `nuovo «${p.name}»` : p.id);
 
@@ -46,7 +51,13 @@
 </div>
 <p class="hint">Variante scelta: {variant}{picked ? ` · esercizio: ${picked}` : ''}</p>
 
-<ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={{ catalog: {} }} onpick={(p) => (picked = describe(p))} />
+<ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={kitArchive}
+  onpick={(p) => (picked = describe(p))}
+  onmerge={(from, to) => {
+    kitArchive = mergeExercise(kitArchive, from, to);
+    return true;
+  }}
+/>
 
 <BottomSheet bind:open={sheetOpen} title="Cambia variante">
   <p class="mb-3 text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>

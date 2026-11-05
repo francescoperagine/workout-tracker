@@ -3,6 +3,43 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-004
+
+Date: 2026-11-05
+
+Summary:
+**Catalogo senza doppioni e serie precompilate dall'ultima volta (US-35, US-36), incremento 1 di
+`dedup-catalog-and-workout-ux`.**
+Ogni esercizio di base ha i suoi alias (nome inglese e varianti italiane): la ricerca li trova, e un nome
+scritto che corrisponde a un alias usa l'esercizio esistente invece di crearne uno nuovo («Esiste già «…»:
+usa questo»). Un esercizio personalizzato si unisce a un altro dal foglio del catalogo, con una conferma che
+dice quanti allenamenti e schede cambiano; l'unione non si annulla. Un esercizio che entra in sessione ha già
+kg e ripetizioni dell'ultima volta in cui è stato fatto davvero, da spuntare: contano solo le serie spuntate,
+per il precedente, lo storico, i record e per concludere l'allenamento.
+
+Deliverables:
+- `src/data/catalog.ts` e `src/lib/archive/types.ts`: campo `aliases` dei 43 esercizi di base (Appendice A
+  della SPEC, senza collisioni).
+- `src/lib/archive/catalog.ts`: ricerca su nome e alias, `mergeExercise`, `mergeImpact`.
+- `src/lib/archive/workout.ts`: `previousExercise` e `previousSets` solo su serie spuntate, `defaultSets`,
+  `prefillSets`, usati da `addSessionExercise` e `switchExercise`; `src/lib/archive/sessions.ts`:
+  `startSession` precompila, `sessionHasData` (concludere, annullare) vuole una serie spuntata.
+- `src/components/exercises/ExercisePicker.svelte`: «Esiste già», «Unisci in…» con `ConfirmDialog`, collegato
+  in `Workout.svelte` e `RoutineEditor.svelte` e mostrato in `/kit`; `Workout.svelte`: testo del cambio di
+  esercizio con valori ripresi; `ExerciseDetailsSheet.svelte`: «L'ultima volta» solo con serie spuntate.
+- Fixture `tests/fixtures/workout-tracker-2026-11-05.json`; test Vitest in `catalog.test.ts` e
+  `workout.test.ts`; e2e `tests/e2e/us-35-us-36-catalog-defaults.spec.ts`; aggiornati 5 e2e che davano per
+  scontati i campi vuoti o un allenamento concluso senza spunte.
+- `docs/ARCHITECTURE.md`, `docs/PROJECT.md`, `features/dedup-catalog-and-workout-ux/SPEC.md` (esito),
+  brief `.impeccable/surfaces/route-workout.md`.
+
+Limiti noti: un backup vecchio importato dopo un'unione riporta i doppioni (non risolto). Il peso della serie
+sopra (step 9) vale solo per le righe vuote, cioè per gli esercizi senza storico. Restano i quasi-doppioni del
+catalogo di base («Rematore al cavo basso» e «Rematore seduto al cavo basso», «Leg press» e «Leg press, piedi a
+metà pedana»): gli ID di base non si uniscono.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-003
 
 Date: 2026-10-19
