@@ -17,7 +17,8 @@ colors:
   done: "light-dark(#111111, #FAFAF7)"
   on-done: "light-dark(#FAFAF7, #111111)"
   danger: "light-dark(#BE123C, #FF7A8A)"
-  on-danger: "light-dark(#FFFFFF, #111111)"
+  danger-fill: "light-dark(#C81E1E, #DF3124)"
+  on-danger: "light-dark(#FFFFFF, #FFFFFF)"
   highlight: "light-dark(#165E83, #8AB4E8)"
   backdrop: "rgb(0 0 0 / 0.6)"
   shadow: "rgb(0 0 0 / 0.28)"
@@ -103,14 +104,14 @@ components:
     padding: "0 20px"
     height: "48px"
   button-danger:
-    backgroundColor: "{colors.danger}"
+    backgroundColor: "{colors.danger-fill}"
     textColor: "{colors.on-danger}"
     typography: "{typography.button}"
     rounded: "{rounded.field}"
     padding: "0 20px"
     height: "48px"
   button-danger-hover:
-    backgroundColor: "color-mix(in oklab, {colors.danger} 88%, {colors.text})"
+    backgroundColor: "color-mix(in oklab, {colors.danger-fill} 88%, black)"
   button-text:
     backgroundColor: "transparent"
     textColor: "{colors.accent-text}"
@@ -312,7 +313,7 @@ I temi sono un registro, non un elenco cablato: `THEME_REGISTRY` in `src/lib/the
 
 1. Una voce nel registro: `orange: { label: 'Arancione', scheme: 'dark' }`. `scheme` è `light` o `dark` per un tema con un solo aspetto, `auto` se segue il sistema (allora i valori sono coppie `light-dark()`).
 2. Un file `orange.css` in `styles/themes/` (cartella nuova sotto `src/`), importato in testa a `global.css`, con una sola regola `:root[data-theme="orange"] { color-scheme: dark; … }` che sovrascrive **tutti** i ruoli (compresi `backdrop` e `shadow`). Il file resta fuori dai layer, così vince sui valori di `@theme`.
-3. Le stesse soglie del sistema, quelle di `src/styles/contrast.test.ts`: testo ≥ 4,5:1 su fondo, superficie e `accent-tint`; testo su accento, su `danger` e su `done` ≥ 4,5:1; bordi dei controlli e indicatori ≥ 3:1. Il test del registro (`src/lib/theme.test.ts`) fallisce se un tema non ha la sua regola CSS o il suo `color-scheme`.
+3. Le stesse soglie del sistema, quelle di `src/styles/contrast.test.ts`: testo ≥ 4,5:1 su fondo, superficie e `accent-tint`; testo su accento, su `danger-fill` e su `done` ≥ 4,5:1; bordi dei controlli, indicatori e `danger-fill` ≥ 3:1. Il test del registro (`src/lib/theme.test.ts`) fallisce se un tema non ha la sua regola CSS o il suo `color-scheme`.
 4. I colori del tema vanno nel frontmatter di questo file e in `.impeccable/design.json`; `/kit` lo mostra da solo nel selettore.
 
 ### Primary
@@ -325,7 +326,7 @@ I temi sono un registro, non un elenco cablato: `THEME_REGISTRY` in `src/lib/the
 - **Indaco** (`highlight`): solo trofei e record (`.record` nella riga serie) e la seconda serie quando un grafico confronta due esercizi (oggi nessun grafico lo fa). Mai pulsanti, link o stati.
 
 ### Tertiary
-- **Rosso lampone** (`danger`): solo errori e azioni distruttive, sempre con icona e testo, così si distingue dall'accento anche per chi confonde arancione e rosso. Il pulsante distruttivo è pieno (`danger` con testo `on-danger`), al passaggio velato di `text`; le distruttive passano dalla conferma. Campi non validi, errori di campo e barra di salvataggio in errore usano `danger` come testo e bordo.
+- **Rosso lampone** (`danger`): solo errori e azioni distruttive, sempre con icona e testo, così si distingue dall'accento anche per chi confonde arancione e rosso. Il pulsante distruttivo è pieno su un rosso a sé, `danger-fill` (#C81E1E in chiaro, #DF3124 in scuro), con testo `on-danger` bianco nei due temi, e al passaggio si scurisce: `danger` in scuro è chiaro, pensato per il testo, e come fondo diventava rosa (INC-011, ADR-006). Le distruttive passano dalla conferma. Campi non validi, errori di campo e barra di salvataggio in errore usano `danger` come testo e bordo.
 - **Avvisi informativi** (ex ambra): `text-muted` con l'icona `info` in un riquadro `border`. Non c'è un colore di avviso.
 
 ### Neutral
@@ -413,7 +414,7 @@ Diretti e pieni di peso, con il verbo dell'azione nel testo.
 - **Primary:** riempimento `accent`, testo `on-accent`, peso 650. Uno solo visibile per schermata.
 - **Hover / Focus:** al passaggio il primario passa a `accent-pressed`; il secondario prende un velo neutro di `text` all'8% sulla superficie, senza colore. Transizione di colore di 0.15s con la curva di uscita. Il focus da tastiera è un anello pieno di 2px `accent-indicator` a 3px di distanza, ovunque.
 - **Secondary:** fondo `surface`, bordo `border-control`, testo `text`. Tutte le azioni secondarie sono neutre.
-- **Danger:** pieno, fondo `danger` e testo `on-danger`, sempre con l'icona `trash` e il verbo; al passaggio il rosso si vela del 12% di `text`. Solo per azioni distruttive, che passano dalla conferma.
+- **Danger:** pieno, fondo `danger-fill` e testo `on-danger`, sempre con l'icona `trash` e il verbo; al passaggio il rosso si mescola al 12% di nero. Solo per azioni distruttive, che passano dalla conferma.
 - **Text:** trasparente, testo `accent-text`, imbottitura 4px, sottolineato al passaggio.
 - **Icon:** quadrato da 48px trasparente, icona `text-muted` da 22px; al passaggio un velo del colore corrente al 12%.
 - **Disabled:** testo `text-muted` su `surface` con bordo `border` e cursore di divieto, mai l'accento sbiadito.
@@ -430,7 +431,7 @@ Diretti e pieni di peso, con il verbo dell'azione nel testo.
 - **Campo che salva a ogni battuta** (`LiveField`): lo stesso campo, per i testi delle schede (nome, ripetizioni, carico, note). Salva a ogni carattere; finché ha il focus il testo resta com'è, poi torna al valore salvato. Un testo non valido resta visibile con l'errore sotto e non si salva.
 
 ### Voce della scheda
-L'editor delle schede si legge come la scheda di carta. Ogni voce è una riga da almeno 56px senza pannello, separata da un filo `border`: a sinistra il numero d'ordine (1, 2a, 2b) a 18px in `text`, poi il nome dell'esercizio (650, 18px) e sotto i target compatti in `text-muted` a 14px ("3 × 6–8 · 40 kg · rec. 1:15", poi unità, nota e alternative), a destra la freccia da 48px che apre la voce. Aperta, i campi stanno in linea sotto il nome, allineati al nome (a filo sotto i 360px): esercizio con "Cambia", serie e recuperi come valori a passi, ripetizioni e carico come campi, alternative come elenco con la crocetta da 48px, interruttore della superserie, "Togli dalla scheda" nel pulsante pieno `danger`.
+L'editor delle schede si legge come la scheda di carta. Ogni voce è una riga da almeno 56px senza pannello, separata da un filo `border`: a sinistra il numero d'ordine (1, 2a, 2b) a 18px in `text`, poi il nome dell'esercizio (650, 18px) e sotto i target compatti in `text-muted` a 14px ("3 × 6–8 · 40 kg · rec. 1:15", poi unità, nota e alternative), a destra la freccia da 48px che apre la voce. Aperta, i campi stanno in linea sotto il nome, allineati al nome (a filo sotto i 360px): esercizio con "Cambia", serie e recuperi come valori a passi, ripetizioni e carico come campi, alternative come elenco con la crocetta da 48px, interruttore della superserie, "Togli dalla scheda" nel pulsante pieno `danger-fill`.
 - **Superserie:** una riga "Superserie · 2 esercizi" in `text` con l'icona del collegamento, e un filo `border-control` di 1px nella colonna dei numeri che unisce ogni voce alla successiva.
 - **Riordino:** modalità "Riordina"/"Fine" (pulsante testuale): le righe si chiudono e mostrano due frecce da 48px. Nessun trascinamento come unico modo.
 
@@ -442,7 +443,7 @@ Lo stato di un giorno ha sempre un'icona Lucide più un testo (nell'etichetta ac
 - **Striscia della settimana** (Oggi): sette colonne alte 76px, giorno abbreviato a 12px `text-muted`, numero a 18px, icona da 18px; ogni giorno è un link al suo foglio nel Calendario.
 - **Riga del giorno** (Calendario): pulsante a tutta larghezza alto almeno 64px, separato da un filo `border`; a sinistra giorno e numero (20px), al centro la scheda (o ciò che si è fatto) in grassetto con una nota `text-muted` a 14px ("solo per questa data", "in programma: Scheda B"), a destra icona e stato a 14px. Riposo e "Niente in programma" a peso normale `text-muted`.
 - **Mese compatto:** tabella di sette colonne con celle alte 56px, numero (650) e icona da 16px sotto; i giorni degli altri mesi restano vuoti; legenda sotto la tabella. Il riposo non ha segno.
-- **Settimana tipo:** una riga per giorno con il nome a sinistra e un `select` nativo (Niente, Riposo, le schede attive) a destra; l'avviso di una scheda archiviata ancora assegnata sta sotto la riga, informativo (`text-muted` con l'icona `info`).
+- **Settimana tipo:** una riga-pulsante da almeno 48px per giorno, separata da un filo `border`, con il nome a sinistra (650) e la scelta a destra seguita da una freccia `text-muted`; il tocco apre il foglio «Ogni lunedì» con Niente, Riposo e le schede attive, la spunta sulla scelta attuale (come il foglio della serie). Il link «Assegna le schede ai giorni» porta il focus alla prima riga. L'avviso di una scheda archiviata ancora assegnata sta sotto la riga, informativo (`text-muted` con l'icona `info`).
 
 ### Righe della scheda in Oggi
 Le righe di scelta (`.choice`) alte 64px con il radio, il nome della scheda a 18px e sotto esercizi e ultima volta a 14px `text-muted`; la pianificata ha a destra "Oggi" con l'icona del calendario in `accent-text`. "Inizia allenamento" (primario alto 56px a 18px) è appiccicato sopra la tab bar con il fondo della pagina, così resta nella zona del pollice anche a 320×568.
@@ -481,8 +482,8 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 Guscio in basso, alta 68px, filo superiore `border`. A sinistra lo stato in `text-muted`, annunciato con cortesia: "Salvato su questo dispositivo" con la spunta, "Salvataggio…" con icona che gira; a destra l'azione principale della schermata. In errore (spazio esaurito) o conflitto (diario cambiato in un'altra scheda) testo e filo passano a `danger`, con l'icona, e l'azione diventa "Salva ora" o "Ricarica".
 
 ### Fogli, conferme e avvisi
-- **Foglio:** sale dal basso su un `<dialog>` nativo (0.32s, curva di uscita), largo fino a 40rem e alto fino all'85% dello schermo, maniglia da 40×4px, titolo e chiusura da 48px in testa, piede facoltativo con le azioni. Per scelte e consultazioni (variante, catalogo, approfondimento), non per inserire dati.
-- **Conferma:** finestra centrata fino a 28rem, imbottitura 24px, titolo, testo `text-muted`, due pulsanti affiancati a tutta larghezza: "Annulla" secondario e il verbo distruttivo nel pulsante pieno `danger` con l'icona. Solo per azioni distruttive; Esc annulla.
+- **Foglio:** sale dal basso su un `<dialog>` nativo (0.32s, curva di uscita), largo fino a 40rem e alto fino all'85% dello schermo, maniglia da 40×4px, titolo e chiusura da 48px in testa, piede facoltativo con le azioni. All'apertura il focus va al titolo (o al campo con `autofocus`), non a ✕. Un foglio aperto dal menu ⋯ di un esercizio ha a sinistra del titolo «Torna al menu» (`chevron-left`, 48px), che riapre il menu; ✕ chiude tutto. Per scelte e consultazioni (variante, catalogo, approfondimento), non per inserire dati.
+- **Conferma:** finestra centrata fino a 28rem, imbottitura 24px, titolo, testo `text-muted`, due pulsanti affiancati a tutta larghezza: "Annulla" secondario e il verbo distruttivo nel pulsante pieno `danger-fill` con l'icona. Solo per azioni distruttive; Esc annulla.
 - **Avviso breve:** pillola del guscio (`surface`, bordo `border-control`) alta 56px con l'unica ombra, entra dal basso in 0.24s sopra lo stack delle barre, si chiude da solo dopo 5 secondi, con azione testuale facoltativa in `accent-text` ("Annulla") e chiusura da 48px.
 
 ### Stato vuoto

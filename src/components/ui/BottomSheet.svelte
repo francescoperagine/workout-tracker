@@ -1,7 +1,10 @@
 <script lang="ts">
   // Foglio dal basso su <dialog> nativo: focus intrappolato, Esc chiude, il focus torna a chi l'ha aperto.
   // Per scelte e consultazioni in linea (catalogo, approfondimento, variante), non per inserire dati (P8).
+  // All'apertura il focus va al titolo (o al campo con autofocus), non a ✕: niente anello su ✕ dopo un tocco.
+  // Con onback, a sinistra del titolo c'è «Torna al menu» (fogli aperti dal menu ⋯ di un esercizio).
   import type { Snippet } from 'svelte';
+  import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import X from '@lucide/svelte/icons/x';
 
   interface Props {
@@ -9,16 +12,22 @@
     title: string;
     children: Snippet;
     footer?: Snippet;
+    onback?: () => void;
   }
 
-  let { open = $bindable(false), title, children, footer }: Props = $props();
+  let { open = $bindable(false), title, children, footer, onback }: Props = $props();
 
   let dialog: HTMLDialogElement;
+  let header: HTMLElement;
+  let heading: HTMLHeadingElement;
   const id = `sheet-${Math.random().toString(36).slice(2, 8)}`;
 
   $effect(() => {
-    if (open && !dialog.open) dialog.showModal();
-    else if (!open && dialog.open) dialog.close();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // showModal mette il focus sul primo pulsante, cioè ✕ (o ‹): lo spostiamo sul titolo
+      if (header.contains(document.activeElement)) heading.focus();
+    } else if (!open && dialog.open) dialog.close();
   });
 
   function onBackdropClick(event: MouseEvent) {
@@ -28,8 +37,13 @@
 
 <dialog bind:this={dialog} class="sheet" aria-labelledby={id} onclose={() => (open = false)} onclick={onBackdropClick}>
   <div class="handle" aria-hidden="true"></div>
-  <header>
-    <h2 {id}>{title}</h2>
+  <header bind:this={header}>
+    {#if onback}
+      <button type="button" class="btn btn-icon back" aria-label="Torna al menu" onclick={onback}>
+        <ChevronLeft size={22} aria-hidden="true" />
+      </button>
+    {/if}
+    <h2 {id} bind:this={heading} tabindex="-1">{title}</h2>
     <button type="button" class="btn btn-icon" aria-label="Chiudi" onclick={() => (open = false)}>
       <X size={22} aria-hidden="true" />
     </button>
@@ -76,15 +90,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.5rem;
     padding: 0.25rem 0 0.5rem;
   }
+  .back {
+    margin-left: -0.75rem;
+  }
   h2 {
+    flex: 1;
     margin: 0;
     font-size: var(--text-xl);
     line-height: 1.3;
     font-weight: 700;
     overflow-wrap: anywhere;
+  }
+  /* il titolo riceve il focus solo come punto di partenza del foglio: non è un controllo */
+  h2:focus {
+    outline: none;
   }
   .body {
     flex: 1;

@@ -60,7 +60,8 @@
   }}
 />
 
-<BottomSheet bind:open={sheetOpen} title="Cambia variante">
+<!-- con onback il foglio ha «Torna al menu» a sinistra del titolo: nell'app riapre il menu ⋯ dell'esercizio, qui chiude -->
+<BottomSheet bind:open={sheetOpen} title="Cambia variante" onback={() => (sheetOpen = false)}>
   <p class="mb-3 text-text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>
   <ul class="flex flex-col gap-2">
     {#each variants as v (v)}

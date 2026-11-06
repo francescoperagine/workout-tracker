@@ -27,7 +27,10 @@
   type Metric = 'load' | 'e1rm' | 'volume';
 
   const store = archiveStore();
-  const exerciseId = new URL(location.href).searchParams.get('id') ?? '';
+  const params = new URL(location.href).searchParams;
+  const exerciseId = params.get('id') ?? '';
+  // aperta da «Progressi» nel menu ⋯ dell'allenamento: il ritorno va all'allenamento, non all'elenco
+  const back = params.get('from') === 'workout' ? { href: appUrl('/workout'), label: 'Allenamento' } : { href: `${appUrl('/history')}?view=exercises`, label: 'Esercizi' };
   const today = toDateKey(new Date());
 
   let metric: Metric = $state('load');
@@ -113,7 +116,7 @@
   </div>
 {:else}
   <div class="page">
-    <a href={`${appUrl('/history')}?view=exercises`} class="btn btn-text back"><ChevronLeft aria-hidden="true" />Esercizi</a>
+    <a href={back.href} class="btn btn-text back"><ChevronLeft aria-hidden="true" />{back.label}</a>
 
     <div>
       <h2 class="title">{name}</h2>

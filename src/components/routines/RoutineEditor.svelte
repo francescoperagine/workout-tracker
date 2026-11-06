@@ -441,7 +441,7 @@
     align-items: center;
     gap: 0.5rem;
     margin: 0;
-    padding: 0.5rem 0 0 0.25rem;
+    padding: 0.5rem 0 0;
     color: var(--color-text);
     font-size: var(--text-sm);
     font-weight: 600;
@@ -452,8 +452,9 @@
     gap: 0.375rem;
     margin: 0;
   }
+  /* larga come la colonna del numero delle voci (EntryEditor): la catena sta a filo del nome */
   .superset-caption :global(.reorder-handle) {
-    width: 2rem;
+    width: 2.5rem;
   }
   /* durante il trascinamento le altre righe fanno posto scorrendo; quella trascinata segue il dito */
   .shifting {

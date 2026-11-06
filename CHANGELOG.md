@@ -3,6 +3,40 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-011
+
+Date: 2026-11-06
+
+Summary:
+**Allenamento in palestra, incremento 1: correzioni (feature `workout-gym-ux`, ADR-006).** «Precedente» abbina
+solo le serie spuntate l'ultima volta, così una serie saltata non sfasa le altre. L'intestazione «Superserie»
+ha maniglia e catena in colonna con maniglia e nome degli esercizi sotto, nell'allenamento e nell'editor. I
+fogli aperti dal menu ⋯ (Recupero, Come si esegue, Cambia esercizio) hanno «Torna al menu»; «Progressi» dal
+menu torna all'allenamento («‹ Allenamento», `?from=workout`). All'apertura il focus va al titolo del foglio e
+alla finestra del timer, non a ✕ né a «Riduci». Il pulsante distruttivo è pieno su un rosso a sé,
+`danger-fill` (`#C81E1E` / `#DF3124`), con il bianco sopra nei due temi. La settimana tipo del Calendario ha una
+riga-pulsante per giorno che apre il foglio della scelta al posto del `select` nativo.
+
+Deliverables:
+- `src/lib/archive/workout.ts`: `previousSets` solo dalle serie spuntate (con test in `workout.test.ts`).
+- `src/components/ui/BottomSheet.svelte`: prop `onback` («Torna al menu»), focus iniziale sul titolo;
+  `VariantSheet` e `ExerciseDetailsSheet` la passano; `Workout.svelte` riapre il menu dello stesso esercizio
+  (da ⓘ «Come si esegue» resta senza ritorno); `RestTimer.svelte` mette il focus sulla finestra.
+- `src/components/history/ExerciseProgress.svelte`: ritorno «‹ Allenamento» con `from=workout`.
+- `src/styles/global.css`: `--color-danger-fill`, `--color-on-danger` bianco, `.btn-danger` e hover scurito;
+  coppie nuove in `src/styles/contrast.test.ts`; campione in `/kit`, `onback` nel foglio di `/kit`.
+- `src/components/calendar/Calendar.svelte`: righe della settimana tipo e foglio «Ogni lunedì»; il link
+  «Assegna le schede ai giorni» porta il focus alla prima riga.
+- Superserie allineata: `Workout.svelte`, `RoutineEditor.svelte` (solo CSS).
+- e2e: `us-04-us-06-calendar.spec.ts` (righe e foglio della settimana tipo), `us-40-exercise-rest.spec.ts`
+  (ritorno al menu, focus, «‹ Allenamento»).
+- Documenti: `DESIGN.md` (token, pulsante distruttivo, foglio, settimana tipo), ADR-006, SPEC aggiornata.
+
+Limiti noti: il «Ogni martedì» dentro il foglio del giorno resta un `select` nativo (fuori ambito). Viste fatte
+con Playwright a 390×844 e 320×568 nei due temi; sul telefono no, era bloccato (schermo spento).
+
+ADR: ADR-006. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-010
 
 Date: 2026-11-06

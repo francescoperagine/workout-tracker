@@ -64,19 +64,19 @@ export interface PreviousSet {
 }
 
 /**
- * "Precedente" per ogni serie: la serie nella stessa posizione tra quelle dello stesso genere
- * (riscaldamento o di lavoro), così aggiungere un riscaldamento non sposta i confronti. null se
- * l'ultima volta non c'era o non era stata spuntata.
+ * "Precedente" per ogni serie: la serie nella stessa posizione tra quelle spuntate dello stesso genere
+ * (riscaldamento o di lavoro), così aggiungere un riscaldamento non sposta i confronti e una serie non
+ * spuntata l'ultima volta non sfasa le altre. null se l'ultima volta non ce n'erano abbastanza.
  */
 export function previousSets(current: Pick<SessionExercise, 'sets'>, previous: Pick<SessionExercise, 'sets'> | null): (PreviousSet | null)[] {
-  if (!previous) return current.sets.map(() => null);
-  const warmups = previous.sets.filter((s) => s.type === 'warmup');
-  const work = previous.sets.filter((s) => s.type !== 'warmup');
+  const done = previous?.sets.filter((s) => s.completedAt !== null) ?? [];
+  const warmups = done.filter((s) => s.type === 'warmup');
+  const work = done.filter((s) => s.type !== 'warmup');
   let w = 0;
   let n = 0;
   return current.sets.map((set) => {
     const match = set.type === 'warmup' ? warmups[w++] : work[n++];
-    return match && match.completedAt !== null ? { kg: match.kg, reps: match.reps } : null;
+    return match ? { kg: match.kg, reps: match.reps } : null;
   });
 }
 

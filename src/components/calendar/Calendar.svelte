@@ -1,7 +1,7 @@
 <script lang="ts">
   // Calendario (/calendar, brief route-calendar): settimana scorrevole come vista principale, una riga
   // per giorno con scheda e stato (US-05); mese compatto con i segni dei giorni; settimana tipo in
-  // linea (US-04); un tocco su un giorno apre il suo foglio, con gli allenamenti e l'eccezione per
+  // righe che aprono un foglio (US-04); un tocco su un giorno apre il suo foglio, con gli allenamenti e l'eccezione per
   // quella sola data (US-06). La settimana è la finestra di 7 giorni che parte da oggi. `?date=YYYY-MM-DD`
   // apre il foglio di quel giorno (striscia di Oggi), spostando la finestra solo se cade fuori; `#week-plan`
   // porta alla settimana tipo.
@@ -9,9 +9,11 @@
   import { navigate } from 'astro:transitions/client';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
+  import Check from '@lucide/svelte/icons/check';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Info from '@lucide/svelte/icons/info';
   import DaySheet from './DaySheet.svelte';
+  import BottomSheet from '../ui/BottomSheet.svelte';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
   import Toast from '../ui/Toast.svelte';
   import { STATUS_LOOK, dayLabel, planLabel, statusLabel } from './day-status';
@@ -135,17 +137,47 @@
     anchor = addMonths(anchor, direction);
   }
 
+  function focusWeekday(weekday: string) {
+    const row = document.getElementById(`plan-${weekday}`);
+    row?.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    row?.focus({ preventScroll: true });
+  }
+
   async function editWeek(weekday: string) {
     sheetOpen = false;
     await tick();
-    const select = document.getElementById(`plan-${weekday}`) as HTMLSelectElement | null;
-    select?.scrollIntoView({ block: 'center' });
-    select?.focus({ preventScroll: true });
+    focusWeekday(weekday);
   }
 
   function weeklySelectValue(weekday: Weekday): string {
     const value = weeklyValue(store.archive, weekday);
     return value === undefined ? NOTHING : value === null ? REST : value;
+  }
+
+  // settimana tipo (US-04): ogni giorno è una riga che apre il foglio della scelta, con la spunta sul valore attuale
+  let weeklyFor: Weekday | null = $state(null);
+  let weeklyOpen = $state(false);
+  const weeklyChoices = $derived([
+    { value: NOTHING, label: 'Niente' },
+    { value: REST, label: 'Riposo' },
+    ...routines.map((r) => ({ value: r.id, label: r.name })),
+  ]);
+
+  function weeklyText(weekday: Weekday, value: string): string {
+    const choice = weeklyChoices.find((c) => c.value === value);
+    if (choice) return choice.label;
+    const staleDay = stale.find((s) => s.weekday === weekday);
+    return staleDay?.routine ? `${staleDay.routine.name} (archiviata)` : 'Scheda eliminata';
+  }
+
+  function openWeekly(weekday: Weekday) {
+    weeklyFor = weekday;
+    weeklyOpen = true;
+  }
+
+  function pickWeekly(value: string) {
+    if (weeklyFor) setWeekly(weeklyFor, value);
+    weeklyOpen = false;
   }
 
   function setWeekly(weekday: Weekday, value: string) {
@@ -198,7 +230,13 @@
     {:else if !planned}
       <p class="notice">
         <Info size={20} aria-hidden="true" />
-        <span>Nessun giorno ha ancora una scheda. <a href="#week-plan">Assegna le schede ai giorni</a> nella settimana tipo, qui sotto.</span>
+        <span>Nessun giorno ha ancora una scheda. <a
+          href="#week-plan"
+          onclick={(event) => {
+            event.preventDefault();
+            focusWeekday(WEEKDAYS[0]);
+          }}>Assegna le schede ai giorni</a
+        > nella settimana tipo, qui sotto.</span>
       </p>
     {/if}
 
@@ -317,23 +355,18 @@
           {@const value = weeklySelectValue(weekday)}
           {@const staleDay = stale.find((s) => s.weekday === weekday)}
           <li class="plan-row">
-            <label for={`plan-${weekday}`} class="plan-day first-upper">{WEEKDAY_LONG[weekday]}</label>
-            <select
+            <button
+              type="button"
               id={`plan-${weekday}`}
-              class="field"
-              {value}
+              class="plan-button"
+              aria-haspopup="dialog"
               aria-describedby={staleDay ? `plan-${weekday}-stale` : undefined}
-              onchange={(event) => setWeekly(weekday, event.currentTarget.value)}
+              onclick={() => openWeekly(weekday)}
             >
-              <option value={NOTHING}>Niente</option>
-              <option value={REST}>Riposo</option>
-              {#each routines as routine (routine.id)}
-                <option value={routine.id}>{routine.name}</option>
-              {/each}
-              {#if staleDay}
-                <option value={value} disabled>{staleDay.routine ? `${staleDay.routine.name} (archiviata)` : 'Scheda eliminata'}</option>
-              {/if}
-            </select>
+              <span class="plan-day first-upper">{WEEKDAY_LONG[weekday]}</span>
+              <span class="plan-value">{weeklyText(weekday, value)}</span>
+              <ChevronRight size={20} aria-hidden="true" class="plan-chevron" />
+            </button>
             {#if staleDay}
               <p class="stale" id={`plan-${weekday}-stale`}>
                 <Info size={16} aria-hidden="true" />
@@ -348,6 +381,23 @@
   </div>
 
   <DaySheet bind:open={sheetOpen} date={sheetDate} archive={store.archive} {today} {now} {edit} oneditweek={editWeek} />
+
+  <BottomSheet bind:open={weeklyOpen} title={weeklyFor ? `Ogni ${WEEKDAY_LONG[weeklyFor]}` : ''}>
+    {#if weeklyFor}
+      {@const current = weeklySelectValue(weeklyFor)}
+      <ul class="weekly-options">
+        {#each weeklyChoices as choice (choice.value)}
+          {@const selected = current === choice.value}
+          <li>
+            <button type="button" class="weekly-option" aria-pressed={selected} onclick={() => pickWeekly(choice.value)}>
+              <span class="grow">{choice.label}</span>
+              {#if selected}<Check size={20} aria-hidden="true" />{/if}
+            </button>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  </BottomSheet>
 {/if}
 
 <Toast message={toast?.message ?? null} onclose={() => (toast = null)} />
@@ -577,13 +627,75 @@
     list-style: none;
   }
   .plan-row {
-    display: grid;
-    grid-template-columns: minmax(5.5rem, 1fr) minmax(0, 2fr);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .plan-row + .plan-row {
+    border-top: 1px solid var(--color-border);
+    padding-top: 0.5rem;
+  }
+  /* riga-pulsante: giorno a sinistra, scelta a destra, ≥ 48px; apre il foglio della settimana tipo */
+  .plan-button {
+    display: flex;
     align-items: center;
-    gap: 0.25rem 0.75rem;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 0.25rem;
+    border: 0;
+    border-radius: var(--radius-field);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .plan-button:hover {
+    background: color-mix(in oklab, var(--color-bg) 92%, var(--color-text));
   }
   .plan-day {
+    flex: 1;
     font-weight: 650;
+  }
+  .plan-value {
+    min-width: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+  .plan-button :global(.plan-chevron) {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+  }
+  .weekly-options {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .weekly-options li + li {
+    border-top: 1px solid var(--color-border);
+  }
+  .weekly-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 56px;
+    padding: 0 0.25rem;
+    border: 0;
+    border-radius: var(--radius-field);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+  .weekly-option:hover {
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
+  }
+  .weekly-option .grow {
+    flex: 1;
   }
   .stale {
     grid-column: 1 / -1;

@@ -47,7 +47,9 @@
   --color-on-done: light-dark(#FAFAF7, #111111);
   /* rosso solo per errori e azioni distruttive, distinto dall'accento; sempre con icona e testo */
   --color-danger: light-dark(#BE123C, #FF7A8A);
-  --color-on-danger: light-dark(#FFFFFF, #111111);
+  /* riempimento del pulsante distruttivo, separato dal testo d'errore: in scuro danger è chiaro (rosa) */
+  --color-danger-fill: light-dark(#C81E1E, #DF3124);
+  --color-on-danger: light-dark(#FFFFFF, #FFFFFF);
   /* indaco: solo trofei e record, e la seconda serie quando un grafico confronta due esercizi; mai pulsanti, link o stati */
   --color-highlight: light-dark(#165E83, #8AB4E8);
   /* velo delle modali e ombra degli elementi sospesi: nero neutro, uguale nei due temi */
@@ -214,12 +216,12 @@
     background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .btn-danger {
-    background: var(--color-danger);
+    background: var(--color-danger-fill);
     color: var(--color-on-danger);
   }
-  /* hover: il rosso velato di testo, così on-danger sopra guadagna contrasto in entrambi i temi */
+  /* hover: on-danger è bianco nei due temi, quindi il rosso si scurisce e il testo guadagna contrasto */
   .btn-danger:hover:not(:disabled) {
-    background: color-mix(in oklab, var(--color-danger) 88%, var(--color-text));
+    background: color-mix(in oklab, var(--color-danger-fill) 88%, black);
   }
   .btn-text {
     min-height: 48px;

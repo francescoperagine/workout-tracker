@@ -60,9 +60,9 @@ const ratio = (a: Rgb, b: Rgb) => {
 const PAIRS: [string[], string[], number][] = [
   [['text', 'text-muted', 'accent-text', 'danger', 'highlight'], ['bg', 'surface', 'accent-tint'], 4.5],
   [['on-accent'], ['accent', 'accent-pressed'], 4.5],
-  [['on-danger'], ['danger'], 4.5],
+  [['on-danger'], ['danger-fill'], 4.5],
   [['on-done'], ['done'], 4.5],
-  [['border-control', 'accent-indicator', 'accent'], ['bg', 'surface'], 3],
+  [['border-control', 'accent-indicator', 'accent', 'danger-fill'], ['bg', 'surface'], 3],
 ];
 
 describe('contrasto WCAG dei ruoli di colore', () => {

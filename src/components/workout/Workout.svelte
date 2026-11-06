@@ -153,6 +153,8 @@
   let variantOpen = $state(false);
   let detailsOpen = $state(false);
   let optionsOpen = $state(false);
+  // «Come si esegue» si apre anche da ⓘ: solo dal menu ⋯ il foglio ha «Torna al menu» (Recupero e Cambia esercizio sempre)
+  let detailsFromMenu = $state(false);
   let restFor: string | null = $state(null);
   let restOpen = $state(false);
   let restValue = $state(0);
@@ -333,11 +335,19 @@
       void tick().then(() => refs[id]?.openNote());
     } else if (action === 'details') {
       detailsFor = id;
+      detailsFromMenu = true;
       detailsOpen = true;
     } else if (action === 'variant') openVariant(id);
     else if (action === 'rest') openRest(id);
     else if (action === 'up' || action === 'down') void move(id, action === 'up' ? -1 : 1);
     else void removeExercise(id);
+  }
+
+  // «Torna al menu»: chiude il foglio aperto dal menu ⋯ e riapre il menu dello stesso esercizio
+  function backToMenu(id: string | null) {
+    variantOpen = detailsOpen = restOpen = false;
+    optionsFor = id;
+    optionsOpen = id !== null;
   }
 
   // --- foglio della serie: tipo (US-13) e "Togli serie" su ogni riga (US-15) -----------------------
@@ -665,6 +675,7 @@
                     onsetoptions={(setId) => openSet(exercise.id, setId)}
                     ondetails={() => {
                       detailsFor = exercise.id;
+                      detailsFromMenu = false;
                       detailsOpen = true;
                     }}
                     onoptions={() => {
@@ -782,6 +793,7 @@
     planned={variantExercise.variantOf ?? variantExercise.exerciseId}
     alternatives={variantEntry?.alternatives ?? []}
     onpick={pickVariant}
+    onback={() => backToMenu(variantFor)}
   />
 {/if}
 
@@ -791,6 +803,7 @@
   exerciseId={detailsExercise?.exerciseId ?? null}
   previous={session && detailsExercise ? previousExercise(store.archive, session, detailsExercise.exerciseId) : null}
   {today}
+  onback={detailsFromMenu ? () => backToMenu(detailsFor) : undefined}
 />
 
 <BottomSheet bind:open={optionsOpen} title={optionsExercise ? exerciseName(store.archive, optionsExercise.exerciseId) : ''}>
@@ -799,7 +812,7 @@
     <li><button type="button" class="option" onclick={() => option('details')}><Info size={20} aria-hidden="true" />Come si esegue</button></li>
     {#if optionsExercise}
       <li>
-        <a class="option" href={`${appUrl('/exercise')}?id=${encodeURIComponent(optionsExercise.exerciseId)}`}><ChartLine size={20} aria-hidden="true" />Progressi</a>
+        <a class="option" href={`${appUrl('/exercise')}?id=${encodeURIComponent(optionsExercise.exerciseId)}${detail ? '' : '&from=workout'}`}><ChartLine size={20} aria-hidden="true" />Progressi</a>
       </li>
     {/if}
     <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
@@ -824,7 +837,7 @@
   </ul>
 </BottomSheet>
 
-<BottomSheet bind:open={restOpen} title={restExercise ? exerciseName(store.archive, restExercise.exerciseId) : ''}>
+<BottomSheet bind:open={restOpen} title={restExercise ? exerciseName(store.archive, restExercise.exerciseId) : ''} onback={() => backToMenu(restFor)}>
   {#if restExercise}
     <Stepper
       label="Recupero"
@@ -945,8 +958,11 @@
     gap: 0.375rem;
     margin: 0;
   }
+  /* come la maniglia dell'esercizio (.lead di WorkoutExercise): sporge nell'imbottitura, così maniglia e catena
+     stanno in colonna con maniglia e nome sotto */
   .superset-caption :global(.reorder-handle) {
     width: 2rem;
+    margin-left: -0.75rem;
   }
   /* durante il trascinamento le altre righe fanno posto scorrendo; quella trascinata segue il dito */
   .shifting {

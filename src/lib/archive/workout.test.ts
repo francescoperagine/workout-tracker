@@ -79,6 +79,12 @@ describe('US-12 precedente e spunta', () => {
     expect(setNumbers(current.sets)).toEqual([1, 0, 0, 2]);
   });
 
+  it('una serie non spuntata l’ultima volta non sfasa il precedente delle altre', () => {
+    const previous = exercise('p', 'x', [set('1', 30, 10, false), set('2', 30, 10), set('3', 40, 8)]);
+    const current = exercise('c', 'x', [set('a', null, null, false), set('b', null, null, false), set('d', null, null, false)]);
+    expect(previousSets(current, previous)).toEqual([{ kg: 30, reps: 10 }, { kg: 40, reps: 8 }, null]);
+  });
+
   it('la spunta su una riga vuota conferma il precedente; senza ripetizioni non si spunta', () => {
     const empty = set('s', null, null, false);
     expect(completedSet(empty, { kg: 40, reps: 8 }, NOW)).toEqual({ ...empty, kg: 40, reps: 8, completedAt: NOW });

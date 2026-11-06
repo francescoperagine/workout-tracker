@@ -15,6 +15,16 @@ test.beforeEach(async ({ page }) => {
 /** Riga di un giorno nella settimana (pulsante con l'etichetta completa del giorno) */
 const dayRow = (page: Page, label: RegExp) => page.getByRole('button', { name: label });
 
+/** Riga di un giorno nella settimana tipo: apre il foglio della scelta */
+const planRow = (page: Page, weekday: string) => page.locator(`#plan-${weekday}`);
+
+/** Sceglie la scheda (o Riposo, Niente) di un giorno della settimana tipo dal suo foglio */
+async function pickWeekly(page: Page, weekday: string, label: string) {
+  await planRow(page, weekday).click();
+  await sheet(page).getByRole('button', { name: label, exact: true }).click();
+  await expect(sheet(page)).toHaveCount(0);
+}
+
 test.describe('US-04 settimana tipo', () => {
   test('US-04 pianifico B il giovedì → giovedì Oggi propone B', async ({ page }) => {
     await seedArchive(page, archiveWith({ routines: starterRoutines() }));
@@ -24,7 +34,11 @@ test.describe('US-04 settimana tipo', () => {
 
     await page.goto('calendar/');
     await expect(page.getByText('Nessun giorno ha ancora una scheda.')).toBeVisible();
-    await page.getByLabel('giovedì', { exact: true }).selectOption({ label: 'Scheda B' });
+    await page.getByRole('link', { name: 'Assegna le schede ai giorni' }).click();
+    await expect(planRow(page, 'mon')).toBeFocused();
+    await pickWeekly(page, 'thu', 'Scheda B');
+    await expect(planRow(page, 'thu')).toHaveAccessibleName('giovedì Scheda B');
+    await expect(planRow(page, 'thu')).toBeFocused();
     await expect.poll(async () => (await storedArchive(page))?.schedule).toEqual({ thu: 'routine-b' });
     await expect(page.getByText('Nessun giorno ha ancora una scheda.')).toHaveCount(0);
     await expect(dayRow(page, /^giovedì 8 ottobre, oggi: Scheda B, in programma/)).toBeVisible();
@@ -48,13 +62,18 @@ test.describe('US-04 settimana tipo', () => {
     await expect(page.getByText('«Scheda B» è archiviata: questo giorno non propone niente.')).toBeVisible();
     await expect(dayRow(page, /^lunedì 12 ottobre: Niente in programma/)).toBeVisible();
     // l'archiviata non si può scegliere
-    await expect(page.getByLabel('martedì', { exact: true }).locator('option', { hasText: 'Scheda B' })).toHaveCount(0);
+    await planRow(page, 'tue').click();
+    await expect(sheet(page).getByRole('heading', { name: 'Ogni martedì' })).toBeFocused();
+    await expect(sheet(page).getByRole('button', { name: 'Niente', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(sheet(page).getByRole('button', { name: 'Scheda B', exact: true })).toHaveCount(0);
+    await sheet(page).getByRole('button', { name: 'Chiudi' }).click();
 
-    await page.getByLabel('lunedì', { exact: true }).selectOption({ label: 'Scheda A' });
+    await expect(planRow(page, 'mon')).toHaveAccessibleName('lunedì Scheda B (archiviata)');
+    await pickWeekly(page, 'mon', 'Scheda A');
     await expect(page.getByText('è archiviata')).toHaveCount(0);
-    await page.getByLabel('sabato', { exact: true }).selectOption({ label: 'Riposo' });
+    await pickWeekly(page, 'sat', 'Riposo');
     await expect(dayRow(page, /^sabato 10 ottobre: Riposo$/)).toBeVisible();
-    await page.getByLabel('sabato', { exact: true }).selectOption({ label: 'Niente' });
+    await pickWeekly(page, 'sat', 'Niente');
     await expect.poll(async () => (await storedArchive(page))?.schedule).toEqual({ mon: 'routine-a' });
   });
 });
@@ -248,7 +267,7 @@ test.describe('US-06 eccezione per una sola data', () => {
     await expect(sheet(page).getByRole('heading', { name: 'martedì 13 ottobre' })).toBeVisible();
     await sheet(page).getByRole('button', { name: 'Cambia la settimana tipo' }).click();
     await expect(sheet(page)).toHaveCount(0);
-    await expect(page.getByLabel('martedì', { exact: true })).toBeFocused();
+    await expect(planRow(page, 'tue')).toBeFocused();
   });
 });
 

@@ -61,8 +61,11 @@
 
   $effect(() => {
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    else if (!open && dialog.open) dialog.close();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // showModal metterebbe il focus su «Riduci il timer», con l'anello: il focus va alla finestra
+      dialog.focus();
+    } else if (!open && dialog.open) dialog.close();
   });
 
   function onCancel(event: Event) {
@@ -131,7 +134,7 @@
     {@render screen()}
   </div>
 {:else}
-  <dialog bind:this={dialog} class="shell overlay" aria-label="Recupero" oncancel={onCancel}>
+  <dialog bind:this={dialog} class="shell overlay" aria-label="Recupero" tabindex="-1" oncancel={onCancel}>
     {#if open}
       {@render screen()}
     {/if}
@@ -139,6 +142,9 @@
 {/if}
 
 <style>
+  .overlay:focus {
+    outline: none;
+  }
   .overlay {
     width: 100%;
     max-width: none;

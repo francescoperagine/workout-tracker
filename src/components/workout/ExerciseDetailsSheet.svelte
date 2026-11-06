@@ -14,9 +14,11 @@
     exerciseId: string | null;
     previous: PreviousExercise | null;
     today: string;
+    /** aperto dal menu ⋯: «Torna al menu» */
+    onback?: () => void;
   }
 
-  let { open = $bindable(false), archive, exerciseId, previous, today }: Props = $props();
+  let { open = $bindable(false), archive, exerciseId, previous, today, onback }: Props = $props();
 
   const details = $derived(exerciseId ? exerciseDetails(exerciseId) : null);
   const custom = $derived(exerciseId ? findExercise(archive, exerciseId)?.custom === true : false);
@@ -32,7 +34,7 @@
   });
 </script>
 
-<BottomSheet bind:open title={exerciseId ? exerciseName(archive, exerciseId) : ''}>
+<BottomSheet bind:open title={exerciseId ? exerciseName(archive, exerciseId) : ''} {onback}>
   <div class="details">
     {#if hasDetails(details)}
       {#if imageSrc}

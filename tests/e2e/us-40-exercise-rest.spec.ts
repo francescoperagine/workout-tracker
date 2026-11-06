@@ -120,4 +120,47 @@ test.describe('US-40 recupero dal menu dell’esercizio', () => {
     await expect(page.locator('li.block.current')).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   });
+
+  test('US-40 i fogli del menu tornano al menu, il focus parte dal titolo e «Progressi» torna all’allenamento', async ({ page }) => {
+    await seedArchive(page, archiveWith({ routines: starterRoutines(), sessions: [pastSession('routine-a', '2026-10-06')] }));
+    await page.goto('');
+    await page.getByRole('button', { name: 'Inizia allenamento' }).click();
+    await expectPage(page, 'workout/');
+    const squat = region(page, SQUAT.exerciseId);
+    const title = name(SQUAT.exerciseId);
+
+    await openOptions(page, squat);
+    // all'apertura il focus è sul titolo del foglio, non su ✕
+    await expect(sheet(page).getByRole('heading', { name: title })).toBeFocused();
+    for (const [item, heading] of [
+      ['Recupero · 2:00', title],
+      ['Come si esegue', title],
+      ['Cambia esercizio', 'Cambia esercizio'],
+    ] as const) {
+      await sheet(page).getByRole('button', { name: item }).click();
+      await expect(sheet(page).getByRole('heading', { name: heading })).toBeFocused();
+      await sheet(page).getByRole('button', { name: 'Torna al menu' }).click();
+      await expect(sheet(page).getByRole('button', { name: item })).toBeVisible();
+    }
+    // ✕ chiude tutto
+    await sheet(page).getByRole('button', { name: 'Recupero · 2:00' }).click();
+    await sheet(page).getByRole('button', { name: 'Chiudi' }).click();
+    await expect(sheet(page)).toHaveCount(0);
+    // aperto da ⓘ, «Come si esegue» non ha il ritorno al menu
+    await squat.getByRole('button', { name: /: come si esegue$/ }).click();
+    await expect(sheet(page).getByRole('button', { name: 'Torna al menu' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+
+    // il timer a tutto schermo prende il focus sulla finestra, non su «Riduci il timer»
+    await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
+    const timer = page.getByRole('dialog', { name: 'Recupero' });
+    await expect(timer).toBeFocused();
+    await timer.getByRole('button', { name: 'Salta il recupero' }).click();
+
+    await openOptions(page, squat);
+    await sheet(page).getByRole('link', { name: 'Progressi' }).click();
+    await expect(page).toHaveURL(/\/exercise\/\?id=.*&from=workout$/);
+    await page.getByRole('link', { name: 'Allenamento', exact: true }).click();
+    await expectPage(page, 'workout/');
+  });
 });

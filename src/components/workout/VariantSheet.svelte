@@ -19,9 +19,11 @@
     planned: string;
     alternatives: readonly string[];
     onpick: (choice: VariantChoice) => void;
+    /** aperto dal menu ⋯: «Torna al menu» */
+    onback?: () => void;
   }
 
-  let { open = $bindable(false), catalog, current, planned, alternatives, onpick }: Props = $props();
+  let { open = $bindable(false), catalog, current, planned, alternatives, onpick, onback }: Props = $props();
 
   const OTHER = '__other__';
   const uid = Math.random().toString(36).slice(2, 8);
@@ -60,7 +62,7 @@
   }
 </script>
 
-<BottomSheet bind:open title="Cambia esercizio">
+<BottomSheet bind:open title="Cambia esercizio" {onback}>
   <p class="intro">Se la macchina è occupata. Vale solo per oggi: la scheda non cambia, e «precedente» segue l’esercizio scelto.</p>
   <fieldset>
     <legend class="sr-only">Esercizio da fare</legend>
