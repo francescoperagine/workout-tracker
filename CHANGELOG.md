@@ -3,6 +3,35 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-014
+
+Date: 2026-11-06
+
+Summary:
+**Allenamento in palestra, incremento 4: suono a tre campane e allenamento dimenticato (feature
+`workout-gym-ux`, US-41).** Il recupero finisce con tre note brevi a campana, ascendenti (Do6, Mi6, Sol6:
+sinusoide con un'armonica all'ottava, attacco morbido, coda di ~0,8 s, compressore prima dell'uscita) al posto dei
+tre bip a onda quadra. Un allenamento in corso la cui ultima serie spuntata, o l'inizio, è di più di 3 ore fa è
+«dimenticato»: aprendo l'allenamento o Oggi un foglio «Allenamento ancora aperto» dice l'ora e propone «Termina
+alle 17:42» (conclude a quell'ora e mostra il riepilogo) o, senza serie fatte, «Annulla allenamento» con «Annulla»
+nell'avviso; «Continua» non lo ripropone nella stessa visita.
+
+Deliverables:
+- `src/lib/rest-alert.ts`: `playEndSound` a tre campane con `PeriodicWave` e `DynamicsCompressorNode`.
+- `src/lib/archive/sessions.ts`: `FORGOTTEN_AFTER`, `forgottenSession`.
+- `src/components/workout/ForgottenSheet.svelte` (nuovo, anche in `/kit`), usato da `Workout.svelte` e
+  `src/components/today/Today.svelte` (l'avviso di Oggi ora ha l'azione «Annulla»).
+- Test: `sessions.test.ts` (US-41); e2e `us-41-forgotten-workout.spec.ts` (orologio controllato) e il finto
+  `AudioContext` di `us-21-us-26-rest-timer.spec.ts`.
+- Documenti: US-41 in `docs/archive/restyling/USER-STORIES.md`, brief `route-workout`, `docs/ARCHITECTURE.md`, SPEC.
+
+Limiti noti: «Riapri» su un allenamento di giorni prima lo rende subito «dimenticato» e il foglio compare (come
+vuole la regola delle 3 ore; `us-27-us-29-history.spec.ts` lo chiude con «Continua»). Il suono nuovo non è stato ascoltato sul telefono (non collegato) né provato in palestra; la sinusoide
+pura il 12 ottobre si sentiva poco, quindi resta da provare lì. Viste del foglio con Playwright a 390×844 e 320×568
+nei due temi.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0). Al primo giro `us-37` su desktop è caduto una volta in `clock.pauseAt` («Cannot fast-forward to the past», orologio finto sotto carico), verde al secondo.
+
 ## INC-013
 
 Date: 2026-11-06

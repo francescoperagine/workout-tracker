@@ -15,15 +15,20 @@
   import WeekStrip from '../calendar/WeekStrip.svelte';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import Toast from '../ui/Toast.svelte';
+  import ForgottenSheet from '../workout/ForgottenSheet.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import {
     ArchiveError,
     activeRoutines,
     currentExercise,
     exerciseName,
+    finishSession,
+    forgottenSession,
     lastFinishedSession,
     quickStart,
+    removeSession,
     reopenSession,
+    restoreSession,
     routineLastDone,
     sessionInProgress,
     sessionsOn,
@@ -31,6 +36,7 @@
     summarizeSession,
     toDateKey,
     type Archive,
+    type RemovedSession,
     type Routine,
   } from '../../lib/archive';
   import { formatElapsed, formatLongDay, formatOnDay, formatRelativeDay, plural } from '../../lib/format';
@@ -78,7 +84,7 @@
   const selected = $derived(chosen && rows.some((r) => r.routine.id === chosen) ? chosen : start.suggested);
   const selectedRoutine = $derived(rows.find((r) => r.routine.id === selected)?.routine ?? null);
 
-  let toast: { message: string } | null = $state(null);
+  let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
 
   function edit(change: (archive: Archive) => Archive): boolean {
     try {
@@ -102,6 +108,37 @@
 
   function reopen(id: string) {
     if (edit((a) => reopenSession(a, id))) void navigate(appUrl('/workout'));
+  }
+
+  // allenamento dimenticato aperto (US-41): il foglio si apre una volta per visita della pagina
+  const forgotten = $derived(ready && running ? forgottenSession(running, now) : null);
+  let forgottenOpen = $state(false);
+  let forgottenShown: string | null = null;
+  $effect(() => {
+    if (!forgotten || !running || forgottenShown === running.id) return;
+    forgottenShown = running.id;
+    forgottenOpen = true;
+  });
+
+  /** «Termina alle …»: conclude all'ora dell'ultima serie e mostra il riepilogo, come «Termina» */
+  function finishForgotten(end: number) {
+    if (!running) return;
+    const id = running.id;
+    if (edit((a) => finishSession(a, id, end))) void navigate(`${appUrl('/workout')}?summary=${encodeURIComponent(id)}`);
+  }
+
+  /** «Annulla allenamento» senza serie fatte: come nell'allenamento, con «Annulla» nell'avviso */
+  function discardForgotten() {
+    if (!running) return;
+    const id = running.id;
+    let removed: RemovedSession | null = null;
+    const ok = edit((a) => {
+      const result = removeSession(a, id);
+      removed = result.removed;
+      return result.archive;
+    });
+    const undo = removed as RemovedSession | null;
+    if (ok && undo) toast = { message: 'Allenamento annullato.', action: 'Annulla', onaction: () => edit((a) => restoreSession(a, undo)) };
   }
 
   function pickOther(routine: Routine) {
@@ -282,7 +319,9 @@
   </BottomSheet>
 {/if}
 
-<Toast message={toast?.message ?? null} onclose={() => (toast = null)} />
+<ForgottenSheet bind:open={forgottenOpen} {forgotten} {today} onfinish={finishForgotten} ondiscard={discardForgotten} />
+
+<Toast message={toast?.message ?? null} action={toast?.action} onaction={toast?.onaction} onclose={() => (toast = null)} />
 
 <style>
   .today {

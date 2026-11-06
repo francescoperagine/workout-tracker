@@ -79,6 +79,27 @@ export function finishSession(archive: Archive, id: string, now: number): Archiv
   return { ...archive, sessions: archive.sessions.map((s) => (s.id === id ? { ...s, end: Math.max(now, s.start) } : s)) };
 }
 
+/** Oltre questo tempo dall'ultima serie spuntata (o dall'inizio) un allenamento in corso è dimenticato (US-41). */
+export const FORGOTTEN_AFTER = 3 * 3_600_000;
+
+export interface ForgottenSession {
+  /** l'ultima serie spuntata, o l'inizio se nessuna: con «Termina alle …» diventa la fine */
+  at: number;
+  lastSet: boolean;
+}
+
+/**
+ * Allenamento in corso dimenticato aperto (US-41): l'ultima serie spuntata, o l'inizio se nessuna, è di più
+ * di 3 ore fa. null se è concluso o non è dimenticato.
+ */
+export function forgottenSession(session: Session, now: number): ForgottenSession | null {
+  if (session.end !== null) return null;
+  let last: number | null = null;
+  for (const e of session.exercises) for (const s of e.sets) if (s.completedAt !== null && (last === null || s.completedAt > last)) last = s.completedAt;
+  const at = last ?? session.start;
+  return now - at > FORGOTTEN_AFTER ? { at, lastSet: last !== null } : null;
+}
+
 export interface RemovedSession {
   session: Session;
   index: number;

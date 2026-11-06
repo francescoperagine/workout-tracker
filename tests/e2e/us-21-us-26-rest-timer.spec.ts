@@ -34,7 +34,13 @@ test.beforeEach(async ({ page }) => {
       }
       createOscillator() {
         log.tones++;
-        return { type: '', frequency: { value: 0 }, connect: (node: unknown) => node, start() {}, stop() {} };
+        return { type: '', frequency: { value: 0 }, setPeriodicWave() {}, connect: (node: unknown) => node, start() {}, stop() {} };
+      }
+      createPeriodicWave() {
+        return {};
+      }
+      createDynamicsCompressor() {
+        return { connect: (node: unknown) => node };
       }
       createGain() {
         return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect: (node: unknown) => node };

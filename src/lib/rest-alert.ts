@@ -24,28 +24,33 @@ export function unlockAudio(): void {
 }
 
 /**
- * Tre toni brevi e acuti, distinguibili nel rumore della sala pesi. Onda quadra: le armoniche cadono
- * tra 2 e 5 kHz, dove l'altoparlante di un telefono rende di più (con la sinusoide si sentiva poco,
- * prova in palestra del 12 ottobre 2026). Il volume resta quello dei contenuti multimediali.
+ * Tre campane brevi e ascendenti (Do6, Mi6, Sol6), al posto dei bip a onda quadra che suonavano aspri
+ * (INC-014). Ogni nota è una sinusoide con un'armonica leggera all'ottava, attacco morbido (~10 ms) e coda
+ * esponenziale (~0,8 s); le fondamentali tra 1 e 2 kHz, dove l'altoparlante del telefono rende. Il compressore tiene
+ * alto il volume senza distorcere quando le code si sovrappongono. Limite: la sinusoide pura si sentiva poco
+ * in palestra (prova del 12 ottobre 2026); va riprovata lì. Il volume resta quello dei contenuti multimediali.
  */
 export function playEndSound(): void {
   const ctx = audioContext();
   if (!ctx) return;
   if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+  const out = ctx.createDynamicsCompressor();
+  out.connect(ctx.destination);
+  // fondamentale e armonica all'ottava, più piano: un oscillatore per nota
+  const bell = ctx.createPeriodicWave(new Float32Array([0, 0, 0]), new Float32Array([0, 1, 0.25]));
   const t0 = ctx.currentTime + 0.02;
-  [0, 0.34, 0.68].forEach((offset, i) => {
+  [1047, 1319, 1568].forEach((frequency, i) => {
+    const start = t0 + i * 0.18;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = i === 2 ? 1320 : 880;
-    const start = t0 + offset;
+    osc.setPeriodicWave(bell);
+    osc.frequency.value = frequency;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.9, start + 0.01);
-    gain.gain.setValueAtTime(0.9, start + 0.18);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
-    osc.connect(gain).connect(ctx.destination);
+    gain.gain.exponentialRampToValueAtTime(0.8, start + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.8);
+    osc.connect(gain).connect(out);
     osc.start(start);
-    osc.stop(start + 0.3);
+    osc.stop(start + 0.85);
   });
 }
 

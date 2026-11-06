@@ -193,6 +193,8 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     await page.getByRole('button', { name: 'Riapri allenamento' }).click();
     await expectPage(page, 'workout/');
     await expect.poll(async () => (await storedArchive(page))!.sessions[0].end).toBeNull();
+    // l'ultima serie è di giorni fa: per US-41 l'allenamento riaperto è «dimenticato» e il foglio lo dice
+    await page.getByRole('dialog', { name: 'Allenamento ancora aperto' }).getByRole('button', { name: 'Continua' }).click();
     await expect(page.getByRole('heading', { name: 'Allenamento libero' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Termina' })).toBeVisible();
   });

@@ -1,6 +1,6 @@
 # SPEC — workout-gym-ux
 
-**Livello:** Feature · **Stato:** in esecuzione, incrementi 1–3 fatti (INC-011, INC-012, INC-013), si riprende dal 4 · **Base:** `main` a `de2f0bb` (INC-010)
+**Livello:** Feature · **Stato:** in esecuzione, incrementi 1–4 fatti (INC-011…INC-014), si riprende dal 5 · **Base:** `main` a `de2f0bb` (INC-010)
 **Data del piano:** 6 novembre 2026 · **Origine:** revisione di Francesco sul telefono e confronto con Strong
 (`screenshots/ux-2026-11-06/wt-*.png`, `strong-*.png`; `screenshots/strong-*.png`; non tracciati)
 
@@ -248,3 +248,8 @@ senza modalità (§3.6). `docs/todo.md` è di Francesco: non toccarlo.
   `plannedReps` e `placeholderSets` (archivio, sessione, esercizio). `nextSetText` usa la stessa fonte ma tiene il
   testo intero delle ripetizioni della scheda («6–8»): il test US-21 lo chiedeva e §3.1.9 lo prende a modello.
   «Annulla» dopo ✓✓ toglie solo le spunte, come la riga singola: i valori scritti dal segnaposto restano.
+- **INC-014 (incremento 4, 6 novembre 2026).** Le campane usano una `PeriodicWave` (fondamentale più ottava a
+  0,25): un oscillatore per nota. `forgottenSession` sta in `sessions.ts`; `ForgottenSheet` è presentazionale e
+  chi lo usa lo apre una volta per visita (anche quando l'ora avanza con la pagina aperta). «Termina alle …» su
+  Oggi porta al riepilogo come «Termina». Suono non ascoltato: telefono non collegato. «Riapri» su una sessione
+  vecchia la rende subito dimenticata: il foglio compare (regola della SPEC alla lettera), domanda aperta a Francesco.

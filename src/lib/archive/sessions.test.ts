@@ -3,7 +3,9 @@ import { starterRoutines, quickStart, sessionInProgress } from './routines';
 import {
   FREE_SESSION_NAME,
   currentExercise,
+  FORGOTTEN_AFTER,
   finishSession,
+  forgottenSession,
   lastFinishedSession,
   removeSession,
   reopenSession,
@@ -118,5 +120,32 @@ describe('US-20 seconda sessione nello stesso giorno', () => {
     const start = quickStart(done, '2026-10-10');
     expect(start.rows.find((r) => r.planned)?.lastDone).toBe('2026-10-10');
     expect(start.suggested).toBe('routine-b');
+  });
+});
+
+describe('US-41 allenamento dimenticato', () => {
+  const HOUR = 3_600_000;
+
+  it('senza serie spuntate conta l’inizio; oltre 3 ore è dimenticato', () => {
+    const { session } = startSession(withAB(), 'routine-a', NOW);
+    expect(forgottenSession(session, NOW + FORGOTTEN_AFTER)).toBeNull();
+    expect(forgottenSession(session, NOW + FORGOTTEN_AFTER + 1)).toEqual({ at: NOW, lastSet: false });
+  });
+
+  it('con serie spuntate conta l’ultima, in qualunque esercizio', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const logged = logFirstSet(archive, session.id).sessions[0];
+    const later = { ...logged, exercises: logged.exercises.map((e, i) => (i === 2 ? { ...e, sets: e.sets.map((x, j) => (j ? x : { ...x, reps: 8, completedAt: NOW + HOUR })) } : e)) };
+    expect(forgottenSession(later, NOW + 3.5 * HOUR)).toBeNull();
+    expect(forgottenSession(later, NOW + 4.5 * HOUR)).toEqual({ at: NOW + HOUR, lastSet: true });
+  });
+
+  it('un allenamento concluso non è mai dimenticato; «Termina alle …» chiude all’ultima serie', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const logged = logFirstSet(archive, session.id);
+    const forgotten = forgottenSession(logged.sessions[0], NOW + 14 * HOUR)!;
+    const ended = finishSession(logged, session.id, forgotten.at).sessions[0];
+    expect(ended.end).toBe(NOW + 1);
+    expect(forgottenSession(ended, NOW + 14 * HOUR)).toBeNull();
   });
 });

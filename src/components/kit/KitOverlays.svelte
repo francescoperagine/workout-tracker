@@ -5,7 +5,8 @@
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
-  import { emptyArchive, mergeExercise, type Archive } from '../../lib/archive';
+  import ForgottenSheet from '../workout/ForgottenSheet.svelte';
+  import { emptyArchive, mergeExercise, toDateKey, type Archive, type ForgottenSession } from '../../lib/archive';
 
   const variants = ['Panca piana bilanciere', 'Panca piana manubri', 'Chest press'];
   // demo: in app i suggerimenti vengono dal catalogo
@@ -25,6 +26,16 @@
     catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift' } },
   });
   let picked = $state('');
+  // allenamento dimenticato (US-41): ultima serie ieri alle 17:42, o nessuna serie
+  let forgottenOpen = $state(false);
+  let forgotten: ForgottenSession | null = $state(null);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(17, 42, 0, 0);
+  const openForgotten = (lastSet: boolean) => {
+    forgotten = { at: yesterday.getTime(), lastSet };
+    forgottenOpen = true;
+  };
   const describe = (p: PickedExercise) => (p.kind === 'new' ? `nuovo «${p.name}»` : p.id);
 
   const suggestions = $derived(
@@ -49,6 +60,8 @@
   <button type="button" class="btn btn-danger" onclick={() => (dialogOpen = true)}><Trash aria-hidden="true" />Elimina sessione</button>
   <button type="button" class="btn btn-secondary" onclick={() => (toast = 'Serie 3 rimossa')}>Rimuovi serie</button>
   <button type="button" class="btn btn-secondary" onclick={() => (pickerOpen = true)}>Aggiungi esercizio</button>
+  <button type="button" class="btn btn-secondary" onclick={() => openForgotten(true)}>Allenamento dimenticato</button>
+  <button type="button" class="btn btn-secondary" onclick={() => openForgotten(false)}>Dimenticato, senza serie</button>
 </div>
 <p class="hint">Variante scelta: {variant}{picked ? ` · esercizio: ${picked}` : ''}</p>
 
@@ -114,6 +127,14 @@
   text="Spariscono 8 esercizi e 24 serie. Non si può annullare: se vuoi tenerne una copia, esporta prima un backup."
   confirmLabel="Elimina sessione"
   onconfirm={() => (toast = 'Sessione eliminata (demo: nessun dato toccato)')}
+/>
+
+<ForgottenSheet
+  bind:open={forgottenOpen}
+  {forgotten}
+  today={toDateKey(new Date())}
+  onfinish={() => (toast = 'Terminato all’ora dell’ultima serie (demo: nessun dato toccato)')}
+  ondiscard={() => (toast = 'Allenamento annullato (demo: nessun dato toccato)')}
 />
 
 <Toast message={toast} action={toast?.startsWith('Serie') ? 'Annulla' : undefined} onaction={() => {}} onclose={() => (toast = null)} />

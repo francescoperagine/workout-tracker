@@ -30,6 +30,7 @@
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
   import ExerciseDetailsSheet from './ExerciseDetailsSheet.svelte';
+  import ForgottenSheet from './ForgottenSheet.svelte';
   import SessionSummary from './SessionSummary.svelte';
   import RestTimerBar from './RestTimerBar.svelte';
   import VariantSheet, { type VariantChoice } from './VariantSheet.svelte';
@@ -47,6 +48,7 @@
     exerciseHasValues,
     exerciseName,
     finishSession,
+    forgottenSession,
     loadRecords,
     moveKind,
     moveSessionExercise,
@@ -532,12 +534,22 @@
     else finish();
   }
 
-  function finish() {
+  function finish(end = Date.now()) {
     if (!session) return;
     const id = session.id;
     // il riepilogo prende il posto dell'allenamento: "indietro" torna a dove si era prima
-    if (edit((a) => finishSession(a, id, Date.now()))) void navigate(`${appUrl('/workout')}?summary=${encodeURIComponent(id)}`, { history: 'replace' });
+    if (edit((a) => finishSession(a, id, end))) void navigate(`${appUrl('/workout')}?summary=${encodeURIComponent(id)}`, { history: 'replace' });
   }
+
+  // allenamento dimenticato aperto (US-41): il foglio si apre una volta per visita della pagina
+  const forgotten = $derived(session && !detail ? forgottenSession(session, now) : null);
+  let forgottenOpen = $state(false);
+  let forgottenShown: string | null = null;
+  $effect(() => {
+    if (!forgotten || !session || forgottenShown === session.id) return;
+    forgottenShown = session.id;
+    forgottenOpen = true;
+  });
 
   function reopen(id: string) {
     if (edit((a) => reopenSession(a, id))) void navigate(appUrl('/workout'), { history: 'replace' });
@@ -865,8 +877,10 @@
   text={`${pendingSets === 1 ? 'Resta 1 serie da fare' : `Restano ${pendingSets} serie da fare`}${pendingExercises > 1 ? ` in ${pendingExercises} esercizi` : ''}. Le serie fatte sono salvate, e dal riepilogo puoi riaprire l’allenamento.`}
   confirmLabel="Termina"
   danger={false}
-  onconfirm={finish}
+  onconfirm={() => finish()}
 />
+
+<ForgottenSheet bind:open={forgottenOpen} {forgotten} {today} onfinish={finish} ondiscard={askDiscard} />
 
 <ConfirmDialog
   bind:open={discardOpen}
