@@ -18,29 +18,27 @@ import KitDays from '../components/kit/KitDays.svelte';
 import { appUrl } from '../lib/paths';
 import Plus from '@lucide/astro/icons/plus';
 import Trash from '@lucide/astro/icons/trash';
+import CircleAlert from '@lucide/astro/icons/circle-alert';
 import Dumbbell from '@lucide/astro/icons/dumbbell';
 import Inbox from '@lucide/astro/icons/inbox';
 
 // Token di colore mostrati nel kit, con il loro uso (testo per chi legge la pagina)
 const contentColors = [
-  ['background', 'Fondo della pagina'],
-  ['surface', 'Pannelli e fogli'],
-  ['field', 'Campi'],
-  ['foreground', 'Testo'],
-  ['muted', 'Etichette, metadati, segnaposto'],
-  ['line', 'Separatori'],
-  ['line-strong', 'Bordi dei controlli'],
-  ['accent', 'Azione primaria, selezione'],
-  ['accent-text', 'Link, icone attive'],
-  ['done', 'Serie fatta'],
-  ['danger', 'Azioni distruttive, errori'],
-  ['warning-bg', 'Avvisi'],
-];
-const shellColors = [
-  ['shell', 'Intestazione, barre, timer'],
-  ['shell-accent', 'Accento lime sul guscio'],
-  ['level', 'Livello del timer'],
-  ['shell-muted', 'Testo secondario sul guscio'],
+  ['bg', 'Fondo della pagina, campi'],
+  ['surface', 'Card, fogli, dialog, barre'],
+  ['text', 'Testo principale'],
+  ['text-muted', 'Testo secondario, segnaposto'],
+  ['border', 'Divisori e bordi decorativi'],
+  ['border-control', 'Bordi dei controlli'],
+  ['accent', 'Azione primaria, toggle attivo'],
+  ['accent-pressed', 'Accento premuto'],
+  ['accent-text', 'Link e testo accento'],
+  ['accent-indicator', 'Timer, progresso, focus, esercizio corrente'],
+  ['accent-tint', 'Fondo dell’esercizio corrente'],
+  ['done', 'Serie ed esercizio completati'],
+  ['danger', 'Errori e azioni distruttive'],
+  ['on-danger', 'Testo sul pulsante distruttivo'],
+  ['highlight', 'Trofei e record, seconda serie di un confronto'],
 ];
 const weightUnits = [
   { value: 'kg', label: 'kg' },
@@ -54,8 +52,8 @@ const weightUnits = [
   <main class="mx-auto flex max-w-2xl flex-col gap-12 px-4 pt-6 pb-40">
     <section aria-labelledby="s-theme" class="flex flex-col gap-3">
       <h2 id="s-theme" class="text-page-title font-bold">Tema</h2>
-      <p class="text-muted">
-        Il contenuto cambia con il tema; il guscio verde scuro resta uguale. La scelta vale per questo dispositivo.
+      <p class="text-text-muted">
+        Contenuto e guscio cambiano insieme con il tema. La scelta vale per questo dispositivo.
       </p>
       <KitTheme client:load />
     </section>
@@ -66,23 +64,10 @@ const weightUnits = [
         {
           contentColors.map(([name, use]) => (
             <li class="flex items-center gap-3">
-              <span class="size-10 shrink-0 rounded-[var(--radius-field)] border border-line" style={`background: var(--color-${name})`} />
+              <span class="size-10 shrink-0 rounded-[var(--radius-field)] border border-border" style={`background: var(--color-${name})`} />
               <span class="min-w-0 text-sm leading-tight">
                 <span class="font-semibold">{name}</span>
-                <span class="block text-muted">{use}</span>
-              </span>
-            </li>
-          ))
-        }
-      </ul>
-      <ul class="shell grid grid-cols-2 gap-x-4 gap-y-3 rounded-[var(--radius-panel)] p-4 sm:grid-cols-4">
-        {
-          shellColors.map(([name, use]) => (
-            <li class="flex items-center gap-3">
-              <span class="size-10 shrink-0 rounded-[var(--radius-field)] border border-shell-line-strong" style={`background: var(--color-${name})`} />
-              <span class="min-w-0 text-sm leading-tight">
-                <span class="font-semibold">{name}</span>
-                <span class="block text-shell-muted">{use}</span>
+                <span class="block text-text-muted">{use}</span>
               </span>
             </li>
           ))
@@ -129,7 +114,7 @@ const weightUnits = [
       <div>
         <label class="label" for="k-rest">Recupero predefinito</label>
         <input id="k-rest" class="field digits" inputmode="numeric" value="1:3" aria-invalid="true" aria-describedby="k-rest-error" />
-        <p class="field-error" id="k-rest-error">Scrivi il recupero come minuti:secondi, ad esempio 1:30.</p>
+        <p class="field-error" id="k-rest-error"><CircleAlert size={16} aria-hidden="true" />Scrivi il recupero come minuti:secondi, ad esempio 1:30.</p>
       </div>
       <div>
         <label class="label" for="k-routine">Scheda di lunedì</label>
@@ -145,7 +130,7 @@ const weightUnits = [
 
     <section aria-labelledby="s-sets" class="flex flex-col gap-3">
       <h2 id="s-sets" class="text-page-title font-bold">Riga serie</h2>
-      <p class="text-muted">
+      <p class="text-text-muted">
         Spunta su una riga vuota: conferma il precedente e parte il recupero. Tocco sul numero: cambia tipo (R, D, C); nell’allenamento apre il foglio della serie, con “Togli serie”.
       </p>
       <KitSetRows client:load />
@@ -153,7 +138,7 @@ const weightUnits = [
 
     <section aria-labelledby="s-reorder" class="flex flex-col gap-3">
       <h2 id="s-reorder" class="text-page-title font-bold">Maniglia di riordino</h2>
-      <p class="text-muted">
+      <p class="text-text-muted">
         Il numero dell’esercizio è la maniglia: si preme e si trascina; nell’allenamento la lista passa alle righe compatte. Con il focus, Su e Giù spostano di un posto.
       </p>
       <KitReorder client:load />
@@ -161,8 +146,8 @@ const weightUnits = [
 
     <section aria-labelledby="s-timer" class="flex flex-col gap-3">
       <h2 id="s-timer" class="text-page-title font-bold">Timer di recupero</h2>
-      <p class="text-muted">
-        Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano lime, alla fine tutto lo schermo. Al rientro dopo lo
+      <p class="text-text-muted">
+        Il livello scende a ogni secondo; negli ultimi 10 s le cifre diventano rosse, alla fine tutto lo schermo. Al rientro dopo lo
         schermo bloccato dice da quanto il recupero è finito. Ridotto, è una barra sopra la barra dell’allenamento.
       </p>
       <div class="grid gap-4 sm:grid-cols-2">
@@ -179,7 +164,7 @@ const weightUnits = [
 
     <section aria-labelledby="s-days" class="flex flex-col gap-3">
       <h2 id="s-days" class="text-page-title font-bold">Giorni del calendario</h2>
-      <p class="text-muted">Ogni stato ha un’icona e un testo, mai il solo colore. Oggi ha il bordo; un tocco porta al giorno nel Calendario.</p>
+      <p class="text-text-muted">Ogni stato ha un’icona e un testo, mai il solo colore. Oggi ha il bordo; un tocco porta al giorno nel Calendario.</p>
       <KitDays client:load />
     </section>
 

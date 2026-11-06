@@ -20,15 +20,15 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Una serie registrata in **1 tocco** se ripete la volta scorsa (la spunta su una riga vuota conferma i valori "precedente"), al massimo 2 campi più la spunta altrimenti (P1). Togliere la spunta annulla.
 - La spunta della serie avvia il recupero (vedi brief del timer).
 - Riordino (US-38, ADR-003): la maniglia (icona a sei punti) sta a sinistra del nome, nella stessa riga (INC-009); premuta e trascinata, la lista passa alle righe del riordino e la riga resta sotto il dito; Su e Giù sulla maniglia spostano di un posto; «Sposta su/giù» anche nel foglio ⋯. L'intestazione «Superserie» ha la maniglia del gruppo intero.
-- «Completa esercizio» (US-37, doppia spunta in accento nella riga delle intestazioni Serie · Precedente · kg · Rip, sopra le spunte delle righe, da INC-009): spunta in un tocco le serie con le ripetizioni; quelle senza restano da fare, in ambra (`warning-bg`, `warning-line`) con «Mancano le ripetizioni: serie N» sotto le righe. Un solo recupero, già ridotto, perché il timer a tutto schermo coprirebbe l'avviso con «Annulla».
+- «Completa esercizio» (US-37, doppia spunta neutra nella riga delle intestazioni Serie · Precedente · kg · Rip, sopra le spunte delle righe, da INC-009): spunta in un tocco le serie con le ripetizioni; quelle senza restano da fare, in ambra (`warning-bg`, `warning-line`) con «Mancano le ripetizioni: serie N» sotto le righe. Un solo recupero, già ridotto, perché il timer a tutto schermo coprirebbe l'avviso con «Annulla».
 - Alla fine, "Termina" porta a un riepilogo: durata, esercizi, serie, volume, record battuti.
 - Contenuto reale: schede A/B del PoC. Esempio: "2a Panca piana bilanciere · 6–8 · 40 kg · recupero 60–75″" in superserie con "2b Rematore manubri, petto su panca inclinata · 8–10 · 12–14 kg per manubrio".
 
 ## Selected direction
 
-- **Autorità visiva:** il mondo del PoC (verde, operativo), esteso a chiaro e scuro nello step 1. Questo brief non sceglie colori né font.
+- **Autorità visiva:** il mondo del PoC (operativo), esteso a chiaro e scuro nello step 1, con la palette a ruoli di INC-010 (inchiostro e carta, accento vermiglio). Questo brief non sceglie colori né font.
 - **Tesi di interazione:** la **riga serie è l'unità di lavoro**. `tipo/n · precedente · peso · rip · ✓`, con la spunta a destra nella zona del pollice. Tutto il resto (nomi, target, note) è contesto attorno alla riga.
-- **Esercizio corrente in evidenza:** il primo esercizio con serie non spuntate è quello "attivo": variante e precedente visibili senza aprire nulla (P7), con il bordo accento sulla card; il target della scheda non si ripete sopra le righe serie (Francesco, 5 novembre 2026). Gli esercizi completati si compattano ma restano modificabili.
+- **Esercizio corrente in evidenza:** il primo esercizio con serie non spuntate è quello "attivo": variante e precedente visibili senza aprire nulla (P7), con il bordo e il velo d'accento sulla card; il target della scheda non si ripete sopra le righe serie (Francesco, 5 novembre 2026). Gli esercizi completati si compattano ma restano modificabili.
 - **Superserie:** gli esercizi del gruppo (2a/2b) sono visivamente legati; dopo la spunta di una serie di 2a il focus passa a 2b, e il recupero parte solo dopo l'ultimo del giro.
 
 ## Scope and boundaries
@@ -61,7 +61,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Isola Svelte persistente tra le pagine (`transition:persist`), dati in kg anche se l'utente usa lb.
 - **Deciso:** la spunta su una riga vuota conferma i valori precedenti (1 tocco, come Strong); senza precedente una riga vuota non si spunta.
 - **Deciso:** il riepilogo è una schermata a sé dopo "Termina".
-- **Deciso (step 9, critique dei flussi):** l'allenamento è una modalità, non una sezione: niente tab bar su `/workout` (a 320×568 si vedevano 1,5 righe serie), «Torna a Oggi» nell'intestazione, rientro dalla mini-barra o da «Riprendi». «Termina» è secondario finché resta una serie da fare e allora chiede conferma; pieno (lime) quando tutto è spuntato. Il segnaposto di una riga vuota prende il peso della serie sopra, se scritto in questa sessione, e la spunta conferma quello; dall'US-36 vale solo per le righe senza valori (esercizi senza storico).
+- **Deciso (step 9, critique dei flussi):** l'allenamento è una modalità, non una sezione: niente tab bar su `/workout` (a 320×568 si vedevano 1,5 righe serie), «Torna a Oggi» nell'intestazione, rientro dalla mini-barra o da «Riprendi». «Termina» è secondario finché resta una serie da fare e allora chiede conferma; pieno (primario) quando tutto è spuntato. Il segnaposto di una riga vuota prende il peso della serie sopra, se scritto in questa sessione, e la spunta conferma quello; dall'US-36 vale solo per le righe senza valori (esercizi senza storico).
 - Superserie (US-09, US-25), note sul carico (US-16), approfondimento (US-19) e più sessioni nello stesso giorno (US-20) sono M. Riordino degli esercizi in sessione (US-15) e data e nome modificabili anche in corso (US-27) sono criteri confermati.
 - Fuori ambito v1: calcolatore dei dischi, calcolatore di riscaldamento, note per singola serie.
 - Il builder non deve inventare: testi degli approfondimenti (oggi vuoti), regole di calcolo dei record oltre a quelle del piano.

@@ -49,11 +49,11 @@
     max-width: 40rem;
     max-height: 85dvh;
     padding: 0 1rem calc(1rem + env(safe-area-inset-bottom));
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--color-border);
     border-bottom: 0;
     border-radius: var(--radius-dialog) var(--radius-dialog) 0 0;
     background: var(--color-surface);
-    color: var(--color-foreground);
+    color: var(--color-text);
     overflow: auto;
     overscroll-behavior: contain;
   }
@@ -70,7 +70,7 @@
     height: 4px;
     margin: 8px auto 0;
     border-radius: var(--radius-field);
-    background: var(--color-line-strong);
+    background: var(--color-border-control);
   }
   header {
     display: flex;

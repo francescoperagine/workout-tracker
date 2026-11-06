@@ -102,16 +102,16 @@
     gap: 0.75rem;
     min-height: 56px;
     padding: 0.375rem 0.5rem 0.375rem 1rem;
-    border-top: 1px solid var(--color-shell-line);
-    color: var(--color-shell-foreground);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text);
     text-decoration: none;
   }
   .mini:hover {
-    background: var(--color-shell-panel);
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .mini :global(.icon) {
     flex-shrink: 0;
-    color: var(--color-shell-accent);
+    color: var(--color-accent-text);
   }
   .text {
     display: flex;
@@ -130,7 +130,7 @@
     font-weight: 650;
   }
   .meta {
-    color: var(--color-shell-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .back {
@@ -138,18 +138,18 @@
     place-items: center;
     flex-shrink: 0;
     width: 56px;
-    border-left: 1px solid var(--color-shell-line);
+    border-left: 1px solid var(--color-border);
     color: inherit;
   }
   .back:hover {
-    background: color-mix(in oklab, transparent 80%, var(--color-shell-panel));
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .go {
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
     gap: 0.125rem;
-    color: var(--color-shell-accent);
+    color: var(--color-accent-text);
     font-weight: 650;
   }
 </style>

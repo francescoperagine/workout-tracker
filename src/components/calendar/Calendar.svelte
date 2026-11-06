@@ -10,6 +10,7 @@
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
+  import Info from '@lucide/svelte/icons/info';
   import DaySheet from './DaySheet.svelte';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
   import Toast from '../ui/Toast.svelte';
@@ -172,9 +173,9 @@
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else}
@@ -196,7 +197,8 @@
       </div>
     {:else if !planned}
       <p class="notice">
-        Nessun giorno ha ancora una scheda. <a href="#week-plan">Assegna le schede ai giorni</a> nella settimana tipo, qui sotto.
+        <Info size={20} aria-hidden="true" />
+        <span>Nessun giorno ha ancora una scheda. <a href="#week-plan">Assegna le schede ai giorni</a> nella settimana tipo, qui sotto.</span>
       </p>
     {/if}
 
@@ -334,8 +336,9 @@
             </select>
             {#if staleDay}
               <p class="stale" id={`plan-${weekday}-stale`}>
-                {staleDay.routine ? `«${staleDay.routine.name}» è archiviata` : 'La scheda non esiste più'}: questo giorno non propone niente.
-                Scegli un’altra scheda{staleDay.routine ? ' o ripristinala in Schede' : ''}.
+                <Info size={16} aria-hidden="true" />
+                <span>                {staleDay.routine ? `«${staleDay.routine.name}» è archiviata` : 'La scheda non esiste più'}: questo giorno non propone niente.
+                Scegli un’altra scheda{staleDay.routine ? ' o ripristinala in Schede' : ''}.</span>
               </p>
             {/if}
           </li>
@@ -355,15 +358,20 @@
     flex-direction: column;
     gap: 1.5rem;
   }
+  /* avviso informativo: text-muted con icona in un riquadro border, nessun colore d'allarme */
   .notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
     margin: 0;
     padding: 0.75rem 1rem;
     border-radius: var(--radius-panel);
-    background: var(--color-warning-bg);
-    color: var(--color-warning);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
   }
-  .notice a {
-    color: inherit;
+  .notice :global(svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
   .period {
     display: flex;
@@ -388,7 +396,7 @@
   }
   .period-when {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .first-upper::first-letter {
@@ -400,7 +408,7 @@
     list-style: none;
   }
   .days li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .day {
     display: grid;
@@ -422,7 +430,7 @@
     background: color-mix(in oklab, var(--color-surface) 70%, transparent);
   }
   .day.today {
-    border-color: var(--color-accent-text);
+    border-color: var(--color-accent-indicator);
     background: var(--color-surface);
   }
   .date {
@@ -432,7 +440,7 @@
     line-height: 1.15;
   }
   .weekday {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     font-weight: 600;
   }
@@ -455,11 +463,11 @@
     white-space: nowrap;
   }
   .what-title.quiet {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-weight: 400;
   }
   .what-note {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -475,11 +483,11 @@
   .accent {
     color: var(--color-accent-text);
   }
-  .warning {
-    color: var(--color-warning);
+  .strong {
+    color: var(--color-text);
   }
   .muted {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .month {
     width: 100%;
@@ -488,7 +496,7 @@
   }
   .month th {
     padding-bottom: 0.25rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-weight: 600;
   }
@@ -518,7 +526,7 @@
     background: color-mix(in oklab, var(--color-surface) 70%, transparent);
   }
   .cell.today {
-    border-color: var(--color-accent-text);
+    border-color: var(--color-accent-indicator);
     background: var(--color-surface);
   }
   .cell-number {
@@ -545,7 +553,7 @@
     gap: 0.375rem;
   }
   .legend-text {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .week-plan {
     display: flex;
@@ -579,8 +587,15 @@
   }
   .stale {
     grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
     margin: 0;
-    color: var(--color-warning);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
+  }
+  .stale :global(svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 </style>

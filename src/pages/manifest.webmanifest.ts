@@ -1,11 +1,12 @@
 // Manifest della PWA (US-03), generato alla build per usare il percorso base (WT_BASE) in
-// start_url, scope e icone. I colori sono lo sfondo dell'icona (grigio molto scuro), uguali nei due temi:
-// la schermata di avvio non è più verde. Il <meta name="theme-color"> di Base.astro resta sul token shell
-// (#142321) finché non cambia la palette dell'app, e a pagina aperta prevale lui.
+// start_url, scope e icone. Il manifest è statico e non può seguire il tema: i colori sono il `bg` del
+// tema scuro, che è anche lo sfondo dell'icona, così la schermata di avvio è una sola. A pagina aperta
+// prevalgono i <meta name="theme-color"> di Base.astro, che seguono il tema.
 import type { APIRoute } from 'astro';
 import { BASE, appUrl } from '../lib/paths';
+import { THEME_COLORS } from '../lib/theme';
 
-const SHELL = '#1C1C1E';
+const SPLASH = THEME_COLORS.dark;
 
 export const GET: APIRoute = () => {
   const manifest = {
@@ -18,8 +19,8 @@ export const GET: APIRoute = () => {
     start_url: BASE,
     scope: BASE,
     display: 'standalone',
-    background_color: SHELL,
-    theme_color: SHELL,
+    background_color: SPLASH,
+    theme_color: SPLASH,
     categories: ['health', 'fitness', 'sports'],
     icons: [
       { src: appUrl('/icons/icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },

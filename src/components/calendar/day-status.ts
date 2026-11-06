@@ -11,14 +11,14 @@ import { formatLongDay } from '../../lib/format';
 export interface StatusLook {
   label: string;
   icon: typeof CircleCheck | null;
-  /** classe del colore dell'icona e del testo dello stato */
-  tone: 'accent' | 'warning' | 'muted';
+  /** classe del colore: accent solo per ciò che è in corso, strong (testo) per i fatti, muted per il resto */
+  tone: 'accent' | 'strong' | 'muted';
 }
 
 export const STATUS_LOOK: Record<DayStatus, StatusLook> = {
-  done: { label: 'Fatto', icon: CircleCheck, tone: 'accent' },
+  done: { label: 'Fatto', icon: CircleCheck, tone: 'strong' },
   'in-progress': { label: 'In corso', icon: CirclePlay, tone: 'accent' },
-  skipped: { label: 'Saltato', icon: CircleX, tone: 'warning' },
+  skipped: { label: 'Saltato', icon: CircleX, tone: 'muted' },
   planned: { label: 'In programma', icon: CircleDashed, tone: 'muted' },
   rest: { label: 'Riposo', icon: Moon, tone: 'muted' },
   empty: { label: '', icon: null, tone: 'muted' },

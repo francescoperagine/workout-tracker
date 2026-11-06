@@ -223,7 +223,7 @@
           bind:value={renameText}
           oninput={() => (renameError = '')}
         />
-        {#if renameError}<p class="field-error" id="rename-error">{renameError}</p>{/if}
+        {#if renameError}<p class="field-error" id="rename-error"><CircleAlert size={16} aria-hidden="true" />{renameError}</p>{/if}
         <div class="rename-actions">
           <button type="button" class="btn btn-secondary" onclick={() => endRename(false)}>Annulla</button>
           <button type="submit" class="btn btn-primary">Salva</button>
@@ -279,16 +279,16 @@
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else if store.archive.routines.length === 0}
   <div class="flex flex-col items-start gap-3 py-8">
-    <ClipboardList size={28} class="text-muted" aria-hidden="true" />
+    <ClipboardList size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Nessuna scheda</h2>
-    <p class="m-0 max-w-[60ch] text-muted">
+    <p class="m-0 max-w-[60ch] text-text-muted">
       Una scheda è il programma di un allenamento: esercizi, serie, ripetizioni, carichi e recuperi. Creane una, oppure parti dalle
       schede di esempio A e B e modificale.
     </p>
@@ -301,7 +301,7 @@
   <div class="flex flex-col gap-10">
     <section aria-labelledby="active-title" class="flex flex-col gap-2">
       <div class="flex min-h-12 items-center justify-between gap-3">
-        <h2 id="active-title" class="m-0 text-xl font-bold">Attive <span class="font-normal text-muted">{active.length || ''}</span></h2>
+        <h2 id="active-title" class="m-0 text-xl font-bold">Attive <span class="font-normal text-text-muted">{active.length || ''}</span></h2>
         {#if active.length > 1}
           <button type="button" class="btn btn-text" aria-pressed={reordering} onclick={() => (reordering = !reordering)}>
             {reordering ? 'Fine' : 'Riordina'}
@@ -316,7 +316,7 @@
         </ul>
         {#if reordering}<p class="hint mt-0">L’ordine è quello delle schede proposte in Oggi.</p>{/if}
       {:else}
-        <p class="m-0 text-muted">Nessuna scheda attiva: creane una o ripristina un’archiviata.</p>
+        <p class="m-0 text-text-muted">Nessuna scheda attiva: creane una o ripristina un’archiviata.</p>
       {/if}
       <p class="sr-only" role="status">{announcement}</p>
       {#if !reordering}
@@ -328,8 +328,8 @@
 
     {#if archived.length}
       <section aria-labelledby="archived-title" class="flex flex-col gap-2">
-        <h2 id="archived-title" class="m-0 text-xl font-bold">Archiviate <span class="font-normal text-muted">{archived.length}</span></h2>
-        <p class="m-0 max-w-[60ch] text-muted">Non compaiono in Oggi né nel calendario. I loro allenamenti restano nello storico.</p>
+        <h2 id="archived-title" class="m-0 text-xl font-bold">Archiviate <span class="font-normal text-text-muted">{archived.length}</span></h2>
+        <p class="m-0 max-w-[60ch] text-text-muted">Non compaiono in Oggi né nel calendario. I loro allenamenti restano nello storico.</p>
         <ul class="routines">
           {#each archived as routine, i (routine.id)}
             {@render row(routine, archived, i)}
@@ -396,10 +396,10 @@
     padding: 0;
   }
   .routine {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .routine:last-child {
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-border);
   }
   .routine-row {
     display: flex;
@@ -431,7 +431,7 @@
     overflow-wrap: anywhere;
   }
   .meta {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .rename {

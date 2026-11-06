@@ -83,10 +83,10 @@
 
 <section class="panel" aria-labelledby="demo-exercise">
   <h3 id="demo-exercise" class="text-lg leading-snug font-bold">
-    <span class="mr-2 text-accent-text">2a</span>Panca piana bilanciere
+    <span class="mr-2 text-text">2a</span>Panca piana bilanciere
   </h3>
-  <p class="mt-1 mb-3 text-base text-muted">6–8 rip · 40 kg · rec. 0:20 (demo) · con 2b</p>
-  <div class="column-heads text-sm text-muted" aria-hidden="true">
+  <p class="mt-1 mb-3 text-base text-text-muted">6–8 rip · 40 kg · rec. 0:20 (demo) · con 2b</p>
+  <div class="column-heads text-sm text-text-muted" aria-hidden="true">
     <span class="text-center">Serie</span><span>Precedente</span><span class="text-center">kg</span><span class="text-center">Rip</span><span></span>
   </div>
   {#each sets as s, i (i)}

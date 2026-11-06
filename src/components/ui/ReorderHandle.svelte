@@ -63,10 +63,10 @@
     inset: 0 -0.375rem;
   }
   .reorder-handle :global(.grip) {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .reorder-handle:hover :global(.grip) {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   :global(.reorder-dragging),
   :global(.reorder-dragging *) {

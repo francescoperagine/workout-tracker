@@ -20,7 +20,7 @@ interface Props {
 const { title, subtitle, showSettings = true, showInfo = true, back } = Astro.props;
 ---
 
-<header transition:animate="none" class="shell sticky top-0 z-20 border-b border-shell-line pt-[env(safe-area-inset-top)]">
+<header transition:animate="none" class="shell sticky top-0 z-20 border-b border-border pt-[env(safe-area-inset-top)]">
   <div class="mx-auto flex min-h-16 max-w-2xl items-center justify-between gap-3 px-4">
     {
       back && (
@@ -31,7 +31,7 @@ const { title, subtitle, showSettings = true, showInfo = true, back } = Astro.pr
     }
     <div class="min-w-0 grow py-2">
       <h1 class="truncate text-lg leading-tight font-bold">{title}</h1>
-      {subtitle && <p class="truncate text-sm text-shell-muted">{subtitle}</p>}
+      {subtitle && <p class="truncate text-sm text-text-muted">{subtitle}</p>}
     </div>
     <div class="flex items-center gap-1">
       <slot name="actions" />

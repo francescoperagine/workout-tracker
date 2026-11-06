@@ -53,10 +53,10 @@
   .accent {
     color: var(--color-accent-text);
   }
-  .warning {
-    color: var(--color-warning);
+  .strong {
+    color: var(--color-text);
   }
   .muted {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
 </style>

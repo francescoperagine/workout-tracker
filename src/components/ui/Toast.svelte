@@ -54,7 +54,7 @@
     width: min(100%, 32rem);
     min-height: 56px;
     padding: 0.25rem 0.25rem 0.25rem 1rem;
-    border: 1px solid var(--color-shell-line-strong);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-panel);
     box-shadow: 0 8px 24px var(--color-shadow);
     animation: enter 0.24s var(--ease-out-expo);

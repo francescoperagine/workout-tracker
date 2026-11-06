@@ -99,7 +99,7 @@
     font-weight: 700;
   }
   .muted {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .progress {
     align-self: flex-start;
@@ -110,6 +110,6 @@
     max-height: 40dvh;
     object-fit: contain;
     border-radius: var(--radius-panel);
-    background: var(--color-field);
+    background: var(--color-bg);
   }
 </style>

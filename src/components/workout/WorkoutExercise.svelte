@@ -356,7 +356,7 @@
     padding: 0.5rem 0;
     border: 0;
     background: transparent;
-    color: var(--color-foreground);
+    color: var(--color-text);
     font: inherit;
     font-size: var(--text-lg);
     font-weight: 700;
@@ -370,14 +370,14 @@
     display: inline;
     margin-left: 0.375rem;
     vertical-align: -0.125rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .name:hover :global(svg) {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   .meta {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
   }
@@ -389,7 +389,7 @@
   .done-line :global(svg) {
     flex-shrink: 0;
     margin-top: 2px;
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   .toggle {
     align-self: flex-start;
@@ -408,24 +408,24 @@
     margin-inline: -0.375rem;
     padding-inline: 0.375rem;
     padding-bottom: 0.25rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
-  /* "Completa esercizio" (US-37): come la spunta di riga, ma in accento perché si legga come pulsante */
+  /* "Completa esercizio" (US-37): come la spunta di riga, pulsante secondario neutro */
   .complete {
     display: grid;
     place-items: center;
     width: 48px;
     height: 48px;
-    border: 1.5px solid var(--color-accent-text);
+    border: 1.5px solid var(--color-border-control);
     border-radius: var(--radius-field);
     background: transparent;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     cursor: pointer;
     transition: background-color 0.15s var(--ease-out-expo);
   }
   .complete:hover {
-    background: color-mix(in oklab, var(--color-surface) 90%, var(--color-accent));
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .add-set {
     align-self: flex-start;
@@ -435,7 +435,7 @@
     align-items: flex-start;
     gap: 0.375rem;
     margin: 0;
-    color: var(--color-warning);
+    color: var(--color-accent-text);
     font-size: var(--text-sm);
   }
   .missing:empty {

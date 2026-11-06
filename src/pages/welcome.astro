@@ -21,11 +21,11 @@ import { appUrl } from '../lib/paths';
       </p>
       <ul class="m-0 flex list-none flex-col gap-3 p-0">
         <li class="flex gap-3">
-          <Smartphone size={22} class="mt-0.5 shrink-0 text-accent-text" aria-hidden="true" />
+          <Smartphone size={22} class="mt-0.5 shrink-0 text-text" aria-hidden="true" />
           <span>I dati restano su questo dispositivo: nessun account, niente viene inviato a un server.</span>
         </li>
         <li class="flex gap-3">
-          <WifiOff size={22} class="mt-0.5 shrink-0 text-accent-text" aria-hidden="true" />
+          <WifiOff size={22} class="mt-0.5 shrink-0 text-text" aria-hidden="true" />
           <span>Dopo la prima apertura funziona anche senza rete.</span>
         </li>
       </ul>
@@ -33,7 +33,7 @@ import { appUrl } from '../lib/paths';
     </div>
 
     <!-- Azioni sempre nella zona del pollice: a 320×568 scorre solo il testo sopra -->
-    <div class="sticky bottom-0 mt-auto -mb-8 bg-background pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+    <div class="sticky bottom-0 mt-auto -mb-8 bg-bg pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))]">
       <WelcomeActions client:load />
     </div>
   </div>

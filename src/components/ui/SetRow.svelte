@@ -168,12 +168,9 @@
     scroll-margin-block: 5rem calc(var(--bottom-bars-height) + 1rem);
     transition: background-color 0.2s var(--ease-out-expo);
   }
-  .row.done {
-    background: var(--color-done);
-  }
+  /* la serie fatta non ha sfondo: lo stato si legge dal check pieno (done + on-done) */
   .row.flagged {
-    background: var(--color-warning-bg);
-    box-shadow: inset 0 0 0 1px var(--color-warning-line);
+    box-shadow: inset 0 0 0 2px var(--color-accent-indicator);
   }
   .type {
     position: relative;
@@ -181,7 +178,7 @@
     border-radius: var(--radius-field);
     font-weight: 650;
     font-size: var(--text-lg);
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-variant-numeric: tabular-nums;
   }
   /* bersaglio di 44px: si allarga sul margine della riga a sinistra, non sotto il precedente */
@@ -191,10 +188,10 @@
     inset: 0 -2px 0 -0.375rem;
   }
   .type.special {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   .done .type {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   .previous {
     display: flex;
@@ -203,7 +200,7 @@
     min-width: 0;
     min-height: 48px;
     text-align: left;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-base);
     font-variant-numeric: tabular-nums;
   }
@@ -219,10 +216,10 @@
   }
   .previous :global(.record) {
     flex-shrink: 0;
-    color: var(--color-accent-text);
+    color: var(--color-highlight);
   }
   button.previous:hover {
-    color: var(--color-foreground);
+    color: var(--color-text);
   }
   .check {
     display: grid;
@@ -230,18 +227,18 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-field);
-    border: 1.5px solid var(--color-line-strong);
-    color: var(--color-muted);
+    border: 1.5px solid var(--color-border-control);
+    color: var(--color-text-muted);
     transition: background-color 0.15s var(--ease-out-expo), border-color 0.15s var(--ease-out-expo);
   }
   .check:hover {
-    border-color: var(--color-accent-text);
-    color: var(--color-accent-text);
+    border-color: var(--color-text);
+    color: var(--color-text);
   }
   .done .check {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-on-accent);
+    background: var(--color-done);
+    border-color: var(--color-done);
+    color: var(--color-on-done);
   }
   button {
     cursor: pointer;

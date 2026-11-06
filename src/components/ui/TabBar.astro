@@ -22,7 +22,7 @@ const tabs = [
 ] as const;
 ---
 
-<nav transition:animate="none" class="shell border-t border-shell-line pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
+<nav transition:animate="none" class="shell border-t border-border pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
   <ul class="mx-auto grid max-w-2xl grid-cols-4">
     {
       tabs.map(({ id, label, href, Icon }) => (
@@ -30,9 +30,10 @@ const tabs = [
           <a
             href={href}
             aria-current={active === id ? 'page' : undefined}
+            data-tab={id}
             class:list={[
-              'flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs no-underline',
-              active === id ? 'font-bold text-shell-accent' : 'text-shell-muted hover:text-shell-foreground',
+              'tab flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs no-underline',
+              active === id ? 'font-bold text-text' : 'text-text-muted hover:text-text',
             ]}
           >
             <Icon size={22} aria-hidden="true" />
@@ -43,3 +44,22 @@ const tabs = [
     }
   </ul>
 </nav>
+
+<style>
+  /* Tab attiva: testo, grassetto, indicatore di 2px e icona piena. Le icone Lucide sono solo contorno:
+     si riempie la sagoma e i dettagli interni si ritagliano nel colore della barra (surface). */
+  .tab[aria-current='page'] {
+    box-shadow: inset 0 2px 0 var(--color-text);
+  }
+  [data-tab='today'][aria-current='page'] :global(svg > *),
+  [data-tab='calendar'][aria-current='page'] :global(svg > rect),
+  [data-tab='routines'][aria-current='page'] :global(svg > :nth-child(-n + 2)),
+  [data-tab='history'][aria-current='page'] :global(svg > :first-child) {
+    fill: currentColor;
+  }
+  [data-tab='calendar'][aria-current='page'] :global(svg > :nth-child(n + 4)),
+  [data-tab='routines'][aria-current='page'] :global(svg > :nth-child(n + 3)),
+  [data-tab='history'][aria-current='page'] :global(svg > :nth-child(3)) {
+    stroke: var(--color-surface);
+  }
+</style>

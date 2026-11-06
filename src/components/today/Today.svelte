@@ -156,9 +156,9 @@
 {#if ready && store.state === 'unreadable'}
   <!-- messaggio in linea, mai un'azione che sovrascrive (brief di Oggi) -->
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">
+    <p class="m-0 max-w-[60ch] text-text-muted">
       Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.
     </p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
@@ -199,7 +199,7 @@
           <div class="done-today">
             <p class="m-0">
               Fatto oggi: <strong>{done.name}</strong>
-              <span class="text-muted">· {formatElapsed(summarizeSession(done, now).duration)}</span>
+              <span class="text-text-muted">· {formatElapsed(summarizeSession(done, now).duration)}</span>
             </p>
             <button type="button" class="btn btn-text" onclick={() => reopen(done.id)}>Riapri</button>
           </div>
@@ -243,8 +243,8 @@
           </div>
         {:else}
           <div class="flex flex-col items-start gap-3">
-            <ClipboardList size={28} class="text-muted" aria-hidden="true" />
-            <p class="m-0 max-w-[60ch] text-muted">
+            <ClipboardList size={28} class="text-text-muted" aria-hidden="true" />
+            <p class="m-0 max-w-[60ch] text-text-muted">
               Non hai schede attive. Crea una scheda per avere il programma sempre pronto, oppure allenati senza scheda e aggiungi gli
               esercizi man mano.
             </p>
@@ -307,7 +307,7 @@
   }
   .plan {
     margin: 0.25rem 0 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .routines {
     display: flex;
@@ -334,7 +334,7 @@
     overflow-wrap: anywhere;
   }
   .meta {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .tag {
@@ -359,14 +359,14 @@
     z-index: 1;
     margin: 0 -1rem;
     padding: 0.75rem 1rem;
-    background: var(--color-background);
+    background: var(--color-bg);
   }
   /* quando la pagina scorre sotto, il contenuto sfuma invece di sembrare tagliato a metà (320×568) */
   .thumb::before {
     content: '';
     position: absolute;
     inset: -1.5rem 0 100%;
-    background: linear-gradient(to bottom, transparent, var(--color-background));
+    background: linear-gradient(to bottom, transparent, var(--color-bg));
     pointer-events: none;
   }
   .start {
@@ -405,8 +405,8 @@
     justify-content: center;
     min-height: 64px;
     padding: 0.5rem 0;
-    border-top: 1px solid var(--color-line);
-    border-bottom: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
     color: inherit;
     text-decoration: none;
   }
@@ -419,7 +419,7 @@
     list-style: none;
   }
   .sheet-list li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .sheet-row {
     display: flex;

@@ -179,7 +179,7 @@
           </ul>
         </section>
       {:else if day.status === 'skipped'}
-        <p class="status warning">
+        <p class="status muted">
           {#if look.icon}<look.icon size={20} aria-hidden="true" />{/if}
           Saltato: nessun allenamento registrato.
         </p>
@@ -258,10 +258,10 @@
     gap: 0 0.75rem;
     min-height: 56px;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-border);
   }
   .session:first-child {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .name {
     flex: 1 1 100%;
@@ -275,15 +275,15 @@
     justify-content: space-between;
     gap: 0.5rem;
     min-height: 48px;
-    color: var(--color-foreground);
+    color: var(--color-text);
     text-decoration: none;
   }
   .link :global(svg) {
     flex-shrink: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .meta {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .session .meta {
@@ -303,11 +303,8 @@
     gap: 0.5rem;
     margin: 0;
   }
-  .warning {
-    color: var(--color-warning);
-  }
   .muted {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .choices {
     display: flex;

@@ -51,7 +51,7 @@
     font-weight: 600;
   }
   .hint-line {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     line-height: 1.4;
   }
@@ -62,9 +62,9 @@
     width: 52px;
     height: 32px;
     margin: 0;
-    border: 1.5px solid var(--color-line-strong);
+    border: 1.5px solid var(--color-border-control);
     border-radius: 16px;
-    background: var(--color-field);
+    background: var(--color-bg);
     cursor: inherit;
     transition: background-color 0.15s var(--ease-out-expo), border-color 0.15s var(--ease-out-expo);
   }
@@ -76,7 +76,7 @@
     width: 23px;
     height: 23px;
     border-radius: 50%;
-    background: var(--color-line-strong);
+    background: var(--color-border-control);
     transition: transform 0.2s var(--ease-out-expo), background-color 0.15s var(--ease-out-expo);
   }
   input:checked {

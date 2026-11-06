@@ -1,6 +1,7 @@
 <script lang="ts">
   // Conferma di un'azione distruttiva (P8): l'unico caso, con il timer, in cui una modale è giusta.
   // Sostituisce confirm(): il pulsante dice cosa fa, l'annullamento è il default del tasto Esc.
+  import Trash from '@lucide/svelte/icons/trash';
   interface Props {
     open: boolean;
     title: string;
@@ -34,7 +35,7 @@
         onconfirm();
       }}
     >
-      {confirmLabel}
+      {#if danger}<Trash aria-hidden="true" />{/if}{confirmLabel}
     </button>
   </div>
 </dialog>
@@ -45,10 +46,10 @@
     width: calc(100% - 2rem);
     max-width: 28rem;
     padding: 1.5rem;
-    border: 1px solid var(--color-line);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-dialog);
     background: var(--color-surface);
-    color: var(--color-foreground);
+    color: var(--color-text);
   }
   .confirm::backdrop {
     background: var(--color-backdrop);
@@ -61,7 +62,7 @@
   }
   p {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .actions {
     display: flex;

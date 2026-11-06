@@ -3,6 +3,42 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-010
+
+Date: 2026-11-06
+
+Summary:
+**Palette a ruoli: inchiostro e carta, un accento vermiglio, rosso solo per gli errori e indaco per i record
+(feature `palette`, ADR-005).** Il verde del PoC non c'è più: fondo carta `#FAFAF7` o grafite `#1C1C1E`, card
+bianche o `#2A2A2D`, bordi grigi chiari, bordi dei controlli `#6B6B70` / `#A1A1AA`. L'accento vermiglio
+(`#E85A2A` / `#FF7A45`, testo nero sopra) marca solo ciò che chiede azione o è in corso; `danger` (`#BE123C` /
+`#FF7A8A`) vale solo per errori e distruttive, sempre con icona e testo, e il pulsante distruttivo è pieno;
+`highlight` indaco marca i trofei dei record. Il guscio (intestazione, barre, tab bar, timer, avviso) segue il
+tema su `surface`; la tab attiva è in `text` con icona piena e indicatore di 2px. La serie fatta non ha fondo:
+lo dice la spunta piena `done`. Gli avvisi ex ambra sono neutri con l'icona `info`. `theme-color` con due meta
+sul `bg` di ciascun tema, barra di stato iOS `default` nel chiaro.
+
+Deliverables:
+- `src/styles/global.css`: ruoli in `@theme` (eliminati `field`, `warning-*`, `danger-bg`, i 13 `shell-*`,
+  `level`); `.shell` su `surface`; `btn-danger` pieno con `on-danger`; disabilitato `text-muted` su `surface`.
+- `src/styles/contrast.test.ts` (nuovo): coppie di testo ≥ 4,5:1, bordi e indicatori ≥ 3:1, nessun colore fuori
+  dai token, `THEME_COLORS` uguale ai `bg`.
+- `src/lib/theme.ts` e `theme.test.ts`: `THEME_COLORS`, `syncThemeMeta` (theme-color e barra di stato) anche
+  nello script inline; `src/layouts/Base.astro` con i due meta per `media`; manifest `#1C1C1E`.
+- Componenti (~45 file in `src/components/`, `src/pages/`): solo ruoli; icone su errori e distruttive (`Trash`
+  su ogni `btn-danger`); `/kit` con i campioni `on-danger` e `highlight`.
+- e2e: `tests/e2e/us-30-themes.spec.ts` con i fondi nuovi e il guscio su `surface` nei due temi.
+- Documenti: `DESIGN.md` (front-matter dei colori e dei componenti, sezioni colore, guscio, componenti);
+  `PRODUCT.md` e i brief in `.impeccable/surfaces/` (solo le frasi sul colore); ADR-005; `docs/PROJECT.md`;
+  voce spuntata in `docs/todo.md`; SPEC in `docs/archive/features/INC-010_palette.md`, cartella cancellata.
+
+Limiti noti: `.impeccable/design.json` (il sidecar di Impeccable) descrive ancora il guscio verde: va
+rigenerato con `/impeccable document`. Eccezioni motivate al «solo token»: `src/lib/theme.ts` (copia dei due
+`bg`, verificata dal test) e `public/favicon.svg` (immagine). In una serie completata `SetInput` resta senza
+bordo: è testo letto, non un campo da compilare (da confermare con Francesco).
+
+ADR: ADR-005. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-009
 
 Date: 2026-11-06

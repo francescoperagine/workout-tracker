@@ -239,16 +239,16 @@
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else if !routine}
   <div class="flex flex-col items-start gap-3 py-8">
-    <ClipboardList size={28} class="text-muted" aria-hidden="true" />
+    <ClipboardList size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Scheda non trovata</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Forse è stata eliminata, anche da un’altra scheda del browser.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Forse è stata eliminata, anche da un’altra scheda del browser.</p>
     <a href={appUrl('/routines')} class="btn btn-primary">Vai alle schede</a>
   </div>
 {:else}
@@ -258,7 +258,7 @@
     {#if routine.archived}
       <div class="flex flex-col items-start gap-3">
         <h2 class="m-0 text-page-title font-bold">{routine.name}</h2>
-        <p class="m-0 max-w-[60ch] text-muted">
+        <p class="m-0 max-w-[60ch] text-text-muted">
           Scheda archiviata: non compare in Oggi né nel calendario, e i suoi allenamenti restano nello storico. Ripristinala per
           modificarla.
         </p>
@@ -271,7 +271,7 @@
     <section aria-labelledby="entries-title" class="flex flex-col gap-2">
       <div class="flex min-h-12 items-center justify-between gap-3">
         <h2 id="entries-title" class="m-0 text-xl font-bold">
-          Esercizi <span class="font-normal text-muted">{exercises.length || ''}</span>
+          Esercizi <span class="font-normal text-text-muted">{exercises.length || ''}</span>
         </h2>
         {#if !routine.archived && exercises.length > 1}
           <button
@@ -289,7 +289,7 @@
       </div>
 
       {#if exercises.length === 0}
-        <p class="m-0 max-w-[60ch] text-muted">
+        <p class="m-0 max-w-[60ch] text-text-muted">
           {routine.archived
             ? 'Questa scheda non ha esercizi.'
             : 'Aggiungi gli esercizi nell’ordine in cui li fai. Per una superserie aggiungi i due esercizi, poi apri il secondo e uniscilo a quello sopra.'}
@@ -402,7 +402,7 @@
         oninput={(text) => void edit((a) => setRoutineNotes(a, routineId, text))}
       />
     {:else if routine.notes}
-      <p class="m-0 max-w-[60ch] whitespace-pre-line text-muted">{routine.notes}</p>
+      <p class="m-0 max-w-[60ch] whitespace-pre-line text-text-muted">{routine.notes}</p>
     {/if}
   </div>
 
@@ -431,10 +431,10 @@
     padding: 0;
   }
   .block {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .block:last-child {
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-border);
   }
   .superset-caption {
     display: flex;
@@ -442,7 +442,7 @@
     gap: 0.5rem;
     margin: 0;
     padding: 0.5rem 0 0 0.25rem;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font-size: var(--text-sm);
     font-weight: 600;
   }
@@ -458,7 +458,7 @@
   /* durante il trascinamento le altre righe fanno posto scorrendo; quella trascinata segue il dito */
   .shifting {
     position: relative;
-    background: var(--color-background);
+    background: var(--color-bg);
   }
   @media (prefers-reduced-motion: no-preference) {
     .shifting:not(.dragged) {
@@ -468,7 +468,7 @@
   .dragged {
     z-index: 2;
     border-radius: var(--radius-field);
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-accent-indicator);
     outline-offset: 2px;
   }
   /* la superserie si legge come un blocco: un filo nella colonna del numero unisce ogni voce alla successiva */
@@ -481,7 +481,7 @@
     top: 2.25rem;
     bottom: -0.75rem;
     left: 1.25rem;
-    border-left: 1px solid var(--color-line-strong);
+    border-left: 1px solid var(--color-border-control);
   }
   /* sotto i 360px l'editor della voce usa tutta la larghezza: il filo lo attraverserebbe */
   @media (max-width: 359px) {
@@ -501,8 +501,8 @@
     position: relative;
     font-size: var(--text-lg);
     font-weight: 700;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     text-align: center;
-    background: var(--color-background);
+    background: var(--color-bg);
   }
 </style>

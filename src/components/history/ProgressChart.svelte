@@ -1,6 +1,6 @@
 <script lang="ts">
   // Grafico a linea dei progressi (US-28) in SVG scritto a mano, secondo la skill dataviz: una serie
-  // sola nel colore d'accento (niente legenda, il titolo dice cosa mostra), linea di 2px, punti con
+  // sola in accent-indicator (niente legenda, il titolo dice cosa mostra), linea di 2px, punti con
   // l'anello del colore del fondo, griglia sottile e asse dei tempi per data. Tocco, puntatore
   // e frecce scelgono il punto più vicino; il valore si legge sopra il grafico, e gli stessi valori
   // sono nella cronologia sotto (il grafico non è l'unico modo di leggerli).
@@ -151,7 +151,7 @@
     font-weight: 700;
   }
   .date {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .plot {
     min-height: 200px;
@@ -164,27 +164,27 @@
     cursor: crosshair;
   }
   .grid {
-    stroke: var(--color-line);
+    stroke: var(--color-border);
     stroke-width: 1;
   }
   .cross {
-    stroke: var(--color-line-strong);
+    stroke: var(--color-border-control);
     stroke-width: 1;
   }
   .tick {
-    fill: var(--color-muted);
+    fill: var(--color-text-muted);
     font-size: var(--text-xs);
   }
   .line {
     fill: none;
-    stroke: var(--color-accent);
+    stroke: var(--color-accent-indicator);
     stroke-width: 2;
     stroke-linejoin: round;
     stroke-linecap: round;
   }
   .dot {
-    fill: var(--color-accent);
-    stroke: var(--color-background);
+    fill: var(--color-accent-indicator);
+    stroke: var(--color-bg);
     stroke-width: 2;
   }
 </style>

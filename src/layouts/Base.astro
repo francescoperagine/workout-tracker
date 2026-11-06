@@ -1,6 +1,6 @@
 ---
 // Documento di base di ogni pagina: lingua, meta, font, token e tema applicato prima del primo disegno.
-import { themeBootScript } from '../lib/theme';
+import { THEME_COLORS, themeBootScript } from '../lib/theme';
 import { appUrl } from '../lib/paths';
 import '../styles/global.css';
 
@@ -28,14 +28,17 @@ const themeScript = themeBootScript();
     <!-- Pagine indicizzabili (ADR-002); il canonico porta al dominio, non alla copia su workers.dev -->
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#142321" />
+    <!-- bg del tema; con un tema forzato lo script inline (src/lib/theme.ts) li porta entrambi al suo colore -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content={THEME_COLORS.light} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content={THEME_COLORS.dark} />
     <link rel="icon" href={appUrl('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={appUrl('/icons/apple-touch-icon.png')} />
     <link rel="manifest" href={appUrl('/manifest.webmanifest')} />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Workout" />
-    <!-- Installata su iOS: la barra di stato è trasparente sopra il guscio verde, l'intestazione rispetta l'area sicura -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Installata su iOS: barra di stato normale nel tema chiaro, trasparente nello scuro (la imposta lo script
+         inline); l'intestazione rispetta comunque l'area sicura -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>{title}</title>
     <script is:inline set:html={themeScript} />
     <link rel="preload" href={appUrl('/fonts/atkinson-hyperlegible-next-latin.woff2')} as="font" type="font/woff2" crossorigin />

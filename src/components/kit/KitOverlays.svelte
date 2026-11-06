@@ -1,5 +1,6 @@
 <script lang="ts">
   // Foglio dal basso, dialogo di conferma e avviso con "Annulla".
+  import Trash from '@lucide/svelte/icons/trash';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import Toast from '../ui/Toast.svelte';
@@ -45,7 +46,7 @@
 
 <div class="flex flex-wrap gap-3">
   <button type="button" class="btn btn-secondary" onclick={() => (sheetOpen = true)}>Cambia variante</button>
-  <button type="button" class="btn btn-danger" onclick={() => (dialogOpen = true)}>Elimina sessione</button>
+  <button type="button" class="btn btn-danger" onclick={() => (dialogOpen = true)}><Trash aria-hidden="true" />Elimina sessione</button>
   <button type="button" class="btn btn-secondary" onclick={() => (toast = 'Serie 3 rimossa')}>Rimuovi serie</button>
   <button type="button" class="btn btn-secondary" onclick={() => (pickerOpen = true)}>Aggiungi esercizio</button>
 </div>
@@ -60,7 +61,7 @@
 />
 
 <BottomSheet bind:open={sheetOpen} title="Cambia variante">
-  <p class="mb-3 text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>
+  <p class="mb-3 text-text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>
   <ul class="flex flex-col gap-2">
     {#each variants as v (v)}
       <li>

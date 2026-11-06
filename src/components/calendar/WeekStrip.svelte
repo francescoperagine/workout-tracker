@@ -66,11 +66,11 @@
     background: color-mix(in oklab, var(--color-surface) 70%, transparent);
   }
   .day.today {
-    border-color: var(--color-accent-text);
+    border-color: var(--color-accent-indicator);
     background: var(--color-surface);
   }
   .weekday {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-weight: 600;
   }
@@ -90,10 +90,10 @@
   .accent {
     color: var(--color-accent-text);
   }
-  .warning {
-    color: var(--color-warning);
+  .strong {
+    color: var(--color-text);
   }
   .muted {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
 </style>

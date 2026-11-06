@@ -224,7 +224,7 @@
     left: 0.75rem;
     top: 50%;
     translate: 0 -50%;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     pointer-events: none;
   }
   .search-box .field {
@@ -240,7 +240,7 @@
     padding: 0;
   }
   .results li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .row {
     display: flex;
@@ -257,11 +257,11 @@
     align-items: flex-start;
     gap: 0.25rem;
     margin-bottom: 0.75rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .merged {
     margin: 0 0 0.5rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .result {
@@ -275,19 +275,19 @@
     border: 0;
     border-radius: var(--radius-field);
     background: transparent;
-    color: var(--color-foreground);
+    color: var(--color-text);
     font: inherit;
     text-align: left;
     cursor: pointer;
   }
   .result:hover {
-    background: color-mix(in oklab, var(--color-surface) 90%, var(--color-accent));
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .name {
     overflow-wrap: anywhere;
   }
   .tag {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .create {

@@ -106,9 +106,9 @@
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else}
@@ -124,9 +124,9 @@
 
     {#if !history.length}
       <div class="flex flex-col items-start gap-3 py-4">
-        <ChartLine size={28} class="text-muted" aria-hidden="true" />
+        <ChartLine size={28} class="text-text-muted" aria-hidden="true" />
         <h3 class="m-0 text-xl leading-snug font-bold">Ancora nessuna serie</h3>
-        <p class="m-0 max-w-[60ch] text-muted">I progressi compaiono dopo il primo allenamento concluso con almeno una serie spuntata di questo esercizio.</p>
+        <p class="m-0 max-w-[60ch] text-text-muted">I progressi compaiono dopo il primo allenamento concluso con almeno una serie spuntata di questo esercizio.</p>
       </div>
     {:else}
       {#if recordRows.length}
@@ -143,7 +143,7 @@
           </dl>
         </section>
       {:else}
-        <p class="m-0 max-w-[60ch] text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
+        <p class="m-0 max-w-[60ch] text-text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
       {/if}
 
       <section aria-labelledby="chart-title" class="section">
@@ -161,7 +161,7 @@
             <p class="hint m-0">Stima con la formula di Epley, dalle serie normali fino a {EPLEY_MAX_REPS} ripetizioni.</p>
           {/if}
         {:else if noChart}
-          <p class="m-0 max-w-[60ch] text-muted">{noChart}</p>
+          <p class="m-0 max-w-[60ch] text-text-muted">{noChart}</p>
         {/if}
       </section>
 
@@ -205,7 +205,7 @@
   }
   .meta {
     margin: 0.25rem 0 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .section {
     display: flex;
@@ -233,7 +233,7 @@
     flex-direction: column;
   }
   dt {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   dd {
@@ -250,21 +250,21 @@
     list-style: none;
   }
   .list li {
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-border);
   }
   .row {
     display: flex;
     flex-direction: column;
     min-height: 56px;
     padding: 0.5rem 0;
-    color: var(--color-foreground);
+    color: var(--color-text);
     text-decoration: none;
   }
   .list li:last-child {
     border-bottom: 0;
   }
   .day {
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font-weight: 700;
   }
   .sets {
@@ -272,7 +272,7 @@
     overflow-wrap: anywhere;
   }
   .detail {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
 </style>

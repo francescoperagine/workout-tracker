@@ -105,7 +105,7 @@
         incrementLabel="+15 s"
         onchange={(v) => saveSetting('defaultRest', v)}
       />
-      <div class="flex flex-col gap-1 border-t border-line pt-3">
+      <div class="flex flex-col gap-1 border-t border-border pt-3">
         <Switch label="Suono a fine recupero" bind:checked={sound} onchange={(v) => saveSetting('sound', v)} />
         <Switch
           label="Vibrazione a fine recupero"

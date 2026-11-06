@@ -65,9 +65,9 @@
 
 {#if unreadable}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else}
@@ -88,12 +88,12 @@
         <!-- una riga come le altre, non un secondo "Riprendi": quello è nella mini-barra (step 9) -->
         <section class="flex flex-col gap-1">
           <h2 class="m-0 text-xl leading-snug font-bold">In corso</h2>
-          <a href={appUrl('/workout')} class="row border-b border-line">
+          <a href={appUrl('/workout')} class="row border-b border-border">
             <span class="min-w-0 flex-1">
               <span class="block text-lg font-bold [overflow-wrap:anywhere]">{running.name}</span>
-              <span class="block text-sm text-muted">{startedLine}</span>
+              <span class="block text-sm text-text-muted">{startedLine}</span>
             </span>
-            <ChevronRight size={20} class="shrink-0 text-muted" aria-hidden="true" />
+            <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
           </a>
         </section>
       {/if}
@@ -104,19 +104,19 @@
             <h2 class="m-0 text-xl leading-snug font-bold">{month.title}</h2>
             <ol class="m-0 list-none p-0">
               {#each month.rows as row (row.session.id)}
-                <li class="border-b border-line last:border-b-0">
+                <li class="border-b border-border last:border-b-0">
                   <a href={sessionHref(row.session.id)} class="row">
                     <span class="min-w-0 flex-1">
                       <span class="block text-lg font-bold [overflow-wrap:anywhere]">{row.session.name}</span>
-                      <span class="block text-sm text-muted">
+                      <span class="block text-sm text-text-muted">
                         {row.meta}
                         {#if row.records}
-                          · <Trophy size={16} class="inline align-text-bottom text-accent-text" aria-hidden="true" />
+                          · <Trophy size={16} class="inline align-text-bottom text-text" aria-hidden="true" />
                           {row.records === 1 ? 'Record' : `Record in ${row.records} esercizi`}
                         {/if}
                       </span>
                     </span>
-                    <ChevronRight size={20} class="shrink-0 text-muted" aria-hidden="true" />
+                    <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
                   </a>
                 </li>
               {/each}
@@ -125,34 +125,34 @@
         {/each}
       {:else if !running}
         <div class="flex flex-col items-start gap-3 py-8">
-          <History size={28} class="text-muted" aria-hidden="true" />
+          <History size={28} class="text-text-muted" aria-hidden="true" />
           <h2 class="m-0 text-xl leading-snug font-bold">Ancora nessun allenamento</h2>
-          <p class="m-0 max-w-[60ch] text-muted">Quando termini un allenamento lo ritrovi qui, per data, con serie e volume. Da qui puoi anche correggerlo.</p>
+          <p class="m-0 max-w-[60ch] text-text-muted">Quando termini un allenamento lo ritrovi qui, per data, con serie e volume. Da qui puoi anche correggerlo.</p>
           <a href={appUrl('/')} class="btn btn-primary">Vai a Oggi</a>
         </div>
       {/if}
     {:else if done.length}
-      <p class="m-0 text-muted">Le varianti hanno ciascuna i loro progressi.</p>
+      <p class="m-0 text-text-muted">Le varianti hanno ciascuna i loro progressi.</p>
       <ol class="m-0 list-none p-0">
         {#each done as item (item.exerciseId)}
-          <li class="border-b border-line last:border-b-0">
+          <li class="border-b border-border last:border-b-0">
             <a href={exerciseHref(item.exerciseId)} class="row">
               <span class="min-w-0 flex-1">
                 <span class="block text-lg font-bold [overflow-wrap:anywhere]">{exerciseName(store.archive, item.exerciseId)}</span>
-                <span class="block text-sm text-muted">
+                <span class="block text-sm text-text-muted">
                   Ultima volta: {formatRelativeDay(item.lastDate, today)} · {plural(item.sessions, 'allenamento', 'allenamenti')}
                 </span>
               </span>
-              <ChevronRight size={20} class="shrink-0 text-muted" aria-hidden="true" />
+              <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
             </a>
           </li>
         {/each}
       </ol>
     {:else}
       <div class="flex flex-col items-start gap-3 py-8">
-        <History size={28} class="text-muted" aria-hidden="true" />
+        <History size={28} class="text-text-muted" aria-hidden="true" />
         <h2 class="m-0 text-xl leading-snug font-bold">Nessun esercizio registrato</h2>
-        <p class="m-0 max-w-[60ch] text-muted">Dopo il primo allenamento concluso trovi qui i progressi di ogni esercizio.</p>
+        <p class="m-0 max-w-[60ch] text-text-muted">Dopo il primo allenamento concluso trovi qui i progressi di ogni esercizio.</p>
         <a href={appUrl('/')} class="btn btn-primary">Vai a Oggi</a>
       </div>
     {/if}

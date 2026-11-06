@@ -80,7 +80,7 @@
     gap: 0.5rem;
   }
   .order {
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font-size: var(--text-lg);
     font-weight: 700;
   }
@@ -94,7 +94,7 @@
   }
   .dragged {
     z-index: 2;
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-accent-indicator);
     outline-offset: 2px;
   }
 </style>

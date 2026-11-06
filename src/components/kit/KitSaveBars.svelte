@@ -9,7 +9,7 @@
 
 <div class="flex flex-col gap-3">
   {#each statuses as status (status)}
-    <div class="overflow-hidden rounded-[var(--radius-panel)] border border-shell-line">
+    <div class="overflow-hidden rounded-[var(--radius-panel)] border border-border">
       <SaveBar {status}>
         {#snippet action()}
           {#if status === 'unreadable'}
@@ -22,7 +22,7 @@
     </div>
   {/each}
   <p class="hint">Allenamento attivo: la durata sopra lo stato, «Salvato» in breve.</p>
-  <div class="overflow-hidden rounded-[var(--radius-panel)] border border-shell-line">
+  <div class="overflow-hidden rounded-[var(--radius-panel)] border border-border">
     <SaveBar status="saved" compact>
       {#snippet detail()}
         <p class="m-0 text-lg leading-tight font-bold">42 min</p>
@@ -33,7 +33,7 @@
     </SaveBar>
   </div>
   <p class="hint">Mini-barra sulle altre pagine, sopra la tab bar: riporta all’allenamento in corso.</p>
-  <div class="overflow-hidden rounded-[var(--radius-panel)] border border-shell-line">
+  <div class="overflow-hidden rounded-[var(--radius-panel)] border border-border">
     <WorkoutMiniBar preview={{ name: 'Scheda A', meta: 'da 25 min · Panca piana bilanciere' }} />
   </div>
 </div>

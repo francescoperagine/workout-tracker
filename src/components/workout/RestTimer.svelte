@@ -1,7 +1,7 @@
 <script lang="ts">
   // Timer di recupero a tutto schermo (brief src-components-workout-resttimer-svelte, US-21…US-26):
-  // lo schermo stesso è la clessidra. Un livello verde scende a scatti di un secondo; negli ultimi 10 s
-  // le cifre diventano lime, alla fine tutto lo schermo passa all'accento con "Vai".
+  // lo schermo stesso è la clessidra. Un livello in accent-tint scende a scatti di un secondo; negli ultimi 10 s
+  // le cifre diventano accent-text, alla fine tutto lo schermo passa all'accento con "Vai".
   // È una vista: il conteggio arriva da fuori (RestTimerHost, motore in src/lib/rest-timer.ts), qui
   // solo il disegno, i gesti e la finestra modale. Con `preview` disegna lo schermo fermo per /kit.
   import Minimize2 from '@lucide/svelte/icons/minimize-2';
@@ -74,7 +74,7 @@
 
 {#snippet screen()}
   <div class="screen" class:go class:final>
-    <!-- il livello pieno si ferma sotto l'intestazione, così la linea lime non la attraversa; vuoto arriva al
+    <!-- il livello pieno si ferma sotto l'intestazione, così la linea accent-indicator non la attraversa; vuoto arriva al
          bordo superiore dei comandi, così negli ultimi secondi non scende dietro le lastre (step 9) -->
     <div
       class="level"
@@ -149,7 +149,7 @@
     border: 0;
   }
   .overlay::backdrop {
-    background: var(--color-shell);
+    background: var(--color-bg);
   }
   .frame {
     position: relative;
@@ -165,22 +165,22 @@
     height: 100%;
     padding: max(0.5rem, env(safe-area-inset-top)) 1rem 0;
     overflow: hidden;
-    background: var(--color-shell);
-    color: var(--color-shell-foreground);
+    background: var(--color-bg);
+    color: var(--color-text);
   }
   .level {
     position: absolute;
     inset: auto 0 0;
-    background: var(--color-level);
-    border-top: 6px solid var(--color-shell-accent);
+    background: var(--color-accent-tint);
+    border-top: 6px solid var(--color-accent-indicator);
   }
-  /* Ultimi 10 s: le cifre passano all'accento, preludio allo schermo lime di "Vai" */
+  /* Ultimi 10 s: le cifre passano all'accento, preludio allo schermo in accento di "Vai" */
   .final .timer-digits {
-    color: var(--color-shell-accent);
+    color: var(--color-accent-text);
   }
   .screen.go {
-    background: var(--color-shell-accent);
-    color: var(--color-shell-on-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
   .head,
   .center,
@@ -201,11 +201,11 @@
     justify-content: space-between;
     gap: 0.5rem;
     min-height: 48px;
-    color: var(--color-shell-muted);
+    color: var(--color-text-muted);
   }
   .go .head,
   .go .next-label {
-    color: var(--color-shell-on-accent);
+    color: var(--color-on-accent);
   }
   .center {
     flex: 1;
@@ -237,7 +237,7 @@
     display: block;
     font-size: var(--text-sm);
     /* sul livello il muted scende sotto 4,5:1: l'etichetta si distingue per dimensione */
-    color: var(--color-shell-foreground);
+    color: var(--color-text);
   }
   .controls {
     display: grid;
@@ -247,34 +247,34 @@
   .plate {
     min-height: 64px;
     border-radius: var(--radius-panel);
-    border: 1px solid var(--color-shell-line-strong);
-    background: var(--color-shell-panel);
-    color: var(--color-shell-foreground);
+    border: 1px solid var(--color-border-control);
+    background: var(--color-surface);
+    color: var(--color-text);
     font-size: var(--text-xl);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     cursor: pointer;
   }
   .plate:hover {
-    background: var(--color-shell-panel-hover);
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .minimize {
     position: relative;
     align-self: center;
     margin-top: 0.25rem;
     padding: 0 1.5rem;
-    color: var(--color-shell-foreground);
+    color: var(--color-text);
   }
   .plate.wide {
     grid-column: 1 / -1;
   }
   .go .plate {
-    background: var(--color-shell-on-accent);
-    border-color: var(--color-shell-on-accent);
-    color: var(--color-shell-accent);
+    background: var(--color-on-accent);
+    border-color: var(--color-on-accent);
+    color: var(--color-accent);
   }
   .go :global(:focus-visible) {
-    outline-color: var(--color-shell-on-accent);
+    outline-color: var(--color-on-accent);
   }
   @media (prefers-reduced-motion: reduce) {
     .screen,

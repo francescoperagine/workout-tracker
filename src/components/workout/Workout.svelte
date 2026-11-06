@@ -562,9 +562,9 @@
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
-    <CircleAlert size={28} class="text-muted" aria-hidden="true" />
+    <CircleAlert size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Il diario salvato non è leggibile</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Non è stato sovrascritto. In Dati e privacy puoi scaricarne il contenuto originale e importare un backup.</p>
     <a href={appUrl('/settings#data')} class="btn btn-primary">Vai a Dati e privacy</a>
   </div>
 {:else if session}
@@ -582,7 +582,7 @@
     {#if exercises.length}
       {#if reordering && !drag}
         <div class="reorder-head">
-          <p class="m-0 text-muted">Sposta gli esercizi con le frecce.</p>
+          <p class="m-0 text-text-muted">Sposta gli esercizi con le frecce.</p>
           <button type="button" class="btn btn-primary" onclick={() => (reordering = false)}>Fine</button>
         </div>
       {/if}
@@ -681,9 +681,9 @@
       <p class="sr-only" role="status">{announcement}</p>
     {:else}
       <div class="flex flex-col items-start gap-3">
-        <Dumbbell size={28} class="text-muted" aria-hidden="true" />
+        <Dumbbell size={28} class="text-text-muted" aria-hidden="true" />
         <h3 class="m-0 text-xl leading-snug font-bold">Da quale esercizio inizi?</h3>
-        <p class="m-0 max-w-[60ch] text-muted">Aggiungi un esercizio dal catalogo o scrivine uno tuo: compare qui con le sue serie.</p>
+        <p class="m-0 max-w-[60ch] text-text-muted">Aggiungi un esercizio dal catalogo o scrivine uno tuo: compare qui con le sue serie.</p>
       </div>
     {/if}
 
@@ -726,23 +726,23 @@
       {#if detail}
         <button type="button" class="btn btn-secondary btn-block" onclick={() => reopen(session.id)}>Riapri allenamento</button>
       {/if}
-      <button type="button" class="btn btn-danger btn-block" onclick={askDiscard}>{detail ? 'Elimina allenamento' : 'Annulla allenamento'}</button>
+      <button type="button" class="btn btn-danger btn-block" onclick={askDiscard}><Trash aria-hidden="true" />{detail ? 'Elimina allenamento' : 'Annulla allenamento'}</button>
     </div>
   </div>
 {:else if detail}
   <div class="flex flex-col items-start gap-3 py-8">
-    <Dumbbell size={28} class="text-muted" aria-hidden="true" />
+    <Dumbbell size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Allenamento non trovato</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Forse è stato eliminato, anche da un’altra scheda del browser.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Forse è stato eliminato, anche da un’altra scheda del browser.</p>
     <a class="btn btn-primary" href={appUrl('/history')}>Vai allo Storico</a>
   </div>
 {:else if finished}
   <SessionSummary archive={store.archive} session={finished} {today} onreopen={() => reopen(finished.id)} />
 {:else}
   <div class="flex flex-col items-start gap-3 py-8">
-    <Dumbbell size={28} class="text-muted" aria-hidden="true" />
+    <Dumbbell size={28} class="text-text-muted" aria-hidden="true" />
     <h2 class="m-0 text-xl leading-snug font-bold">Nessun allenamento in corso</h2>
-    <p class="m-0 max-w-[60ch] text-muted">Da Oggi scegli la scheda e tocca “Inizia allenamento”.</p>
+    <p class="m-0 max-w-[60ch] text-text-muted">Da Oggi scegli la scheda e tocca “Inizia allenamento”.</p>
     <a class="btn btn-primary" href={appUrl('/')}>Vai a Oggi</a>
   </div>
 {/if}
@@ -911,7 +911,7 @@
   }
   .meta {
     margin: 0.25rem 0 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .blocks {
     display: flex;
@@ -927,14 +927,15 @@
   }
   /* il blocco con la serie da fare adesso (P7): bordo accento disegnato dentro, niente salto di layout */
   .block.current {
-    box-shadow: inset 0 0 0 2px var(--color-accent-text);
+    background: var(--color-accent-tint);
+    box-shadow: inset 0 0 0 2px var(--color-accent-indicator);
   }
   .superset-caption {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin: 0 0 0.25rem;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font-size: var(--text-sm);
     font-weight: 600;
   }
@@ -960,13 +961,13 @@
     z-index: 2;
     border-radius: var(--radius-field);
     background: var(--color-surface);
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-accent-indicator);
     outline-offset: 2px;
   }
   .entry + .entry {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .reorder-head {
     display: flex;
@@ -982,7 +983,7 @@
     min-height: 48px;
   }
   .order {
-    color: var(--color-accent-text);
+    color: var(--color-text);
     font-size: var(--text-lg);
     font-weight: 700;
     text-align: center;
@@ -1008,12 +1009,12 @@
     /* /workout non ha la tab bar (step 9): la barra sta in fondo e copre da sé l'area sicura */
     bottom: var(--bottom-bars-base);
     padding-bottom: env(safe-area-inset-bottom);
-    background: var(--color-shell);
+    background: var(--color-surface);
     z-index: 20;
   }
   .elapsed {
     margin: 0;
-    color: var(--color-shell-foreground);
+    color: var(--color-text);
     font-size: var(--text-lg);
     font-weight: 700;
     line-height: 1.2;
@@ -1024,7 +1025,7 @@
     list-style: none;
   }
   .options li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .option {
     display: flex;
@@ -1036,7 +1037,7 @@
     border: 0;
     border-radius: var(--radius-field);
     background: transparent;
-    color: var(--color-foreground);
+    color: var(--color-text);
     font: inherit;
     font-weight: 600;
     text-align: left;
@@ -1044,10 +1045,10 @@
     cursor: pointer;
   }
   .option :global(svg) {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .option:hover {
-    background: color-mix(in oklab, var(--color-surface) 90%, var(--color-accent));
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .option.danger,
   .option.danger :global(svg) {
@@ -1062,22 +1063,22 @@
     margin: 0.5rem 0;
   }
   .options + .hint + .options {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .badge {
     width: 2rem;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-lg);
     font-weight: 650;
     text-align: center;
   }
   .badge.special {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
   .grow {
     flex: 1;
   }
   .option :global(.selected) {
-    color: var(--color-accent-text);
+    color: var(--color-text);
   }
 </style>

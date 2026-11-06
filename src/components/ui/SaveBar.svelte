@@ -44,7 +44,7 @@
       {:else if status === 'saving'}
         <LoaderCircle size={18} aria-hidden="true" class="icon-wait" />
       {:else}
-        <CircleAlert size={18} aria-hidden="true" class="icon-warning" />
+        <CircleAlert size={18} aria-hidden="true" />
       {/if}
       <span>{compact && status === 'saved' ? 'Salvato' : MESSAGES[status]}</span>
     </p>
@@ -68,10 +68,10 @@
     gap: 0.75rem;
     min-height: 68px;
     padding: 0.625rem 1rem;
-    border-top: 1px solid var(--color-shell-line);
+    border-top: 1px solid var(--color-border);
   }
   .bar.problem {
-    border-top-color: var(--color-shell-warning-line);
+    border-top-color: var(--color-danger);
   }
   .lead {
     display: flex;
@@ -87,20 +87,17 @@
     margin: 0;
     font-size: var(--text-sm);
     line-height: 1.35;
-    color: var(--color-shell-muted);
+    color: var(--color-text-muted);
   }
   .problem .status {
-    color: var(--color-shell-warning);
+    color: var(--color-danger);
   }
   .status :global(svg) {
     flex-shrink: 0;
     margin-top: 1px;
   }
   .status :global(.icon-ok) {
-    color: var(--color-shell-accent);
-  }
-  .status :global(.icon-warning) {
-    color: var(--color-shell-warning-icon);
+    color: var(--color-text-muted);
   }
   .status :global(.icon-wait) {
     animation: spin 1s linear infinite;

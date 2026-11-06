@@ -87,7 +87,7 @@
 
 <div class="summary">
   <div class="head">
-    <CircleCheck size={28} aria-hidden="true" class="text-accent-text" />
+    <CircleCheck size={28} aria-hidden="true" class="text-text" />
     <h2 class="title">Allenamento concluso</h2>
     <p class="meta">
       {[session.name, formatLongDay(session.date, today), hasDuration && session.end ? `${formatClock(session.start)}–${formatClock(session.end)}` : '']
@@ -107,7 +107,7 @@
 
   {#if records.length}
     <section aria-labelledby="records-title" class="section">
-      <h3 id="records-title" class="subtitle"><Trophy size={20} aria-hidden="true" class="text-accent-text" />{records.length === 1 ? 'Record battuto' : 'Record battuti'}</h3>
+      <h3 id="records-title" class="subtitle"><Trophy size={20} aria-hidden="true" class="text-text" />{records.length === 1 ? 'Record battuto' : 'Record battuti'}</h3>
       <ul class="list">
         {#each recordsByExercise as record (record.exerciseId)}
           <li>
@@ -141,7 +141,7 @@
       {#if canPrompt}
         <button type="button" class="btn btn-secondary self-start" onclick={() => promptInstall()}>Installa l’app</button>
       {:else}
-        <p class="m-0 text-muted">In Safari tocca Condividi, poi «Aggiungi alla schermata Home». Su iPhone è anche il modo per non perdere i dati.</p>
+        <p class="m-0 text-text-muted">In Safari tocca Condividi, poi «Aggiungi alla schermata Home». Su iPhone è anche il modo per non perdere i dati.</p>
       {/if}
     </section>
   {/if}
@@ -172,11 +172,11 @@
   }
   .meta {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .stats {
     margin: 0;
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .stat {
     display: flex;
@@ -185,10 +185,10 @@
     gap: 1rem;
     min-height: 48px;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-border);
   }
   dt {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   dd {
     margin: 0;
@@ -220,7 +220,7 @@
     display: flex;
     flex-direction: column;
     padding: 0.5rem 0;
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   .name {
     font-weight: 650;
@@ -228,7 +228,7 @@
   }
   .detail {
     margin: 0;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .install {

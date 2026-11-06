@@ -2,9 +2,11 @@ import { expect, test, type Page } from '@playwright/test';
 import { archiveWith, hydrated, seedArchive } from './helpers';
 
 // US-30: tema chiaro, scuro o di sistema, applicato prima del primo disegno.
-const LIGHT_BACKGROUND = 'rgb(238, 242, 236)';
-const DARK_BACKGROUND = 'rgb(20, 35, 33)';
-const SHELL = 'rgb(20, 35, 33)';
+const LIGHT_BACKGROUND = 'rgb(250, 250, 247)';
+const DARK_BACKGROUND = 'rgb(28, 28, 30)';
+// il guscio segue il tema su `surface` (ADR-005)
+const LIGHT_SHELL = 'rgb(255, 255, 255)';
+const DARK_SHELL = 'rgb(42, 42, 45)';
 
 const backgroundOf = (page: Page, selector: string) =>
   page.locator(selector).first().evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -15,14 +17,14 @@ test.describe('US-30 tema chiaro, scuro o di sistema', () => {
     await page.goto('kit/');
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     expect(await backgroundOf(page, 'body')).toBe(LIGHT_BACKGROUND);
-    // il guscio resta verde scuro anche nel tema chiaro
-    expect(await backgroundOf(page, 'header.shell')).toBe(SHELL);
+    expect(await backgroundOf(page, 'header.shell')).toBe(LIGHT_SHELL);
   });
 
   test('US-30 senza preferenza segue il sistema scuro', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.goto('kit/');
     expect(await backgroundOf(page, 'body')).toBe(DARK_BACKGROUND);
+    expect(await backgroundOf(page, 'header.shell')).toBe(DARK_SHELL);
   });
 
   test('US-30 la scelta Scuro vale anche dopo il ricaricamento, con il sistema chiaro', async ({ page }) => {

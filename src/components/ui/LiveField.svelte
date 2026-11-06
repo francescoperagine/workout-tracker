@@ -3,6 +3,7 @@
   // focus; fuori dal focus torna al valore salvato (es. normalizzato, o cambiato in un'altra scheda).
   // `oninput` salva e restituisce un messaggio d'errore se il testo non è valido: allora il testo resta
   // visibile con l'errore, e il valore salvato non cambia.
+  import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import type { HTMLInputAttributes } from 'svelte/elements';
   import { selectOnFocus } from '../../lib/select-on-focus';
 
@@ -76,7 +77,7 @@
     />
   {/if}
   {#if error}
-    <p class="field-error" id={`${id}-error`}>{error}</p>
+    <p class="field-error" id={`${id}-error`}><CircleAlert size={16} aria-hidden="true" />{error}</p>
   {:else if hint}
     <p class="hint" id={`${id}-hint`}>{hint}</p>
   {/if}

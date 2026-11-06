@@ -2,6 +2,7 @@
   // Azioni del primo avvio (US-01, US-02): schede di esempio, partenza da zero, importazione.
   // Nessun permesso chiesto qui: la conservazione dei dati si chiede solo dopo la scelta.
   import { navigate } from 'astro:transitions/client';
+  import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Upload from '@lucide/svelte/icons/upload';
   import ImportFlow from '../data/ImportFlow.svelte';
   import { archiveStore, askPersistenceOnce } from '../../lib/archive-store.svelte';
@@ -35,7 +36,7 @@
     <Upload aria-hidden="true" />Importa un backup
   </button>
   {#if error}
-    <p class="field-error mt-0" role="alert">{error}</p>
+    <p class="field-error mt-0" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>
   {/if}
 </div>
 

@@ -2,7 +2,7 @@
   // Timer di recupero ridotto (US-23, DESIGN.md "Timer di recupero"): barra del guscio alta 56px, il
   // livello avanza in larghezza da sinistra; un tocco riapre lo schermo intero. Sta sopra la barra
   // dell'allenamento e, sulle altre pagine, nella mini-barra (con la freccia per tornare all'allenamento
-  // in `trailing`). A fine recupero diventa lime con "Vai".
+  // in `trailing`). A fine recupero passa all'accento con "Vai".
   import type { Snippet } from 'svelte';
   import Timer from '@lucide/svelte/icons/timer';
   import { formatDuration, speakDuration } from '../../lib/format';
@@ -56,9 +56,9 @@
     display: flex;
     align-items: stretch;
     min-height: 56px;
-    border-top: 1px solid var(--color-shell-line);
+    border-top: 1px solid var(--color-border);
     overflow: hidden;
-    color: var(--color-shell-foreground);
+    color: var(--color-text);
   }
   .preview {
     border-radius: var(--radius-panel);
@@ -66,8 +66,8 @@
   .bar-level {
     position: absolute;
     inset: 0 auto 0 0;
-    background: var(--color-level);
-    border-top: 3px solid var(--color-shell-accent);
+    background: var(--color-accent-tint);
+    border-top: 3px solid var(--color-accent-indicator);
   }
   .bar > :global(*:not(.bar-level)) {
     position: relative;
@@ -91,8 +91,8 @@
     flex-shrink: 0;
   }
   .go {
-    background: var(--color-shell-accent);
-    color: var(--color-shell-on-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
   }
   .go .bar-level {
     display: none;
@@ -110,12 +110,12 @@
     white-space: nowrap;
     font-size: var(--text-sm);
     /* sopra il livello il muted scende sotto 4,5:1 */
-    color: var(--color-shell-foreground);
+    color: var(--color-text);
   }
   .go .next {
-    color: var(--color-shell-on-accent);
+    color: var(--color-on-accent);
   }
   .go :global(:focus-visible) {
-    outline-color: var(--color-shell-on-accent);
+    outline-color: var(--color-on-accent);
   }
 </style>

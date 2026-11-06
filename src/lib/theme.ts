@@ -27,13 +27,41 @@ export const THEMES = Object.keys(THEME_REGISTRY) as Theme[];
 export const THEME_LABELS = Object.fromEntries(THEMES.map((t) => [t, THEME_REGISTRY[t].label])) as Record<Theme, string>;
 
 /**
+ * Colore della barra del browser (meta theme-color e manifest): il ruolo `bg` di src/styles/global.css.
+ * I meta non leggono le variabili CSS, quindi i due valori sono copiati qui: contrast.test.ts verifica
+ * che coincidano con i token, così non possono divergere.
+ */
+export const THEME_COLORS = { light: '#FAFAF7', dark: '#1C1C1E' } as const;
+
+const SCHEMES = Object.fromEntries(THEMES.map((t) => [t, THEME_REGISTRY[t].scheme])) as Record<Theme, ThemeDefinition['scheme']>;
+
+/**
+ * Allinea al tema i meta che il browser legge fuori dal CSS. Con il tema di sistema ogni theme-color tiene
+ * il colore del suo `media`; con un tema forzato entrambi prendono quello del tema, altrimenti la barra
+ * seguirebbe il sistema invece della scelta. Su iOS la barra di stato è trasparente (black-translucent)
+ * solo nel tema scuro: nel chiaro le sue icone bianche sparirebbero sull'intestazione chiara.
+ */
+export function syncThemeMeta(doc: Document, theme: Theme, systemDark = globalThis.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false): void {
+  const scheme = SCHEMES[theme];
+  for (const meta of doc.querySelectorAll('meta[name="theme-color"]')) {
+    const own = /dark/.test(meta.getAttribute('media') ?? '') ? 'dark' : 'light';
+    meta.setAttribute('content', THEME_COLORS[scheme === 'auto' ? own : scheme]);
+  }
+  const dark = scheme === 'dark' || (scheme === 'auto' && systemDark);
+  doc.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', dark ? 'black-translucent' : 'default');
+}
+
+/**
  * Script inline di Base.astro: applica il tema salvato prima del primo disegno, solo se è nel registro.
  * Con il ClientRouter lo script in <head> gira una volta sola e la navigazione sostituisce gli attributi
  * di <html>: per questo il tema viene applicato anche al documento nuovo prima dello scambio.
  */
 export function themeBootScript(): string {
   const allowed = THEMES.filter((t) => t !== DEFAULT_THEME);
-  return `(function(){function a(d){try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(${JSON.stringify(allowed)}.indexOf(t)>-1)d.documentElement.dataset.theme=t}catch(e){}}a(document);document.addEventListener('astro:before-swap',function(e){a(e.newDocument)})})()`;
+  // m(): la stessa regola di syncThemeMeta, scritta in ES5 perché gira prima di qualunque modulo
+  const meta = `function m(d,s){if(!d.querySelectorAll)return;var c=${JSON.stringify(THEME_COLORS)},l=d.querySelectorAll('meta[name="theme-color"]'),i,k,b;for(i=0;i<l.length;i++){k=s==='auto'?(/dark/.test(l[i].getAttribute('media')||'')?'dark':'light'):s;l[i].setAttribute('content',c[k])}b=d.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');if(b)b.setAttribute('content',s==='dark'||(s==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'black-translucent':'default')}`;
+  const schemes = Object.fromEntries(allowed.map((t) => [t, SCHEMES[t]]));
+  return `(function(){var S=${JSON.stringify(schemes)};${meta}function a(d){var s=${JSON.stringify(SCHEMES[DEFAULT_THEME])};try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(${JSON.stringify(allowed)}.indexOf(t)>-1){d.documentElement.dataset.theme=t;s=S[t]}}catch(e){}try{m(d,s)}catch(e){}}a(document);document.addEventListener('astro:before-swap',function(e){a(e.newDocument)})})()`;
 }
 
 export function isTheme(value: unknown): value is Theme {
@@ -53,6 +81,8 @@ export function readTheme(storage: Pick<Storage, 'getItem'> | undefined = global
 export function applyTheme(theme: Theme, root: HTMLElement = document.documentElement): void {
   if (theme === DEFAULT_THEME) delete root.dataset.theme;
   else root.dataset.theme = theme;
+  // typeof: nei test root è un oggetto finto senza un Document vero dietro
+  if (typeof root.ownerDocument?.querySelectorAll === 'function') syncThemeMeta(root.ownerDocument, theme);
 }
 
 /** Salva e applica. Restituisce false se il salvataggio non riesce (il tema vale comunque per questa pagina). */

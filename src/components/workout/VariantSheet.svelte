@@ -123,7 +123,7 @@
   .intro {
     margin: 0 0 0.75rem;
     max-width: 60ch;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   fieldset {
     margin: 0;
@@ -147,7 +147,7 @@
     overflow-wrap: anywhere;
   }
   .tag {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .other {

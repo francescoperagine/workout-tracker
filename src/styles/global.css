@@ -2,12 +2,12 @@
 /* Temi aggiuntivi (palette): un file per tema in src/styles/themes/, importato qui. Vedi DESIGN.md, "Aggiungere un tema". */
 
 /*
-  Design system di Workout Tracker: il mondo verde del PoC, in tema chiaro e scuro.
+  Design system di Workout Tracker: inchiostro e carta con un solo accento vermiglio, rosso solo per gli errori e indaco per i record, in tema chiaro e scuro.
   I valori normativi sono in DESIGN.md. Ogni colore di tema usa light-dark():
   - nessun attributo su <html> → segue il sistema (color-scheme: light dark);
   - data-theme="light" / "dark" → forza il tema (scelta nelle Impostazioni, src/lib/theme.ts);
   - data-theme="<palette>" → un tema aggiuntivo sovrascrive i token in src/styles/themes/<palette>.css.
-  Il guscio (`.shell`: intestazione, barra di salvataggio, tab bar, timer) resta verde scuro in entrambi i temi.
+  Il guscio (`.shell`: intestazione, barra di salvataggio, tab bar, timer) segue il tema come il contenuto (ADR-005).
   Nomi di token e classi in inglese; i testi per l'utente restano in italiano.
 */
 
@@ -23,42 +23,36 @@
 }
 
 @theme {
-  /* Contenuto: cambia con il tema (chiaro, scuro) */
-  --color-background: light-dark(#eef2ec, #142321);
-  --color-surface: light-dark(#ffffff, #1e302d);
-  --color-field: light-dark(#f7f9f5, #142321);
-  --color-foreground: light-dark(#142321, #f0f5ee);
-  --color-muted: light-dark(#4b5f55, #b8c9bf);
-  --color-line: light-dark(#c3d0c6, #344a41);
-  --color-line-strong: light-dark(#788f80, #6b8577);
-  --color-accent: light-dark(#2f5d34, #c7e69c);
-  --color-on-accent: light-dark(#f2f9e8, #19301e);
-  --color-accent-text: light-dark(#2f5d34, #c7e69c);
-  --color-done: light-dark(#ddebd0, #28432f);
-  --color-danger: light-dark(#a8321f, #ffb6a6);
-  --color-danger-bg: light-dark(#fbe9e5, #3d2621);
-  --color-warning: light-dark(#6b3d0f, #ffe0bd);
-  --color-warning-bg: light-dark(#fbecd9, #3e2f23);
-  --color-warning-line: light-dark(#c28a4a, #846b4e);
-
-  /* Guscio: uguale nei due temi, è il mondo verde scuro del PoC */
-  --color-shell: #142321;
-  --color-shell-panel: #1e302d;
-  --color-shell-foreground: #f0f5ee;
-  --color-shell-muted: #b8c9bf;
-  --color-shell-line: #344a41;
-  --color-shell-line-strong: #6b8577;
-  --color-shell-accent: #c7e69c;
-  --color-shell-on-accent: #19301e;
-  --color-shell-panel-hover: #2a4238;
-  --color-shell-accent-hover: #dbf4b8;
-  --color-shell-warning: #ffe0bd;
-  --color-shell-warning-icon: #ffc98f;
-  --color-shell-warning-line: #846b4e;
-  --color-level: #3d6b47;
-  /* Fondale delle modali e ombra degli elementi sospesi: verde quasi nero del PoC */
-  --color-backdrop: rgb(9 23 19 / 0.6);
-  --color-shadow: rgb(9 23 19 / 0.28);
+  /*
+    Ruoli di colore: l'unico punto con i valori, una coppia light-dark(chiaro, scuro) per ruolo.
+    I componenti usano solo i ruoli. Il contrasto delle coppie usate è controllato da src/styles/contrast.test.ts.
+  */
+  --color-bg: light-dark(#FAFAF7, #1C1C1E);
+  --color-surface: light-dark(#FFFFFF, #2A2A2D);
+  --color-text: light-dark(#111111, #FAFAF7);
+  --color-text-muted: light-dark(#6B6B70, #A1A1AA);
+  --color-border: light-dark(#E4E4E7, #3F3F46);
+  --color-border-control: light-dark(#6B6B70, #A1A1AA);
+  /* accento vermiglio: solo ciò che chiede azione o è in corso, mai decorazione né stati conclusi.
+     on-accent è nero nei due temi: il bianco sull'arancione non arriva a 3:1.
+     accent-pressed nel chiaro è più chiaro di accent: scurendolo, il nero sopra scende sotto 4,5. */
+  --color-accent: light-dark(#E85A2A, #FF7A45);
+  --color-on-accent: light-dark(#111111, #111111);
+  --color-accent-pressed: light-dark(#F97316, #FF7A1A);
+  --color-accent-text: light-dark(#B8401F, #FF7A45);
+  --color-accent-indicator: light-dark(#E85A2A, #FF7A45);
+  /* accent-text all'8% (chiaro) e accent al 10% (scuro) su surface: il fondo dell'esercizio corrente è una card */
+  --color-accent-tint: light-dark(color-mix(in srgb, #B8401F 8%, #FFFFFF), color-mix(in srgb, #FF7A45 10%, #2A2A2D));
+  --color-done: light-dark(#111111, #FAFAF7);
+  --color-on-done: light-dark(#FAFAF7, #111111);
+  /* rosso solo per errori e azioni distruttive, distinto dall'accento; sempre con icona e testo */
+  --color-danger: light-dark(#BE123C, #FF7A8A);
+  --color-on-danger: light-dark(#FFFFFF, #111111);
+  /* indaco: solo trofei e record, e la seconda serie quando un grafico confronta due esercizi; mai pulsanti, link o stati */
+  --color-highlight: light-dark(#165E83, #8AB4E8);
+  /* velo delle modali e ombra degli elementi sospesi: nero neutro, uguale nei due temi */
+  --color-backdrop: rgb(0 0 0 / 0.6);
+  --color-shadow: rgb(0 0 0 / 0.28);
 
   --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif;
 
@@ -87,7 +81,7 @@
     font-variant-numeric: tabular-nums;
     -webkit-text-size-adjust: 100%;
     accent-color: var(--color-accent);
-    scrollbar-color: var(--color-line-strong) var(--color-background);
+    scrollbar-color: var(--color-border-control) var(--color-bg);
   }
   :root {
     /* altezza dello stack fisso in basso: di base la tab bar; le pagine con altre barre la alzano */
@@ -105,16 +99,16 @@
     min-height: 100%;
   }
   body {
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--color-bg);
+    color: var(--color-text);
     font-size: 1rem;
     line-height: 1.5;
     -webkit-tap-highlight-color: transparent;
   }
 
   ::selection {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
+    background: var(--color-accent-tint);
+    color: var(--color-text);
   }
   input,
   textarea {
@@ -135,15 +129,11 @@
     touch-action: manipulation;
   }
   :focus-visible {
-    outline: 3px solid var(--color-accent-text);
+    outline: 2px solid var(--color-accent-indicator);
     outline-offset: 3px;
   }
-  /* Sul guscio verde scuro il contorno usa l'accento lime anche nel tema chiaro */
-  .shell :focus-visible {
-    outline-color: var(--color-shell-accent);
-  }
   ::placeholder {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     opacity: 1;
   }
   h1,
@@ -168,11 +158,10 @@
 }
 
 @layer components {
-  /* Guscio: superfici verde scuro fisse (intestazione, barre in basso, timer) */
+  /* Guscio (intestazione, barre in basso): segue il tema, su surface come le card (ADR-005) */
   .shell {
-    background: var(--color-shell);
-    color: var(--color-shell-foreground);
-    color-scheme: dark;
+    background: var(--color-surface);
+    color: var(--color-text);
   }
 
   /* Pulsanti */
@@ -192,10 +181,15 @@
     cursor: pointer;
     transition: background-color 0.15s var(--ease-out-expo), border-color 0.15s var(--ease-out-expo);
   }
+  /* disabilitato: text-muted su surface, mai l'accento sbiadito */
   .btn:disabled,
   .btn[aria-disabled="true"] {
-    opacity: 0.45;
+    color: var(--color-text-muted);
     cursor: not-allowed;
+  }
+  :is(.btn-primary, .btn-secondary, .btn-danger):is(:disabled, [aria-disabled="true"]) {
+    background: var(--color-surface);
+    border-color: var(--color-border);
   }
   .btn svg {
     width: 20px;
@@ -206,24 +200,26 @@
     background: var(--color-accent);
     color: var(--color-on-accent);
   }
-  .btn-primary:hover:not(:disabled) {
-    background: color-mix(in oklab, var(--color-accent) 86%, var(--color-foreground));
+  .btn-primary:hover:not(:disabled),
+  .btn-primary:active:not(:disabled) {
+    background: var(--color-accent-pressed);
   }
   .btn-secondary {
     background: var(--color-surface);
-    color: var(--color-foreground);
-    border-color: var(--color-line-strong);
+    color: var(--color-text);
+    border-color: var(--color-border-control);
   }
+  /* hover neutro: un velo del testo sulla superficie, nessun colore */
   .btn-secondary:hover:not(:disabled) {
-    background: color-mix(in oklab, var(--color-surface) 90%, var(--color-accent));
+    background: color-mix(in oklab, var(--color-surface) 92%, var(--color-text));
   }
   .btn-danger {
-    background: transparent;
-    color: var(--color-danger);
-    border-color: var(--color-danger);
+    background: var(--color-danger);
+    color: var(--color-on-danger);
   }
+  /* hover: il rosso velato di testo, così on-danger sopra guadagna contrasto in entrambi i temi */
   .btn-danger:hover:not(:disabled) {
-    background: var(--color-danger-bg);
+    background: color-mix(in oklab, var(--color-danger) 88%, var(--color-text));
   }
   .btn-text {
     min-height: 48px;
@@ -239,7 +235,7 @@
     width: 48px;
     padding: 0;
     background: transparent;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .btn-icon:hover:not(:disabled) {
     background: color-mix(in oklab, currentColor 12%, transparent);
@@ -247,33 +243,10 @@
   .btn-block {
     width: 100%;
   }
-  /* Sul guscio il primario è lime con inchiostro verde, come nel PoC */
-  .shell .btn-primary {
-    background: var(--color-shell-accent);
-    color: var(--color-shell-on-accent);
-  }
-  .shell .btn-primary:hover:not(:disabled) {
-    background: var(--color-shell-accent-hover);
-  }
-  .shell .btn-secondary {
-    background: var(--color-shell-panel);
-    color: var(--color-shell-foreground);
-    border-color: var(--color-shell-line-strong);
-  }
-  .shell .btn-secondary:hover:not(:disabled) {
-    background: var(--color-shell-panel-hover);
-  }
-  .shell .btn-icon {
-    color: var(--color-shell-muted);
-  }
-  .shell .btn-text {
-    color: var(--color-shell-accent);
-  }
-
   /* Campi */
   .label {
     display: block;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.375rem;
@@ -285,14 +258,14 @@
     min-height: 48px;
     padding: 0.625rem 0.75rem;
     border-radius: var(--radius-field);
-    border: 1px solid var(--color-line-strong);
-    background: var(--color-field);
-    color: var(--color-foreground);
+    border: 1px solid var(--color-border-control);
+    background: var(--color-bg);
+    color: var(--color-text);
     font: inherit;
   }
   .field:focus-visible {
     outline-offset: 1px;
-    border-color: var(--color-accent-text);
+    border-color: var(--color-accent-indicator);
   }
   .field[aria-invalid="true"] {
     border-color: var(--color-danger);
@@ -300,19 +273,30 @@
   select.field {
     appearance: none;
     padding-right: 2.5rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23788f80' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    /* chevron disegnato con due tratti in gradiente sul ruolo text-muted, così segue il tema */
+    --chevron: transparent calc(50% - 1px), var(--color-text-muted) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px);
+    background-image: linear-gradient(to top right, var(--chevron)), linear-gradient(to top left, var(--chevron));
+    background-size: 7px 7px;
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
+    background-position: right calc(0.75rem + 10px) center, right calc(0.75rem + 3px) center;
   }
   .hint {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: 0.875rem;
     margin-top: 0.375rem;
   }
+  /* errore di un campo: danger, sempre con l'icona davanti al testo */
   .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
     color: var(--color-danger);
     font-size: 0.875rem;
     margin-top: 0.375rem;
+  }
+  .field-error svg {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   /* Scelta singola in un elenco (variante, catalogo): riga intera toccabile con radio del tema */
@@ -322,13 +306,13 @@
     gap: 0.75rem;
     min-height: 48px;
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-field);
     cursor: pointer;
   }
   .choice:has(:checked) {
-    border-color: var(--color-accent-text);
-    background: var(--color-done);
+    border-color: var(--color-text);
+    box-shadow: inset 0 0 0 1px var(--color-text);
   }
   .radio {
     appearance: none;
@@ -338,9 +322,9 @@
     width: 22px;
     height: 22px;
     margin: 0;
-    border: 1.5px solid var(--color-line-strong);
+    border: 1.5px solid var(--color-border-control);
     border-radius: 50%;
-    background: var(--color-field);
+    background: var(--color-bg);
     cursor: pointer;
   }
   .radio::before {

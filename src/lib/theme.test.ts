@@ -79,4 +79,30 @@ describe('registro dei temi', () => {
     listeners['astro:before-swap']({ newDocument: next });
     expect(next.documentElement.dataset.theme).toBe('dark');
   });
+
+  it('lo script inline allinea theme-color e barra di stato iOS al tema scelto', async () => {
+    const { themeBootScript, THEME_COLORS } = await import('./theme');
+    const meta = (attrs: Record<string, string>) => ({
+      attrs: { ...attrs },
+      getAttribute(k: string) { return this.attrs[k] ?? null; },
+      setAttribute(k: string, v: string) { this.attrs[k] = v; },
+    });
+    const run = (saved: string | null, systemDark: boolean) => {
+      const colors = [meta({ name: 'theme-color', media: '(prefers-color-scheme: light)' }), meta({ name: 'theme-color', media: '(prefers-color-scheme: dark)' })];
+      const bar = meta({ name: 'apple-mobile-web-app-status-bar-style', content: 'default' });
+      const doc = {
+        documentElement: { dataset: {} as Record<string, string> },
+        querySelectorAll: () => colors,
+        querySelector: () => bar,
+        addEventListener: () => {},
+      };
+      const win = { matchMedia: () => ({ matches: systemDark }) };
+      new Function('document', 'localStorage', 'window', 'matchMedia', themeBootScript())(doc, { getItem: () => saved }, win, win.matchMedia);
+      return { colors: colors.map((m) => m.attrs.content), bar: bar.attrs.content };
+    };
+    expect(run(null, false)).toEqual({ colors: [THEME_COLORS.light, THEME_COLORS.dark], bar: 'default' });
+    expect(run(null, true)).toEqual({ colors: [THEME_COLORS.light, THEME_COLORS.dark], bar: 'black-translucent' });
+    expect(run('dark', false)).toEqual({ colors: [THEME_COLORS.dark, THEME_COLORS.dark], bar: 'black-translucent' });
+    expect(run('light', true)).toEqual({ colors: [THEME_COLORS.light, THEME_COLORS.light], bar: 'default' });
+  });
 });

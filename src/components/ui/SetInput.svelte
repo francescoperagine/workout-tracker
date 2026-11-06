@@ -66,9 +66,9 @@
     height: 48px;
     padding: 0 0.125rem;
     border-radius: var(--radius-field);
-    border: 1px solid var(--color-line-strong);
-    background: var(--color-field);
-    color: var(--color-foreground);
+    border: 1px solid var(--color-border-control);
+    background: var(--color-bg);
+    color: var(--color-text);
     font: inherit;
     /* almeno 20px (P3) anche a 320px di larghezza */
     font-size: clamp(var(--text-xl), 5.6vw, var(--text-digits));
@@ -81,7 +81,7 @@
   }
   .set-input:focus-visible {
     outline-offset: 1px;
-    border-color: var(--color-accent-text);
+    border-color: var(--color-accent-indicator);
   }
   .set-input[aria-invalid='true'] {
     border-color: var(--color-danger);
@@ -91,7 +91,7 @@
     background: transparent;
   }
   .set-input.done:focus-visible {
-    border-color: var(--color-accent-text);
-    background: var(--color-field);
+    border-color: var(--color-accent-indicator);
+    background: var(--color-bg);
   }
 </style>

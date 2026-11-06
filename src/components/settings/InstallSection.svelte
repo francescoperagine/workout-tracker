@@ -33,9 +33,9 @@
       {#if canPrompt}
         <button type="button" class="btn btn-secondary self-start" onclick={() => promptInstall()}>Installa l’app</button>
       {:else if ios}
-        <p class="m-0 text-muted">In Safari tocca Condividi, poi «Aggiungi alla schermata Home».</p>
+        <p class="m-0 text-text-muted">In Safari tocca Condividi, poi «Aggiungi alla schermata Home».</p>
       {:else}
-        <p class="m-0 text-muted">Dal menu del browser scegli «Installa app» o «Aggiungi alla schermata Home».</p>
+        <p class="m-0 text-text-muted">Dal menu del browser scegli «Installa app» o «Aggiungi alla schermata Home».</p>
       {/if}
     {/if}
   </div>

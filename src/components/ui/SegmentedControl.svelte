@@ -37,8 +37,8 @@
     gap: 4px;
     padding: 4px;
     border-radius: var(--radius-panel);
-    border: 1px solid var(--color-line-strong);
-    background: var(--color-field);
+    border: 1px solid var(--color-border-control);
+    background: var(--color-bg);
   }
   label {
     position: relative;
@@ -47,13 +47,13 @@
     min-height: 48px;
     padding: 0 0.5rem;
     border-radius: var(--radius-field);
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.15s var(--ease-out-expo), color 0.15s var(--ease-out-expo);
   }
   label:hover {
-    color: var(--color-foreground);
+    color: var(--color-text);
   }
   label.active {
     background: var(--color-accent);
@@ -67,7 +67,7 @@
     cursor: pointer;
   }
   label:has(input:focus-visible) {
-    outline: 3px solid var(--color-accent-text);
+    outline: 2px solid var(--color-accent-indicator);
     outline-offset: 2px;
   }
 </style>

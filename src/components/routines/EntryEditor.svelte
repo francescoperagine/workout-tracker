@@ -301,17 +301,17 @@
     cursor: pointer;
   }
   .toggle:hover .chevron {
-    color: var(--color-foreground);
+    color: var(--color-text);
   }
   .order {
     /* sopra il filo che unisce le voci di una superserie */
     position: relative;
     align-self: start;
     padding: 0.0625rem 0 0.25rem;
-    background: var(--color-background);
+    background: var(--color-bg);
     font-size: var(--text-lg);
     font-weight: 700;
-    color: var(--color-accent-text);
+    color: var(--color-text);
     text-align: center;
   }
   .text {
@@ -326,7 +326,7 @@
     overflow-wrap: anywhere;
   }
   .summary {
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
   }
   .chevron {
@@ -334,7 +334,7 @@
     place-items: center;
     width: 48px;
     height: 48px;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
     transition: rotate 0.2s var(--ease-out-expo);
   }
   .expanded .chevron {
@@ -378,7 +378,7 @@
     overflow-wrap: anywhere;
   }
   .alternatives li + li {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-border);
   }
   @media (max-width: 359px) {
     .editor {

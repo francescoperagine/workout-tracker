@@ -25,7 +25,7 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 
 ## Selected direction
 
-- **Autorità visiva:** mondo del PoC esteso (step 1): guscio verde scuro con accento lime, Atkinson Hyperlegible Next. Il timer è la mossa distintiva: il tempo che resta è la cosa più grande sullo schermo e cambia stato in modo inequivocabile alla fine.
+- **Autorità visiva:** mondo del PoC esteso (step 1), con la palette di INC-010: fondo `bg` del tema e accento vermiglio, Atkinson Hyperlegible Next. Il timer è la mossa distintiva: il tempo che resta è la cosa più grande sullo schermo e cambia stato in modo inequivocabile alla fine.
 - **Tesi di interazione:** il timer non chiede attenzione, la concede. Un solo numero, un solo progresso, quattro controlli grandi in basso. Ridurlo è sempre possibile e non perde il conteggio.
 
 ## Scope and boundaries
@@ -56,11 +56,11 @@ L'utente ha appena finito una serie: respira, beve, magari si sposta. Guarda lo 
 
 ## Direction contract
 
-THESIS: lo schermo stesso è la clessidra. Un livello verde riempie lo schermo dal basso e scende a ogni secondo: quanto recupero resta si legge con la coda dell'occhio, senza leggere le cifre. Rifiuta l'anello attorno alle cifre, lo standard della categoria (Strong, Hevy).
+THESIS: lo schermo stesso è la clessidra. Un livello velato d'accento riempie lo schermo dal basso e scende a ogni secondo: quanto recupero resta si legge con la coda dell'occhio, senza leggere le cifre. Rifiuta l'anello attorno alle cifre, lo standard della categoria (Strong, Hevy).
 
-OWN-WORLD: fondo del guscio verde scuro in entrambi i temi (il timer è un momento del guscio, non del contenuto); livello in verde intermedio con un bordo superiore lime di 4px; cifre Atkinson Hyperlegible Next tabulari, peso 650, alte quanto metà della larghezza; controlli come lastre a tutta larghezza con raggio 12px. Allo stato "Vai" tutto lo schermo diventa lime, testo in inchiostro verde.
+OWN-WORLD: fondo `bg` del tema scelto (ADR-005: il guscio segue il tema); livello in `accent-tint` con un bordo superiore `accent-indicator` di 6px; cifre Atkinson Hyperlegible Next tabulari, peso 650, alte quanto metà della larghezza; controlli come lastre a tutta larghezza con raggio 12px. Allo stato "Vai" tutto lo schermo diventa `accent`, testo in `on-accent`.
 
-STORY: l'utente spunta la serie, appoggia il telefono, beve. Da un metro vede quanto verde resta e la prossima serie; se serve allunga o salta col pollice; alla fine lo schermo diventa lime e capisce "vai" prima di leggere la parola.
+STORY: l'utente spunta la serie, appoggia il telefono, beve. Da un metro vede quanto livello resta e la prossima serie; se serve allunga o salta col pollice; alla fine lo schermo diventa vermiglio e capisce "vai" prima di leggere la parola.
 
 FIRST VIEWPORT: in alto "Recupero · 2:00" e Riduci (icona, 48px); cifre al centro dell'altezza ottica, larghe circa l'80% dello schermo; sotto, "Prossima" con esercizio, serie, peso × ripetizioni; in basso, nella zona del pollice, −15 s, +15 s, Salta in tre lastre da 64px, e "Riduci" come testo sotto. Il livello sta dietro a tutto.
 

@@ -3,6 +3,7 @@
   // file (v2 o del PoC) → anteprima con numero di allenamenti e periodo →
   // scelta "mantieni" o "sostituisci" se ci sono elementi già presenti → riepilogo con gli scartati.
   // Fino alla conferma nulla viene modificato; un file non valido lascia il diario com'è.
+  import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import BottomSheet from '../ui/BottomSheet.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import {
@@ -147,9 +148,10 @@
   {#if phase === 'preview' && preview}
     <div class="flex flex-col gap-4">
       {#if store.state === 'unreadable'}
-        <p class="warning">
-          Il diario salvato su questo dispositivo non è leggibile: importando, il suo contenuto viene sostituito. Se vuoi
-          conservarlo, scaricalo prima da Dati e privacy.
+        <p class="error-box alert-line">
+          <CircleAlert size={20} aria-hidden="true" />
+          <span>Il diario salvato su questo dispositivo non è leggibile: importando, il suo contenuto viene sostituito. Se vuoi
+          conservarlo, scaricalo prima da Dati e privacy.</span>
         </p>
       {/if}
       <ul class="facts">
@@ -202,14 +204,14 @@
             <input class="radio" type="radio" name="import-choice" value="keep" bind:group={choice} />
             <span>
               <span class="block font-semibold">Mantieni quelli di questo dispositivo</span>
-              <span class="block text-sm text-muted">Dal backup si aggiungono solo gli elementi nuovi.</span>
+              <span class="block text-sm text-text-muted">Dal backup si aggiungono solo gli elementi nuovi.</span>
             </span>
           </label>
           <label class="choice">
             <input class="radio" type="radio" name="import-choice" value="replace" bind:group={choice} />
             <span>
               <span class="block font-semibold">Sostituisci con quelli del backup</span>
-              <span class="block text-sm text-muted">
+              <span class="block text-sm text-text-muted">
                 {data?.format === 'v2'
                   ? 'Gli elementi in comune prendono la versione del backup, insieme alle impostazioni.'
                   : 'Gli allenamenti in comune prendono la versione del backup.'}
@@ -238,7 +240,7 @@
         {/if}
       </ul>
       {#if outcome.unsaved}
-        <p class="warning">{outcome.unsaved}</p>
+        <p class="error-box alert-line"><CircleAlert size={20} aria-hidden="true" /><span>{outcome.unsaved}</span></p>
       {/if}
       {#if outcome.discarded.length}
         <div>
@@ -253,8 +255,8 @@
     </div>
   {:else if phase === 'error'}
     <div class="flex flex-col gap-2">
-      <p class="field-error mt-0 text-base" role="alert">{error}</p>
-      <p class="text-muted">Nessun dato è stato modificato.</p>
+      <p class="field-error mt-0 text-base" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>
+      <p class="text-text-muted">Nessun dato è stato modificato.</p>
     </div>
   {/if}
 
@@ -290,18 +292,27 @@
     margin: 0;
     padding-left: 1.25rem;
     list-style: disc;
-    color: var(--color-muted);
+    color: var(--color-text-muted);
   }
   .list :global(.font-semibold) {
-    color: var(--color-foreground);
+    color: var(--color-text);
   }
-  .warning {
+  /* errore vero: danger, sempre con icona e testo */
+  .error-box {
     margin: 0;
     padding: 0.75rem;
-    border: 1px solid var(--color-warning-line);
+    border: 1px solid var(--color-danger);
     border-radius: var(--radius-panel);
-    background: var(--color-warning-bg);
-    color: var(--color-warning);
+    color: var(--color-danger);
+  }
+  .alert-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .alert-line > :global(svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
   fieldset {
     margin: 0;

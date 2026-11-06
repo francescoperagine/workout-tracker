@@ -3,7 +3,9 @@
   // (v2 e PoC), recupero di un archivio illeggibile, cancellazione con conferma forte e annullamento.
   // Testi semplici: niente "localStorage" né "origin" senza spiegazione (brief route-settings).
   import { onMount } from 'svelte';
+  import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Download from '@lucide/svelte/icons/download';
+  import Info from '@lucide/svelte/icons/info';
   import Upload from '@lucide/svelte/icons/upload';
   import Trash from '@lucide/svelte/icons/trash';
   import ImportFlow from '../data/ImportFlow.svelte';
@@ -79,10 +81,11 @@
   <h2 id="s-data" class="section-title">Dati e privacy</h2>
 
   {#if store.state === 'unreadable'}
-    <div class="warning flex flex-col gap-3" role="alert">
-      <p class="m-0">
-        Non riesco a leggere il diario salvato in questo browser. Non l’ho sovrascritto: scarica il contenuto originale per
-        conservarlo, poi importa un backup valido.
+    <div class="error-box flex flex-col gap-3" role="alert">
+      <p class="alert-line m-0">
+        <CircleAlert size={20} aria-hidden="true" />
+        <span>Non riesco a leggere il diario salvato in questo browser. Non l’ho sovrascritto: scarica il contenuto originale per
+        conservarlo, poi importa un backup valido.</span>
       </p>
       <button type="button" class="btn btn-secondary self-start" onclick={downloadOriginal}>
         <Download aria-hidden="true" />Scarica il contenuto originale
@@ -95,12 +98,12 @@
       Il diario è salvato solo in questo browser, su questo dispositivo. Non c’è un account e nulla viene inviato a un
       server: l’app funziona anche senza rete.
     </p>
-    <p class="m-0 text-muted">
+    <p class="m-0 text-text-muted">
       Ogni browser e ogni indirizzo del sito ha il suo spazio: da un altro browser, da un altro telefono o in navigazione
       privata questi dati non ci sono. Per spostarli o conservarli usa un backup.
     </p>
     {#if persisted !== null}
-      <p class="m-0 text-muted">
+      <p class="m-0 text-text-muted">
         {persisted
           ? 'Il browser si è impegnato a conservare i dati anche quando lo spazio scarseggia.'
           : 'Il browser potrebbe cancellare i dati se lo spazio scarseggia: fai un backup ogni tanto.'}
@@ -109,16 +112,17 @@
   </div>
 
   {#if showIosWarning}
-    <p class="warning m-0">
-      Su iPhone e iPad, Safari cancella i dati dei siti che non apri da 7 giorni. Installa l’app sulla schermata Home e fai un
-      backup ogni tanto.
+    <p class="notice m-0">
+      <Info size={20} aria-hidden="true" />
+      <span>Su iPhone e iPad, Safari cancella i dati dei siti che non apri da 7 giorni. Installa l’app sulla schermata Home e fai un
+      backup ogni tanto.</span>
     </p>
   {/if}
 
   <div class="panel flex flex-col gap-4">
     <div>
       <h3 class="subhead">Backup</h3>
-      <p class="m-0 text-muted" data-testid="archive-summary">
+      <p class="m-0 text-text-muted" data-testid="archive-summary">
         {isEmpty
           ? 'Il diario è vuoto.'
           : `Nel diario: ${plural(counts.sessions, 'allenamento', 'allenamenti')}, ${plural(counts.routines, 'scheda', 'schede')}.`}
@@ -141,7 +145,7 @@
 
   <div class="panel flex flex-col gap-3">
     <h3 class="subhead">Cancella il diario</h3>
-    <p class="m-0 text-muted">Elimina allenamenti, schede e pianificazione da questo dispositivo. Le impostazioni restano.</p>
+    <p class="m-0 text-text-muted">Elimina allenamenti, schede e pianificazione da questo dispositivo. Le impostazioni restano.</p>
     <button type="button" class="btn btn-danger self-start" disabled={isEmpty || store.state !== 'saved'} onclick={() => (confirmClear = true)}>
       <Trash aria-hidden="true" />Cancella tutto il diario
     </button>
@@ -168,11 +172,32 @@
     font-size: var(--text-base);
     font-weight: 700;
   }
-  .warning {
+  /* errore vero: danger, sempre con icona e testo */
+  .error-box {
+    margin: 0;
     padding: 0.75rem;
-    border: 1px solid var(--color-warning-line);
+    border: 1px solid var(--color-danger);
     border-radius: var(--radius-panel);
-    background: var(--color-warning-bg);
-    color: var(--color-warning);
+    color: var(--color-danger);
+  }
+  .error-box :global(.alert-line) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .error-box :global(.alert-line > svg),
+  .notice :global(svg) {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  /* avviso informativo: text-muted con icona in un riquadro border */
+  .notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    color: var(--color-text-muted);
   }
 </style>
