@@ -65,12 +65,10 @@ test.describe('US-37 completa esercizio', () => {
 
     await region.getByRole('button', { name: `Completa ${name}` }).click();
 
-    // tutte le serie spuntate, comprese quelle senza peso
-    for (let n = 1; n <= count; n++) {
-      await expect(region.getByRole('button', { name: `Annulla serie ${n}` })).toHaveAttribute('aria-pressed', 'true');
-    }
-    // stessa spunta per tutte: un tocco, un istante
-    expect((await savedSets(page, session.id, exercise.id)).map((s) => s.completedAt)).toEqual(Array(count).fill(NOW.getTime()));
+    // tutte le serie spuntate, comprese quelle senza peso, con la stessa spunta: un tocco, un istante;
+    // l'esercizio fatto si chiude (§3.7)
+    await expect.poll(async () => (await savedSets(page, session.id, exercise.id)).map((s) => s.completedAt)).toEqual(Array(count).fill(NOW.getTime()));
+    await expect(region.getByRole('button', { name, exact: true })).toHaveAttribute('aria-expanded', 'false');
 
     // un solo recupero, dall'ultima serie spuntata, già ridotto: il timer a tutto schermo coprirebbe «Annulla»
     await expect(timerBar(page)).toBeVisible();
@@ -123,12 +121,21 @@ test.describe('US-37 completa esercizio', () => {
     await expect(timer(page)).toHaveCount(0);
   });
 
-  test('US-37 il pulsante sparisce quando l’esercizio è fatto', async ({ page }) => {
-    const { archive, name } = exerciseFromRoutineB();
+  test('US-37 riuscito, l’esercizio si chiude e il focus passa all’intestazione del successivo; «Annulla» lo riapre', async ({ page }) => {
+    const { archive, session, exercise, name } = exerciseFromRoutineB();
+    const following = session.exercises[session.exercises.indexOf(exercise) + 1];
+    const nextName = exerciseName(archive, following.exerciseId);
     await openWorkout(page, archive);
 
     await card(page, name).getByRole('button', { name: `Completa ${name}` }).click();
     await expect(page.getByRole('button', { name: `Completa ${name}` })).toHaveCount(0);
-    await expect(card(page, name).getByRole('button', { name: 'Nascondi serie' })).toBeVisible();
+    await expect(card(page, name).getByRole('button', { name, exact: true })).toHaveAttribute('aria-expanded', 'false');
+    const nextHeader = card(page, nextName).getByRole('button', { name: nextName, exact: true });
+    await expect(nextHeader).toHaveAttribute('aria-expanded', 'true');
+    await expect(nextHeader).toBeFocused();
+    await expect(nextHeader).toBeInViewport();
+
+    await toast(page, 'serie spuntate').getByRole('button', { name: 'Annulla' }).click();
+    await expect(card(page, name).getByRole('button', { name, exact: true })).toHaveAttribute('aria-expanded', 'true');
   });
 });

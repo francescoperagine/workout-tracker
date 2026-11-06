@@ -139,7 +139,7 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     // l’esercizio con tutte le serie fatte è compatto
     await expect(page.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'Mostra serie' }).click();
+    await page.getByRole('button', { name: 'Squat bilanciere', exact: true }).click();
     const reps = page.getByRole('textbox', { name: 'Ripetizioni serie 1' });
     await expect(reps).toHaveValue('8');
     await reps.fill('10');

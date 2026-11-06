@@ -3,6 +3,37 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-012
+
+Date: 2026-11-06
+
+Summary:
+**Allenamento in palestra, incremento 2: card a fisarmonica e riordino solo trascinando (feature
+`workout-gym-ux`, ADR-007).** All'avvio tutti gli esercizi sono aperti; ognuno si apre e si chiude toccando la
+sua intestazione (il nome è il pulsante, con `aria-expanded`), ⓘ apre l'approfondimento, e chiuso mostra il
+riassunto di oggi. Sparisce «Mostra/Nascondi serie». «Completa esercizio» riuscito chiude l'esercizio e porta in
+vista il successivo con serie da fare, aperto, con il focus sul suo nome; «Annulla» lo riapre. Via la modalità
+«Riordina» e le frecce, nell'allenamento e nell'editor della scheda: trascinando, a sinistra resta la maniglia e il
+numero d'ordine passa a destra; senza gesto, «Sposta su/giù» nel menu ⋯ e nella voce aperta della scheda.
+
+Deliverables:
+- `src/components/workout/Workout.svelte`: stato di apertura per esercizio, `moveOn` dopo ✓✓, righe del
+  trascinamento con il numero a destra, niente «Riordina esercizi» né frecce.
+- `src/components/workout/WorkoutExercise.svelte`: nome come pulsante della fisarmonica, ⓘ a sé, riassunto da
+  chiuso anche per un esercizio non finito.
+- `src/components/routines/RoutineEditor.svelte` ed `EntryEditor.svelte`: niente «Riordina», «Sposta su/giù»
+  nella voce aperta.
+- e2e: `us-40-exercise-rest.spec.ts` (fisarmonica), `us-37-complete-exercise.spec.ts` (✓✓ che passa al
+  successivo), `us-38-drag-reorder.spec.ts` (righe del trascinamento), `us-07-us-10-routines.spec.ts`,
+  `us-12-us-20-workout.spec.ts`, `us-27-us-29-history.spec.ts` adeguati.
+- Documenti: `DESIGN.md` (testa dell'esercizio, aperto e chiuso, riordino nell'editor), brief `route-workout` e
+  `route-routines`, ADR-007, SPEC aggiornata.
+
+Limiti noti: con un nome su due righe ⓘ sta a destra del nome, all'altezza dell'ultima riga, non subito dopo
+l'ultima parola. Viste fatte con Playwright a 390×844 e 320×568 nei due temi; sul telefono no, era bloccato.
+
+ADR: ADR-007. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-011
 
 Date: 2026-11-06

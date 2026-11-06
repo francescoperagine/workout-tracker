@@ -1,8 +1,8 @@
 <script lang="ts">
-  // Un esercizio dell'allenamento attivo (brief route-workout): maniglia, nome (tocco = approfondimento) e
-  // menu ⋯ in testa, variante, righe serie con "Completa" nell'intestazione, "Aggiungi serie" e la nota
-  // sul carico; recupero e cambio esercizio stanno nel menu (US-40). Ogni gesto salva subito
-  // (P4). Fatto (tutte le serie spuntate) si compatta in una riga, ma resta modificabile.
+  // Un esercizio dell'allenamento attivo (brief route-workout): maniglia, nome (tocco = apre e chiude), ⓘ
+  // (approfondimento) e menu ⋯ in testa, variante, righe serie con "Completa" nell'intestazione, "Aggiungi
+  // serie" e la nota sul carico; recupero e cambio esercizio stanno nel menu (US-40). Ogni gesto salva subito
+  // (P4). Chiuso mostra il riassunto di oggi in una riga, ma resta modificabile.
   import { tick } from 'svelte';
   import CheckCheck from '@lucide/svelte/icons/check-check';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
@@ -42,7 +42,7 @@
     exercise: SessionExercise;
     /** contiene la serie da fare adesso (P7) */
     current: boolean;
-    /** compattato perché fatto; il tocco su "Mostra serie" lo riapre */
+    /** chiuso (fatto, o chiuso dall'utente): il tocco sull'intestazione lo riapre */
     compact: boolean;
     /** id delle serie che hanno battuto un record di carico (US-29) */
     records: ReadonlySet<string>;
@@ -91,6 +91,13 @@
   const numbers = $derived(setNumbers(exercise.sets));
   const done = $derived(exercise.sets.length > 0 && exercise.sets.every((s) => s.completedAt !== null));
   const id = $derived(`exercise-${exercise.id}`);
+  const doneSets = $derived(exercise.sets.filter((s) => s.completedAt !== null).length);
+
+  /** Tocco sulla riga del nome fuori dai pulsanti (maniglia, ⓘ, ⋯): apre e chiude come il pulsante del nome */
+  function onHeadClick(event: MouseEvent) {
+    if ((event.target as Element).closest('button, a, input')) return;
+    ontoggle();
+  }
 
   // serie lasciate senza spunta da "Completa esercizio" perché senza ripetizioni (US-37): evidenziate
   // finché non si modificano o si spuntano
@@ -192,7 +199,9 @@
 </script>
 
 <section class="exercise" class:current aria-label={name} {id}>
-  <div class="head">
+  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+  <!-- solo un bersaglio più grande per il dito: da tastiera e lettore di schermo c'è il pulsante del nome -->
+  <div class="head" onclick={onHeadClick}>
     {#if handle}
       <div class="lead">
         <ReorderHandle id={`handle-${exercise.id}`} label={handle.label} onstart={handle.onstart} onstep={handle.onstep} />
@@ -201,14 +210,22 @@
     {#if current && !compact}<span class="sr-only">Adesso: </span>{/if}
     <div class="title">
       <h3>
-        <button type="button" class="name" aria-haspopup="dialog" aria-label={`${name}: come si esegue`} onclick={ondetails}>
-          {name}<Info size={18} aria-hidden="true" />
-        </button>
+        <button type="button" class="name" id={`${id}-toggle`} aria-expanded={!compact} aria-controls={`${id}-sets`} onclick={ontoggle}>{name}</button><button
+          type="button"
+          class="info"
+          aria-haspopup="dialog"
+          aria-label={`${name}: come si esegue`}
+          onclick={ondetails}><Info size={18} aria-hidden="true" /></button
+        >
       </h3>
       {#if compact}
         <p class="meta done-line">
-          <CircleCheck size={16} aria-hidden="true" />
-          <span>{[plural(exercise.sets.length, 'serie', 'serie'), compactSummary].filter(Boolean).join(' · ')}</span>
+          {#if done}<CircleCheck size={16} aria-hidden="true" />{/if}
+          <span>
+            {[done ? plural(exercise.sets.length, 'serie', 'serie') : `${doneSets} di ${plural(exercise.sets.length, 'serie', 'serie')} fatte`, compactSummary]
+              .filter(Boolean)
+              .join(' · ')}
+          </span>
         </p>
       {:else}
         {#if exercise.variantOf}
@@ -223,12 +240,6 @@
       <Ellipsis size={22} aria-hidden="true" />
     </button>
   </div>
-
-  {#if compact || done}
-    <button type="button" class="btn btn-text toggle" aria-expanded={!compact} aria-controls={`${id}-sets`} onclick={ontoggle}>
-      {compact ? 'Mostra serie' : 'Nascondi serie'}
-    </button>
-  {/if}
 
   {#if !compact}
     <div class="body" id={`${id}-sets`}>
@@ -311,6 +322,7 @@
   }
   /* maniglia · nome · ⋯ su una riga; il nome prende tutto lo spazio che resta e va a capo a parola */
   .head {
+    cursor: pointer;
     margin-top: -0.375rem;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -347,11 +359,14 @@
     grid-row: 1;
     margin-right: -0.5rem;
   }
+  /* nome e ⓘ in fila: ⓘ si allinea all'ultima riga del nome e non va mai a capo da solo */
   h3 {
+    display: flex;
     margin: 0;
   }
   .name {
-    display: inline;
+    display: block;
+    min-width: 0;
     min-height: 48px;
     padding: 0.5rem 0;
     border: 0;
@@ -366,13 +381,31 @@
     overflow-wrap: break-word;
     cursor: pointer;
   }
-  .name :global(svg) {
-    display: inline;
-    margin-left: 0.375rem;
-    vertical-align: -0.125rem;
+  /* ⓘ subito dopo il nome, sulla stessa riga: piccolo a vista, bersaglio allargato dallo pseudo-elemento */
+  .info {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    /* in fondo, all'altezza dell'ultima riga del nome (che ha 0.5rem di imbottitura sotto) */
+    align-self: flex-end;
+    margin-bottom: 0.5rem;
+    width: 1.25rem;
+    height: 1.5rem;
+    margin-left: 0.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-field);
+    background: transparent;
     color: var(--color-text-muted);
+    cursor: pointer;
   }
-  .name:hover :global(svg) {
+  .info::before {
+    content: '';
+    position: absolute;
+    inset: -0.75rem -0.75rem;
+  }
+  .info:hover {
     color: var(--color-text);
   }
   .meta {
@@ -390,9 +423,6 @@
     flex-shrink: 0;
     margin-top: 2px;
     color: var(--color-text);
-  }
-  .toggle {
-    align-self: flex-start;
   }
   .body {
     display: flex;

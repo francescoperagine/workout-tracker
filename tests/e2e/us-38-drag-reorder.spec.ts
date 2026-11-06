@@ -62,6 +62,25 @@ function blockAt(page: Page, index: number): Locator {
 }
 
 test.describe('US-38 riordino con la maniglia', () => {
+  test('US-38 durante il trascinamento a sinistra c’è solo la maniglia, il numero sta a destra, niente frecce', async ({ page }) => {
+    const { archive, session } = routineB();
+    await seedArchive(page, archive);
+    await page.goto('workout/');
+    await expect(page.getByRole('button', { name: 'Riordina esercizi' })).toHaveCount(0);
+
+    const { x, y } = await centerOf(page.locator(`#handle-${session.exercises[0].id}`));
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x, y + 24);
+    const row = blockAt(page, 0).locator('.reorder-row');
+    await expect(row).toBeVisible();
+    // ordine nel DOM: maniglia, nome, numero
+    expect(await row.evaluate((el) => [...el.children].map((c) => c.className.split(' ')[0]))).toEqual(['reorder-handle', 'reorder-name', 'order']);
+    await expect(page.getByRole('button', { name: /^Sposta (su|giù) / })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await page.mouse.up();
+  });
+
   test('US-38 trascina un esercizio più in basso e l’ordine resta', async ({ page }) => {
     const { archive, session } = routineB();
     const before = session.exercises;

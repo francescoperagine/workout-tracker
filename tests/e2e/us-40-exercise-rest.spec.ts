@@ -98,7 +98,7 @@ test.describe('US-40 recupero dal menu dell’esercizio', () => {
     await page.goto('workout/');
 
     const long = B.exercises.find((e) => name(e.exerciseId) === 'Distensioni manubri panca inclinata')!;
-    const button = region(page, long.exerciseId).getByRole('button', { name: /: come si esegue$/ });
+    const button = region(page, long.exerciseId).getByRole('button', { name: 'Distensioni manubri panca inclinata', exact: true });
     const { height, lineHeight, padding } = await button.evaluate((el) => {
       const style = getComputedStyle(el);
       return { height: el.getBoundingClientRect().height, lineHeight: parseFloat(style.lineHeight), padding: parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) };
@@ -163,4 +163,37 @@ test.describe('US-40 recupero dal menu dell’esercizio', () => {
     await page.getByRole('link', { name: 'Allenamento', exact: true }).click();
     await expectPage(page, 'workout/');
   });
+
+  test('US-40 all’avvio tutti gli esercizi sono aperti; l’intestazione apre e chiude in qualunque momento', async ({ page }) => {
+    const { session } = startSession(archiveWith({ routines: starterRoutines() }), 'routine-a', NOW.getTime() - 600_000);
+    await seedArchive(page, archiveWith({ routines: starterRoutines(), sessions: [session] }));
+    await page.goto('workout/');
+
+    for (const e of session.exercises) {
+      await expect(region(page, e.exerciseId).getByRole('button', { name: name(e.exerciseId), exact: true })).toHaveAttribute('aria-expanded', 'true');
+    }
+    await expect(page.getByRole('button', { name: /^(Mostra|Nascondi) serie$/ })).toHaveCount(0);
+
+    const squat = region(page, SQUAT.exerciseId);
+    const header = squat.getByRole('button', { name: name(SQUAT.exerciseId), exact: true });
+    await expect(header).toHaveAttribute('aria-controls', `exercise-${session.exercises[0].id}-sets`);
+    // chiuso senza serie fatte: il riassunto dice quante ne restano
+    await header.click();
+    await expect(header).toHaveAttribute('aria-expanded', 'false');
+    await expect(squat.getByRole('textbox')).toHaveCount(0);
+    await expect(squat).toContainText(`0 di ${SQUAT.sets} serie fatte`);
+    // ⓘ e ⋯ non aprono né chiudono
+    await squat.getByRole('button', { name: /: come si esegue$/ }).click();
+    await page.keyboard.press('Escape');
+    await expect(header).toHaveAttribute('aria-expanded', 'false');
+    // il tocco sulla riga del nome, fuori dal testo, riapre
+    const box = (await squat.locator('.head').boundingBox())!;
+    await page.mouse.click(box.x + box.width - 70, box.y + 10);
+    await expect(header).toHaveAttribute('aria-expanded', 'true');
+    // da tastiera
+    await header.focus();
+    await page.keyboard.press('Enter');
+    await expect(header).toHaveAttribute('aria-expanded', 'false');
+  });
 });
+

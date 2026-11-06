@@ -3,8 +3,6 @@
   // linea, superserie, riordino con frecce (P9), aggiunta dal catalogo in un foglio dal basso.
   // Ogni modifica si salva subito (P4); una scheda archiviata è in sola lettura, con "Ripristina".
   import { tick } from 'svelte';
-  import ArrowDown from '@lucide/svelte/icons/arrow-down';
-  import ArrowUp from '@lucide/svelte/icons/arrow-up';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import ClipboardList from '@lucide/svelte/icons/clipboard-list';
@@ -56,7 +54,6 @@
   const blocks = $derived(blocksOf(exercises));
 
   let expandedId: string | null = $state(null);
-  let reordering = $state(false);
   let announcement = $state('');
 
   let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
@@ -125,7 +122,6 @@
     if (addedId) {
       // la voce nuova si apre per scrivere serie, ripetizioni e carico
       expandedId = addedId;
-      reordering = false;
       await tick();
       document.getElementById(`entry-${addedId}-toggle`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
@@ -153,21 +149,13 @@
     (document.getElementById(next ? `entry-${next.id}-toggle` : 'add-exercise') as HTMLElement | null)?.focus();
   }
 
-  function moveLabel(entryId: string, direction: -1 | 1): string {
-    const entry = exercises.find((e) => e.id === entryId)!;
-    const name = exerciseName(store.archive, entry.exerciseId);
-    const where = direction < 0 ? 'su' : 'giù';
-    return moveKind(exercises, entryId, direction) === 'block' && entry.group !== null
-      ? `Sposta ${where} la superserie con ${name}`
-      : `Sposta ${where} ${name}`;
-  }
-
+  // «Sposta su/giù» dentro la voce aperta (§3.6: niente modalità «Riordina», si trascina dalla maniglia)
   async function move(entryId: string, direction: -1 | 1) {
     if (!edit((a) => moveEntry(a, routineId, entryId, direction))) return;
     const entry = exercises.find((e) => e.id === entryId);
     const index = exercises.findIndex((e) => e.id === entryId);
     if (entry) announcement = `${exerciseName(store.archive, entry.exerciseId)}: ora ${labels[index]}.`;
-    // il focus resta sulla freccia (o sull'altra, se questa non può più spostare)
+    // la voce resta aperta e il focus sul pulsante (o sull'altro, se questo non può più spostare)
     await tick();
     const same = document.getElementById(`move-${entryId}-${direction}`) as HTMLButtonElement | null;
     const other = document.getElementById(`move-${entryId}-${-direction}`) as HTMLButtonElement | null;
@@ -176,7 +164,7 @@
 
   // --- trascinamento e Su/Giù sulla maniglia (US-38), come nell'allenamento ------------------------
   let drag: (DragState & { id: string }) | null = $state(null);
-  const rows = $derived(reordering || drag !== null);
+  const rows = $derived(drag !== null);
   const handleId = (id: string, whole: boolean) => (whole ? `handle-group-${id}` : `handle-${id}`);
   const entryName = (id: string) => exerciseName(store.archive, exercises.find((e) => e.id === id)?.exerciseId ?? '');
   const unitName = (id: string, whole: boolean) => (whole ? `La superserie con ${entryName(id)}` : entryName(id));
@@ -273,19 +261,6 @@
         <h2 id="entries-title" class="m-0 text-xl font-bold">
           Esercizi <span class="font-normal text-text-muted">{exercises.length || ''}</span>
         </h2>
-        {#if !routine.archived && exercises.length > 1}
-          <button
-            type="button"
-            class="btn btn-text"
-            aria-pressed={reordering}
-            onclick={() => {
-              reordering = !reordering;
-              expandedId = null;
-            }}
-          >
-            {reordering ? 'Fine' : 'Riordina'}
-          </button>
-        {/if}
       </div>
 
       {#if exercises.length === 0}
@@ -319,35 +294,13 @@
                   {@const inner = unitStyle(drag, i, block.entries[0].id)}
                   <li class={['entry-item', drag && 'shifting', inner.dragged && 'dragged']} style:transform={inner.transform}>
                     {#if rows}
+                      <!-- righe del trascinamento: a sinistra solo la maniglia, il numero d'ordine a destra -->
                       <div class="reorder-row">
                         {#if handle}
-                          <ReorderHandle id={handleId(entry.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
-                            <span class="order" aria-hidden="true">{labels[index]}</span>
-                          </ReorderHandle>
-                        {:else}
-                          <span class="order" aria-hidden="true">{labels[index]}</span>
+                          <ReorderHandle id={handleId(entry.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep} />
                         {/if}
                         <span class="min-w-0 grow font-semibold">{exerciseName(store.archive, entry.exerciseId)}</span>
-                        <button
-                          type="button"
-                          id={`move-${entry.id}--1`}
-                          class="btn btn-icon"
-                          aria-label={moveLabel(entry.id, -1)}
-                          disabled={!moveKind(exercises, entry.id, -1)}
-                          onclick={() => move(entry.id, -1)}
-                        >
-                          <ArrowUp size={22} aria-hidden="true" />
-                        </button>
-                        <button
-                          type="button"
-                          id={`move-${entry.id}-1`}
-                          class="btn btn-icon"
-                          aria-label={moveLabel(entry.id, 1)}
-                          disabled={!moveKind(exercises, entry.id, 1)}
-                          onclick={() => move(entry.id, 1)}
-                        >
-                          <ArrowDown size={22} aria-hidden="true" />
-                        </button>
+                        <span class="order" aria-hidden="true">{labels[index]}</span>
                       </div>
                     {:else}
                       <EntryEditor
@@ -363,6 +316,8 @@
                         {edit}
                         onpick={(mode) => openPicker({ kind: mode, entryId: entry.id })}
                         onremove={() => remove(entry.id)}
+                        canmove={{ up: moveKind(exercises, entry.id, -1) !== null, down: moveKind(exercises, entry.id, 1) !== null }}
+                        onmove={(direction) => move(entry.id, direction)}
                         {handle}
                       />
                     {/if}
@@ -492,11 +447,14 @@
   }
   .reorder-row {
     display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr) 48px 48px;
+    grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
     align-items: center;
     gap: 0.5rem;
     min-height: 56px;
     padding: 0.25rem 0;
+  }
+  .reorder-row :global(.reorder-handle) {
+    width: 2.5rem;
   }
   .order {
     position: relative;

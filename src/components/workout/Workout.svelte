@@ -135,11 +135,10 @@
   const doneCount = $derived(exercises.filter((e) => e.sets.length && e.sets.every((s) => s.completedAt !== null)).length);
 
   // --- stato della pagina ------------------------------------------------------------------------
-  /** esercizi fatti riaperti dall'utente */
-  let opened: string[] = $state([]);
+  /** apertura scelta dall'utente toccando l'intestazione (o da ✓✓): vince sulla regola di partenza */
+  let openState: Record<string, boolean> = $state({});
   /** l'ultimo esercizio toccato resta aperto anche quando è fatto, per correggere l'ultima serie */
   let touched: string | null = $state(null);
-  let reordering = $state(false);
   let editingDetails = $state(false);
   let announcement = $state('');
   let refs: Record<string, { openNote(): Promise<void> }> = $state({});
@@ -163,15 +162,17 @@
 
   let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
 
-  const isCompact = (e: SessionExercise) =>
-    e.sets.length > 0 && e.sets.every((s) => s.completedAt !== null) && !opened.includes(e.id) && touched !== e.id;
+  // fisarmonica (§3.7): tutti aperti all'avvio; un esercizio con tutte le serie spuntate si chiude da solo,
+  // tranne l'ultimo toccato; il tocco sull'intestazione apre e chiude in qualunque momento
+  const allDone = (e: SessionExercise) => e.sets.length > 0 && e.sets.every((s) => s.completedAt !== null);
+  const isCompact = (e: SessionExercise) => !(openState[e.id] ?? !(allDone(e) && touched !== e.id));
+
+  function showExercise(id: string, open: boolean) {
+    openState = { ...openState, [id]: open };
+  }
 
   function toggle(e: SessionExercise) {
-    if (isCompact(e)) opened = [...opened, e.id];
-    else {
-      opened = opened.filter((id) => id !== e.id);
-      if (touched === e.id) touched = null;
-    }
+    showExercise(e.id, isCompact(e));
   }
 
   function notify(message: string, action?: string, onaction?: () => void) {
@@ -197,13 +198,13 @@
   const find = (id: string | null) => (id ? exercises.find((e) => e.id === id) : undefined);
 
   // --- serie spuntata: parte il recupero (US-21, US-25) e l'attenzione passa alla serie successiva ---
-  async function afterCheck(exerciseId: string, setId: string, minimized = false) {
+  async function afterCheck(exerciseId: string, setId: string, minimized = false, follow = true) {
     // dentro il gesto della spunta: sblocca anche l'audio del suono di fine
     // una sessione conclusa si corregge e basta: nessun recupero (step 8)
     if (!session || detail) return;
     timer.afterCheck(session.id, exerciseId, setId, minimized);
     await tick();
-    if (!next) return;
+    if (!next || !follow) return;
     const row = document.getElementById(`set-${next.set.id}`);
     row?.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
@@ -220,12 +221,33 @@
       return;
     }
     const sessionId = session.id;
-    void afterCheck(exerciseId, completed.at(-1)!, true);
+    // riuscito (nessuna serie senza ripetizioni): l'esercizio si chiude e l'attenzione passa al successivo
+    const done = missing === 0;
+    void afterCheck(exerciseId, completed.at(-1)!, true, !done);
     const left = missing ? `, ${missing} senza ripetizioni` : '';
     notify(`${name}: ${plural(completed.length, 'serie spuntata', 'serie spuntate')}${left}.`, 'Annulla', () => {
       if (timer.state && completed.includes(timer.state.setId)) timer.stop();
-      edit((a) => undoCompleteExercise(a, sessionId, exerciseId, completed, at));
+      if (edit((a) => undoCompleteExercise(a, sessionId, exerciseId, completed, at)) && done) showExercise(exerciseId, true);
     });
+    if (done) void moveOn(exerciseId);
+  }
+
+  /** Dopo ✓✓: chiude l'esercizio, apre il successivo con serie da fare, lo porta in vista e mette il focus sulla
+   * sua intestazione (non su un campo: la tastiera coprirebbe la pagina) */
+  async function moveOn(exerciseId: string) {
+    showExercise(exerciseId, false);
+    if (touched === exerciseId) touched = null;
+    const index = exercises.findIndex((e) => e.id === exerciseId);
+    const pending = (e: SessionExercise) => e.sets.some((s) => s.completedAt === null);
+    const following = exercises.slice(index + 1).find(pending) ?? exercises.slice(0, index).find(pending);
+    if (!following) return;
+    showExercise(following.id, true);
+    await tick();
+    document.getElementById(`exercise-${following.id}`)?.scrollIntoView({
+      block: 'start',
+      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+    document.getElementById(`exercise-${following.id}-toggle`)?.focus({ preventScroll: true });
   }
 
   // --- esercizi ----------------------------------------------------------------------------------
@@ -247,7 +269,6 @@
     });
     if (!ok || !added) return;
     touched = added;
-    reordering = false;
     await tick();
     document.getElementById(`exercise-${added}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
@@ -331,7 +352,7 @@
     if (!id) return;
     if (action === 'note') {
       touched = id;
-      opened = opened.includes(id) ? opened : [...opened, id];
+      showExercise(id, true);
       void tick().then(() => refs[id]?.openNote());
     } else if (action === 'details') {
       detailsFor = id;
@@ -339,7 +360,7 @@
       detailsOpen = true;
     } else if (action === 'variant') openVariant(id);
     else if (action === 'rest') openRest(id);
-    else if (action === 'up' || action === 'down') void move(id, action === 'up' ? -1 : 1);
+    else if (action === 'up' || action === 'down') move(id, action === 'up' ? -1 : 1);
     else void removeExercise(id);
   }
 
@@ -397,33 +418,21 @@
       notify(`${exerciseName(store.archive, exercise.exerciseId)}: serie tolta.`, 'Annulla', () => edit((a) => restoreSet(a, sessionId, undo)));
   }
 
-  // --- riordino ----------------------------------------------------------------------------------
-  function moveLabel(id: string, direction: -1 | 1): string {
-    const exercise = find(id)!;
-    const name = exerciseName(store.archive, exercise.exerciseId);
-    const where = direction < 0 ? 'su' : 'giù';
-    return moveKind(exercises, id, direction) === 'block' && exercise.group !== null ? `Sposta ${where} la superserie con ${name}` : `Sposta ${where} ${name}`;
-  }
-
-  async function move(id: string, direction: -1 | 1) {
+  // --- riordino: «Sposta su/giù» dal menu ⋯ (§3.6: niente modalità «Riordina», si trascina dalla maniglia) ---
+  function move(id: string, direction: -1 | 1) {
     if (!session) return;
     const sessionId = session.id;
     if (!edit((a) => moveSessionExercise(a, sessionId, id, direction))) return;
     const index = exercises.findIndex((e) => e.id === id);
     const exercise = exercises[index];
     if (exercise) announcement = `${exerciseName(store.archive, exercise.exerciseId)}: ora ${labels[index]}.`;
-    // il focus resta sulla freccia (o sull'altra, se questa non può più spostare)
-    await tick();
-    const same = document.getElementById(`move-${id}-${direction}`) as HTMLButtonElement | null;
-    const other = document.getElementById(`move-${id}-${-direction}`) as HTMLButtonElement | null;
-    (same && !same.disabled ? same : other)?.focus();
   }
 
   // --- trascinamento e Su/Giù sulla maniglia (US-38) ------------------------------------------------
   // Appena parte il gesto la lista passa alle righe del riordino, così sta tutta nello schermo; si salva
   // solo al rilascio. `whole`: la maniglia dell'intestazione «Superserie» sposta l'intero gruppo.
   let drag: (DragState & { id: string }) | null = $state(null);
-  const rows = $derived(reordering || drag !== null);
+  const rows = $derived(drag !== null);
   const handleId = (id: string, whole: boolean) => (whole ? `handle-group-${id}` : `handle-${id}`);
 
   function unitName(id: string, whole: boolean): string {
@@ -590,12 +599,6 @@
     </div>
 
     {#if exercises.length}
-      {#if reordering && !drag}
-        <div class="reorder-head">
-          <p class="m-0 text-text-muted">Sposta gli esercizi con le frecce.</p>
-          <button type="button" class="btn btn-primary" onclick={() => (reordering = false)}>Fine</button>
-        </div>
-      {/if}
       <ol class="blocks" aria-label="Esercizi">
         {#each blocks as block, b (block.entries[0].id)}
           {@const groupHandle = block.entries.length > 1 ? handleFor(block.entries[0].id, true) : null}
@@ -626,35 +629,13 @@
               {@const inner = unitStyle(drag, j, block.entries[0].id)}
               <div class={['entry', drag && 'shifting', inner.dragged && 'dragged']} style:transform={inner.transform}>
                 {#if rows}
+                  <!-- righe del trascinamento: a sinistra solo la maniglia, il numero d'ordine a destra (sotto il dito c'è la maniglia) -->
                   <div class="reorder-row">
                     {#if handle}
-                      <ReorderHandle id={handleId(exercise.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep}>
-                        <span class="order" aria-hidden="true">{labels[index]}</span>
-                      </ReorderHandle>
-                    {:else}
-                      <span class="order" aria-hidden="true">{labels[index]}</span>
+                      <ReorderHandle id={handleId(exercise.id, false)} label={handle.label} onstart={handle.onstart} onstep={handle.onstep} />
                     {/if}
                     <span class="reorder-name">{exerciseName(store.archive, exercise.exerciseId)}</span>
-                    <button
-                      type="button"
-                      class="btn btn-icon"
-                      id={`move-${exercise.id}--1`}
-                      aria-label={moveLabel(exercise.id, -1)}
-                      disabled={!moveKind(exercises, exercise.id, -1)}
-                      onclick={() => move(exercise.id, -1)}
-                    >
-                      <ArrowUp size={22} aria-hidden="true" />
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-icon"
-                      id={`move-${exercise.id}-1`}
-                      aria-label={moveLabel(exercise.id, 1)}
-                      disabled={!moveKind(exercises, exercise.id, 1)}
-                      onclick={() => move(exercise.id, 1)}
-                    >
-                      <ArrowDown size={22} aria-hidden="true" />
-                    </button>
+                    <span class="order" aria-hidden="true">{labels[index]}</span>
                   </div>
                 {:else}
                   <WorkoutExercise
@@ -716,11 +697,6 @@
 
     <div class="more">
       <div class="flex flex-wrap gap-x-6">
-        {#if exercises.length > 1}
-          <button type="button" class="btn btn-text" aria-pressed={reordering} onclick={() => (reordering = !reordering)}>
-            {reordering ? 'Fine riordino' : 'Riordina esercizi'}
-          </button>
-        {/if}
         <button type="button" class="btn btn-text" aria-expanded={editingDetails} aria-controls="session-details" onclick={() => (editingDetails = !editingDetails)}>
           Nome e data
         </button>
@@ -985,26 +961,29 @@
     padding-top: 0.75rem;
     border-top: 1px solid var(--color-border);
   }
-  .reorder-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
+  /* maniglia come nella card (sporge nell'imbottitura), nome allineato al nome della card, numero a destra */
   .reorder-row {
-    display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr) 48px 48px;
+    display: flex;
     align-items: center;
     gap: 0.5rem;
     min-height: 48px;
   }
+  .reorder-row :global(.reorder-handle) {
+    flex-shrink: 0;
+    width: 2rem;
+    margin-left: -0.75rem;
+  }
   .order {
+    flex-shrink: 0;
+    min-width: 2rem;
     color: var(--color-text);
     font-size: var(--text-lg);
     font-weight: 700;
     text-align: center;
   }
   .reorder-name {
+    flex: 1;
+    min-width: 0;
     font-weight: 650;
     overflow-wrap: anywhere;
   }

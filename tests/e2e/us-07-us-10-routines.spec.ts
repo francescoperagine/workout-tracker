@@ -189,21 +189,26 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
     await expect(page.getByRole('button', { name: /^4a\. Distensioni manubri seduto/ })).toBeVisible();
   });
 
-  test('US-07 riordino con le frecce, da tastiera, con il focus che resta sulla freccia', async ({ page }) => {
+  test('US-07 riordino con «Sposta su/giù» nella voce aperta, da tastiera, con il focus che resta sul pulsante', async ({ page }) => {
     await seedArchive(page, archiveWith({ routines: starterRoutines() }));
     await page.goto('routine/?id=routine-a');
-    await page.getByRole('button', { name: 'Riordina' }).click();
-    const down = page.getByRole('button', { name: 'Sposta giù Squat bilanciere' });
-    await expect(page.getByRole('button', { name: 'Sposta su Squat bilanciere' })).toBeDisabled();
+    // niente modalità «Riordina» (§3.6): si trascina dalla maniglia, o si sposta dalla voce aperta
+    await expect(page.getByRole('button', { name: 'Riordina', exact: true })).toHaveCount(0);
+    await page.getByRole('button', { name: /^1\. Squat bilanciere/ }).click();
+    const squat = page.getByRole('group', { name: 'Modifica Squat bilanciere' });
+    const down = squat.getByRole('button', { name: 'Sposta giù' });
+    await expect(squat.getByRole('button', { name: 'Sposta su' })).toBeDisabled();
     await down.focus();
     await page.keyboard.press('Enter');
     // la voce singola scavalca la superserie senza entrarci
     await expect(page.getByRole('status').filter({ hasText: 'Squat bilanciere: ora 2.' })).toBeAttached();
     await expect(down).toBeFocused();
     // dentro la superserie le voci si scambiano; dal bordo si sposta la superserie intera
-    await page.getByRole('button', { name: 'Sposta giù Panca piana bilanciere' }).click();
-    await page.getByRole('button', { name: 'Sposta giù la superserie con Panca piana bilanciere' }).click();
-    await page.getByRole('button', { name: 'Fine' }).click();
+    await page.getByRole('button', { name: /^1a\. Panca piana bilanciere/ }).click();
+    const bench = page.getByRole('group', { name: 'Modifica Panca piana bilanciere' });
+    await bench.getByRole('button', { name: 'Sposta giù' }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Panca piana bilanciere: ora 1b.' })).toBeAttached();
+    await bench.getByRole('button', { name: 'Sposta giù' }).click();
     const ids = (await storedArchive(page))?.routines[0].exercises.map((e) => e.exerciseId);
     expect(ids?.slice(0, 4)).toEqual(['squat-bilanciere', 'rematore-manubri-petto-su-panca-inclinata', 'panca-piana-bilanciere', 'hip-thrust-bilanciere']);
     await expect(page.getByRole('button', { name: /^2a\. Rematore manubri/ })).toBeVisible();

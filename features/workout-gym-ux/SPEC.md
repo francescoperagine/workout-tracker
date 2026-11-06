@@ -215,4 +215,11 @@ senza modalità (§3.6). `docs/todo.md` è di Francesco: non toccarlo.
   nel foglio del giorno, che ora porta il focus alla riga del giorno. Il «Ogni martedì» dentro il foglio del
   giorno resta un `select` (fuori da E4). «Progressi» aggiunge `from=workout` solo nell'allenamento in corso,
   non nel dettaglio di una sessione conclusa.
+- **INC-012 (incremento 2, 6 novembre 2026).** Verifiche: in `us-07-us-10-routines.spec.ts` la riga 195 era
+  l'editor (passata a «Sposta su/giù» nella voce aperta), la 264 è `/routines/` (intatta). In `EntryEditor`
+  «Sposta su» e «Sposta giù» stanno sopra «Togli dalla scheda». L'intestazione: il nome è il pulsante che apre e
+  chiude, ⓘ è un pulsante a sé subito dopo, e anche il tocco sul resto della riga apre e chiude (solo puntatore:
+  da tastiera c'è il pulsante del nome). «✓✓ riuscito» = nessuna serie rimasta senza ripetizioni; il successivo
+  con serie da fare si cerca dopo l'esercizio, poi dall'inizio. Chiuso e non finito, il riassunto dice «1 di 3
+  serie fatte».
 

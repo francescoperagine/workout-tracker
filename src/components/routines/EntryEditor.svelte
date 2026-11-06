@@ -2,6 +2,8 @@
   // Voce della scheda (US-07, US-08, US-09). Chiusa si legge come la scheda di carta: numero, nome e
   // target compatti ("3 × 6–8 · 40 kg · rec. 1:15"). Aperta si modifica in linea, senza modale (P8):
   // ogni campo salva a ogni modifica (P4).
+  import ArrowDown from '@lucide/svelte/icons/arrow-down';
+  import ArrowUp from '@lucide/svelte/icons/arrow-up';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import Plus from '@lucide/svelte/icons/plus';
   import X from '@lucide/svelte/icons/x';
@@ -38,11 +40,14 @@
     edit: (change: (archive: Archive) => Archive) => boolean;
     onpick: (mode: 'replace' | 'alternative') => void;
     onremove: () => void;
+    /** «Sposta su/giù» nella voce aperta: l'alternativa al trascinamento (nessun gesto come unico modo) */
+    canmove: { up: boolean; down: boolean };
+    onmove: (direction: -1 | 1) => void;
     /** maniglia del riordino (US-38) accanto alla riga; assente con una voce sola o in sola lettura */
     handle?: { label: string; onstart: (event: PointerEvent) => void; onstep: (direction: -1 | 1) => void } | null;
   }
 
-  let { archive, routineId, entry, label, index, linked, expanded, readonly = false, ontoggle, edit, onpick, onremove, handle = null }: Props = $props();
+  let { archive, routineId, entry, label, index, linked, expanded, readonly = false, ontoggle, edit, onpick, onremove, canmove, onmove, handle = null }: Props = $props();
 
   const settings = $derived(archive.settings);
   const unit = $derived(settings.weightUnit);
@@ -258,6 +263,17 @@
         />
       {/if}
 
+      {#if canmove.up || canmove.down}
+        <div class="moves">
+          <button type="button" id={`move-${entry.id}--1`} class="btn btn-secondary" disabled={!canmove.up} onclick={() => onmove(-1)}>
+            <ArrowUp aria-hidden="true" />Sposta su
+          </button>
+          <button type="button" id={`move-${entry.id}-1`} class="btn btn-secondary" disabled={!canmove.down} onclick={() => onmove(1)}>
+            <ArrowDown aria-hidden="true" />Sposta giù
+          </button>
+        </div>
+      {/if}
+
       <button type="button" class="btn btn-danger self-start" onclick={onremove}>
         <Trash aria-hidden="true" />Togli dalla scheda
       </button>
@@ -266,6 +282,11 @@
 </div>
 
 <style>
+  .moves {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
   .row {
     display: grid;
     grid-template-columns: 2.5rem minmax(0, 1fr) auto;

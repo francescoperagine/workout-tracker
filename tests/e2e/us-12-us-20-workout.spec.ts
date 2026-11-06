@@ -300,10 +300,10 @@ test.describe('US-15 serie ed esercizi durante la sessione', () => {
     await page.getByRole('button', { name: 'Annulla', exact: true }).click();
     await expect(legPress).toBeVisible();
 
-    await page.getByRole('button', { name: 'Riordina esercizi' }).click();
-    await page.getByRole('button', { name: 'Sposta giù Squat bilanciere' }).click();
-    await expect(page.getByRole('button', { name: 'Sposta giù Squat bilanciere' })).toBeFocused();
-    await page.getByRole('button', { name: 'Fine', exact: true }).click();
+    // niente modalità «Riordina» (§3.6): «Sposta giù» dal menu ⋯
+    await expect(page.getByRole('button', { name: 'Riordina esercizi' })).toHaveCount(0);
+    await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Altre azioni: Squat bilanciere' }).click();
+    await sheet(page).getByRole('button', { name: 'Sposta giù', exact: true }).click();
     const order = (await running(page)).exercises.map((e) => e.exerciseId);
     expect(order.slice(0, 3)).toEqual([BENCH.exerciseId, ROW.exerciseId, SQUAT.exerciseId]);
     await expect(page.getByRole('list', { name: 'Esercizi' }).getByRole('region').first()).toHaveAccessibleName(name(BENCH.exerciseId));
@@ -335,11 +335,11 @@ test.describe('US-17 ripresa e mini-barra', () => {
 
     await page.reload();
     // lo squat fatto è compatto, la panca ha la sua serie spuntata e la serie da fare è il rematore (2b)
-    await expect(region(page, SQUAT.exerciseId).getByRole('button', { name: 'Mostra serie' })).toBeVisible();
+    await expect(region(page, SQUAT.exerciseId).getByRole('button', { name: name(SQUAT.exerciseId), exact: true })).toHaveAttribute('aria-expanded', 'false');
     await expect(region(page, BENCH.exerciseId).getByRole('button', { name: 'Annulla serie 1' })).toBeVisible();
     await expect(region(page, ROW.exerciseId)).toContainText('Adesso');
     await expect(page.getByText('Iniziato alle 18:30 · 1 di 8 esercizi fatti')).toBeVisible();
-    await region(page, SQUAT.exerciseId).getByRole('button', { name: 'Mostra serie' }).click();
+    await region(page, SQUAT.exerciseId).getByRole('button', { name: name(SQUAT.exerciseId), exact: true }).click();
     await expect(region(page, SQUAT.exerciseId).getByRole('textbox', { name: 'Peso serie 3, kg' })).toHaveValue('40');
   });
 
