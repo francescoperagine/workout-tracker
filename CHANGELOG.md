@@ -3,6 +3,33 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-015
+
+Date: 2026-11-06
+
+Summary:
+**Allenamento in palestra, incremento 5: tab «Progressi» e chiusura della feature `workout-gym-ux`.** Quinta
+voce della tab bar, ultima a destra, con l'icona `chart-line`: la pagina `/progress/` elenca gli esercizi fatti
+(ultima volta, quanti allenamenti), ciascuno verso la sua pagina, che ora sta sotto la tab Progressi con il ritorno
+«‹ Progressi» (salvo `from=workout`, che torna all'allenamento). Lo Storico tiene solo gli allenamenti: sparisce
+l'interruttore Allenamenti / Esercizi. Le misure del corpo andranno in questa tab con una feature a sé.
+
+Deliverables:
+- `src/pages/progress.astro` e `src/components/history/ProgressPage.svelte` (nuovi).
+- `src/components/ui/TabBar.astro`: cinque voci, Progressi attiva con il tratto più spesso.
+- `src/components/history/HistoryPage.svelte` senza la vista Esercizi; `src/pages/exercise.astro` e
+  `ExerciseProgress.svelte` sotto la tab Progressi.
+- e2e: `smoke.spec.ts` (cinque sezioni), `us-34-info.spec.ts` (cinque voci, «?» anche su Progressi), `us-27-us-29-history.spec.ts` (US-28 dalla tab Progressi, stato vuoto).
+- Documenti: `DESIGN.md` (tab bar), brief `route` e `route-history`, US-28, `docs/ARCHITECTURE.md`,
+  `docs/PROJECT.md` (stato, focus, direzione: misure del corpo); SPEC archiviata in
+  `docs/archive/features/INC-015_workout-gym-ux.md`, cartella `features/workout-gym-ux/` cancellata.
+
+Limiti noti: l'elenco dei Progressi è quello che mostrava Storico → Esercizi, senza record né tendenza per riga.
+`/history/?view=exercises` non porta più alla lista (resta lo Storico). Viste con Playwright a 390×844 e 320×568
+nei due temi; il telefono non era collegato.
+
+ADR: nessuna (meccanico: la scelta della tab è di Francesco nella SPEC). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-014
 
 Date: 2026-11-06

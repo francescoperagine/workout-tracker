@@ -5,7 +5,7 @@ import { archiveWith, seedArchive } from './helpers';
 
 test('US-34 la «?» dell’intestazione porta a Info da ogni pagina con intestazione', async ({ page }) => {
   await seedArchive(page, archiveWith());
-  for (const path of ['', 'calendar/', 'routines/', 'history/', 'settings/', 'workout/']) {
+  for (const path of ['', 'calendar/', 'routines/', 'history/', 'progress/', 'settings/', 'workout/']) {
     await page.goto(path);
     await expect(page.getByRole('link', { name: 'Informazioni' })).toHaveAttribute('href', /\/info\/$/);
   }
@@ -14,7 +14,7 @@ test('US-34 la «?» dell’intestazione porta a Info da ogni pagina con intesta
   // nella pagina Info la «?» non c'è, l'ingranaggio sì; la tab bar non ha una voce Info
   await expect(page.getByRole('link', { name: 'Informazioni' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Impostazioni', exact: true })).toBeVisible();
-  await expect(page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link')).toHaveCount(4);
+  await expect(page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link')).toHaveCount(5);
 });
 
 test('US-34 Info: contatti, mailto con oggetto e collegamento all’export', async ({ page }) => {

@@ -1,30 +1,18 @@
 <script lang="ts">
-  // Storico (US-27, US-20): allenamenti conclusi per mese, oppure elenco degli esercizi fatti per i progressi.
+  // Storico (US-27, US-20): allenamenti conclusi per mese; i progressi per esercizio sono nella tab Progressi.
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import History from '@lucide/svelte/icons/rotate-ccw-clock';
   import Trophy from '@lucide/svelte/icons/trophy';
-  import SegmentedControl from '../ui/SegmentedControl.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { appUrl } from '../../lib/paths';
-  import { exerciseName, exercisesDone, sessionInProgress, sessionRecords, toDateKey, workoutSummary, type Session } from '../../lib/archive';
-  import { formatClock, formatElapsed, formatLongDay, formatMonth, formatOnDay, formatRelativeDay, plural } from '../../lib/format';
+  import { sessionInProgress, sessionRecords, toDateKey, workoutSummary, type Session } from '../../lib/archive';
+  import { formatClock, formatElapsed, formatLongDay, formatMonth, formatOnDay, plural } from '../../lib/format';
   import { formatWeight } from '../../lib/units';
 
   const store = archiveStore();
   const now = Date.now();
   const today = toDateKey(new Date(now));
-
-  type View = 'sessions' | 'exercises';
-  let view: View = $state(new URLSearchParams(location.search).get('view') === 'exercises' ? 'exercises' : 'sessions');
-
-  // la scelta resta nell'indirizzo, così tornando indietro si ritrova
-  function changeView(next: View) {
-    const url = new URL(location.href);
-    if (next === 'exercises') url.searchParams.set('view', 'exercises');
-    else url.searchParams.delete('view');
-    history.replaceState(history.state, '', url);
-  }
 
   const unreadable = $derived(store.state === 'unreadable');
   const running = $derived(unreadable ? null : sessionInProgress(store.archive));
@@ -54,13 +42,10 @@
     return groups;
   });
 
-  const done = $derived(exercisesDone(store.archive));
-
   const startedLine = $derived(
     running ? `In corso · ${running.date === today ? `iniziato alle ${formatClock(running.start)}` : `iniziato ${formatOnDay(running.date, today)}`}` : '',
   );
   const sessionHref = (id: string) => `${appUrl('/session')}?id=${encodeURIComponent(id)}`;
-  const exerciseHref = (id: string) => `${appUrl('/exercise')}?id=${encodeURIComponent(id)}`;
 </script>
 
 {#if unreadable}
@@ -72,87 +57,50 @@
   </div>
 {:else}
   <div class="flex flex-col gap-5">
-    <SegmentedControl
-      name="history-view"
-      label="Mostra"
-      options={[
-        { value: 'sessions', label: 'Allenamenti' },
-        { value: 'exercises', label: 'Esercizi' },
-      ]}
-      bind:value={view}
-      onchange={changeView}
-    />
+    {#if running}
+      <!-- una riga come le altre, non un secondo "Riprendi": quello è nella mini-barra (step 9) -->
+      <section class="flex flex-col gap-1">
+        <h2 class="m-0 text-xl leading-snug font-bold">In corso</h2>
+        <a href={appUrl('/workout')} class="row border-b border-border">
+          <span class="min-w-0 flex-1">
+            <span class="block text-lg font-bold [overflow-wrap:anywhere]">{running.name}</span>
+            <span class="block text-sm text-text-muted">{startedLine}</span>
+          </span>
+          <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
+        </a>
+      </section>
+    {/if}
 
-    {#if view === 'sessions'}
-      {#if running}
-        <!-- una riga come le altre, non un secondo "Riprendi": quello è nella mini-barra (step 9) -->
+    {#if months.length}
+      {#each months as month (month.key)}
         <section class="flex flex-col gap-1">
-          <h2 class="m-0 text-xl leading-snug font-bold">In corso</h2>
-          <a href={appUrl('/workout')} class="row border-b border-border">
-            <span class="min-w-0 flex-1">
-              <span class="block text-lg font-bold [overflow-wrap:anywhere]">{running.name}</span>
-              <span class="block text-sm text-text-muted">{startedLine}</span>
-            </span>
-            <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
-          </a>
-        </section>
-      {/if}
-
-      {#if months.length}
-        {#each months as month (month.key)}
-          <section class="flex flex-col gap-1">
-            <h2 class="m-0 text-xl leading-snug font-bold">{month.title}</h2>
-            <ol class="m-0 list-none p-0">
-              {#each month.rows as row (row.session.id)}
-                <li class="border-b border-border last:border-b-0">
-                  <a href={sessionHref(row.session.id)} class="row">
-                    <span class="min-w-0 flex-1">
-                      <span class="block text-lg font-bold [overflow-wrap:anywhere]">{row.session.name}</span>
-                      <span class="block text-sm text-text-muted">
-                        {row.meta}
-                        {#if row.records}
-                          · <Trophy size={16} class="inline align-text-bottom text-text" aria-hidden="true" />
-                          {row.records === 1 ? 'Record' : `Record in ${row.records} esercizi`}
-                        {/if}
-                      </span>
+          <h2 class="m-0 text-xl leading-snug font-bold">{month.title}</h2>
+          <ol class="m-0 list-none p-0">
+            {#each month.rows as row (row.session.id)}
+              <li class="border-b border-border last:border-b-0">
+                <a href={sessionHref(row.session.id)} class="row">
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-lg font-bold [overflow-wrap:anywhere]">{row.session.name}</span>
+                    <span class="block text-sm text-text-muted">
+                      {row.meta}
+                      {#if row.records}
+                        · <Trophy size={16} class="inline align-text-bottom text-text" aria-hidden="true" />
+                        {row.records === 1 ? 'Record' : `Record in ${row.records} esercizi`}
+                      {/if}
                     </span>
-                    <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
-                  </a>
-                </li>
-              {/each}
-            </ol>
-          </section>
-        {/each}
-      {:else if !running}
-        <div class="flex flex-col items-start gap-3 py-8">
-          <History size={28} class="text-text-muted" aria-hidden="true" />
-          <h2 class="m-0 text-xl leading-snug font-bold">Ancora nessun allenamento</h2>
-          <p class="m-0 max-w-[60ch] text-text-muted">Quando termini un allenamento lo ritrovi qui, per data, con serie e volume. Da qui puoi anche correggerlo.</p>
-          <a href={appUrl('/')} class="btn btn-primary">Vai a Oggi</a>
-        </div>
-      {/if}
-    {:else if done.length}
-      <p class="m-0 text-text-muted">Le varianti hanno ciascuna i loro progressi.</p>
-      <ol class="m-0 list-none p-0">
-        {#each done as item (item.exerciseId)}
-          <li class="border-b border-border last:border-b-0">
-            <a href={exerciseHref(item.exerciseId)} class="row">
-              <span class="min-w-0 flex-1">
-                <span class="block text-lg font-bold [overflow-wrap:anywhere]">{exerciseName(store.archive, item.exerciseId)}</span>
-                <span class="block text-sm text-text-muted">
-                  Ultima volta: {formatRelativeDay(item.lastDate, today)} · {plural(item.sessions, 'allenamento', 'allenamenti')}
-                </span>
-              </span>
-              <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
-            </a>
-          </li>
-        {/each}
-      </ol>
-    {:else}
+                  </span>
+                  <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
+                </a>
+              </li>
+            {/each}
+          </ol>
+        </section>
+      {/each}
+    {:else if !running}
       <div class="flex flex-col items-start gap-3 py-8">
         <History size={28} class="text-text-muted" aria-hidden="true" />
-        <h2 class="m-0 text-xl leading-snug font-bold">Nessun esercizio registrato</h2>
-        <p class="m-0 max-w-[60ch] text-text-muted">Dopo il primo allenamento concluso trovi qui i progressi di ogni esercizio.</p>
+        <h2 class="m-0 text-xl leading-snug font-bold">Ancora nessun allenamento</h2>
+        <p class="m-0 max-w-[60ch] text-text-muted">Quando termini un allenamento lo ritrovi qui, per data, con serie e volume. Da qui puoi anche correggerlo.</p>
         <a href={appUrl('/')} class="btn btn-primary">Vai a Oggi</a>
       </div>
     {/if}

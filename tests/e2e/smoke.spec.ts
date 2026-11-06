@@ -17,7 +17,7 @@ for (const path of ['', 'welcome/', 'settings/', 'info/', 'calendar/', 'routines
   });
 }
 
-test('la tab bar porta alle quattro sezioni senza ricaricare la pagina', async ({ page }) => {
+test('la tab bar porta alle cinque sezioni senza ricaricare la pagina', async ({ page }) => {
   await seedArchive(page, archiveWith());
   await page.goto('');
   const tabs = page.getByRole('navigation', { name: 'Sezioni' });
@@ -28,6 +28,7 @@ test('la tab bar porta alle quattro sezioni senza ricaricare la pagina', async (
     ['Calendario', 'calendar/'],
     ['Schede', 'routines/'],
     ['Storico', 'history/'],
+    ['Progressi', 'progress/'],
     ['Oggi', ''],
   ]) {
     await tabs.getByRole('link', { name }).click();

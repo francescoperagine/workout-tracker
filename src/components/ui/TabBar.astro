@@ -4,9 +4,10 @@ import House from '@lucide/astro/icons/house';
 import CalendarDays from '@lucide/astro/icons/calendar-days';
 import ClipboardList from '@lucide/astro/icons/clipboard-list';
 import History from '@lucide/astro/icons/rotate-ccw-clock';
+import ChartLine from '@lucide/astro/icons/chart-line';
 import { appUrl } from '../../lib/paths';
 
-export type TabId = 'today' | 'calendar' | 'routines' | 'history';
+export type TabId = 'today' | 'calendar' | 'routines' | 'history' | 'progress';
 
 interface Props {
   active?: TabId;
@@ -19,11 +20,12 @@ const tabs = [
   { id: 'calendar', label: 'Calendario', href: appUrl('/calendar'), Icon: CalendarDays },
   { id: 'routines', label: 'Schede', href: appUrl('/routines'), Icon: ClipboardList },
   { id: 'history', label: 'Storico', href: appUrl('/history'), Icon: History },
+  { id: 'progress', label: 'Progressi', href: appUrl('/progress'), Icon: ChartLine },
 ] as const;
 ---
 
 <nav transition:animate="none" class="shell border-t border-border pb-[env(safe-area-inset-bottom)]" aria-label="Sezioni">
-  <ul class="mx-auto grid max-w-2xl grid-cols-4">
+  <ul class="mx-auto grid max-w-2xl grid-cols-5">
     {
       tabs.map(({ id, label, href, Icon }) => (
         <li>
@@ -61,5 +63,9 @@ const tabs = [
   [data-tab='routines'][aria-current='page'] :global(svg > :nth-child(n + 3)),
   [data-tab='history'][aria-current='page'] :global(svg > :nth-child(3)) {
     stroke: var(--color-surface);
+  }
+  /* la linea del grafico non ha una sagoma da riempire: tratto più spesso */
+  [data-tab='progress'][aria-current='page'] :global(svg) {
+    stroke-width: 2.75;
   }
 </style>

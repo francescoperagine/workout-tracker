@@ -1,0 +1,9 @@
+---
+// Progressi (/progress, quinta tab): gli esercizi fatti, ciascuno verso la pagina dei suoi progressi.
+import AppLayout from '../layouts/AppLayout.astro';
+import ProgressPage from '../components/history/ProgressPage.svelte';
+---
+
+<AppLayout title="Progressi" tab="progress">
+  <ProgressPage client:only="svelte" />
+</AppLayout>

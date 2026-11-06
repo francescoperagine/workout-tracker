@@ -1,6 +1,6 @@
 # SPEC — workout-gym-ux
 
-**Livello:** Feature · **Stato:** in esecuzione, incrementi 1–4 fatti (INC-011…INC-014), si riprende dal 5 · **Base:** `main` a `de2f0bb` (INC-010)
+**Livello:** Feature · **Stato:** chiusa con INC-015 (incrementi INC-011…INC-015) · **Base:** `main` a `de2f0bb` (INC-010)
 **Data del piano:** 6 novembre 2026 · **Origine:** revisione di Francesco sul telefono e confronto con Strong
 (`screenshots/ux-2026-11-06/wt-*.png`, `strong-*.png`; `screenshots/strong-*.png`; non tracciati)
 
@@ -253,3 +253,7 @@ senza modalità (§3.6). `docs/todo.md` è di Francesco: non toccarlo.
   chi lo usa lo apre una volta per visita (anche quando l'ora avanza con la pagina aperta). «Termina alle …» su
   Oggi porta al riepilogo come «Termina». Suono non ascoltato: telefono non collegato. «Riapri» su una sessione
   vecchia la rende subito dimenticata: il foglio compare (regola della SPEC alla lettera), domanda aperta a Francesco.
+- **INC-015 (incremento 5, 6 novembre 2026).** `/progress/` con `ProgressPage` (l'elenco di Storico → Esercizi
+  spostato com'era: «record e tendenza» per riga non c'erano e non sono stati aggiunti). La tab bar a cinque voci
+  regge a 320 px con le etichette intere (64 px per voce, 56 di altezza); Progressi attiva ha il tratto più
+  spesso, perché `chart-line` non ha sagome da riempire. Chiusura secondo §8.

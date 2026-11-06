@@ -30,7 +30,7 @@
   const params = new URL(location.href).searchParams;
   const exerciseId = params.get('id') ?? '';
   // aperta da «Progressi» nel menu ⋯ dell'allenamento: il ritorno va all'allenamento, non all'elenco
-  const back = params.get('from') === 'workout' ? { href: appUrl('/workout'), label: 'Allenamento' } : { href: `${appUrl('/history')}?view=exercises`, label: 'Esercizi' };
+  const back = params.get('from') === 'workout' ? { href: appUrl('/workout'), label: 'Allenamento' } : { href: appUrl('/progress'), label: 'Progressi' };
   const today = toDateKey(new Date());
 
   let metric: Metric = $state('load');

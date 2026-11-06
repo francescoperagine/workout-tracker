@@ -180,6 +180,7 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 
 **US-28 (M, step 8).** Come utente, voglio vedere l'andamento di un esercizio (carico massimo, 1RM stimato, volume), per sapere se sto progredendo.
 - Grafico per periodo, nell'unità scelta, varianti separate, riscaldamento escluso; leggibile in entrambi i temi.
+- Dall'INC-015 l'elenco degli esercizi fatti e la loro pagina stanno nella tab «Progressi» (`/progress/`); lo Storico tiene solo gli allenamenti.
 
 **US-29 (S, step 8).** Come utente, voglio sapere quando batto un record personale, per motivarmi.
 - Indicazione nella riga serie al momento della spunta e nel riepilogo finale.

@@ -44,5 +44,5 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 
 ## Constraints and open decisions
 
-- **Deciso:** Storico è una voce della tab bar e include i progressi (pagina esercizio); nessuna sezione "Progressi" separata.
+- **Deciso (INC-015, rovescia la scelta dello step 8):** i progressi hanno la loro tab «Progressi» (`/progress/`, con la pagina dell'esercizio); lo Storico tiene solo gli allenamenti, senza l'interruttore Allenamenti / Esercizi. Le misure del corpo andranno nella tab Progressi con una feature a sé.
 - **Deciso (step 9, critique dei flussi):** l'allenamento in corso è una riga «In corso» in cima all'elenco, che porta all'allenamento; «Riprendi» resta solo nella mini-barra, per non averlo due volte. I record della riga si contano per esercizio («Record in 3 esercizi»), non per misura; l'1RM stimato è arrotondato al mezzo chilo.

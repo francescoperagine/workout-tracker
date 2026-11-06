@@ -15,14 +15,15 @@ Qui c'è solo dove siamo e dove si va.
 - **Catalogo e allenamento** (`dedup-catalog-and-workout-ux`, chiusa con INC-008): catalogo senza doppioni e valori dell'ultima volta (INC-004), completa esercizio (INC-005), trascinamento (INC-006, ADR-003), selezione delle celle (INC-007), icona dal bilanciere a pennello (INC-008, ADR-004); SPEC in `docs/archive/features/INC-008_dedup-catalog-and-workout-ux.md`.
 - **Card esercizio sfoltita** (`exercise-card-layout`, chiusa con INC-009): in testa solo maniglia, nome e ⋯, niente numero né obiettivo della scheda, «Completa» nell'intestazione delle righe, bordo accento sull'esercizio corrente, recupero dal menu ⋯ (US-40); SPEC in `docs/archive/features/INC-009_exercise-card-layout.md`.
 - **Palette a ruoli** (`palette`, chiusa con INC-010, ADR-005): inchiostro e carta in chiaro e scuro, un solo accento vermiglio, rosso solo per errori e distruttive (pulsante pieno con icona), indaco per i record, nessun verde; il guscio segue il tema su `surface`; `src/styles/contrast.test.ts` controlla le coppie. SPEC in `docs/archive/features/INC-010_palette.md`.
+- **Allenamento in palestra** (`workout-gym-ux`, chiusa con INC-015): correzioni e rosso di riempimento (INC-011, ADR-006), card a fisarmonica e riordino solo trascinando (INC-012, ADR-007), segnaposto dall'ultima volta o dalla scheda al posto dei valori veri (INC-013, ADR-008), suono a tre campane e foglio per l'allenamento dimenticato (INC-014, US-41), tab «Progressi» (INC-015); SPEC in `docs/archive/features/INC-015_workout-gym-ux.md`.
 - **Feature attive:** nessuna.
 
 ## Focus attuale
 
-Correzioni dopo le prove sull'app installata. Da provare in palestra: storico e progressi (step 8), suono di
-fine recupero, e le correzioni dello step 9 (variante a metà esercizio che tiene le serie fatte, «Termina» con
-conferma, allenamento senza tab bar, livello del timer, «Ogni martedì» nel foglio del giorno, peso suggerito
-dalla serie sopra).
+Correzioni dopo le prove sull'app installata. Da provare in palestra: il suono a tre campane (INC-014: la
+sinusoide pura il 12 ottobre si sentiva poco), il segnaposto al posto dei valori dell'ultima volta (INC-013), la
+tab Progressi, e le correzioni dello step 9 (variante a metà esercizio che tiene le serie fatte, «Termina» con
+conferma, allenamento senza tab bar, livello del timer, «Ogni martedì» nel foglio del giorno).
 
 Le decisioni aperte dello step 9 sono chiuse come raccomandato (INC-002): la variante a metà esercizio resta
 una voce nuova con il suo numero, il nome accessibile dei giorni del calendario resta più lungo del testo
@@ -43,5 +44,8 @@ prove in palestra (vedi direzione).
 ## Direzione
 
 Nessuna milestone fissata. La palette nuova è fatta (INC-010); da provare in palestra alla luce del sole, chiaro e scuro.
+
+**Misure del corpo** (peso, circonferenze) nella tab Progressi: una feature a sé, perché toccano modello dati,
+validazione, backup e import. Finché non c'è, nessun segnaposto «Misure» nell'interfaccia.
 
 Altri candidati, solo se le prove li chiedono: server Web Push per gli avvisi ad app chiusa, le proposte della critique (segno sulla riga della serie da fare adesso, pulsanti ± per il peso, impostazione «Distanza» che oggi non ha effetto).

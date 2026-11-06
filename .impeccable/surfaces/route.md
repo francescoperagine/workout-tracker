@@ -41,7 +41,7 @@ L'utente apre l'app entrando in palestra o negli spogliatoi, spesso con la rete 
 
 ## Interaction and layout
 
-- Una colonna; l'azione primaria cade nella metà inferiore a 390×844 senza scorrere; tab bar in basso (Oggi, Calendario, Schede, Storico).
+- Una colonna; l'azione primaria cade nella metà inferiore a 390×844 senza scorrere; tab bar in basso (Oggi, Calendario, Schede, Storico, Progressi).
 - Le righe delle schede sono un gruppo a scelta singola (le righe di scelta del design system, `.choice`), non pulsanti primari: l'unica azione primaria resta "Inizia allenamento". Le 4 righe e "Inizia" entrano senza scorrere a 390×844; a 320×568 "Inizia" resta fisso sopra la tab bar.
 - La striscia della settimana è leggibile senza colore (icona o testo per lo stato), toccabile per giorno.
 

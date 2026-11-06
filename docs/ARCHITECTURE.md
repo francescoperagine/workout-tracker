@@ -68,13 +68,14 @@ src/pages/
   routine.astro         editor di una scheda (/routine?id=…)
   calendar.astro        Calendario (/calendar, ?date= apre il foglio del giorno, ?view=month il mese): settimana, mese, settimana tipo, eccezioni
   workout.astro         allenamento in corso (/workout, step 6), senza tab bar (è una modalità: «Torna a Oggi» nell'intestazione); ?summary=<id> mostra il riepilogo di una sessione appena conclusa
-  history.astro         Storico (/history, step 8): allenamenti per mese, ?view=exercises l'elenco degli esercizi fatti
+  history.astro         Storico (/history, step 8): allenamenti per mese
+  progress.astro        Progressi (/progress, quinta tab, INC-015): elenco degli esercizi fatti verso la loro pagina
   session.astro         dettaglio modificabile di un allenamento concluso (/session?id=…, &date= se si arriva dal calendario): Workout con detail
-  exercise.astro        progressi di un esercizio (/exercise?id=…): record, grafico, cronologia
+  exercise.astro        progressi di un esercizio (/exercise?id=…, tab Progressi; &from=workout torna all'allenamento): record, grafico, cronologia
   manifest.webmanifest.ts  manifest della PWA generato alla build (start_url, scope e icone nel percorso base)
   _kit.astro            /kit: pagina interna del design system (?theme=light|dark forza il tema); fuori dalla navigazione, dal precache e dalla build pubblicata (solo dev e WT_KIT=1)
 src/components/ui/      componenti base: AppHeader, TabBar, EmptyState (.astro); SetInput, SetRow, SegmentedControl, Switch, Stepper,
-                        LiveField (campo che salva a ogni battuta; `selectall` per i numerici), SaveBar, Toast, BottomSheet, ConfirmDialog, ReorderHandle (maniglia del
+                        LiveField (campo che salva a ogni battuta; `selectall` per i numerici), SaveBar, Toast, BottomSheet (con `onback` il ritorno al menu), ConfirmDialog, ReorderHandle (maniglia del
                         riordino sul numero dell'esercizio, US-38) (.svelte)
 src/components/shell/ArchiveStatus.svelte  barra di salvataggio nel guscio, solo con un problema (unsaved, conflict, unreadable); aggiorna --bottom-bars-height
 src/components/shell/WorkoutMiniBar.svelte  mini-barra "allenamento in corso" sulle altre pagine (non su /workout; su Oggi solo con un recupero), transition:persist; con un recupero è il timer ridotto, con la freccia verso l'allenamento
@@ -83,7 +84,7 @@ src/components/data/ImportFlow.svelte      importazione (file v2 o backup del Po
 src/components/settings/  SettingsPage (tema, unità, allenamento, guida «Come funziona»), DataSection (Dati e privacy), InstallSection (app sul telefono)
 src/components/welcome/WelcomeActions.svelte, src/components/today/Today.svelte (Oggi)
 src/components/calendar/  Calendar (pagina), DaySheet (foglio del giorno con l'eccezione), WeekStrip (striscia di Oggi), day-status.ts (icona e testo di ogni stato)
-src/components/history/  HistoryPage (Storico), ExerciseProgress (pagina esercizio), ProgressChart (grafico a linea in SVG scritto a mano, skill dataviz)
+src/components/history/  HistoryPage (Storico), ProgressPage (Progressi), ExerciseProgress (pagina esercizio), ProgressChart (grafico a linea in SVG scritto a mano, skill dataviz)
 src/components/workout/  Workout (pagina: esercizi per blocco, riordino, barra fissa con durata, salvataggio e Termina; con detail il dettaglio di una sessione conclusa, senza recupero, con Riapri ed Elimina), WorkoutExercise (esercizio con righe serie e nota), VariantSheet ("Cambia esercizio" e "Altro esercizio…"), ExerciseDetailsSheet (approfondimento), SessionSummary (riepilogo e invito all'installazione), ForgottenSheet (allenamento dimenticato aperto, US-41, anche su Oggi)
 src/components/routines/  RoutineList (elenco), RoutineEditor (editor), EntryEditor (voce chiusa/aperta)
 src/components/exercises/ExercisePicker.svelte  foglio del catalogo con ricerca (anche per alias), "Crea «…»" (esercizio personalizzato) o "Esiste già «…»: usa questo"; con onmerge il personalizzato si unisce a un altro esercizio ("Unisci in…" nello stesso foglio, poi ConfirmDialog)

@@ -347,29 +347,33 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await expect(chronology(page).nth(0)).toContainText('R 100 × 5');
   });
 
-  test('US-28 dallo Storico, vista Esercizi, si apre l’esercizio e la vista resta', async ({ page }) => {
+  test('US-28 dalla tab Progressi si apre l’esercizio e «‹ Progressi» ci torna; lo Storico tiene solo gli allenamenti', async ({ page }) => {
     await seedArchive(page, archiveWith({ sessions: [finished('concluso', '2026-10-01', [{ kg: 60, reps: 10 }])] }));
     await page.goto('history/');
-    await page.getByRole('radio', { name: 'Esercizi' }).check();
-    await expect(page).toHaveURL(/view=exercises/);
+    await expect(page.getByRole('heading', { name: 'Ottobre 2026' })).toBeVisible();
+    await expect(page.getByRole('radio')).toHaveCount(0);
 
+    const tabs = page.getByRole('navigation', { name: 'Sezioni' });
+    await tabs.getByRole('link', { name: 'Progressi' }).click();
+    await expectPage(page, 'progress/');
     const row = page.getByRole('link', { name: /^Squat bilanciere/ });
     await expect(row).toContainText('Ultima volta: 7 giorni fa · 1 allenamento');
-    await expect(page.getByRole('heading', { name: 'Ottobre 2026' })).toHaveCount(0);
     await row.click();
 
+    // la pagina dell'esercizio sta sotto la tab Progressi
     await expectPage(page, 'exercise/');
     await expect(page.getByRole('heading', { name: 'Squat bilanciere' })).toBeVisible();
-    await page.getByRole('link', { name: 'Esercizi' }).click();
+    await expect(tabs.getByRole('link', { name: 'Progressi' })).toHaveAttribute('aria-current', 'page');
+    await page.getByRole('main').getByRole('link', { name: 'Progressi' }).click();
+    await expectPage(page, 'progress/');
+    await expect(page.getByRole('link', { name: /^Squat bilanciere/ })).toBeVisible();
+  });
 
-    // la vista scelta è nell’indirizzo: torna e resta anche dopo un ricaricamento
-    await expectPage(page, 'history/');
-    await expect(page.getByRole('radio', { name: 'Esercizi' })).toBeChecked();
-    await expect(page.getByRole('link', { name: /^Squat bilanciere/ })).toBeVisible();
-    await page.reload();
-    await expect(page.getByRole('radio', { name: 'Esercizi' })).toBeChecked();
-    await expect(page.getByRole('link', { name: /^Squat bilanciere/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Ottobre 2026' })).toHaveCount(0);
+  test('US-28 Progressi senza esercizi fatti invita a cominciare da Oggi', async ({ page }) => {
+    await seedArchive(page, archiveWith());
+    await page.goto('progress/');
+    await expect(page.getByRole('heading', { name: 'Nessun esercizio registrato' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Vai a Oggi' })).toBeVisible();
   });
 });
 
