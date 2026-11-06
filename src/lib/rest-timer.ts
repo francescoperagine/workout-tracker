@@ -5,7 +5,7 @@
 // fa parte del diario (PIANO.md, "Modello dati v2").
 import { blocksOf } from './archive/routine-edit';
 import { exerciseName } from './archive/catalog';
-import { plannedEntry, previousExercise, previousSets, setNumbers, suggestedSets } from './archive/workout';
+import { plannedEntry, previousExercise, previousSets, setNumbers } from './archive/workout';
 import type { Archive, Session } from './archive/types';
 import { formatWeight } from './units';
 
@@ -133,8 +133,10 @@ export function crossedThreshold(before: number, after: number): (typeof ANNOUNC
 
 /**
  * La prossima serie attesa, per il timer (US-21): "Panca piana bilanciere · serie 2 · 40 kg × 6–8".
- * Peso e ripetizioni: quelli già scritti nella riga, altrimenti la volta scorsa, altrimenti i target
- * della scheda (il carico della scheda non vale per una variante).
+ * Peso e ripetizioni: quelli già scritti nella riga, altrimenti la fonte del segnaposto (`placeholderSets`):
+ * la serie spuntata l'ultima volta, poi i target della scheda (niente kg su una variante, niente target sul
+ * riscaldamento). Unica differenza voluta: qui le ripetizioni della scheda restano il testo intero («6–8»),
+ * nel campo il limite basso.
  */
 export function nextSetText(
   archive: Archive,
@@ -145,11 +147,12 @@ export function nextSetText(
   const { exercise, set } = next;
   const index = exercise.sets.indexOf(set);
   const number = setNumbers(exercise.sets)[index];
-  // i valori che la spunta confermerebbe: il precedente, con il peso della serie sopra se c'è (suggestedSets)
-  const previous = suggestedSets(exercise, previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null))[index];
+  const previous = previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null)[index];
   const entry = plannedEntry(archive, session, exercise);
-  const kg = set.kg ?? previous?.kg ?? (exercise.variantOf || set.type === 'warmup' ? null : (entry?.loadMin ?? null));
-  const reps = set.reps ?? previous?.reps ?? (set.type === 'warmup' ? null : entry?.reps || null);
+  const target = entry && set.type !== 'warmup' ? { kg: exercise.variantOf ? null : entry.loadMin, reps: entry.reps || null } : null;
+  const hint = previous ?? target;
+  const kg = set.kg ?? hint?.kg ?? null;
+  const reps = set.reps ?? hint?.reps ?? null;
   const weight = kg === null ? '' : formatWeight(kg, archive.settings);
   // spazi unificatori: "40 kg × 8" va a capo tutto insieme
   const load = weight && reps !== null ? `${weight}\u00a0×\u00a0${reps}` : weight || (reps !== null ? `${reps}\u00a0rip` : '');

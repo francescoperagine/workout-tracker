@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { exerciseName, startSession, validateArchive, type Archive } from '../../src/lib/archive';
+import { exerciseName, placeholderSets, startSession, validateArchive, type Archive } from '../../src/lib/archive';
 import { seedArchive, storedArchive } from './helpers';
 
 // Selezione del contenuto al focus (US-39): toccare o raggiungere con la tastiera il campo kg o ripetizioni
@@ -18,13 +18,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 /**
- * Sessione di Scheda B e primo esercizio che arriva con tutte le serie precompilate (US-36), peso e
- * ripetizioni: lo stacco da terra, primo esercizio della scheda, nel fixture non ha storico e le sue
- * serie nascerebbero vuote, senza niente da selezionare.
+ * Sessione di Scheda B e primo esercizio con peso e ripetizioni nel segnaposto di ogni serie, scritti nei
+ * campi come li avrebbe scritti Francesco (dall'INC-013 le serie entrano vuote, US-36): serve un valore
+ * da selezionare. Lo stacco da terra, primo della scheda, non ha storico nel fixture né carico in scheda.
  */
 function exerciseFromRoutineB() {
   const { archive, session } = startSession(fixture(), 'routine-b', NOW.getTime() - 600_000);
-  const exercise = session.exercises.find((e) => e.sets.every((s) => s.reps !== null && s.kg !== null))!;
+  const exercise = session.exercises.find((e) => placeholderSets(archive, session, e).every((p) => p?.kg != null && p.reps !== null))!;
+  // la sessione è quella dentro `archive`: scrivere nelle sue serie le scrive nel diario da caricare
+  placeholderSets(archive, session, exercise).forEach((p, i) => Object.assign(exercise.sets[i], p));
   return { archive, session, exercise, name: exerciseName(archive, exercise.exerciseId) };
 }
 

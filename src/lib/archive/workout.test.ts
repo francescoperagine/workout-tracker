@@ -12,14 +12,14 @@ import {
   completedSet,
   completeExercise,
   undoCompleteExercise,
-  defaultSets,
   finishedCount,
   loadRecords,
   moveSessionExercise,
   moveSessionExerciseTo,
   nextSet,
   nextSetType,
-  suggestedSets,
+  placeholderSets,
+  plannedReps,
   plannedEntry,
   previousExercise,
   previousSets,
@@ -306,16 +306,49 @@ describe('US-19 approfondimento', () => {
   });
 });
 
-describe('US-12 suggerimento della serie sopra', () => {
+describe('US-36 segnaposto: l’ultima volta, poi la scheda', () => {
   const s = (id: string, kg: number | null, reps: number | null, type: SetType = 'normal'): SessionSet => ({ id, type, kg, reps, completedAt: null });
-  it('il peso scritto sopra vale per le serie sotto dello stesso genere; le ripetizioni restano la volta scorsa', () => {
-    const previous = [{ kg: 20, reps: 10 }, { kg: 40, reps: 8 }, { kg: 40, reps: 7 }, null];
-    const sets = [s('w', null, null, 'warmup'), s('1', 42.5, null), s('2', null, null), s('3', null, null)];
-    expect(suggestedSets({ sets }, previous)).toEqual([{ kg: 20, reps: 10 }, { kg: 40, reps: 8 }, { kg: 42.5, reps: 7 }, { kg: 42.5, reps: null }]);
-    // senza niente scritto il suggerimento è il precedente
-    expect(suggestedSets({ sets: sets.map((x) => ({ ...x, kg: null })) }, previous)).toEqual(previous);
-    // il riscaldamento non presta il peso alle serie di lavoro
-    expect(suggestedSets({ sets: [s('w', 20, 10, 'warmup'), s('1', null, null)] }, [null, { kg: 40, reps: 8 }])[1]).toEqual({ kg: 40, reps: 8 });
+
+  it('plannedReps: un intero, il limite basso di un intervallo, altrimenti niente', () => {
+    expect(plannedReps('8')).toBe(8);
+    expect(plannedReps('6–8')).toBe(6);
+    expect(plannedReps(' 10 - 12 ')).toBe(10);
+    for (const text of ['', 'AMRAP', '30 s', '8+', '6–8–10']) expect(plannedReps(text), text).toBeNull();
+  });
+
+  it('senza storico il segnaposto è il target della scheda; il riscaldamento non ne ha', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const squat = session.exercises[0];
+    expect(placeholderSets(archive, session, squat)).toEqual([{ kg: 45, reps: 6 }, { kg: 45, reps: 6 }, { kg: 45, reps: 6 }]);
+    const warm = { ...squat, sets: [s('w', null, null, 'warmup'), ...squat.sets] };
+    expect(placeholderSets(archive, { ...session, exercises: [warm, ...session.exercises.slice(1)] }, warm)[0]).toBeNull();
+    // allenamento libero: nessuna scheda, nessun segnaposto
+    const free = startSession(withAB(), null, NOW);
+    const added = addSessionExercise(free.archive, free.session.id, 'leg-press');
+    expect(placeholderSets(added.archive, running(added.archive), added.exercise)).toEqual([null, null, null]);
+  });
+
+  it('la serie spuntata l’ultima volta vince sul target; quelle in più prendono il target', () => {
+    const before = finished('b', '2026-10-01', [exercise('b1', 'squat-bilanciere', [set('1', 60, 8), set('2', 70, 5, false), set('3', null, 12)])]);
+    const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
+    // la serie non spuntata non sfasa le altre; a corpo libero il kg resta vuoto, senza il target
+    expect(placeholderSets(archive, session, session.exercises[0])).toEqual([{ kg: 60, reps: 8 }, { kg: null, reps: 12 }, { kg: 45, reps: 6 }]);
+  });
+
+  it('una variante non prende il kg della scheda, solo le ripetizioni', () => {
+    const { archive, session } = startSession(withAB(), 'routine-a', NOW);
+    const switched = switchExercise(archive, session.id, session.exercises[0].id, 'leg-press');
+    const live = running(switched.archive);
+    expect(placeholderSets(switched.archive, live, live.exercises[0])).toEqual([{ kg: null, reps: 6 }, { kg: null, reps: 6 }, { kg: null, reps: 6 }]);
+  });
+
+  it('i valori scritti nella riga non cambiano il segnaposto delle altre (niente più peso della serie sopra)', () => {
+    const before = finished('b', '2026-10-01', [exercise('b1', 'squat-bilanciere', [set('1', 60, 8), set('2', 60, 8)])]);
+    const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
+    const squat = session.exercises[0];
+    const edited = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 62.5 });
+    const live = running(edited);
+    expect(placeholderSets(edited, live, live.exercises[0])[1]).toEqual({ kg: 60, reps: 8 });
   });
 });
 
@@ -324,30 +357,23 @@ const fixtureText = readFileSync(new URL('../../../tests/fixtures/workout-tracke
 const fixture = (): Archive => validateArchive(JSON.parse(fixtureText));
 /** giovedì 5 novembre 2026, 18:00 ora locale: dopo l'ultima sessione della fixture */
 const NOV_5 = new Date(2026, 10, 5, 18, 0).getTime();
-const values = (sets: readonly { kg: number | null; reps: number | null }[]) => sets.map((s) => [s.kg, s.reps]);
+const values = (sets: readonly ({ kg: number | null; reps: number | null } | null)[]) => sets.map((s) => (s ? [s.kg, s.reps] : null));
+const normal = (n: number) => ({ sets: Array.from({ length: n }, (_, i): SessionSet => ({ id: `n${i}`, type: 'normal', kg: null, reps: null, completedAt: null })) });
 
-describe('US-36 default dall’ultima esecuzione', () => {
-  it('defaultSets: posizione per genere, ripete l’ultima, ignora le serie in più e quelle non spuntate', () => {
-    const previous = exercise('p', 'x', [set('w', 20, 10, true, 'warmup'), set('1', 60, 8), set('2', 62.5, 6), set('3', 70, 5, false)]);
-    expect(values(defaultSets(4, previous))).toEqual([[60, 8], [62.5, 6], [62.5, 6], [62.5, 6]]);
-    expect(values(defaultSets(1, previous))).toEqual([[60, 8]]);
-    expect(values(defaultSets(['warmup', 'normal', 'warmup', 'normal'], previous))).toEqual([[20, 10], [60, 8], [20, 10], [62.5, 6]]);
-    expect(values(defaultSets(['drop'], exercise('p', 'x', [set('w', 20, 10, true, 'warmup')])))).toEqual([[null, null]]);
-    expect(values(defaultSets(2, null))).toEqual([[null, null], [null, null]]);
-  });
-
+describe('US-36 le serie entrano vuote, l’ultima volta è il segnaposto', () => {
   it('fixture: dopo l’unione il rumeno prende dal 4 novembre; la panca salta il 4 novembre vuoto', () => {
     const merged = mergeExercise(fixture(), 'custom-romanian-deadlift', 'stacco-rumeno-bilanciere');
     const { archive, session } = startSession(merged, 'routine-a', NOV_5);
     const rdl = previousExercise(archive, session, 'stacco-rumeno-bilanciere');
     expect(rdl?.session.date).toBe('2026-11-04');
-    expect(values(defaultSets(4, rdl!.exercise))).toEqual([[20, 15], [25, 12], [30, 10], [35, 10]]);
+    expect(values(previousSets(normal(4), rdl!.exercise))).toEqual([[20, 15], [25, 12], [30, 10], [35, 10]]);
     const bench = previousExercise(archive, session, 'panca-piana-bilanciere');
     expect(bench?.session.date).toBe('2026-10-05');
-    // la scheda A ha 3 serie di panca: valori veri, nessuna spunta
-    expect(session.exercises[1].sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[20, 10, null], [40, 8, null], [50, 6, null]]);
-    // senza storico (leg curl mai spuntato) le serie restano vuote
-    expect(values(session.exercises[3].sets)).toEqual([[null, null], [null, null]]);
+    // la scheda A ha 3 serie di panca: vuote e da spuntare, l'ultima volta nel segnaposto
+    expect(session.exercises[1].sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[null, null, null], [null, null, null], [null, null, null]]);
+    expect(values(placeholderSets(archive, session, session.exercises[1]))).toEqual([[20, 10], [40, 8], [50, 6]]);
+    // senza storico (leg curl mai spuntato) il target della scheda: 10–15, nessun carico
+    expect(values(placeholderSets(archive, session, session.exercises[3]))).toEqual([[null, 10], [null, 10]]);
   });
 
   it('fixture: il rematore al cavo basso aggiunto il 4 novembre prende dal 12 ottobre', () => {
@@ -355,44 +381,50 @@ describe('US-36 default dall’ultima esecuzione', () => {
     const nov4 = archive.sessions.find((s) => s.date === '2026-11-04')!;
     const found = previousExercise(archive, nov4, 'rematore-al-cavo-basso');
     expect(found?.session.date).toBe('2026-10-12');
-    expect(values(defaultSets(4, found!.exercise))).toEqual([[32, 15], [45, 10], [52, 6], [39, 6]]);
-    // aggiunto a mano in una sessione nuova: numero e genere delle serie dell'ultima volta (il 4 novembre)
+    expect(values(previousSets(normal(4), found!.exercise))).toEqual([[32, 15], [45, 10], [52, 6], [39, 6]]);
+    // aggiunto a mano in una sessione nuova: numero e genere delle serie dell'ultima volta (il 4 novembre), vuote
     const free = startSession(archive, null, NOV_5);
     const added = addSessionExercise(free.archive, free.session.id, 'rematore-al-cavo-basso');
-    expect(added.exercise.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[25, 12, null], [32, 14, null], [39, 10, null], [39, 8, null], [32, 10, null]]);
+    expect(added.exercise.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(Array.from({ length: 5 }, () => [null, null, null]));
+    expect(values(placeholderSets(added.archive, running(added.archive), added.exercise))).toEqual([[25, 12], [32, 14], [39, 10], [39, 8], [32, 10]]);
   });
 
   it('la stessa voce due volte prende dalla sessione precedente, mai dalla stessa', () => {
     const before = finished('b', '2026-10-01', [exercise('b1', 'leg-press', [set('1', 80, 10), set('2', 85, 8)])]);
     const free = startSession(withAB([before]), null, NOW);
     const first = addSessionExercise(free.archive, free.session.id, 'leg-press');
-    const done = updateSet(first.archive, free.session.id, first.exercise.id, first.exercise.sets[0].id, { kg: 100, completedAt: NOW });
+    const done = updateSet(first.archive, free.session.id, first.exercise.id, first.exercise.sets[0].id, { kg: 100, reps: 10, completedAt: NOW });
     const second = addSessionExercise(done, free.session.id, 'leg-press');
-    expect(values(second.exercise.sets)).toEqual([[80, 10], [85, 8]]);
+    expect(values(placeholderSets(second.archive, running(second.archive), second.exercise))).toEqual([[80, 10], [85, 8]]);
   });
 
-  it('cambio di esercizio: le serie prendono i valori dell’esercizio nuovo, anche nella voce aggiunta a metà', () => {
+  it('cambio di esercizio: le serie si svuotano e il segnaposto è quello dell’esercizio nuovo, anche nella voce aggiunta a metà', () => {
     const before = finished('b', '2026-10-01', [exercise('b1', 'leg-press-piedi-a-meta-pedana', [set('1', 90, 12), set('2', 100, 10)])]);
     const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
     const squat = session.exercises[0];
-    const inPlace = switchExercise(archive, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
-    expect(values(running(inPlace.archive).exercises[0].sets)).toEqual([[90, 12], [100, 10], [100, 10]]);
+    const written = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 60, reps: 5 });
+    const inPlace = switchExercise(written, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
+    const moved = running(inPlace.archive).exercises[0];
+    expect(values(moved.sets)).toEqual([[null, null], [null, null], [null, null]]);
+    // la terza serie non c'era l'ultima volta: il target della scheda, senza kg perché è una variante
+    expect(values(placeholderSets(inPlace.archive, running(inPlace.archive), moved))).toEqual([[90, 12], [100, 10], [null, 6]]);
     const logged = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 60, reps: 5, completedAt: NOW });
     const split = switchExercise(logged, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
     const added = running(split.archive).exercises.find((e) => e.id === split.added)!;
-    expect(added.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[90, 12, null], [100, 10, null]]);
+    expect(added.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[null, null, null], [null, null, null]]);
   });
 
-  it('una serie precompilata e non spuntata non conta come fatta da nessuna parte', () => {
+  it('una serie con valori scritti e non spuntata non conta come fatta da nessuna parte', () => {
     const before = finished('b', '2026-10-01', [exercise('b1', 'squat-bilanciere', [set('1', 60, 8), set('2', 60, 8), set('3', 60, 8)])]);
     const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
-    expect(values(session.exercises[0].sets)).toEqual([[60, 8], [60, 8], [60, 8]]);
-    // concludere chiede almeno una spunta; annullare non perde nulla
-    expect(sessionHasData(session)).toBe(false);
-    expect(() => finishSession(archive, session.id, NOW + 60_000)).toThrow(/almeno una serie/);
-    // spuntata la prima serie dello squat, le altre restano solo precompilate
     const squat = session.exercises[0];
-    const one = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 70, completedAt: NOW + 1 });
+    // valori scritti a mano, come le sessioni precompilate prima di INC-013
+    const written = squat.sets.reduce((a, x) => updateSet(a, session.id, squat.id, x.id, { kg: 60, reps: 8 }), archive);
+    // concludere chiede almeno una spunta; annullare non perde nulla
+    expect(sessionHasData(running(written))).toBe(false);
+    expect(() => finishSession(written, session.id, NOW + 60_000)).toThrow(/almeno una serie/);
+    // spuntata la prima serie dello squat, le altre restano solo scritte
+    const one = updateSet(written, session.id, squat.id, squat.sets[0].id, { kg: 70, completedAt: NOW + 1 });
     const ended = finishSession(one, session.id, NOW + 60_000);
     const done = ended.sessions.find((s) => s.id === session.id)!;
     expect(workoutSummary(done, NOW)).toMatchObject({ exercises: 1, sets: 1, volume: 560 });
@@ -400,10 +432,9 @@ describe('US-36 default dall’ultima esecuzione', () => {
     expect(exerciseHistory(ended, 'squat-bilanciere').at(-1)).toMatchObject({ maxLoad: 70, volume: 560 });
     // la panca, senza storico e senza spunte, non è tra gli esercizi fatti
     expect(exercisesDone(ended).map((e) => e.exerciseId)).toEqual(['squat-bilanciere']);
-    // la volta dopo il precedente è la serie spuntata, non le precompilate
+    // la volta dopo il segnaposto è la serie spuntata, poi il target: non le serie solo scritte
     const next = startSession(ended, 'routine-a', NOW + DAY);
-    expect(previousSets(next.session.exercises[0], previousExercise(next.archive, next.session, 'squat-bilanciere')!.exercise)).toEqual([{ kg: 70, reps: 8 }, null, null]);
-    expect(values(next.session.exercises[0].sets)).toEqual([[70, 8], [70, 8], [70, 8]]);
+    expect(values(placeholderSets(next.archive, next.session, next.session.exercises[0]))).toEqual([[70, 8], [45, 6], [45, 6]]);
   });
 });
 
@@ -419,6 +450,22 @@ describe('US-37 completa esercizio', () => {
     const sets = setsOf(done, 's', 'e1');
     expect(sets.map((s) => s.completedAt)).toEqual([NOW, NOW, null, null]);
     expect(values(sets)).toEqual([[50, 10], [60, 8], [70, null], [80, null]]);
+  });
+
+  it('i campi vuoti prendono il segnaposto, come la spunta della riga; senza ripetizioni né segnaposto la serie resta da fare', () => {
+    const before = finished('b', '2026-10-01', [exercise('b1', 'squat-bilanciere', [set('1', 60, 8)])]);
+    const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
+    const squat = session.exercises[0];
+    // serie 1: kg scritto, ripetizioni dall'ultima volta; serie 2 e 3: il target della scheda (45 kg × 6)
+    const written = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 62.5 });
+    const { archive: done, completed } = completeExercise(written, session.id, squat.id, NOW);
+    expect(completed).toEqual(squat.sets.map((x) => x.id));
+    expect(setsOf(done, session.id, squat.id).map((x) => [x.kg, x.reps, x.completedAt])).toEqual([[62.5, 8, NOW], [45, 6, NOW], [45, 6, NOW]]);
+    // una voce senza scheda né storico: solo la serie con le ripetizioni scritte
+    const free = startSession(withAB(), null, NOW);
+    const added = addSessionExercise(free.archive, free.session.id, 'leg-press');
+    const one = updateSet(added.archive, free.session.id, added.exercise.id, added.exercise.sets[1].id, { reps: 12 });
+    expect(completeExercise(one, free.session.id, added.exercise.id, NOW).completed).toEqual([added.exercise.sets[1].id]);
   });
 
   it('tutte le serie spuntate prendono lo stesso completedAt', () => {

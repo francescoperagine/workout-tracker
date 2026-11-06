@@ -6,8 +6,8 @@
     kg: string;
     reps: string;
   }
-  /** Cosa fare dopo la spunta: niente, o portare il cursore al campo vuoto */
-  export type CheckResult = 'kg' | 'reps' | void;
+  /** Cosa fare dopo la spunta: niente, o portare il cursore alle ripetizioni (il peso può mancare) */
+  export type CheckResult = 'reps' | void;
 
   /** "40 × 8", "12 rip" (senza peso), "40 kg" (senza ripetizioni) */
   export function formatPrevious(previous: Previous, unit: string): string {
@@ -22,7 +22,7 @@
   // Riga serie, l'unità di lavoro dell'allenamento: tipo/n · precedente · peso · rip · spunta.
   // La riga mostra i valori e passa i gesti a chi la usa, che salva: tocco sull'indice (tipo successivo),
   // tocco sul precedente (lo copia), battute nei campi, spunta. La spunta su una riga vuota conferma il
-  // precedente (1 tocco, P1); se manca un valore chi la usa risponde con il campo da compilare.
+  // segnaposto (1 tocco, P1); se mancano le ripetizioni chi la usa risponde 'reps' e il cursore va lì.
   import Check from '@lucide/svelte/icons/check';
   import Trophy from '@lucide/svelte/icons/trophy';
   import SetInput from './SetInput.svelte';
@@ -33,7 +33,7 @@
     number: number;
     type?: SetType;
     previous?: Previous | null;
-    /** segnaposto dei campi vuoti, se diverso dal precedente (peso della serie sopra); assente = il precedente */
+    /** segnaposto dei campi vuoti, se diverso dal precedente (target della scheda); assente = il precedente */
     suggestion?: Previous | null;
     kg?: string;
     reps?: string;
@@ -78,7 +78,6 @@
   const BADGE: Record<SetType, string> = { normal: '', warmup: 'R', drop: 'D', failure: 'C' };
   const TYPE_NAME: Record<SetType, string> = { normal: 'normale', warmup: 'di riscaldamento', drop: 'drop', failure: 'a cedimento' };
 
-  let kgInput: { focus(): void } | undefined = $state();
   let repsInput: { focus(): void } | undefined = $state();
 
   const badge = $derived(type === 'normal' ? String(number) : BADGE[type]);
@@ -90,9 +89,7 @@
   );
 
   function check() {
-    const missing = oncheck?.();
-    if (missing === 'kg') kgInput?.focus();
-    else if (missing === 'reps') repsInput?.focus();
+    if (oncheck?.() === 'reps') repsInput?.focus();
   }
 
   function onkeydown(event: KeyboardEvent, field: 'kg' | 'reps') {
@@ -128,7 +125,6 @@
   {/if}
 
   <SetInput
-    bind:this={kgInput}
     value={kg}
     kind="decimal"
     label={`Peso ${setName}, ${unit}`}

@@ -123,13 +123,15 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Gli esercizi di base hanno alias (nome inglese, varianti italiane): la ricerca li trova e un nome scritto che corrisponde a un alias usa l'esercizio esistente («Esiste già «…»: usa questo»).
 - Un esercizio personalizzato si unisce a un altro dal foglio del catalogo; la conferma dice quanti allenamenti e schede cambiano e che non si annulla.
 
-**US-36 (M, INC-004).** Come utente, voglio trovare già scritti kg e ripetizioni dell'ultima volta che ho fatto un esercizio, per dover solo spuntare.
-- Valori veri, da spuntare: contano solo le serie spuntate (precedente, storico, record, concludere l'allenamento).
-- Senza storico le righe restano vuote, con il peso della serie sopra come segnaposto.
+**US-36 (M, INC-004, riscritta in INC-013, ADR-008).** Come utente, voglio vedere nei campi vuoti kg e ripetizioni dell'ultima volta, o il target della scheda, distinti da quello che ho scritto, per dover solo spuntare e sapere a colpo d'occhio cosa è confermato.
+- Le serie entrano vuote (avvio da scheda, esercizio aggiunto, variante): i valori suggeriti sono il segnaposto, in grigio; quelli scritti sono a colore pieno.
+- Segnaposto della serie, per genere (riscaldamento o di lavoro): la stessa serie spuntata l'ultima volta (kg vuoto se era a corpo libero); altrimenti il target della scheda, ripetizioni come numero o limite basso di un intervallo («6–8» → 6), kg dal carico minimo ma non su una variante; nessun target sul riscaldamento; altrimenti vuoto.
+- La spunta, e «Completa esercizio», scrivono il segnaposto nei campi vuoti; il peso può mancare, le ripetizioni no: senza, la serie non si spunta e il cursore va al campo Rip.
+- Contano solo le serie spuntate (precedente, storico, record, concludere l'allenamento).
 
 **US-37 (M, INC-005).** Come utente, voglio completare un esercizio in un tocco, per non spuntare le serie una per una quando sono andate come scritto.
 - Pulsante nell'intestazione della card (doppia spunta, accanto a ⋯), assente quando l'esercizio è fatto.
-- Spunta le serie con le ripetizioni (il peso può mancare) e lascia da fare, evidenziate e dette per nome, quelle senza; nessun valore inventato.
+- Spunta le serie con le ripetizioni scritte o nel segnaposto (US-36), scrivendo il segnaposto nei campi vuoti come la spunta della riga (il peso può mancare), e lascia da fare, evidenziate e dette per nome, quelle senza.
 - Un solo recupero, dall'ultima serie spuntata, già ridotto; l'avviso con «Annulla» toglie solo quelle spunte e ferma il recupero.
 
 **US-38 (M, INC-006).** Come utente, voglio riordinare gli esercizi trascinandoli, nell'allenamento e nella scheda, per seguire l'ordine in cui trovo libere le macchine.

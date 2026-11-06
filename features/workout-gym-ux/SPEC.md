@@ -1,6 +1,6 @@
 # SPEC — workout-gym-ux
 
-**Livello:** Feature · **Stato:** pronta per l'esecuzione · **Base:** `main` a `de2f0bb` (INC-010)
+**Livello:** Feature · **Stato:** in esecuzione, incrementi 1–3 fatti (INC-011, INC-012, INC-013), si riprende dal 4 · **Base:** `main` a `de2f0bb` (INC-010)
 **Data del piano:** 6 novembre 2026 · **Origine:** revisione di Francesco sul telefono e confronto con Strong
 (`screenshots/ux-2026-11-06/wt-*.png`, `strong-*.png`; `screenshots/strong-*.png`; non tracciati)
 
@@ -57,8 +57,16 @@ inutili mentre si trascina. In più: i progressi nella tab bar e alcune incoeren
 5. **Spunta:** su una riga i campi vuoti prendono il segnaposto (`completedSet`). I **kg possono restare vuoti**
    (esercizi senza pesi); le **ripetizioni sono obbligatorie**: senza ripetizioni scritte né segnaposto la serie
    non si spunta e il focus va al campo Rip (mai al campo kg: **da verificare** il ramo `missing === 'kg'` di
-   `SetRow.svelte`). Chi non l'ha fatta toglie la serie («Togli serie», c'è già). «Completa esercizio» (US-37)
-   resta com'è: le serie senza ripetizioni restano evidenziate.
+   `SetRow.svelte`). Chi non l'ha fatta toglie la serie («Togli serie», c'è già). **«Completa esercizio» (US-37)
+   completa con i parametri attuali o, dove il campo è vuoto, con il segnaposto** (Francesco, 6 novembre 2026:
+   «✓✓ serve a completare l'esercizio mantenendo i parametri attuali o precedenti; se non ci sono ripetizioni
+   sono da inserire»). Quindi `completeExercise` spunta ogni serie non fatta che ha ripetizioni scritte **o** un
+   segnaposto di ripetizioni, scrivendo i valori come fa `completedSet` sulla singola riga (stessa fonte: punto
+   2, precedente poi target della scheda); le serie senza ripetizioni né segnaposto restano da fare ed
+   evidenziate, come oggi. Il segnaposto si calcola nella funzione pura (archivio, sessione, esercizio), non
+   arriva dalla UI. Le altre parti di US-37 (chiusura, passaggio al successivo, «Annulla») restano come in INC-012.
+   **«Aggiungi serie» resta com'è** (Francesco, 6 novembre 2026): la serie nuova copia come valore vero il kg
+   della serie sopra (`addSet`), con le ripetizioni vuote.
 6. **Aspetto:** segnaposto in `--color-text-muted` (già `::placeholder`, `global.css:135`), valori scritti a
    colore pieno. Il contrasto del segnaposto sul fondo del campo deve reggere AA in entrambi i temi: coppia nel
    test di contrasto, **da verificare** se c'è già.
@@ -66,6 +74,9 @@ inutili mentre si trascina. In più: i progressi nella tab bar e alcune incoeren
    riassunti in Oggi; altro: **da verificare** con `grep`) usa il segnaposto quando il campo è vuoto.
 8. US-36 riscritta in `docs/archive/restyling/USER-STORIES.md` (riga ~126) e il suo e2e aggiornato. ADR nuovo:
    segnaposto contro valori veri (rovescia la scelta di INC-004).
+9. **Target della scheda nel segnaposto, come il testo del timer** (`nextSetText`, `rest-timer.ts:134-158`, già
+   così): il kg della scheda (`loadMin`) **non** vale per una variante (`exercise.variantOf`) e nessun target
+   (né kg né ripetizioni) va sulle serie di riscaldamento. Coerente con «carichi per variante» di `PRODUCT.md`.
 
 ### 3.2 Superserie allineata (E3)
 
@@ -222,4 +233,18 @@ senza modalità (§3.6). `docs/todo.md` è di Francesco: non toccarlo.
   da tastiera c'è il pulsante del nome). «✓✓ riuscito» = nessuna serie rimasta senza ripetizioni; il successivo
   con serie da fare si cerca dopo l'esercizio, poi dall'inizio. Chiuso e non finito, il riassunto dice «1 di 3
   serie fatte».
-
+- **Prima di INC-013 (incremento 3, 6 novembre 2026): «da verificare» già controllati, non rifarli.**
+  `prefillSets` (`workout.ts:107`) è chiamata da `startSession` (`sessions.ts:48`) e da `switchExercise`
+  (`workout.ts:~385`); `defaultSets` (`workout.ts:89`) da `addSessionExercise` (`workout.ts:312`), che ne usa
+  anche genere e numero delle serie (da tenere). `SetRow.svelte` porta il focus al kg quando `missing === 'kg'`,
+  e `WorkoutExercise.onCheck` restituisce `'kg'` se mancano sia il kg sia il suo segnaposto: va tolto, il focus
+  va sempre a Rip. La coppia `text-muted` su `bg`/`surface` ≥ 4,5:1 è già in `src/styles/contrast.test.ts`
+  (punto 6 fatto). Chi legge i valori delle serie non fatte, oltre alle righe: solo `nextSetText` (usa
+  `suggestedSets`, da sostituire con la fonte del punto 2); Oggi non legge kg, gli altri lettori (riassunto,
+  progressi, approfondimento, pagina esercizio) leggono serie spuntate. `completeExercise` (`workout.ts:237`)
+  oggi spunta solo `reps !== null`: da cambiare come al punto 5. Test esistenti da adattare:
+  `workout.test.ts` su `defaultSets` (~330-358) e `suggestedSets` (~314-318).
+- **INC-013 (incremento 3, 6 novembre 2026).** Via `defaultSets`, `prefillSets` e `suggestedSets`; nuove
+  `plannedReps` e `placeholderSets` (archivio, sessione, esercizio). `nextSetText` usa la stessa fonte ma tiene il
+  testo intero delle ripetizioni della scheda («6–8»): il test US-21 lo chiedeva e §3.1.9 lo prende a modello.
+  «Annulla» dopo ✓✓ toglie solo le spunte, come la riga singola: i valori scritti dal segnaposto restano.

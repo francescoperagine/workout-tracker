@@ -3,8 +3,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { startSession, validateArchive, type Archive } from '../../src/lib/archive';
 import { seedArchive, sheet, storedArchive } from './helpers';
 
-// Catalogo senza doppioni (US-35: alias e unione dei personalizzati) e serie precompilate con i valori
-// dell'ultima volta (US-36), sul diario vero di Francesco al 5 novembre 2026 (sola lettura).
+// Catalogo senza doppioni (US-35: alias e unione dei personalizzati) e serie vuote con l'ultima volta e la
+// scheda come segnaposto (US-36, INC-013), sul diario vero di Francesco al 5 novembre 2026 (sola lettura).
 // "Oggi" è giovedì 5 novembre 2026 alle 18:00 (il browser dei test è in Europe/Rome).
 
 const NOW = new Date('2026-11-05T18:00:00+01:00');
@@ -67,8 +67,8 @@ test.describe('US-35 catalogo senza doppioni', () => {
   });
 });
 
-test.describe('US-36 valori dell’ultima volta', () => {
-  test('US-36 un esercizio aggiunto ha i valori dell’ultima volta già scritti, da spuntare', async ({ page }) => {
+test.describe('US-36 l’ultima volta e la scheda come segnaposto', () => {
+  test('US-36 un esercizio aggiunto entra vuoto, con i valori dell’ultima volta come segnaposto da confermare', async ({ page }) => {
     const { archive } = startSession(fixture(), null, NOW.getTime() - 600_000);
     await seedArchive(page, archive);
     await page.goto('workout/');
@@ -76,7 +76,7 @@ test.describe('US-36 valori dell’ultima volta', () => {
     await sheet(page).getByLabel('Cerca o scrivi il nome').fill('rematore al cavo basso');
     await sheet(page).getByRole('button', { name: 'Rematore al cavo basso', exact: true }).click();
 
-    // il 4 novembre: 25 × 12, 32 × 14, 39 × 10, 39 × 8, 32 × 10
+    // il 4 novembre: 25 × 12, 32 × 14, 39 × 10, 39 × 8, 32 × 10, nei segnaposto e non nei campi
     const row = page.getByRole('region', { name: 'Rematore al cavo basso', exact: true });
     const expected = [
       ['25', '12'],
@@ -86,15 +86,51 @@ test.describe('US-36 valori dell’ultima volta', () => {
       ['32', '10'],
     ];
     for (const [i, [kg, reps]] of expected.entries()) {
-      await expect(row.getByRole('textbox', { name: `Peso serie ${i + 1}, kg` })).toHaveValue(kg);
-      await expect(row.getByRole('textbox', { name: `Ripetizioni serie ${i + 1}` })).toHaveValue(reps);
-      await expect(row.getByRole('button', { name: `Segna serie ${i + 1} come fatta` })).toHaveAttribute('aria-pressed', 'false');
+      const kgField = row.getByRole('textbox', { name: `Peso serie ${i + 1}, kg` });
+      const repsField = row.getByRole('textbox', { name: `Ripetizioni serie ${i + 1}` });
+      await expect(kgField).toHaveValue('');
+      await expect(kgField).toHaveAttribute('placeholder', kg);
+      await expect(repsField).toHaveValue('');
+      await expect(repsField).toHaveAttribute('placeholder', reps);
     }
     const added = (await storedArchive(page))!.sessions.find((s) => s.end === null)!.exercises[0];
-    expect(added.sets.map((s) => s.completedAt)).toEqual([null, null, null, null, null]);
+    expect(added.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(Array.from({ length: 5 }, () => [null, null, null]));
 
-    // i soli valori precompilati non bastano per concludere
+    // senza spunte non si conclude
     await page.getByRole('button', { name: 'Termina' }).click();
     await expect(page.getByText('Registra almeno una serie prima di terminare, oppure annulla l’allenamento.')).toBeVisible();
+
+    // la spunta su una riga vuota conferma il segnaposto
+    await row.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
+    await expect(row.getByRole('textbox', { name: 'Peso serie 2, kg' })).toHaveValue('32');
+    const set = (await storedArchive(page))!.sessions.find((s) => s.end === null)!.exercises[0].sets[1];
+    expect([set.kg, set.reps, set.completedAt !== null]).toEqual([32, 14, true]);
+  });
+
+  test('US-36 senza storico il segnaposto è il target della scheda', async ({ page }) => {
+    const { archive } = startSession(fixture(), 'routine-a', NOW.getTime() - 600_000);
+    await seedArchive(page, archive);
+    await page.goto('workout/');
+    // leg curl mai spuntato, scheda «10–15» senza carico: 10 ripetizioni, kg vuoto
+    const curl = page.getByRole('region', { name: 'Leg curl', exact: true });
+    await expect(curl.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveAttribute('placeholder', '');
+    await expect(curl.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toHaveAttribute('placeholder', '10');
+    await curl.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
+    const done = (await storedArchive(page))!.sessions.find((s) => s.end === null)!.exercises[3].sets[0];
+    expect([done.kg, done.reps, done.completedAt !== null]).toEqual([null, 10, true]);
+  });
+
+  test('US-36 senza storico né scheda niente segnaposto: la spunta porta al campo Rip, mai al kg', async ({ page }) => {
+    const free = startSession(fixture(), null, NOW.getTime() - 600_000);
+    await seedArchive(page, free.archive);
+    await page.goto('workout/');
+    await openPicker(page);
+    // la leg press non c'è nel diario
+    await sheet(page).getByLabel('Cerca o scrivi il nome').fill('Leg press');
+    await sheet(page).getByRole('button', { name: 'Leg press', exact: true }).click();
+    const fresh = page.getByRole('region', { name: 'Leg press', exact: true });
+    await fresh.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
+    await expect(fresh.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toBeFocused();
+    await expect(fresh.getByRole('button', { name: 'Segna serie 1 come fatta' })).toHaveAttribute('aria-pressed', 'false');
   });
 });

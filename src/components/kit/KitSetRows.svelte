@@ -41,7 +41,7 @@
     return sets.map((s) => (s.type === 'warmup' ? 0 : ++n));
   });
 
-  // Come nell'allenamento: la spunta su una riga vuota conferma il precedente, altrimenti porta al campo vuoto
+  // Come nell'allenamento: la spunta su una riga vuota conferma il precedente, senza ripetizioni porta al campo Rip
   function check(index: number): CheckResult {
     const s = sets[index];
     if (s.done) {
@@ -51,7 +51,7 @@
     }
     if (!s.kg && s.previous) s.kg = s.previous.kg;
     if (!s.reps && s.previous) s.reps = s.previous.reps;
-    if (!s.reps) return s.kg ? 'reps' : 'kg';
+    if (!s.reps) return 'reps';
     s.done = true;
     onCheck(index, true);
   }

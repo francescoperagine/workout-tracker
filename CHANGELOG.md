@@ -3,6 +3,37 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-013
+
+Date: 2026-11-06
+
+Summary:
+**Allenamento in palestra, incremento 3: segnaposto al posto dei valori veri (feature `workout-gym-ux`,
+ADR-008, rovescia la scelta di INC-004).** Un esercizio che entra in sessione (avvio da scheda, aggiunta, variante)
+ha le serie vuote: l'ultima volta è il segnaposto, in grigio, e i valori scritti sono a colore pieno. Senza storico
+il segnaposto è il target della scheda (ripetizioni come numero o limite basso di «6–8», kg dal carico minimo ma
+non su una variante, niente sul riscaldamento); non più il peso della serie sopra. La spunta e «Completa
+esercizio» scrivono il segnaposto nei campi vuoti; senza ripetizioni né segnaposto la serie resta da fare e il
+cursore va sempre al campo Rip. «Aggiungi serie» resta com'è. Le sessioni già in corso non cambiano.
+
+Deliverables:
+- `src/lib/archive/workout.ts`: `plannedReps`, `placeholderSets`; `completeExercise` con il segnaposto; via
+  `defaultSets`, `prefillSets`, `suggestedSets`; `addSessionExercise` e `switchExercise` con serie vuote.
+- `src/lib/archive/sessions.ts`: `startSession` con serie vuote.
+- `src/lib/rest-timer.ts`: `nextSetText` con la fonte del segnaposto (le ripetizioni della scheda restano «6–8»).
+- `src/components/workout/WorkoutExercise.svelte`, `src/components/ui/SetRow.svelte`,
+  `src/components/kit/KitSetRows.svelte`: segnaposto da `placeholderSets`, il focus va solo a Rip.
+- Test: `workout.test.ts` (segnaposto, ✓✓ con il segnaposto); e2e `us-35-us-36-catalog-defaults.spec.ts` (US-36
+  riscritta), `us-37-complete-exercise.spec.ts`, `us-39-select-cell.spec.ts`, `us-12-us-20-workout.spec.ts`.
+- Documenti: US-36 e US-37 in `docs/archive/restyling/USER-STORIES.md`, ADR-008, brief `route-workout`,
+  `docs/ARCHITECTURE.md`, SPEC.
+
+Limiti noti: togliere una spunta, o «Annulla» dopo ✓✓, lascia nei campi i valori che la spunta aveva scritto dal
+segnaposto (come già per la riga singola). Viste con Playwright a 390×844 e 320×568 nei due temi; il telefono non
+era collegato.
+
+ADR: ADR-008. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-012
 
 Date: 2026-11-06

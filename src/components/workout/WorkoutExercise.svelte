@@ -21,8 +21,8 @@
     exerciseName,
     isValidSetValue,
     previousExercise,
+    placeholderSets,
     previousSets,
-    suggestedSets,
     replaceSet,
     setExerciseNotes,
     setNumbers,
@@ -87,7 +87,8 @@
   const name = $derived(exerciseName(archive, exercise.exerciseId));
   const previous = $derived(previousExercise(archive, session, exercise.exerciseId));
   const rawPrevious = $derived(previousSets(exercise, previous?.exercise ?? null));
-  const suggested = $derived(suggestedSets(exercise, rawPrevious));
+  // segnaposto dei campi vuoti (US-36): la volta scorsa, poi i target della scheda
+  const placeholders = $derived(placeholderSets(archive, session, exercise));
   const numbers = $derived(setNumbers(exercise.sets));
   const done = $derived(exercise.sets.length > 0 && exercise.sets.every((s) => s.completedAt !== null));
   const id = $derived(`exercise-${exercise.id}`);
@@ -159,12 +160,12 @@
       return;
     }
     const completed = completedSet(set, suggestion, Date.now());
-    // senza ripetizioni la riga non si spunta: il cursore va al primo campo vuoto (US-12)
-    if (!completed) return set.kg === null && suggestion?.kg == null ? 'kg' : 'reps';
+    // senza ripetizioni la riga non si spunta: il cursore va alle ripetizioni, il peso può mancare (US-12)
+    if (!completed) return 'reps';
     if (edit((a) => replaceSet(a, session.id, exercise.id, completed))) onchecked(set.id);
   }
 
-  /** "Completa esercizio" (US-37): le serie con le ripetizioni si spuntano, le altre si evidenziano */
+  /** "Completa esercizio" (US-37): le serie con ripetizioni scritte o segnaposto si spuntano, le altre si evidenziano */
   function complete() {
     ontouch();
     const at = Date.now();
@@ -174,7 +175,7 @@
       completed = result.completed;
       return result.archive;
     })) return;
-    const empty = exercise.sets.filter((s) => s.completedAt === null && s.reps === null && !completed.includes(s.id));
+    const empty = exercise.sets.filter((s) => s.completedAt === null && !completed.includes(s.id));
     flagged = empty.map((s) => s.id);
     oncompleted(completed, at, empty.length);
   }
@@ -259,7 +260,7 @@
         </div>
         {#each exercise.sets as set, i (set.id)}
           {@const previousSet = rawPrevious[i]}
-          {@const suggestion = suggested[i]}
+          {@const suggestion = placeholders[i]}
           <SetRow
             id={`set-${set.id}`}
             number={numbers[i]}

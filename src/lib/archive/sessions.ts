@@ -4,7 +4,7 @@
 import { toDateKey } from './dates';
 import { newId } from './routine-edit';
 import { sessionInProgress } from './routines';
-import { nextSet, prefillSets } from './workout';
+import { nextSet } from './workout';
 import { ArchiveError, LIMITS, type Archive, type Session, type SessionExercise } from './types';
 
 export const FREE_SESSION_NAME = 'Allenamento libero';
@@ -21,8 +21,8 @@ function checkNoneInProgress(archive: Pick<Archive, 'sessions'>) {
 
 /**
  * Inizia un allenamento adesso. Da una scheda: una voce di sessione per ogni voce della scheda, con
- * superserie e recuperi della scheda e tante serie quante le serie target, precompilate con i valori
- * dell'ultima volta e da spuntare (US-36). Senza scheda (`null`): allenamento libero, vuoto.
+ * superserie e recuperi della scheda e tante serie quante le serie target, vuote: l'ultima volta e i
+ * target della scheda sono il segnaposto (US-36, INC-013). Senza scheda (`null`): allenamento libero, vuoto.
  */
 export function startSession(archive: Archive, routineId: string | null, now: number): SessionResult {
   checkNoneInProgress(archive);
@@ -30,7 +30,6 @@ export function startSession(archive: Archive, routineId: string | null, now: nu
   let name = FREE_SESSION_NAME;
   let exercises: SessionExercise[] = [];
   const date = toDateKey(new Date(now));
-  // la sessione nuova serve già per cercare l'ultima volta di ogni esercizio, prima di lei
   const draft: Session = { id: newId('session'), date, routineId, name, start: now, end: null, exercises };
   if (routineId !== null) {
     const routine = archive.routines.find((r) => r.id === routineId);
@@ -45,18 +44,13 @@ export function startSession(archive: Archive, routineId: string | null, now: nu
       rest: entry.rest,
       warmupRest: entry.warmupRest,
       notes: '',
-      sets: prefillSets(
-        archive,
-        draft,
-        entry.exerciseId,
-        Array.from({ length: Math.min(entry.sets, LIMITS.setsPerExercise) }, () => ({
-          id: newId('set'),
-          type: 'normal' as const,
-          kg: null,
-          reps: null,
-          completedAt: null,
-        })),
-      ),
+      sets: Array.from({ length: Math.min(entry.sets, LIMITS.setsPerExercise) }, () => ({
+        id: newId('set'),
+        type: 'normal' as const,
+        kg: null,
+        reps: null,
+        completedAt: null,
+      })),
     }));
   }
   const session: Session = { ...draft, name, exercises };
@@ -74,7 +68,7 @@ export function reopenSession(archive: Archive, id: string): Archive {
 
 /**
  * Conclude la sessione in corso; come nel PoC serve almeno un esercizio, e (step 6) almeno una serie
- * spuntata, così il calendario non mostra "fatto" per un allenamento vuoto o di soli precompilati (US-36).
+ * spuntata, così il calendario non mostra "fatto" per un allenamento vuoto o di soli valori scritti.
  */
 export function finishSession(archive: Archive, id: string, now: number): Archive {
   const session = archive.sessions.find((s) => s.id === id);
@@ -109,7 +103,7 @@ export function restoreSession(archive: Archive, removed: RemovedSession): Archi
 
 /**
  * true se la sessione ha almeno una serie spuntata: annullarla perderebbe qualcosa, e si può concludere.
- * I valori soli non bastano: dall'US-36 arrivano precompilati dall'ultima volta.
+ * I valori soli non bastano: le sessioni iniziate prima di INC-013 li hanno precompilati dall'ultima volta.
  */
 export function sessionHasData(session: Session): boolean {
   return session.exercises.some((e) => e.sets.some((s) => s.completedAt !== null));

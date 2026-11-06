@@ -43,7 +43,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Esercizi per sessione: tipico 6–8, massimo 100. Serie per esercizio: tipico 2–5, massimo 100.
 - Nomi lunghi fino a ~45 caratteri ("Rematore manubri, petto su panca inclinata"): vanno a capo, mai troncati nella riga attiva.
 - Peso: 0–300 kg con decimali (0,25 kg / 0,5 lb in visualizzazione), oppure carico non numerico nella scheda ("Bilanciere + 5 kg", "da tarare"). Ripetizioni: 1–30 o intervallo target ("6–8").
-- Stati: sessione da scheda (serie precompilate con i valori veri dell'ultima volta, da spuntare, dall'US-36; vuote con il precedente come segnaposto se l'esercizio non ha storico); allenamento libero (nessun esercizio: stato vuoto che insegna ad aggiungerne uno); esercizio senza storico ("precedente" vuoto, "—"); variante senza storico; serie spuntata; record battuto alla spunta; sessione conclusa riaperta; salvataggio riuscito / in corso / fallito (quota) / conflitto con un'altra scheda; "aggiungi almeno un esercizio prima di concludere".
+- Stati: sessione da scheda (serie vuote con l'ultima volta, o senza storico il target della scheda, come segnaposto in grigio: US-36 riscritta in INC-013, ADR-008); allenamento libero (nessun esercizio: stato vuoto che insegna ad aggiungerne uno); esercizio senza storico ("precedente" vuoto, "—"); variante senza storico; serie spuntata; record battuto alla spunta; sessione conclusa riaperta; salvataggio riuscito / in corso / fallito (quota) / conflitto con un'altra scheda; "aggiungi almeno un esercizio prima di concludere".
 
 ## Interaction and layout
 
@@ -61,7 +61,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 - Isola Svelte persistente tra le pagine (`transition:persist`), dati in kg anche se l'utente usa lb.
 - **Deciso:** la spunta su una riga vuota conferma i valori precedenti (1 tocco, come Strong); senza precedente una riga vuota non si spunta.
 - **Deciso:** il riepilogo è una schermata a sé dopo "Termina".
-- **Deciso (step 9, critique dei flussi):** l'allenamento è una modalità, non una sezione: niente tab bar su `/workout` (a 320×568 si vedevano 1,5 righe serie), «Torna a Oggi» nell'intestazione, rientro dalla mini-barra o da «Riprendi». «Termina» è secondario finché resta una serie da fare e allora chiede conferma; pieno (primario) quando tutto è spuntato. Il segnaposto di una riga vuota prende il peso della serie sopra, se scritto in questa sessione, e la spunta conferma quello; dall'US-36 vale solo per le righe senza valori (esercizi senza storico).
+- **Deciso (step 9, critique dei flussi):** l'allenamento è una modalità, non una sezione: niente tab bar su `/workout` (a 320×568 si vedevano 1,5 righe serie), «Torna a Oggi» nell'intestazione, rientro dalla mini-barra o da «Riprendi». «Termina» è secondario finché resta una serie da fare e allora chiede conferma; pieno (primario) quando tutto è spuntato. Il segnaposto di una riga vuota è l'ultima volta, poi il target della scheda (INC-013, ADR-008: non più il peso della serie sopra), e la spunta conferma quello.
 - Superserie (US-09, US-25), note sul carico (US-16), approfondimento (US-19) e più sessioni nello stesso giorno (US-20) sono M. Riordino degli esercizi in sessione (US-15) e data e nome modificabili anche in corso (US-27) sono criteri confermati.
 - Fuori ambito v1: calcolatore dei dischi, calcolatore di riscaldamento, note per singola serie.
 - Il builder non deve inventare: testi degli approfondimenti (oggi vuoti), regole di calcolo dei record oltre a quelle del piano.

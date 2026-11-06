@@ -62,9 +62,10 @@ test.describe('US-12 registrare le serie', () => {
     await startFromToday(page, archiveWith({ routines: routines(), sessions: [pastSession('2026-10-06', 40, 8)] }));
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByRole('button', { name: 'Copia il precedente: 40 × 8' })).toHaveCount(SQUAT.sets);
-    // i valori della volta scorsa sono già scritti, da spuntare (US-36)
-    await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveValue('40');
-    await expect(squat.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toHaveValue('8');
+    // la volta scorsa è nel segnaposto, i campi sono vuoti (US-36, INC-013)
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveValue('');
+    await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveAttribute('placeholder', '40');
+    await expect(squat.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toHaveAttribute('placeholder', '8');
 
     let taps = 0;
     for (let n = 1; n <= SQUAT.sets; n++) {
@@ -85,8 +86,7 @@ test.describe('US-12 registrare le serie', () => {
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('6');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     expect((await running(page)).exercises[0].sets[0]).toMatchObject({ kg: 42.5, reps: 6, completedAt: NOW.getTime() });
-    // solo le ripetizioni: il peso resta quello precompilato dalla volta scorsa (US-36); il peso della serie
-    // sopra vale solo per le righe vuote, cioè senza storico
+    // solo le ripetizioni: il peso viene dal segnaposto, la volta scorsa (US-36), non dalla serie sopra
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 2' }).fill('7');
     await squat.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
     expect((await running(page)).exercises[0].sets[1]).toMatchObject({ kg: 40, reps: 7 });
@@ -96,12 +96,15 @@ test.describe('US-12 registrare le serie', () => {
     await expect(squat.getByRole('button', { name: 'Segna serie 1 come fatta' })).toHaveAttribute('aria-pressed', 'false');
   });
 
-  test('US-12 senza precedente la riga vuota non si spunta e il cursore va al primo campo vuoto', async ({ page }) => {
-    await startFromToday(page, archiveWith({ routines: routines() }));
+  test('US-12 senza precedente né target la riga vuota non si spunta e il cursore va alle ripetizioni', async ({ page }) => {
+    const noTarget = routines().map((r) => ({ ...r, exercises: r.exercises.map((e) => ({ ...e, reps: '', loadMin: null })) }));
+    await startFromToday(page, archiveWith({ routines: noTarget }));
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByLabel('Nessun precedente')).toHaveCount(SQUAT.sets);
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
-    await expect(squat.getByRole('textbox', { name: 'Peso serie 1, kg' })).toBeFocused();
+    // il peso può mancare (corpo libero): il cursore va sempre al campo Rip (US-36)
+    await expect(squat.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toBeFocused();
+    await squat.getByRole('textbox', { name: 'Peso serie 1, kg' }).focus();
     await page.keyboard.type('50');
     await page.keyboard.press('Enter');
     await expect(squat.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toBeFocused();
@@ -195,8 +198,9 @@ test.describe('US-14 varianti', () => {
     expect(kept.sets.map((s) => [s.kg, s.reps])).toEqual([[60, 8]]);
     expect(stored).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
     expect(stored.sets).toHaveLength(SQUAT.sets - 1);
-    // le serie da fare prendono i valori dell'ultima volta con la variante (US-36), da spuntare
-    expect(stored.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(stored.sets.map(() => [100, 8, null]));
+    // le serie da fare entrano vuote, con l'ultima volta della variante nel segnaposto (US-36)
+    expect(stored.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(stored.sets.map(() => [null, null, null]));
+    await expect(variant.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveAttribute('placeholder', '100');
     // la scheda non cambia
     expect((await storedArchive(page))!.routines[0].exercises[0].exerciseId).toBe(SQUAT.exerciseId);
 
@@ -391,7 +395,7 @@ test.describe('US-18 fine dell’allenamento', () => {
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await expect(squat.getByRole('button', { name: /^Annulla serie 1/ })).toBeVisible();
     await expect(squat.getByLabel('Copia il precedente: 40 × 8. Record di carico')).toBeVisible();
-    // la seconda serie ha già la volta scorsa (40 × 8, US-36): si cambia solo il peso
+    // la seconda serie ha la volta scorsa nel segnaposto (40 × 8, US-36): si scrive solo il peso
     await squat.getByRole('textbox', { name: 'Peso serie 2, kg' }).fill('45');
     await squat.getByRole('button', { name: 'Segna serie 2 come fatta' }).click();
     // un'ora dopo
