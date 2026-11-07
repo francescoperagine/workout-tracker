@@ -1,9 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { REST_TIMER_KEY } from '../../src/lib/rest-timer';
 import type { Session, SetType } from '../../src/lib/archive';
 import { archiveWith, expectPage, seedArchive, session, sheet, storedArchive } from './helpers';
 
-// Storico e progressi (step 8): US-27 l'elenco degli allenamenti conclusi e la loro correzione, US-28 i
+// Storico e progressi (step 8): US-27 l'elenco degli allenamenti conclusi e il loro registro, US-28 i
 // progressi di un esercizio (record, grafico, cronologia delle serie) e US-29 i record segnalati
 // nell'elenco. "Oggi" è giovedì 8 ottobre 2026 alle 18:30 (il browser dei test è in Europe/Rome).
 
@@ -59,8 +58,6 @@ const readout = (page: Page) => page.locator('p[aria-live="polite"]');
 const plot = (page: Page) => page.getByRole('group', { name: /^(Carico massimo|1RM stimato|Volume) per allenamento:/ });
 /** Un record personale: il blocco che contiene il termine dato ("Carico massimo") */
 const record = (page: Page, term: string) => page.locator('main dl > div').filter({ hasText: term });
-/** Lo stato del timer di recupero salvato: null = nessun recupero in corso */
-const storedTimer = (page: Page) => page.evaluate((key) => localStorage.getItem(key), REST_TIMER_KEY);
 
 test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
   test('US-27 US-20 lo Storico elenca per mese, dal più recente, anche due nello stesso giorno', async ({ page }) => {
@@ -129,33 +126,43 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     await expectPage(page, 'workout/');
   });
 
-  test('US-27 il dettaglio si corregge e la spunta non avvia il recupero', async ({ page }) => {
-    await seedArchive(page, archiveWith({ sessions: [finished('concluso', '2026-10-06', [{ kg: 60, reps: 8 }, { kg: 60, reps: 8 }])] }));
+  test('US-27 il dettaglio è un registro di sola lettura delle serie fatte', async ({ page }) => {
+    const base = finished('concluso', '2026-10-06', [{ kg: 60, reps: 8 }, { kg: 60, reps: 10 }, { kg: 70, reps: null }]);
+    // la terza serie non è fatta, e il secondo esercizio non ha serie fatte: nel registro non compaiono
+    base.exercises[0].sets[2].completedAt = null;
+    base.exercises.push({ ...base.exercises[0], id: 'concluso-e2', exerciseId: 'leg-press', sets: [{ id: 'concluso-e2-s1', type: 'normal', kg: 100, reps: 8, completedAt: null }] });
+    await seedArchive(page, archiveWith({ sessions: [base] }));
     await page.goto('session/?id=concluso');
 
     await expect(page.getByRole('heading', { name: 'Allenamento libero' })).toBeVisible();
     await expect(page.getByRole('main').getByRole('link', { name: 'Storico' })).toBeVisible();
-    await expect(page.getByText('martedì 6 ottobre · 18:00–19:00 · 2 serie · volume 960 kg')).toBeVisible();
-    // l’esercizio con tutte le serie fatte è compatto
-    await expect(page.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toHaveCount(0);
-
-    await page.getByRole('button', { name: 'Squat bilanciere', exact: true }).click();
-    const reps = page.getByRole('textbox', { name: 'Ripetizioni serie 1' });
-    await expect(reps).toHaveValue('8');
-    await reps.fill('10');
-    await expect.poll(async () => (await storedArchive(page))!.sessions[0].exercises[0].sets[0].reps).toBe(10);
     await expect(page.getByText('martedì 6 ottobre · 18:00–19:00 · 2 serie · volume 1080 kg')).toBeVisible();
 
-    // una sessione conclusa si corregge: la spunta non fa partire nessun recupero
-    await page.getByRole('button', { name: 'Annulla serie 1' }).click();
-    await expect(page.getByRole('button', { name: 'Segna serie 1 come fatta' })).toBeVisible();
+    const exercises = page.getByRole('list', { name: 'Esercizi' }).getByRole('region');
+    await expect(exercises).toHaveCount(1);
+    const squat = page.getByRole('region', { name: 'Squat bilanciere' });
+    await expect(squat).toContainText('2 serie · 60 × 8 · 60 × 10');
+    await expect(page.getByRole('region', { name: 'Leg press' })).toHaveCount(0);
+
+    // niente da modificare: né campi, né spunte, né maniglie, né menu, né aggiunte
+    await expect(page.getByRole('textbox')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^Segna serie|^Annulla serie/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^Sposta/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^Altre azioni/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Aggiungi esercizio' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Nome e data' })).toHaveCount(0);
+
+    // ⓘ apre l'approfondimento, l'icona dei progressi porta alla pagina dell'esercizio
+    await squat.getByRole('button', { name: 'Squat bilanciere: come si esegue' }).click();
+    await expect(sheet(page)).toBeVisible();
+    await page.keyboard.press('Escape');
     await expect(sheet(page)).toHaveCount(0);
-    await page.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
-    await expect(page.getByRole('button', { name: 'Annulla serie 1' })).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.getByRole('dialog', { name: 'Recupero' })).toHaveCount(0);
-    await expect(sheet(page)).toHaveCount(0);
-    expect(await storedTimer(page)).toBeNull();
-    expect((await storedArchive(page))!.sessions[0].exercises[0].sets[0]).toMatchObject({ kg: 60, reps: 10 });
+    await squat.getByRole('link', { name: 'Progressi: Squat bilanciere' }).click();
+    await expectPage(page, 'exercise/');
+    await expect(page).toHaveURL(/id=squat-bilanciere/);
+    await expect(page.getByRole('heading', { name: 'Squat bilanciere' })).toBeVisible();
+    // il dettaglio non ha scritto niente
+    expect((await storedArchive(page))!.sessions[0]).toEqual(base);
   });
 
   test('US-27 eliminare un allenamento chiede conferma e si può annullare', async ({ page }) => {

@@ -82,15 +82,6 @@ test.describe('US-40 recupero dal menu dell’esercizio', () => {
     expect((await storedArchive(page))!.routines).toEqual(archive.routines);
   });
 
-  test('US-40 nella sessione conclusa il menu non ha il recupero', async ({ page }) => {
-    const past = pastSession('routine-a', '2026-10-06');
-    await seedArchive(page, archiveWith({ routines: starterRoutines(), sessions: [past] }));
-    await page.goto(`session/?id=${past.id}`);
-    await openOptions(page, region(page, SQUAT.exerciseId));
-    await expect(sheet(page).getByRole('button', { name: 'Cambia esercizio' })).toBeVisible();
-    await expect(sheet(page).getByRole('button', { name: /^Recupero/ })).toHaveCount(0);
-  });
-
   test('US-40 la card tiene in testa maniglia, nome e menu; il nome lungo sta in 2 righe a 320 px', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     const { session } = startSession(archiveWith({ routines: starterRoutines() }), 'routine-b', NOW.getTime() - 600_000);

@@ -7,7 +7,7 @@ related_targets: ["route:/session", "route:/exercise"]
 
 ## Scope
 
-Operate mode. Storico e progressi: elenco delle sessioni (`/history`), dettaglio modificabile di una sessione (`/session?id=…`) e pagina esercizio con grafici e record (`/exercise?id=…`).
+Operate mode. Storico e progressi: elenco delle sessioni (`/history`), dettaglio di sola lettura di una sessione (`/session?id=…`) e pagina esercizio con grafici e record (`/exercise?id=…`).
 
 Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 (più sessioni nello stesso giorno). Principi: P3, P4, P9, P10.
 
@@ -19,7 +19,7 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 ## Outcome and proof
 
 - Elenco per data (più recente in alto), raggruppato per mese: data, scheda, durata, serie, volume, record.
-- Dettaglio: stesse righe serie dell'allenamento attivo, modificabili; "Riapri"; eliminazione con conferma (o annulla).
+- Dettaglio: registro di sola lettura, solo gli esercizi con serie fatte e le serie fatte in una riga; ⓘ e icona dei progressi (pagina dell'esercizio); per correggere "Riapri"; eliminazione con conferma (o annulla).
 - Pagina esercizio: grafici di **carico massimo**, **1RM stimato** (Epley, solo serie normali con ripetizioni ≤ 12) e **volume per sessione**, con selettore di periodo; record personali; cronologia delle serie. Varianti separate, riscaldamento escluso, unità scelta.
 - Record: indicati nella riga serie al momento della spunta e nel riepilogo (US-29).
 

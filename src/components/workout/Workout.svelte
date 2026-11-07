@@ -3,15 +3,12 @@
   // esercizi con i target della scheda e le superserie, righe serie con il precedente, varianti, note,
   // riordino; in basso la barra fissa con durata, stato del salvataggio e "Termina", che porta al
   // riepilogo (/workout?summary=<id>). Ogni modifica si salva subito (P4) e ricaricare riporta qui (P5).
-  // Con `detail` (/session?id=…, step 8: US-27) mostra una sessione conclusa con le stesse righe serie,
-  // modificabili: la spunta non avvia il recupero, in fondo "Riapri" ed "Elimina" (con conferma e "Annulla").
   import { onMount, tick } from 'svelte';
   import { navigate } from 'astro:transitions/client';
   import ArrowDown from '@lucide/svelte/icons/arrow-down';
   import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
   import ArrowUp from '@lucide/svelte/icons/arrow-up';
   import ChartLine from '@lucide/svelte/icons/chart-line';
-  import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import Check from '@lucide/svelte/icons/check';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Dumbbell from '@lucide/svelte/icons/dumbbell';
@@ -72,7 +69,6 @@
     setNumbers,
     updateSet,
     sessionInProgress,
-    workoutSummary,
     setSessionDate,
     summarizeSession,
     switchExercise,
@@ -84,21 +80,15 @@
     type SessionExercise,
     type SetType,
   } from '../../lib/archive';
-  import { formatClock, formatDuration, formatElapsed, formatLongDay, formatOnDay, plural, speakDuration } from '../../lib/format';
-  import { formatWeight } from '../../lib/units';
+  import { formatClock, formatDuration, formatElapsed, formatOnDay, plural, speakDuration } from '../../lib/format';
   import { appUrl } from '../../lib/paths';
   import { setBottomBar } from '../../lib/bottom-bars';
   import { startDrag, unitStyle, type DragState } from '../../lib/reorder';
-
-  let { detail = false }: { detail?: boolean } = $props();
 
   const store = archiveStore();
   const timer = restTimer();
   const params = new URL(location.href).searchParams;
   const summaryId = params.get('summary');
-  /** sessione conclusa da mostrare (/session?id=…); `date` se si arriva dal calendario */
-  const detailId = detail ? params.get('id') : null;
-  const fromDate = detail ? params.get('date') : null;
   let now = $state(Date.now());
 
   onMount(() => {
@@ -115,23 +105,13 @@
   });
 
   const today = $derived(toDateKey(new Date(now)));
-  const session = $derived(
-    store.state === 'unreadable'
-      ? null
-      : detail
-        ? (store.archive.sessions.find((s) => s.id === detailId && s.end !== null) ?? null)
-        : sessionInProgress(store.archive),
-  );
-  // il dettaglio di una sessione in corso è l'allenamento stesso
-  $effect(() => {
-    if (detail && store.archive.sessions.some((s) => s.id === detailId && s.end === null)) void navigate(appUrl('/workout'), { history: 'replace' });
-  });
+  const session = $derived(store.state === 'unreadable' ? null : sessionInProgress(store.archive));
   const finished = $derived(summaryId && !session ? store.archive.sessions.find((s) => s.id === summaryId && s.end !== null) : undefined);
 
   const exercises = $derived(session?.exercises ?? []);
   const blocks = $derived(blocksOf(exercises));
   const labels = $derived(orderLabels(exercises));
-  const next = $derived(session && !detail ? nextSet(session) : null);
+  const next = $derived(session ? nextSet(session) : null);
   const nextText = $derived(session ? nextSetText(store.archive, session, next) : null);
   const records = $derived(new Set(session ? loadRecords(store.archive, session).map((r) => r.setId) : []));
   const doneCount = $derived(exercises.filter((e) => e.sets.length && e.sets.every((s) => s.completedAt !== null)).length);
@@ -202,8 +182,7 @@
   // --- serie spuntata: parte il recupero (US-21, US-25) e l'attenzione passa alla serie successiva ---
   async function afterCheck(exerciseId: string, setId: string, minimized = false, follow = true) {
     // dentro il gesto della spunta: sblocca anche l'audio del suono di fine
-    // una sessione conclusa si corregge e basta: nessun recupero (step 8)
-    if (!session || detail) return;
+    if (!session) return;
     timer.afterCheck(session.id, exerciseId, setId, minimized);
     await tick();
     if (!next || !follow) return;
@@ -515,11 +494,11 @@
       return result.archive;
     });
     const undo = removed as RemovedSession | null;
-    if (ok && undo) notify(detail ? 'Allenamento eliminato.' : 'Allenamento annullato.', 'Annulla', () => edit((a) => restoreSession(a, undo)));
+    if (ok && undo) notify('Allenamento annullato.', 'Annulla', () => edit((a) => restoreSession(a, undo)));
   }
 
   function askDiscard() {
-    if (session && (detail || sessionHasData(session))) discardOpen = true;
+    if (session && sessionHasData(session)) discardOpen = true;
     else discard();
   }
 
@@ -542,7 +521,7 @@
   }
 
   // allenamento dimenticato aperto (US-41): il foglio si apre una volta per visita della pagina
-  const forgotten = $derived(session && !detail ? forgottenSession(session, now) : null);
+  const forgotten = $derived(session ? forgottenSession(session, now) : null);
   let forgottenOpen = $state(false);
   let forgottenShown: string | null = null;
   $effect(() => {
@@ -557,26 +536,13 @@
 
   // --- barra fissa -------------------------------------------------------------------------------
   const status: SaveBarStatus | null = $derived(
-    // nel dettaglio i problemi di salvataggio li mostra la barra del guscio
-    detail ? null : store.state === 'saved' ? (session ? 'saved' : null) : store.state === 'unsaved' ? 'unsaved' : store.state === 'conflict' ? 'conflict' : 'unreadable',
+    store.state === 'saved' ? (session ? 'saved' : null) : store.state === 'unsaved' ? 'unsaved' : store.state === 'conflict' ? 'conflict' : 'unreadable',
   );
   let barHeight = $state(0);
   $effect(() => setBottomBar('workout', status ? barHeight : 0));
 
   const startedLine = $derived.by(() => {
     if (!session) return '';
-    if (detail) {
-      const summary = workoutSummary(session, now);
-      return [
-        formatLongDay(session.date, today),
-        // le sessioni importate dal PoC non hanno una durata vera
-        summary.duration >= 60_000 && session.end ? `${formatClock(session.start)}–${formatClock(session.end)}` : '',
-        plural(summary.sets, 'serie', 'serie'),
-        summary.volume > 0 ? `volume ${formatWeight(summary.volume, store.archive.settings)}` : '',
-      ]
-        .filter(Boolean)
-        .join(' · ');
-    }
     const started = session.date === today ? `Iniziato alle ${formatClock(session.start)}` : `Iniziato ${formatOnDay(session.date, today)}`;
     return exercises.length ? `${started} · ${doneCount} di ${plural(exercises.length, 'esercizio fatto', 'esercizi fatti')}` : started;
   });
@@ -600,11 +566,6 @@
   </div>
 {:else if session}
   <div class="workout">
-    {#if detail}
-      <a href={fromDate ? appUrl(`/calendar?date=${fromDate}`) : appUrl('/history')} class="btn btn-text back">
-        <ChevronLeft aria-hidden="true" />{fromDate ? 'Torna al calendario' : 'Storico'}
-      </a>
-    {/if}
     <div>
       <h2 class="title">{session.name}</h2>
       <p class="meta">{startedLine}</p>
@@ -722,18 +683,8 @@
           </div>
         </div>
       {/if}
-      {#if detail}
-        <button type="button" class="btn btn-secondary btn-block" onclick={() => reopen(session.id)}>Riapri allenamento</button>
-      {/if}
-      <button type="button" class="btn btn-danger btn-block" onclick={askDiscard}><Trash aria-hidden="true" />{detail ? 'Elimina allenamento' : 'Annulla allenamento'}</button>
+      <button type="button" class="btn btn-danger btn-block" onclick={askDiscard}><Trash aria-hidden="true" />Annulla allenamento</button>
     </div>
-  </div>
-{:else if detail}
-  <div class="flex flex-col items-start gap-3 py-8">
-    <Dumbbell size={28} class="text-text-muted" aria-hidden="true" />
-    <h2 class="m-0 text-xl leading-snug font-bold">Allenamento non trovato</h2>
-    <p class="m-0 max-w-[60ch] text-text-muted">Forse è stato eliminato, anche da un’altra scheda del browser.</p>
-    <a class="btn btn-primary" href={appUrl('/history')}>Vai allo Storico</a>
   </div>
 {:else if finished}
   <SessionSummary archive={store.archive} session={finished} {today} onreopen={() => reopen(finished.id)} />
@@ -800,11 +751,11 @@
     <li><button type="button" class="option" onclick={() => option('details')}><Info size={20} aria-hidden="true" />Come si esegue</button></li>
     {#if optionsExercise}
       <li>
-        <a class="option" href={`${appUrl('/exercise')}?id=${encodeURIComponent(optionsExercise.exerciseId)}${detail ? '' : '&from=workout'}`}><ChartLine size={20} aria-hidden="true" />Progressi</a>
+        <a class="option" href={`${appUrl('/exercise')}?id=${encodeURIComponent(optionsExercise.exerciseId)}&from=workout`}><ChartLine size={20} aria-hidden="true" />Progressi</a>
       </li>
     {/if}
     <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
-    {#if optionsExercise && !detail}
+    {#if optionsExercise}
       <li>
         <button type="button" class="option" onclick={() => option('rest')}><Timer size={20} aria-hidden="true" />Recupero · {restLabel(optionsExercise.rest)}</button>
       </li>
@@ -884,11 +835,11 @@
 
 <ConfirmDialog
   bind:open={discardOpen}
-  title={detail ? 'Eliminare l’allenamento?' : 'Annullare l’allenamento?'}
+  title="Annullare l’allenamento?"
   text={session
-    ? `Si perde quanto registrato in «${session.name}»${detail ? ` ${formatOnDay(session.date, today)}` : ''}: ${plural(summarizeSession(session, now).completedSets, 'serie fatta', 'serie fatte')}.`
+    ? `Si perde quanto registrato in «${session.name}»: ${plural(summarizeSession(session, now).completedSets, 'serie fatta', 'serie fatte')}.`
     : ''}
-  confirmLabel={detail ? 'Elimina allenamento' : 'Annulla allenamento'}
+  confirmLabel="Annulla allenamento"
   onconfirm={discard}
 />
 
@@ -899,11 +850,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
-  .back {
-    align-self: flex-start;
-    margin: -0.75rem 0 -0.5rem;
-    gap: 0.25rem;
   }
   .title {
     margin: 0;

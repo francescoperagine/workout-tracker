@@ -4,7 +4,6 @@
   // esercizio. Dopo il primo allenamento concluso, l'invito discreto a installare l'app (US-03).
   // La sessione resta modificabile: "Riapri allenamento" la rimette in corso.
   import { onMount } from 'svelte';
-  import CircleCheck from '@lucide/svelte/icons/circle-check';
   import Trophy from '@lucide/svelte/icons/trophy';
   import { exerciseName, finishedCount, sessionRecords, setNumbers, workoutSummary, type Archive, type RecordKind, type Session } from '../../lib/archive';
   import { formatClock, formatElapsed, formatLongDay, plural } from '../../lib/format';
@@ -87,7 +86,6 @@
 
 <div class="summary">
   <div class="head">
-    <CircleCheck size={28} aria-hidden="true" class="text-text" />
     <h2 class="title">Allenamento concluso</h2>
     <p class="meta">
       {[session.name, formatLongDay(session.date, today), hasDuration && session.end ? `${formatClock(session.start)}–${formatClock(session.end)}` : '']
@@ -135,13 +133,18 @@
   </section>
 
   {#if invite}
-    <section class="panel install" aria-labelledby="install-title">
-      <h3 id="install-title" class="install-title">Tienila sul telefono</h3>
-      <p class="m-0">Installata sulla schermata Home, Workout Tracker si apre come un’app e funziona anche senza rete.</p>
+    <!-- invito discreto: riquadro con il bordo, non un pannello; il pulsante sta a destra o, se non c'è posto, sotto al centro -->
+    <section class="install" aria-labelledby="install-title">
+      <div class="install-text">
+        <h3 id="install-title" class="install-title">Tienila sul telefono</h3>
+        {#if canPrompt}
+          <p>Si apre come un’app e funziona senza rete.</p>
+        {:else}
+          <p>In Safari: Condividi, poi «Aggiungi alla schermata Home». Su iPhone così non perdi i dati.</p>
+        {/if}
+      </div>
       {#if canPrompt}
-        <button type="button" class="btn btn-secondary self-start" onclick={() => promptInstall()}>Installa l’app</button>
-      {:else}
-        <p class="m-0 text-text-muted">In Safari tocca Condividi, poi «Aggiungi alla schermata Home». Su iPhone è anche il modo per non perdere i dati.</p>
+        <button type="button" class="btn btn-secondary" onclick={() => promptInstall()}>Installa l’app</button>
       {/if}
     </section>
   {/if}
@@ -184,7 +187,8 @@
     justify-content: space-between;
     gap: 1rem;
     min-height: 48px;
-    padding: 0.5rem 0;
+    /* le righe rientrano un poco dai filetti, che restano a tutta larghezza */
+    padding: 0.5rem;
     border-bottom: 1px solid var(--color-border);
   }
   dt {
@@ -219,7 +223,7 @@
   .list li {
     display: flex;
     flex-direction: column;
-    padding: 0.5rem 0;
+    padding: 0.5rem;
     border-top: 1px solid var(--color-border);
   }
   .name {
@@ -233,16 +237,32 @@
   }
   .install {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+  }
+  .install-text {
+    /* a 390px il pulsante ci sta accanto, a 320px va sotto */
+    flex: 1 1 9rem;
+    min-width: 0;
   }
   .install-title {
     margin: 0;
-    font-size: var(--text-lg);
-    font-weight: 700;
+    font-size: inherit;
+    font-weight: 650;
   }
   .install p {
-    max-width: 56ch;
+    margin: 0.125rem 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  /* accanto al testo resta a destra (il testo prende tutto lo spazio); andato a capo, si centra */
+  .install .btn {
+    flex: none;
+    margin-inline: auto;
   }
   .actions {
     display: flex;

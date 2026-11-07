@@ -3,6 +3,64 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-018
+
+Date: 2026-11-07
+
+Summary:
+**Riepilogo di fine allenamento più asciutto.** Tolta l'icona `circle-check` sopra «Allenamento concluso»: il
+titolo sale in cima. Le righe delle statistiche (Durata, Esercizi, Serie, Volume), dei record e di «Cosa hai fatto»
+rientrano di 0.5rem a sinistra e a destra, mentre i filetti restano a tutta larghezza.
+
+Deliverables:
+- `src/components/workout/SessionSummary.svelte`.
+
+Limiti noti: nessuno. Viste con Playwright a 390×844 e 320×568 (scuro).
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
+## INC-017
+
+Date: 2026-11-07
+
+Summary:
+**Invito all'installazione più discreto nel riepilogo.** «Tienila sul telefono» non è più un pannello pieno ma un
+riquadro con il bordo `border` (come gli avvisi informativi di `DESIGN.md`), titolo al corpo del testo e una riga
+in `text-muted`: «Si apre come un’app e funziona senza rete.» (su iPhone le istruzioni di Safari, accorciate).
+«Installa l’app» sta a destra del testo e, quando non c'è posto, va sotto centrato (a destra a 390 px, sotto a 320 px).
+
+Deliverables:
+- `src/components/workout/SessionSummary.svelte`: markup e stili dell'invito.
+
+Limiti noti: nessuno. Viste con Playwright a 390×844 (scuro) e 320×568 (chiaro, anche con lo user agent di iPhone).
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
+## INC-016
+
+Date: 2026-11-07
+
+Summary:
+**Il dettaglio di un allenamento concluso diventa un registro di sola lettura.** `/session?id=…` non usa più
+`Workout.svelte` in modalità `detail` ma un componente suo, `SessionLog`: solo gli esercizi con almeno una serie
+fatta, nell'ordine in cui sono stati fatti, e sotto il nome una riga con le serie fatte («3 serie · 8 × 12 · …»,
+riscaldamento con la sigla R). Spariscono maniglie, trascinamento, spunte, campi, «Aggiungi esercizio», «Nome e
+data» e il menu ⋯, che lascia il posto all'icona dei progressi verso la pagina dell'esercizio. Restano ⓘ, «Riapri
+allenamento» (la via per correggere) ed «Elimina allenamento» con conferma e «Annulla».
+
+Deliverables:
+- `src/components/history/SessionLog.svelte` (nuovo); `src/pages/session.astro` lo usa.
+- `src/components/workout/Workout.svelte`: tolta la modalità `detail` (worker Hermes, diff riletto).
+- e2e: `us-27-us-29-history.spec.ts` («US-27 il dettaglio è un registro di sola lettura delle serie fatte» al posto
+  della correzione in pagina); `us-40-exercise-rest.spec.ts` senza il test del menu nella sessione conclusa.
+- Documenti: brief `route-history`, `docs/ARCHITECTURE.md`.
+
+Limiti noti: nome e data di un allenamento concluso si cambiano solo riaprendolo, e «Termina» ne riscrive l'ora di
+fine. Le note sul carico compaiono come riga «Nota: «…»»; la variante («al posto di») non è più mostrata. Visto sul
+telefono con i dati veri (copiati nell'origine locale e poi ripristinati) e con Playwright a 390×844 e 320×568.
+
+ADR: nessuna (meccanico: il comportamento è quello chiesto da Francesco). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-015
 
 Date: 2026-11-06
