@@ -150,7 +150,7 @@
     <div>
       <h2 class="title">{name}</h2>
       {#if history.length}
-        <p class="meta">{plural(history.length, 'allenamento', 'allenamenti')} dal {dateText(history[0].date)}</p>
+        <p class="meta">{plural(history.length, 'allenamento', 'allenamenti')} {withPreposition('da', dateText(history[0].date))}</p>
       {/if}
     </div>
 
