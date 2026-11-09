@@ -1,23 +1,34 @@
 <script lang="ts" generics="T extends string">
   // Controllo segmentato (radiogroup nativo): una scelta tra poche opzioni sempre visibili.
+  // `compact`: senza binario e con la legenda solo per lo screen reader, segmenti larghi quanto il testo
+  // (bersaglio sempre di 48px, pastiglia visibile più bassa), per i filtri di un grafico. `short` è il testo
+  // visibile al posto dell'etichetta ("3M" per "3 mesi"), che resta il nome accessibile del segmento.
   interface Props {
     name: string;
     label: string;
-    options: readonly { value: T; label: string }[];
+    options: readonly { value: T; label: string; short?: string }[];
     value: T;
+    compact?: boolean;
     onchange?: (value: T) => void;
   }
 
-  let { name, label, options, value = $bindable(), onchange }: Props = $props();
+  let { name, label, options, value = $bindable(), compact = false, onchange }: Props = $props();
 </script>
 
-<fieldset class="segmented">
+<fieldset class="segmented" class:compact>
   <legend class="label">{label}</legend>
   <div class="options">
     {#each options as option (option.value)}
       <label class:active={value === option.value}>
-        <input type="radio" {name} value={option.value} bind:group={value} onchange={() => onchange?.(option.value)} />
-        {option.label}
+        <input
+          type="radio"
+          {name}
+          value={option.value}
+          aria-label={option.short ? option.label : undefined}
+          bind:group={value}
+          onchange={() => onchange?.(option.value)}
+        />
+        {#if compact}<span class="chip">{option.short ?? option.label}</span>{:else}{option.short ?? option.label}{/if}
       </label>
     {/each}
   </div>
@@ -67,6 +78,51 @@
     cursor: pointer;
   }
   label:has(input:focus-visible) {
+    outline: 2px solid var(--color-accent-indicator);
+    outline-offset: 2px;
+  }
+
+  /* variante compatta: niente binario, legenda nascosta alla vista, pastiglia da 32px dentro il bersaglio da 48px */
+  .compact legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .compact .options {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  .compact label {
+    padding: 0 0.125rem;
+    background: none;
+  }
+  .compact label.active {
+    background: none;
+    color: var(--color-on-accent);
+  }
+  .compact .chip {
+    display: grid;
+    place-items: center;
+    min-height: 2rem;
+    padding: 0 0.625rem;
+    border-radius: var(--radius-field);
+    font-size: var(--text-sm);
+    transition: background-color 0.15s var(--ease-out-expo);
+  }
+  .compact label.active .chip {
+    background: var(--color-accent);
+  }
+  .compact label:has(input:focus-visible) {
+    outline: none;
+  }
+  .compact label:has(input:focus-visible) .chip {
     outline: 2px solid var(--color-accent-indicator);
     outline-offset: 2px;
   }

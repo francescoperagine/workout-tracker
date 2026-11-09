@@ -1,8 +1,9 @@
 <script lang="ts">
-  // Progressi di un esercizio (/exercise?id=…, brief route-history, US-28 e US-29): record personali,
-  // grafico di carico massimo, 1RM stimato (Epley) o volume per allenamento con il periodo, e la
-  // cronologia delle serie. L'esercizio è quello fatto davvero: ogni variante ha la sua pagina, il
-  // riscaldamento non conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts.
+  // Progressi di un esercizio (/exercise?id=…, brief route-history, US-28 e US-29): prima il grafico di
+  // carico massimo, 1RM stimato (Epley) o volume per allenamento, con misura e periodo su una riga e il
+  // confronto con l'allenamento precedente; sotto i record personali in una riga e la cronologia delle
+  // serie. L'esercizio è quello fatto davvero: ogni variante ha la sua pagina, il riscaldamento non
+  // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts.
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import ChartLine from '@lucide/svelte/icons/chart-line';
@@ -21,7 +22,7 @@
     type ExercisePoint,
     type Period,
   } from '../../lib/archive';
-  import { formatDayMonth, plural } from '../../lib/format';
+  import { formatDayMonth, plural, withPreposition } from '../../lib/format';
   import { formatNumber, formatWeight, fromKg, roundToStep, WEIGHT_STEP } from '../../lib/units';
 
   type Metric = 'load' | 'e1rm' | 'volume';
@@ -48,21 +49,35 @@
     { value: 'e1rm', label: '1RM', title: '1RM stimato per allenamento', pick: (p) => p.e1rm },
     { value: 'volume', label: 'Volume', title: 'Volume per allenamento', pick: (p) => (p.volume > 0 ? p.volume : null) },
   ];
-  const PERIODS: { value: Period; label: string }[] = [
-    { value: '3m', label: '3 mesi' },
-    { value: '1y', label: '1 anno' },
+  const PERIODS: { value: Period; label: string; short?: string }[] = [
+    { value: '3m', label: '3 mesi', short: '3M' },
+    { value: '1y', label: '1 anno', short: '1A' },
     { value: 'all', label: 'Tutto' },
   ];
 
   const current = $derived(METRICS.find((m) => m.value === metric)!);
-  const chartPoints: ChartPoint[] = $derived(
-    inPeriod.flatMap((p) => {
+  /** i valori della misura su tutto lo storico, nell'unità scelta: il confronto guarda anche prima del periodo */
+  const series = $derived(
+    history.flatMap((p) => {
       const kg = current.pick(p);
-      return kg === null ? [] : [{ date: p.date, value: roundToStep(fromKg(kg, unit), WEIGHT_STEP[unit]) }];
+      return kg === null ? [] : [{ point: p, value: roundToStep(fromKg(kg, unit), WEIGHT_STEP[unit]) }];
     }),
   );
+  const periodIds = $derived(new Set(inPeriod.map((p) => p.sessionId)));
+  /** i valori del periodo, ciascuno con il precedente della stessa misura (anche fuori dal periodo) */
+  const shown = $derived(series.flatMap((s, i) => (periodIds.has(s.point.sessionId) ? [{ ...s, previous: series[i - 1] ?? null }] : [])));
+  const chartPoints: ChartPoint[] = $derived(shown.map((s) => ({ date: s.point.date, value: s.value, note: comparison(s.value, s.previous) })));
 
   const dateText = (date: string) => formatDayMonth(date, today);
+
+  /** "+2,5 kg rispetto al 3 ottobre", "Invariato rispetto all’8 settembre", "Primo valore registrato" */
+  function comparison(value: number, previous: { point: ExercisePoint; value: number } | null): string {
+    if (!previous) return 'Primo valore registrato';
+    const diff = roundToStep(value - previous.value, WEIGHT_STEP[unit]);
+    const since = `rispetto ${withPreposition('a', dateText(previous.point.date))}`;
+    if (diff === 0) return `Invariato ${since}`;
+    return `${diff > 0 ? '+' : '\u2212'}${formatNumber(Math.abs(diff))} ${unit} ${since}`;
+  }
   const valueText = (value: number) => `${formatNumber(value)} ${unit}`;
   const sessionHref = (id: string) => `${appUrl('/session')}?id=${encodeURIComponent(id)}`;
 
@@ -102,10 +117,24 @@
     ].filter((r) => !!r),
   );
 
+  /** tutti i record dallo stesso allenamento: la data si scrive una volta sola */
+  const recordsSession = $derived(
+    recordRows.length > 1 && recordRows.every((r) => r.best.sessionId === recordRows[0].best.sessionId) ? recordRows[0].best : null,
+  );
+
   const recent = $derived([...inPeriod].reverse());
   // il numero di serie di lavoro di un punto, per la cronologia
   const workSets = (p: ExercisePoint) => setNumbers(p.sets).filter(Boolean).length;
 </script>
+
+{#snippet sessionDetails(index: number)}
+  {@const shownPoint = shown[index]?.point}
+  {#if shownPoint}
+    <p class="selected-sets">{setsLine(shownPoint)}</p>
+    <p class="detail">{[plural(workSets(shownPoint), 'serie', 'serie'), metricsLine(shownPoint)].filter(Boolean).join(' · ')}</p>
+    <a class="btn btn-text open" href={sessionHref(shownPoint.sessionId)}>Apri l’allenamento</a>
+  {/if}
+{/snippet}
 
 {#if store.state === 'unreadable'}
   <div class="flex flex-col items-start gap-3 py-8">
@@ -132,31 +161,14 @@
         <p class="m-0 max-w-[60ch] text-text-muted">I progressi compaiono dopo il primo allenamento concluso con almeno una serie spuntata di questo esercizio.</p>
       </div>
     {:else}
-      {#if recordRows.length}
-        <section aria-labelledby="records-title" class="section">
-          <h3 id="records-title" class="subtitle">Record personali</h3>
-          <dl class="records">
-            {#each recordRows as row (row.term)}
-              <div class="record">
-                <dt>{row.term}</dt>
-                <dd class="record-value">{row.value}</dd>
-                <dd><a href={sessionHref(row.best.sessionId)}>{dateText(row.best.date)}</a></dd>
-              </div>
-            {/each}
-          </dl>
-        </section>
-      {:else}
-        <p class="m-0 max-w-[60ch] text-text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
-      {/if}
-
       <section aria-labelledby="chart-title" class="section">
-        <h3 id="chart-title" class="subtitle">{current.title}</h3>
+        <h3 id="chart-title" class="visually-hidden">{current.title}</h3>
         <div class="controls">
-          <SegmentedControl name="metric" label="Misura" options={METRICS} bind:value={metric} />
-          <SegmentedControl name="period" label="Periodo" options={PERIODS} bind:value={period} />
+          <SegmentedControl name="metric" label="Misura" options={METRICS} bind:value={metric} compact />
+          <SegmentedControl name="period" label="Periodo" options={PERIODS} bind:value={period} compact />
         </div>
         {#if chartPoints.length}
-          <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} />
+          <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} details={sessionDetails} />
           {#if chartPoints.length === 1}
             <p class="hint m-0">Un solo allenamento in questo periodo: l’andamento compare dal secondo.</p>
           {/if}
@@ -167,6 +179,28 @@
           <p class="m-0 max-w-[60ch] text-text-muted">{noChart}</p>
         {/if}
       </section>
+
+      {#if recordRows.length}
+        <section aria-labelledby="records-title" class="section">
+          <h3 id="records-title" class="subtitle">Record personali</h3>
+          <dl class="records">
+            {#each recordRows as row (row.term)}
+              <div class="record">
+                <dt>{row.term}</dt>
+                <dd class="record-value">{row.value}</dd>
+                {#if !recordsSession}
+                  <dd class="record-date"><a href={sessionHref(row.best.sessionId)}>{dateText(row.best.date)}</a></dd>
+                {/if}
+              </div>
+            {/each}
+          </dl>
+          {#if recordsSession}
+            <p class="record-date m-0">Fatti tutti nell’<a href={sessionHref(recordsSession.sessionId)}>allenamento {withPreposition('di', dateText(recordsSession.date))}</a></p>
+          {/if}
+        </section>
+      {:else}
+        <p class="m-0 max-w-[60ch] text-text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
+      {/if}
 
       {#if recent.length}
         <section aria-labelledby="sets-title" class="section">
@@ -220,20 +254,50 @@
     font-size: var(--text-lg);
     font-weight: 700;
   }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* misura a sinistra, periodo a destra; dove non c'è posto il periodo va a capo */
   .controls {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 0.5rem;
+    margin: -0.5rem 0 -0.25rem;
   }
+  .controls > :global(:last-child) {
+    margin-left: auto;
+  }
+  /* righe condivise (subgrid): un'etichetta su due righe non sposta i valori delle altre colonne */
   .records {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-    gap: 0.75rem 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 1rem;
     margin: 0;
   }
+  .record-date {
+    font-size: var(--text-sm);
+  }
+  .selected-sets {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .open {
+    margin-left: -0.25rem;
+  }
   .record {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .record dt {
+    align-self: end;
   }
   dt {
     color: var(--color-text-muted);
@@ -243,9 +307,10 @@
     margin: 0;
   }
   .record-value {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
     font-weight: 700;
     line-height: 1.25;
+    overflow-wrap: anywhere;
   }
   .list {
     margin: 0;

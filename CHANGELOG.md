@@ -3,6 +3,35 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-019
+
+Date: 2026-11-09
+
+Summary:
+**Pagina dell'esercizio con il grafico in cima.** L'ordine diventa grafico, record, cronologia. Misura e periodo
+sono due controlli segmentati compatti su una riga sopra il grafico, senza le intestazioni «Misura» e «Periodo»
+(restano allo screen reader; il periodo si legge «3M», «1A», «Tutto», con il nome intero come etichetta
+accessibile); dove non c'è posto il periodo va a capo. Sotto il valore del punto scelto c'è il confronto con
+l'allenamento precedente della stessa misura («+10 kg rispetto al 20 agosto», «Invariato…», «Primo valore
+registrato»), cercato su tutto lo storico anche quando è fuori dal periodo. Sotto la trama, le serie del punto
+scelto e «Apri l’allenamento». Con un solo punto niente trama, come dice il brief: valore, confronto e serie. I
+record stanno in una riga da tre e, se vengono tutti dallo stesso allenamento, la data si scrive una volta.
+
+Deliverables:
+- `src/components/ui/SegmentedControl.svelte`: variante `compact` e testo abbreviato `short`; gli usi esistenti non cambiano.
+- `src/components/history/ProgressChart.svelte`: `note` per punto, snippet `details`, niente trama con un punto solo.
+- `src/components/history/ExerciseProgress.svelte`: nuovo ordine, confronto con il precedente, dettagli del punto, record in riga.
+- `src/pages/_kit.astro`: esempio della variante compatta.
+- `tests/e2e/us-27-us-29-history.spec.ts`: confronto (anche fuori periodo), link alla sessione, punto solo.
+- `DESIGN.md` (controllo segmentato compatto), `.impeccable/surfaces/route-history.md` (decisione).
+
+Limiti noti: a 320 px il periodo va a capo, allineato a destra. Viste nel browser a 390×844 (scuro) e 320×568
+(chiaro) con lo storico reale di alzate laterali e leg press. Dopo il gate, due ritocchi solo di CSS visti a 320
+px: il periodo a capo resta a destra (`:global` sul fieldset di `SegmentedControl`) e i valori dei record stanno
+alla stessa altezza anche con un'etichetta su due righe (subgrid).
+
+ADR: nessuna (meccanico). Gate, prima dei due ritocchi CSS: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-018
 
 Date: 2026-11-07

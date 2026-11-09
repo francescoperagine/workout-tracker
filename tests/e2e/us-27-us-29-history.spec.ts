@@ -278,6 +278,8 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await expect(page.getByRole('radio', { name: '3 mesi', exact: true })).toBeChecked();
     await expect(readout(page)).toContainText('60 kg');
     await expect(readout(page)).toContainText('15 settembre');
+    // sotto il valore, il confronto con l'allenamento precedente della stessa misura
+    await expect(readout(page)).toContainText('+10 kg rispetto al 20 agosto');
     await expect(chronology(page)).toHaveCount(2);
     // i record personali valgono su tutto lo storico, quindi la data del 2025 compare lì comunque:
     // qui conta la cronologia, che è quella filtrata dal periodo
@@ -299,10 +301,37 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await plot(page).focus();
     await page.keyboard.press('ArrowLeft');
     await expect(readout(page)).toContainText('63,5 kg');
+    await expect(readout(page)).toContainText('\u221218 kg rispetto al 10 giugno 2025');
     await page.keyboard.press('End');
     await expect(readout(page)).toContainText('80 kg');
     await page.keyboard.press('Home');
     await expect(readout(page)).toContainText('81,5 kg');
+    await expect(readout(page)).toContainText('Primo valore registrato');
+
+    // sotto il grafico le serie del punto scelto, e il link al suo allenamento
+    await expect(page.locator('figure')).toContainText('70 × 5');
+    await page.getByRole('link', { name: 'Apri l’allenamento' }).click();
+    await expectPage(page, 'session/');
+    await expect(page).toHaveURL(/id=vecchia/);
+  });
+
+  test('US-28 il confronto guarda anche prima del periodo, e con un punto solo resta il valore', async ({ page }) => {
+    await seedArchive(
+      page,
+      archiveWith({
+        sessions: [finished('vecchia', '2025-06-10', [{ kg: 70, reps: 5 }]), finished('recente', '2026-09-15', [{ kg: 60, reps: 10 }])],
+      }),
+    );
+    await page.goto('exercise/?id=squat-bilanciere');
+
+    // negli ultimi 3 mesi c'è un allenamento solo: niente trama, il valore e il confronto con quello del 2025
+    await expect(readout(page)).toContainText('60 kg');
+    await expect(readout(page)).toContainText('\u221210 kg rispetto al 10 giugno 2025');
+    await expect(plot(page)).toHaveCount(0);
+    await expect(page.getByText('Un solo allenamento in questo periodo: l’andamento compare dal secondo.')).toBeVisible();
+    // i tre record vengono dallo stesso allenamento? qui no: carico e 1RM dal 2025, volume dal 15 settembre
+    await expect(record(page, 'Carico massimo')).toContainText('10 giugno 2025');
+    await expect(record(page, 'Volume')).toContainText('15 settembre');
   });
 
   test('US-28 la variante ha i suoi progressi, separati da quelli dell’esercizio previsto', async ({ page }) => {

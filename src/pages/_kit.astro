@@ -41,6 +41,12 @@ const contentColors = [
   ['on-danger', 'Testo sul pulsante distruttivo'],
   ['highlight', 'Trofei e record, seconda serie di un confronto'],
 ];
+// variante compatta, per i filtri di un grafico: testo corto visibile, etichetta intera come nome accessibile
+const chartPeriods = [
+  { value: '3m', label: '3 mesi', short: '3M' },
+  { value: '1y', label: '1 anno', short: '1A' },
+  { value: 'all', label: 'Tutto' },
+];
 const weightUnits = [
   { value: 'kg', label: 'kg' },
   { value: 'lb', label: 'lb' },
@@ -126,6 +132,7 @@ const weightUnits = [
         </select>
       </div>
       <SegmentedControl name="weight-unit" label="Unità di peso" options={weightUnits} value="kg" client:load />
+      <SegmentedControl name="kit-period" label="Periodo del grafico (compatto)" options={chartPeriods} value="3m" compact client:load />
       <KitControls client:load />
     </section>
 

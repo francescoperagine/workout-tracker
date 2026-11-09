@@ -40,9 +40,10 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 
 ## Interaction and layout
 
-- Una colonna; selettore di periodo come controllo segmentato standard; valori dei punti accessibili anche senza grafico (tabella o elenco).
+- Una colonna; misura e periodo come controlli segmentati compatti su una riga sopra il grafico (INC-019); valori dei punti accessibili anche senza grafico (tabella o elenco).
 
 ## Constraints and open decisions
 
+- **Deciso (INC-019):** nella pagina dell'esercizio il grafico viene prima dei record. Sopra la trama il valore del punto scelto con il confronto con l'allenamento precedente della stessa misura, cercato su tutto lo storico anche fuori dal periodo; sotto la trama le serie di quel punto e «Apri l’allenamento». I record stanno in una riga da tre, con la data scritta una volta se vengono tutti dallo stesso allenamento. Con un punto solo niente trama: valore, confronto e serie.
 - **Deciso (INC-015, rovescia la scelta dello step 8):** i progressi hanno la loro tab «Progressi» (`/progress/`, con la pagina dell'esercizio); lo Storico tiene solo gli allenamenti, senza l'interruttore Allenamenti / Esercizi. Le misure del corpo andranno nella tab Progressi con una feature a sé.
 - **Deciso (step 9, critique dei flussi):** l'allenamento in corso è una riga «In corso» in cima all'elenco, che porta all'allenamento; «Riprendi» resta solo nella mini-barra, per non averlo due volte. I record della riga si contano per esercizio («Record in 3 esercizi»), non per misura; l'1RM stimato è arrotondato al mezzo chilo.

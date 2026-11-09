@@ -2,8 +2,11 @@
   // Grafico a linea dei progressi (US-28) in SVG scritto a mano, secondo la skill dataviz: una serie
   // sola in accent-indicator (niente legenda, il titolo dice cosa mostra), linea di 2px, punti con
   // l'anello del colore del fondo, griglia sottile e asse dei tempi per data. Tocco, puntatore
-  // e frecce scelgono il punto più vicino; il valore si legge sopra il grafico, e gli stessi valori
-  // sono nella cronologia sotto (il grafico non è l'unico modo di leggerli).
+  // e frecce scelgono il punto più vicino; il valore si legge sopra il grafico, con la nota del punto
+  // (il confronto con il precedente), e sotto la trama `details` mostra cosa c'è dietro il punto scelto.
+  // Gli stessi valori sono nella cronologia (il grafico non è l'unico modo di leggerli). Con un punto
+  // solo niente trama: resta il valore (brief route-history).
+  import type { Snippet } from 'svelte';
   import { fromDateKey } from '../../lib/archive';
 
   export interface ChartPoint {
@@ -11,6 +14,8 @@
     date: string;
     /** già nell'unità scelta */
     value: number;
+    /** riga sotto il valore quando il punto è scelto ("+2,5 kg rispetto al 3 ottobre") */
+    note?: string;
   }
 
   interface Props {
@@ -21,9 +26,11 @@
     formatDate: (date: string) => string;
     /** cosa mostra, per lo screen reader ("Carico massimo per allenamento") */
     label: string;
+    /** sotto la trama: il dettaglio del punto scelto (indice in `points`) */
+    details?: Snippet<[number]>;
   }
 
-  let { points, format, formatDate, label }: Props = $props();
+  let { points, format, formatDate, label, details }: Props = $props();
 
   const HEIGHT = 200;
   const PAD = { top: 12, right: 12, bottom: 28, left: 48 };
@@ -95,6 +102,9 @@
     picked = Math.max(0, Math.min(last, moves[event.key]));
   }
 
+  /** la riga della nota c'è per tutti i punti o per nessuno: scorrendo, il grafico non salta */
+  const notes = $derived(points.some((p) => p.note));
+
   const summary = $derived(
     points.length
       ? `${label}: ${points.length === 1 ? '1 valore' : `${points.length} valori`}, dal ${formatDate(points[0].date)} (${format(points[0].value)}) al ${formatDate(points.at(-1)!.date)} (${format(points.at(-1)!.value)}). Usa le frecce per scorrere i valori.`
@@ -107,7 +117,9 @@
     <p class="readout" aria-live="polite">
       <span class="value">{format(points[selected].value)}</span>
       <span class="date">{formatDate(points[selected].date)}</span>
+      {#if notes}<span class="note">{points[selected].note ?? '\u00a0'}</span>{/if}
     </p>
+    {#if points.length > 1}
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div class="plot" bind:clientWidth={width} tabindex="0" role="group" aria-label={summary} {onkeydown}>
       {#if width}
@@ -132,6 +144,10 @@
         </svg>
       {/if}
     </div>
+    {/if}
+    {#if details}
+      <div class="details">{@render details(selected)}</div>
+    {/if}
   </figure>
 {/if}
 
@@ -152,6 +168,17 @@
   }
   .date {
     color: var(--color-text-muted);
+  }
+  .note {
+    flex-basis: 100%;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 0.5rem;
   }
   .plot {
     min-height: 200px;
