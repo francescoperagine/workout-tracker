@@ -152,11 +152,8 @@ test.describe('US-27 l’elenco degli allenamenti conclusi', () => {
     await expect(page.getByRole('button', { name: 'Aggiungi esercizio' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Nome e data' })).toHaveCount(0);
 
-    // ⓘ apre l'approfondimento, l'icona dei progressi porta alla pagina dell'esercizio
-    await squat.getByRole('button', { name: 'Squat bilanciere: come si esegue' }).click();
-    await expect(sheet(page)).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(sheet(page)).toHaveCount(0);
+    // niente ⓘ (l'approfondimento ripeteva la pagina dei progressi): l'icona dei progressi porta lì
+    await expect(squat.getByRole('button', { name: /come si esegue/ })).toHaveCount(0);
     await squat.getByRole('link', { name: 'Progressi: Squat bilanciere' }).click();
     await expectPage(page, 'exercise/');
     await expect(page).toHaveURL(/id=squat-bilanciere/);

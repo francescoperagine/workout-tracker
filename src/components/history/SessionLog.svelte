@@ -1,25 +1,23 @@
 <script lang="ts">
   // Dettaglio di un allenamento concluso (/session?id=…, US-27): un registro di sola lettura. Solo gli
   // esercizi con almeno una serie fatta, nell'ordine in cui sono stati fatti, con le serie fatte in una
-  // riga; ⓘ apre l'approfondimento, l'icona dei progressi porta alla pagina dell'esercizio. Per correggere
-  // si riapre l'allenamento; in fondo anche l'eliminazione (con conferma e "Annulla").
+  // riga; l'icona dei progressi porta alla pagina dell'esercizio (lì record, grafico e la correzione di un
+  // esercizio sbagliato, US-42). Per correggere le serie si riapre l'allenamento; in fondo anche
+  // l'eliminazione (con conferma e "Annulla").
   import { navigate } from 'astro:transitions/client';
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Dumbbell from '@lucide/svelte/icons/dumbbell';
-  import Info from '@lucide/svelte/icons/info';
   import Link from '@lucide/svelte/icons/link';
   import Trash from '@lucide/svelte/icons/trash';
   import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import Toast from '../ui/Toast.svelte';
-  import ExerciseDetailsSheet from '../workout/ExerciseDetailsSheet.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import {
     ArchiveError,
     blocksOf,
     exerciseName,
-    previousExercise,
     removeSession,
     reopenSession,
     restoreSession,
@@ -76,8 +74,6 @@
     return [plural(sets.length, 'serie', 'serie'), ...values].join(' · ');
   }
 
-  let detailsFor: string | null = $state(null);
-  let detailsOpen = $state(false);
   let discardOpen = $state(false);
   let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
 
@@ -148,16 +144,7 @@
             <section class="entry" aria-label={name}>
               <div class="head">
                 <h3>
-                  <span class="name">{name}</span><button
-                    type="button"
-                    class="info"
-                    aria-haspopup="dialog"
-                    aria-label={`${name}: come si esegue`}
-                    onclick={() => {
-                      detailsFor = exercise.exerciseId;
-                      detailsOpen = true;
-                    }}><Info size={18} aria-hidden="true" /></button
-                  >
+                  <span class="name">{name}</span>
                 </h3>
                 <a class="btn btn-icon progress" href={`${appUrl('/exercise')}?id=${encodeURIComponent(exercise.exerciseId)}`} aria-label={`Progressi: ${name}`}>
                   <ChartLine size={22} aria-hidden="true" />
@@ -186,14 +173,6 @@
     <a class="btn btn-primary" href={appUrl('/history')}>Vai allo Storico</a>
   </div>
 {/if}
-
-<ExerciseDetailsSheet
-  bind:open={detailsOpen}
-  archive={store.archive}
-  exerciseId={detailsFor}
-  previous={session && detailsFor ? previousExercise(store.archive, session, detailsFor) : null}
-  {today}
-/>
 
 <ConfirmDialog
   bind:open={discardOpen}
@@ -250,7 +229,7 @@
     padding-top: 0.75rem;
     border-top: 1px solid var(--color-border);
   }
-  /* nome (con ⓘ) e progressi su una riga; sotto, allineate al nome, le serie fatte */
+  /* nome e progressi su una riga; sotto, allineate al nome, le serie fatte */
   .head {
     display: flex;
     align-items: flex-start;
@@ -270,31 +249,6 @@
     font-weight: 700;
     line-height: 1.3;
     overflow-wrap: break-word;
-  }
-  /* ⓘ subito dopo il nome, all'altezza dell'ultima riga: piccolo a vista, bersaglio allargato */
-  .info {
-    position: relative;
-    flex-shrink: 0;
-    display: inline-grid;
-    place-items: center;
-    align-self: flex-end;
-    width: 1.25rem;
-    height: 1.5rem;
-    margin: 0 0 0.5rem 0.25rem;
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-field);
-    background: transparent;
-    color: var(--color-text-muted);
-    cursor: pointer;
-  }
-  .info::before {
-    content: '';
-    position: absolute;
-    inset: -0.75rem;
-  }
-  .info:hover {
-    color: var(--color-text);
   }
   /* il bersaglio da 48px sporge sotto: con il nome su una riga la riga delle serie resta attaccata */
   .progress {

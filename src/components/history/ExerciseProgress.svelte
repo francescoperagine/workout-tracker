@@ -3,22 +3,32 @@
   // carico massimo, 1RM stimato (Epley) o volume per allenamento, con misura e periodo su una riga e il
   // confronto con l'allenamento precedente; sotto i record personali in una riga e la cronologia delle
   // serie. L'esercizio è quello fatto davvero: ogni variante ha la sua pagina, il riscaldamento non
-  // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts.
+  // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts. Ogni riga della
+  // cronologia ha «Era un altro esercizio» (US-42): le serie di quell'allenamento passano all'esercizio
+  // giusto, con «Annulla» nell'avviso.
+  import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
+  import Toast from '../ui/Toast.svelte';
+  import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
   import ProgressChart, { type ChartPoint } from './ProgressChart.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { appUrl } from '../../lib/paths';
   import {
+    ArchiveError,
     EPLEY_MAX_REPS,
+    ensureExercise,
     exerciseHistory,
     exerciseName,
     personalRecords,
     pointsInPeriod,
+    reassignExercise,
     setNumbers,
     toDateKey,
+    undoReassign,
+    type Archive,
     type ExercisePoint,
     type Period,
   } from '../../lib/archive';
@@ -123,6 +133,59 @@
   );
 
   const recent = $derived([...inPeriod].reverse());
+
+  // US-42: l'allenamento della riga scelta, da passare a un altro esercizio
+  let reassigning: ExercisePoint | null = $state(null);
+  let pickerOpen = $state(false);
+  let toast: { message: string; action?: string; onaction?: () => void } | null = $state(null);
+
+  function edit(change: (archive: Archive) => Archive): boolean {
+    try {
+      const result = store.update(change);
+      if (!result.ok && result.state !== 'unsaved') {
+        toast = { message: result.message ?? 'Modifica non salvata.' };
+        return false;
+      }
+      return true;
+    } catch (error) {
+      if (!(error instanceof ArchiveError)) throw error;
+      toast = { message: error.message };
+      return false;
+    }
+  }
+
+  function askReassign(point: ExercisePoint) {
+    reassigning = point;
+    pickerOpen = true;
+  }
+
+  function reassign(picked: PickedExercise) {
+    const point = reassigning;
+    if (!point) return;
+    pickerOpen = false;
+    let targetId = '';
+    let before: Parameters<typeof undoReassign>[2] = [];
+    const ok = edit((a) => {
+      // un nome scritto a mano diventa un esercizio (personalizzato, o quello che ha già quel nome)
+      let target = a;
+      if (picked.kind === 'existing') targetId = picked.id;
+      else {
+        const ensured = ensureExercise(a, picked.name);
+        target = ensured.archive;
+        targetId = ensured.exercise.id;
+      }
+      const result = reassignExercise(target, point.sessionId, exerciseId, targetId);
+      before = result.before;
+      return result.archive;
+    });
+    if (!ok) return;
+    const undo = before;
+    toast = {
+      message: `Allenamento ${withPreposition('di', dateText(point.date))} spostato in ${exerciseName(store.archive, targetId)}.`,
+      action: 'Annulla',
+      onaction: () => edit((a) => undoReassign(a, point.sessionId, undo)),
+    };
+  }
   // il numero di serie di lavoro di un punto, per la cronologia
   const workSets = (p: ExercisePoint) => setNumbers(p.sets).filter(Boolean).length;
 </script>
@@ -213,6 +276,13 @@
                   <span class="sets">{setsLine(point)}</span>
                   <span class="detail">{[plural(workSets(point), 'serie', 'serie'), metricsLine(point)].filter(Boolean).join(' · ')}</span>
                 </a>
+                <button
+                  type="button"
+                  class="btn btn-icon reassign"
+                  aria-haspopup="dialog"
+                  aria-label={`Era un altro esercizio: allenamento ${withPreposition('di', dateText(point.date))}`}
+                  onclick={() => askReassign(point)}><ArrowLeftRight size={20} aria-hidden="true" /></button
+                >
               </li>
             {/each}
           </ol>
@@ -221,6 +291,19 @@
     {/if}
   </div>
 {/if}
+
+<!-- montato solo dopo il primo «Era un altro esercizio»: chiuso, il foglio terrebbe nella pagina tutto il catalogo -->
+{#if reassigning}
+  <ExercisePicker
+    bind:open={pickerOpen}
+    title={`Era un altro esercizio? Allenamento ${withPreposition('di', dateText(reassigning.date))}`}
+    catalog={store.archive}
+    exclude={[exerciseId]}
+    onpick={reassign}
+  />
+{/if}
+
+<Toast message={toast?.message ?? null} action={toast?.action} onaction={toast?.onaction} onclose={() => (toast = null)} />
 
 <style>
   .page {
@@ -318,7 +401,22 @@
     list-style: none;
   }
   .list li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     border-bottom: 1px solid var(--color-border);
+  }
+  .list .row {
+    flex: 1;
+    min-width: 0;
+  }
+  .reassign {
+    flex-shrink: 0;
+    margin-right: -0.75rem;
+    color: var(--color-text-muted);
+  }
+  .reassign:hover {
+    color: var(--color-text);
   }
   .row {
     display: flex;

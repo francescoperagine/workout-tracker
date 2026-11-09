@@ -123,6 +123,32 @@ export function restoreSession(archive: Archive, removed: RemovedSession): Archi
 }
 
 /**
+ * US-42: corregge un allenamento concluso in cui si è scelto l'esercizio sbagliato. Tutte le voci di
+ * `fromId` della sessione passano a `toId` con le loro serie così come sono; dove la voce era una
+ * variante di `toId` non lo è più. Altri allenamenti, schede e catalogo non cambiano. `before` sono le
+ * voci com'erano, per `undoReassign` ("Annulla").
+ */
+export function reassignExercise(archive: Archive, sessionId: string, fromId: string, toId: string): { archive: Archive; before: SessionExercise[] } {
+  const session = archive.sessions.find((s) => s.id === sessionId);
+  if (!session) throw new ArchiveError('Questo allenamento non esiste più.');
+  if (session.end === null) throw new ArchiveError('L’allenamento è in corso: correggilo dall’allenamento.');
+  if (fromId === toId) throw new ArchiveError('Scegli un esercizio diverso.');
+  const before = session.exercises.filter((e) => e.exerciseId === fromId);
+  if (!before.length) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
+  const exercises = session.exercises.map((e) => (e.exerciseId === fromId ? { ...e, exerciseId: toId, variantOf: e.variantOf === toId ? null : e.variantOf } : e));
+  return { archive: { ...archive, sessions: archive.sessions.map((s) => (s.id === sessionId ? { ...s, exercises } : s)) }, before };
+}
+
+/** "Annulla" di `reassignExercise`: rimette le voci com'erano; se la sessione non c'è più non fa nulla. */
+export function undoReassign(archive: Archive, sessionId: string, before: readonly SessionExercise[]): Archive {
+  const byId = new Map(before.map((e) => [e.id, e]));
+  return {
+    ...archive,
+    sessions: archive.sessions.map((s) => (s.id === sessionId ? { ...s, exercises: s.exercises.map((e) => byId.get(e.id) ?? e) } : s)),
+  };
+}
+
+/**
  * true se la sessione ha almeno una serie spuntata: annullarla perderebbe qualcosa, e si può concludere.
  * I valori soli non bastano: le sessioni iniziate prima di INC-013 li hanno precompilati dall'ultima volta.
  */

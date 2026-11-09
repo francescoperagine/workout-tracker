@@ -7,12 +7,14 @@ import {
   finishSession,
   forgottenSession,
   lastFinishedSession,
+  reassignExercise,
   removeSession,
   reopenSession,
   restoreSession,
   sessionHasData,
   startSession,
   summarizeSession,
+  undoReassign,
 } from './sessions';
 import { validateArchive } from './validation';
 import { ArchiveError, emptyArchive, type Archive } from './types';
@@ -147,5 +149,72 @@ describe('US-41 allenamento dimenticato', () => {
     const ended = finishSession(logged, session.id, forgotten.at).sessions[0];
     expect(ended.end).toBe(NOW + 1);
     expect(forgottenSession(ended, NOW + 14 * HOUR)).toBeNull();
+  });
+});
+
+describe('US-42 correggere l’esercizio di un allenamento concluso', () => {
+  /** voce di sessione con una serie fatta */
+  const entry = (id: string, exerciseId: string, variantOf: string | null = null) => ({
+    id,
+    exerciseId,
+    variantOf,
+    group: null,
+    rest: 90,
+    warmupRest: 60,
+    notes: '',
+    sets: [{ id: `${id}-s1`, type: 'normal' as const, kg: 60, reps: 8, completedAt: NOW - 3_600_000 }],
+  });
+  const done = (id: string, exercises: ReturnType<typeof entry>[], end: number | null = NOW - 1_800_000): Archive['sessions'][number] => ({
+    id,
+    date: '2026-10-08',
+    routineId: 'routine-a',
+    name: 'Scheda A',
+    start: NOW - 7_200_000,
+    end,
+    exercises,
+  });
+  const base = (): Archive => ({
+    ...withAB(),
+    sessions: [
+      done('sbagliata', [entry('e1', 'leg-press'), entry('e2', 'panca-piana-bilanciere'), entry('e3', 'leg-press')]),
+      done('altra', [entry('e4', 'leg-press')]),
+    ],
+  });
+
+  it('sposta le voci con le serie com’erano, solo in quell’allenamento', () => {
+    const a = base();
+    const { archive, before } = reassignExercise(a, 'sbagliata', 'leg-press', 'leg-press-piedi-a-meta-pedana');
+    const fixed = archive.sessions.find((s) => s.id === 'sbagliata')!;
+    expect(fixed.exercises.map((e) => e.exerciseId)).toEqual(['leg-press-piedi-a-meta-pedana', 'panca-piana-bilanciere', 'leg-press-piedi-a-meta-pedana']);
+    expect(fixed.exercises[0].sets).toEqual(a.sessions[0].exercises[0].sets);
+    expect(archive.sessions.find((s) => s.id === 'altra')).toBe(a.sessions[1]);
+    expect(archive.routines).toBe(a.routines);
+    expect(archive.catalog).toBe(a.catalog);
+    expect(before.map((e) => e.id)).toEqual(['e1', 'e3']);
+  });
+
+  it('una variante dell’esercizio scelto non è più una variante; le altre restano', () => {
+    const a: Archive = { ...withAB(), sessions: [done('v', [entry('e1', 'leg-press', 'squat-bilanciere'), entry('e2', 'hack-squat', 'squat-bilanciere')])] };
+    const one = reassignExercise(a, 'v', 'leg-press', 'squat-bilanciere').archive.sessions[0].exercises[0];
+    expect(one).toMatchObject({ exerciseId: 'squat-bilanciere', variantOf: null });
+    const two = reassignExercise(a, 'v', 'hack-squat', 'leg-press-piedi-a-meta-pedana').archive.sessions[0].exercises[1];
+    expect(two).toMatchObject({ exerciseId: 'leg-press-piedi-a-meta-pedana', variantOf: 'squat-bilanciere' });
+  });
+
+  it('"Annulla" rimette le voci com’erano', () => {
+    const a = base();
+    const { archive, before } = reassignExercise(a, 'sbagliata', 'leg-press', 'hack-squat');
+    expect(undoReassign(archive, 'sbagliata', before)).toEqual(a);
+    // allenamento eliminato nel frattempo: niente da rimettere
+    expect(undoReassign({ ...archive, sessions: [] }, 'sbagliata', before).sessions).toEqual([]);
+  });
+
+  it('rifiuta l’allenamento in corso, lo stesso esercizio e un esercizio assente', () => {
+    const a = base();
+    const running: Archive = { ...a, sessions: [done('corso', [entry('e1', 'leg-press')], null)] };
+    expect(() => reassignExercise(running, 'corso', 'leg-press', 'hack-squat')).toThrow(ArchiveError);
+    expect(() => reassignExercise(a, 'sbagliata', 'leg-press', 'leg-press')).toThrow(ArchiveError);
+    expect(() => reassignExercise(a, 'sbagliata', 'squat-bilanciere', 'hack-squat')).toThrow(ArchiveError);
+    expect(() => reassignExercise(a, 'nessuna', 'leg-press', 'hack-squat')).toThrow(ArchiveError);
   });
 });

@@ -19,7 +19,7 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 ## Outcome and proof
 
 - Elenco per data (più recente in alto), raggruppato per mese: data, scheda, durata, serie, volume, record.
-- Dettaglio: registro di sola lettura, solo gli esercizi con serie fatte e le serie fatte in una riga; ⓘ e icona dei progressi (pagina dell'esercizio); per correggere "Riapri"; eliminazione con conferma (o annulla).
+- Dettaglio: registro di sola lettura, solo gli esercizi con serie fatte e le serie fatte in una riga; icona dei progressi (pagina dell'esercizio), senza ⓘ; per correggere le serie "Riapri"; eliminazione con conferma (o annulla).
 - Pagina esercizio: grafici di **carico massimo**, **1RM stimato** (Epley, solo serie normali con ripetizioni ≤ 12) e **volume per sessione**, con selettore di periodo; record personali; cronologia delle serie. Varianti separate, riscaldamento escluso, unità scelta.
 - Record: indicati nella riga serie al momento della spunta e nel riepilogo (US-29).
 
@@ -44,6 +44,7 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 
 ## Constraints and open decisions
 
+- **Deciso (INC-020):** la ⓘ esce dal dettaglio dell'allenamento: l'approfondimento ripeteva la pagina dei progressi. Un esercizio scelto per sbaglio si corregge dalla cronologia della pagina dell'esercizio, riga per riga («Era un altro esercizio», US-42), non dal dettaglio e non spostando tutto lo storico: è una correzione occasionale di un allenamento, con «Annulla» nell'avviso.
 - **Deciso (INC-019):** nella pagina dell'esercizio il grafico viene prima dei record. Sopra la trama il valore del punto scelto con il confronto con l'allenamento precedente della stessa misura, cercato su tutto lo storico anche fuori dal periodo; sotto la trama le serie di quel punto e «Apri l’allenamento». I record stanno in una riga da tre, con la data scritta una volta se vengono tutti dallo stesso allenamento. Con un punto solo niente trama: valore, confronto e serie.
 - **Deciso (INC-015, rovescia la scelta dello step 8):** i progressi hanno la loro tab «Progressi» (`/progress/`, con la pagina dell'esercizio); lo Storico tiene solo gli allenamenti, senza l'interruttore Allenamenti / Esercizi. Le misure del corpo andranno nella tab Progressi con una feature a sé.
 - **Deciso (step 9, critique dei flussi):** l'allenamento in corso è una riga «In corso» in cima all'elenco, che porta all'allenamento; «Riprendi» resta solo nella mini-barra, per non averlo due volte. I record della riga si contano per esercizio («Record in 3 esercizi»), non per misura; l'1RM stimato è arrotondato al mezzo chilo.

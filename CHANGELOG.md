@@ -3,6 +3,32 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-020
+
+Date: 2026-11-09
+
+Summary:
+**Correggere l'esercizio di un allenamento passato (US-42), senza ⓘ nel dettaglio.** Ogni riga della cronologia
+della pagina dell'esercizio ha «Era un altro esercizio»: si sceglie dal catalogo quello giusto e le serie di
+quell'allenamento passano lì così come sono, con «Annulla» nell'avviso. Cambia solo quell'allenamento (non gli
+altri, le schede o il catalogo); grafici, record e «precedente» si ricalcolano. Serve quando nell'allenamento si
+è scelto un esercizio sbagliato (es. «Leg press» per «Leg press, piedi a metà pedana»). Il dettaglio
+dell'allenamento perde la ⓘ, che ripeteva la pagina dei progressi.
+
+Deliverables:
+- `src/lib/archive/sessions.ts`: `reassignExercise`, `undoReassign`; test in `sessions.test.ts`.
+- `src/components/history/ExerciseProgress.svelte`: pulsante sulle righe della cronologia, `ExercisePicker`, avviso.
+- `src/components/history/SessionLog.svelte`: tolta la ⓘ e `ExerciseDetailsSheet`.
+- e2e: `tests/e2e/us-42-reassign-exercise.spec.ts`; `us-27-us-29-history.spec.ts` (dettaglio senza ⓘ).
+- `docs/ARCHITECTURE.md`, `docs/archive/restyling/USER-STORIES.md` (US-42), brief `route-history`, `docs/todo.md`.
+
+Limiti noti: un backup vecchio importato con «sostituisci» riporta l'esercizio sbagliato; si rifà la correzione.
+`ExercisePicker` si monta solo al primo «Era un altro esercizio»: chiuso terrebbe nella pagina tutto il catalogo
+(lo diceva l'e2e della variante di US-28). Provato nel browser a 390×844 (scuro) e 320×568 (chiaro): spostamento,
+ricalcolo della pagina e «Annulla».
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-019
 
 Date: 2026-11-09

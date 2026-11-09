@@ -147,6 +147,11 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Voce «Recupero · 1:30» nel menu ⋯ (non nella sessione conclusa), foglio con −15 s / +15 s da 0 a 60 minuti; ogni passo si salva subito, nessun «Salva».
 - Cambia la sessione e, se l'esercizio viene da una scheda, la sua voce; vale dalla prossima spunta, un recupero in corso non cambia.
 
+**US-42 (S, INC-020).** Come utente, voglio spostare le serie di un allenamento passato sull'esercizio giusto quando ne ho scelto uno sbagliato, perché i progressi di quell'esercizio contino anche quei dati.
+- Dalla cronologia della pagina dell'esercizio, su una riga: «Era un altro esercizio», poi il catalogo; le serie di quell'allenamento passano all'esercizio scelto così come sono.
+- Cambia solo quell'allenamento: non gli altri, non le schede, non il catalogo. Una variante dell'esercizio scelto smette di esserlo.
+- Nessuna conferma: l'avviso dice cosa è stato spostato e ha «Annulla».
+
 **US-41 (S, INC-014).** Come utente, voglio che l'app mi dica quando ho lasciato aperto un allenamento, per chiuderlo all'ora giusta invece di ritrovarmi «14 h 06 min» nello storico.
 - Un allenamento in corso è dimenticato se l'ultima serie spuntata, o l'inizio se nessuna, è di più di 3 ore fa.
 - Aprendo l'allenamento o Oggi compare il foglio «Allenamento ancora aperto» con l'ora dell'ultima serie (o dell'inizio): con serie fatte «Termina alle 17:42», che lo conclude a quell'ora e mostra il riepilogo, e «Continua»; senza, «Annulla allenamento» (con «Annulla» nell'avviso) e «Continua».
