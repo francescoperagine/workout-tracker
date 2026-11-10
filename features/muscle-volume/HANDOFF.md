@@ -47,6 +47,9 @@ fonte nuova. Resta da chiudere SPEC §8, attaccare il piano (AGENTS.md, regola 9
 
 ## Vincoli di Francesco (valgono per tutta la feature)
 
+- Terminologia: **variante** = esercizio personalizzato derivato da un altro; **alternativa** = esercizio scelto al
+  posto di quello della scheda. Il codice di oggi le confonde (SPEC §6).
+
 - Anti BS: ogni affermazione su efficacia, numeri o comportamento dei competitor ha la fonte; se non c'è, dillo.
 - Ogni decisione: utenti, competitor, pro e contro. Senza che te lo ricordi.
 - Italiano, conclusione per prima, niente lineette lunghe.

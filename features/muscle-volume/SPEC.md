@@ -7,6 +7,10 @@
 Questa SPEC raccoglie le decisioni già prese e le domande ancora aperte. La sessione di piano successiva la completa
 con `HANDOFF.md` (mode: plan); solo dopo si scrive l'handoff d'esecuzione.
 
+**Terminologia (di Francesco, vincolante):** **variante** = esercizio personalizzato derivato da un altro (D7);
+**alternativa** = esercizio scelto al posto di quello previsto dalla scheda. Il codice e i testi di oggi usano
+«variante» per l'alternativa: vedi §6.
+
 **Regola per ogni decisione di questa feature (data da Francesco, non va ripetuta):** presentare sempre cosa
 chiedono gli utenti, cosa fanno i competitor e pro e contro di ciascuna opzione.
 
@@ -24,10 +28,10 @@ chiedono gli utenti, cosa fanno i competitor e pro e contro di ciascuna opzione.
 | D1 | Deltoidi separati: anteriori, laterali, posteriori | Scelta di Francesco; le spinte lavorano gli anteriori, le alzate i laterali, le tirate i posteriori: con un solo «spalle» il conteggio non dice nulla |
 | D2 | Conteggio frazionario: principale = 1 serie, secondario = 0,5 | Pelland et al. 2026: il metodo frazionario con 0,5 per il lavoro indiretto è quello che si adatta meglio ai dati. Pesi fissi, nessuna percentuale libera (nessuna evidenza per sceglierle, richiesta marginale) |
 | D3 | Più muscoli principali ammessi per esercizio | Lo squat profondo fa crescere quadricipiti e glutei (Kubo 2019, §4); Hevy ne ammette uno solo e sbaglia proprio qui |
-| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`features/muscle-volume/research/wger-crosscheck.md`). Regola: dove c'è uno studio di crescita muscolare comanda lo studio; altrimenti l'azione articolare principale. Delavier 6ª ed. come verifica, wger solo come controllo |
+| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`features/muscle-volume/research/wger-crosscheck.md`). Regola: dove c'è uno studio di crescita muscolare comanda lo studio; altrimenti l'azione articolare principale. I libri di Delavier come verifica, fatta da Francesco (Claude non ha accesso ai libri); wger solo come controllo |
 | D5 | Si parte dalle cose base | Conteggio descrittivo delle serie per gruppo (come Hevy). Zone colorate con soglie: non nella prima versione (§4: le soglie MEV/MRV non hanno base sperimentale) |
 | D6 | Esercizi personalizzati: liste libere di principali e secondari, senza limiti; un muscolo non può stare in entrambe | Nessuno chiede un limite; MacroFactor fa così (tocco = principale, secondo tocco = secondario) |
-| D7 | Modificare i muscoli di un esercizio di catalogo **crea un nuovo esercizio personalizzato** basato su quello; il catalogo non cambia mai | Scelta di Francesco. Il catalogo resta unico e lo aggiorniamo solo noi; niente conflitti tra aggiornamenti e modifiche dell'utente; niente «Ripristina predefinito». Limite accettato: il derivato non riceve le correzioni successive della mappa |
+| D7 | Modificare i muscoli di un esercizio di catalogo **crea una variante**, cioè un nuovo esercizio personalizzato basato su quello; il catalogo non cambia mai | Scelta di Francesco. Il catalogo resta unico e lo aggiorniamo solo noi; niente conflitti tra aggiornamenti e modifiche dell'utente; niente «Ripristina predefinito». Limite accettato: il derivato non riceve le correzioni successive della mappa |
 | D8 | Panoramica in Progressi, grafici in alto, stesso schema della pagina dell'esercizio (INC-019: SegmentedControl compatti, lettura sotto il grafico) | Scelta di Francesco |
 | D9 | Logica isolata: costanti del modello (pesi, regole di conteggio) in un solo modulo con la citazione | Se le evidenze cambiano si cambia un file e i suoi test |
 
@@ -101,8 +105,13 @@ sessione di piano li ricerca e li cita.
   derivato (D7). Senza muscoli l'esercizio conta come «non classificato».
 - Va verificato come `src/lib/archive/validation.ts` e `src/lib/archive/backup.ts` trattano i campi nuovi: backup
   vecchi senza muscoli devono restare validi. Serve una nuova versione dell'archivio? **Da verificare.**
-- **Attenzione al nome:** `SessionExercise.variantOf` esiste già e significa un'altra cosa (l'esercizio previsto
-  dalla scheda quando si passa a un'alternativa). Il riferimento di D7 va chiamato diversamente.
+- **Terminologia nel codice:** `SessionExercise.variantOf` e circa 100 occorrenze in `src/` (per esempio
+  `src/components/workout/VariantSheet.svelte`, «Cambia variante» in `src/components/kit/KitOverlays.svelte`,
+  «Le varianti hanno ciascuna i loro progressi» in `src/components/history/ProgressPage.svelte`) chiamano
+  «variante» quella che per Francesco è un'**alternativa**. Prima della feature serve un incremento che allinei i
+  testi visibili e i commenti ad «alternativa». **Da decidere:** rinominare anche gli identificatori; `variantOf`
+  è salvato nell'archivio e nei backup, quindi rinominarlo richiede una migrazione. Il riferimento di D7 si
+  chiamerà con «variante» in senso proprio, quindi l'ambiguità con `variantOf` va risolta prima.
 - Logica (D9): un modulo nuovo in `src/lib/archive/` per il volume per muscolo. Idee di partenza:
   - serie spuntate di sessioni concluse;
   - riscaldamento escluso, come `src/lib/archive/progress.ts`;
@@ -125,7 +134,9 @@ sessione di piano li ricerca e li cita.
 
 1. Lista dei gruppi (§3), con lombari e adduttori.
 2. Mappa dei 43 esercizi: bozza da preparare (principali, secondari, azione articolare, studio se esiste),
-   Francesco la confronta con il libro.
+   Francesco la confronta con i libri di Delavier che ha (pagina per esercizio).
+8. Identificatori: rinominare `variantOf` e simili in `alternativeOf` (con migrazione) o lasciarli e cambiare solo
+   i testi?
 3. Cosa mostra il grafico: barre per gruppo nel periodo, oppure linea di un gruppo per settimana? Quale controllo
    sceglie il gruppo? Opzioni con utenti, competitor, pro e contro.
 4. Settimana: da lunedì (come `WEEKDAYS`) o ultimi 7 giorni?
@@ -136,6 +147,8 @@ sessione di piano li ricerca e li cita.
 
 ## 9. Incrementi proposti (da confermare dopo §8)
 
+0. Terminologia: «alternativa» al posto di «variante» nei testi visibili e nei commenti (§6), con la decisione
+   sugli identificatori.
 1. Dati: gruppi muscolari, mappa del catalogo, modello e validazione (backup vecchi validi).
 2. Logica: modulo del volume con test (casi: principale, secondario, più principali, riscaldamento, sessione in
    corso esclusa, esercizio non classificato).
