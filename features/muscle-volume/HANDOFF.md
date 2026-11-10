@@ -1,10 +1,10 @@
 ---
 mode: implement
 feature: muscle-volume
-inc_base: 2ecdf0f   # commit di INC-021 (incremento 1); il commit dopo tocca solo questo file
-last_inc: INC-021   # ultimo incremento in CHANGELOG
+inc_base: 929721b   # commit di INC-022 (incremento 2); il commit dopo tocca solo questo file
+last_inc: INC-022   # ultimo incremento in CHANGELOG
 spec: features/muscle-volume/SPEC.md
-resume_from: SPEC §9, incremento 2
+resume_from: SPEC §9, incremento 3
 ---
 
 > **MODE: implement**: si esegue l'ambito dell'incremento indicato in `resume_from`, senza riprogettare né allargare.
@@ -54,6 +54,9 @@ Esegui l'incremento di `resume_from`: ambito, criteri e documenti sono in SPEC �
 - **Incremento 1 fatto** (INC-021, ADR-009, 10 novembre 2026): archivio v3, `EXERCISE_REDIRECTS`, `alternativeOf`,
   `AlternativeSheet`. `CustomExercise` ha già `muscles` e `variantOf`; `rewriteSessions`/`rewriteRoutines` in
   `src/lib/archive/catalog.ts` sono il riscrittore da riusare per la variante (incremento 4).
+- **Incremento 2 fatto** (INC-022, ADR-010, ADR-011, 10 novembre 2026): `CatalogExercise.muscles` obbligatorio, le 42
+  voci di `src/data/catalog.ts` uguali alla tabella di `mappa-43.md`, righe degli studi bloccate in
+  `src/data/seed-data.test.ts`. Il prossimo ADR libero è ADR-012.
 - Domande di SPEC §10.2 senza risposta al 10 novembre: valgono i predefiniti. Esito Delavier: non ancora arrivato.
 
 ## Insidie già note (dettagli in SPEC §10.1)
