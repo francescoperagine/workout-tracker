@@ -5,11 +5,17 @@
   // serie. L'esercizio è quello fatto davvero: ogni alternativa ha la sua pagina, il riscaldamento non
   // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts. Ogni riga della
   // cronologia ha «Era un altro esercizio» (US-42): le serie di quell'allenamento passano all'esercizio
-  // giusto, con «Annulla» nell'avviso.
+  // giusto, con «Annulla» nell'avviso. In fondo la sezione «Muscoli» (US-43, US-44), visibile anche senza
+  // storico: in sola lettura per il catalogo, con «Personalizza i muscoli» che crea una variante; l'editor
+  // per i personalizzati. Dopo la creazione si arriva qui con &created=1: l'avviso con «Annulla» vive
+  // nella pagina della variante, perché l'isola si ricrea a ogni navigazione.
   import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import ChartLine from '@lucide/svelte/icons/chart-line';
+  import { navigate } from 'astro:transitions/client';
+  import BottomSheet from '../ui/BottomSheet.svelte';
+  import MuscleEditor from './MuscleEditor.svelte';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
   import Toast from '../ui/Toast.svelte';
   import ExercisePicker, { type PickedExercise } from '../exercises/ExercisePicker.svelte';
@@ -19,17 +25,25 @@
   import {
     ArchiveError,
     EPLEY_MAX_REPS,
+    MUSCLE_LABELS,
+    createVariant,
     ensureExercise,
+    exerciseDetails,
     exerciseHistory,
     exerciseName,
+    mergeExercise,
     personalRecords,
     pointsInPeriod,
+    proposeVariantName,
     reassignExercise,
+    setCustomMuscles,
     setNumbers,
     toDateKey,
     undoReassign,
+    variantImpact,
     type Archive,
     type ExercisePoint,
+    type MuscleGroup,
     type Period,
   } from '../../lib/archive';
   import { formatDayMonth, plural, withPreposition } from '../../lib/format';
@@ -188,6 +202,64 @@
   }
   // il numero di serie di lavoro di un punto, per la cronologia
   const workSets = (p: ExercisePoint) => setNumbers(p.sets).filter(Boolean).length;
+
+  // US-43, US-44: muscoli dell'esercizio (catalogo in sola lettura, personalizzato modificabile)
+  const exerciseHref = (id: string) => `${appUrl('/exercise')}?id=${encodeURIComponent(id)}`;
+  const baseMuscles = exerciseDetails(exerciseId)?.muscles ?? null;
+  const custom = $derived(store.archive.catalog[exerciseId] ?? null);
+  const musclesText = (list: MuscleGroup[]) => (list.length ? list.map((m) => MUSCLE_LABELS[m]).join(', ') : 'nessuno');
+
+  let variantOpen = $state(false);
+  let variantName = $state('');
+  let variantError = $state('');
+  const impact = $derived(variantImpact(store.archive, exerciseId));
+
+  function openVariant() {
+    variantName = proposeVariantName(store.archive, exerciseId);
+    variantError = '';
+    variantOpen = true;
+  }
+
+  function createVariantHere(event: SubmitEvent) {
+    event.preventDefault();
+    let id = '';
+    try {
+      const result = store.update((a) => {
+        const created = createVariant(a, exerciseId, variantName);
+        id = created.id;
+        return created.archive;
+      });
+      if (!result.ok && result.state !== 'unsaved') {
+        toast = { message: result.message ?? 'Modifica non salvata.' };
+        return;
+      }
+    } catch (error) {
+      if (!(error instanceof ArchiveError)) throw error;
+      // nome già usato o non valido: l'errore sotto il campo, il foglio resta aperto
+      variantError = error.message;
+      return;
+    }
+    variantOpen = false;
+    navigate(`${exerciseHref(id)}&created=1`);
+  }
+
+  // appena creata la variante: avviso con «Annulla», una volta sola (il parametro si toglie subito)
+  if (params.get('created') === '1') {
+    const baseId = custom?.variantOf;
+    if (baseId) {
+      const routines = variantImpact(store.archive, exerciseId);
+      toast = {
+        message: `Creato «${name}»${routines ? `, sostituito in ${plural(routines, 'scheda', 'schede')}` : ''}.`,
+        action: 'Annulla',
+        onaction: () => {
+          if (edit((a) => mergeExercise(a, exerciseId, baseId))) navigate(exerciseHref(baseId));
+        },
+      };
+    }
+    const url = new URL(location.href);
+    url.searchParams.delete('created');
+    window.history.replaceState(window.history.state, '', url);
+  }
 </script>
 
 {#snippet sessionDetails(index: number)}
@@ -289,7 +361,57 @@
         </section>
       {/if}
     {/if}
+
+    {#if baseMuscles || custom}
+      <section aria-labelledby="muscles-title" class="section">
+        <h3 id="muscles-title" class="subtitle">Muscoli</h3>
+        {#if custom?.variantOf}
+          <a class="based-on" href={exerciseHref(custom.variantOf)}>Basata su {exerciseName(store.archive, custom.variantOf)}</a>
+        {/if}
+        {#if baseMuscles}
+          <dl class="muscle-list">
+            <div><dt>Principali:</dt> <dd>{musclesText(baseMuscles.primary)}</dd></div>
+            <div><dt>Secondari:</dt> <dd>{musclesText(baseMuscles.secondary)}</dd></div>
+          </dl>
+          <button type="button" class="btn btn-secondary personalize" aria-haspopup="dialog" onclick={openVariant}>Personalizza i muscoli</button>
+        {:else if custom}
+          {#if !custom.muscles.primary.length && !custom.muscles.secondary.length}
+            <p class="m-0 max-w-[60ch] text-text-muted">Scegli i muscoli: finché sono vuoti, le serie finiscono in «Senza muscoli» in Progressi.</p>
+          {/if}
+          <p class="hint m-0">Un tocco: principale. Due: secondario. Tre: nessuno.</p>
+          <MuscleEditor muscles={custom.muscles} onchange={(m) => edit((a) => setCustomMuscles(a, exerciseId, m))} />
+        {/if}
+      </section>
+    {/if}
   </div>
+{/if}
+
+{#if baseMuscles}
+  <BottomSheet bind:open={variantOpen} title="Personalizza i muscoli">
+    <form id="variant-form" class="variant-form" novalidate onsubmit={createVariantHere}>
+      <div>
+        <label class="label" for="variant-name">Nome del nuovo esercizio</label>
+        <input
+          id="variant-name"
+          class="field"
+          bind:value={variantName}
+          oninput={() => (variantError = '')}
+          aria-invalid={variantError ? 'true' : undefined}
+          aria-describedby={variantError ? 'variant-name-error' : undefined}
+        />
+        {#if variantError}
+          <p class="field-error" id="variant-name-error"><CircleAlert size={16} aria-hidden="true" />{variantError}</p>
+        {/if}
+      </div>
+      <p class="m-0 max-w-[60ch] text-text-muted">
+        Crea un esercizio tuo con i muscoli di «{name}», da modificare.
+        {#if impact}Lo sostituisce in {plural(impact, 'scheda attiva', 'schede attive')}; gli allenamenti fatti restano su «{name}», e il nuovo esercizio parte senza record né grafico.{:else}Gli allenamenti fatti restano su «{name}», e il nuovo esercizio parte senza record né grafico.{/if}
+      </p>
+    </form>
+    {#snippet footer()}
+      <button type="submit" form="variant-form" class="btn btn-primary btn-block">Crea</button>
+    {/snippet}
+  </BottomSheet>
 {/if}
 
 <!-- montato solo dopo il primo «Era un altro esercizio»: chiuso, il foglio terrebbe nella pagina tutto il catalogo -->
@@ -394,6 +516,31 @@
     font-weight: 700;
     line-height: 1.25;
     overflow-wrap: anywhere;
+  }
+  .based-on {
+    align-self: flex-start;
+    color: var(--color-accent-text);
+  }
+  .muscle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+  }
+  .muscle-list dt {
+    display: inline;
+    font-size: inherit;
+  }
+  .muscle-list dd {
+    display: inline;
+  }
+  .personalize {
+    align-self: flex-start;
+  }
+  .variant-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   .list {
     margin: 0;

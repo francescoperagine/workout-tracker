@@ -2,7 +2,7 @@
 // US-14: un nome scritto a mano si confronta senza maiuscole, spazi, punteggiatura e accenti;
 // se non corrisponde a nessun esercizio diventa un esercizio personalizzato, riusato le volte dopo.
 import { BASE_CATALOG, EXERCISE_REDIRECTS } from '../../data/catalog';
-import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise, type Routine, type RoutineExercise, type Session, type SessionExercise } from './types';
+import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise, type Muscles, type Routine, type RoutineExercise, type Session, type SessionExercise } from './types';
 
 export const CUSTOM_PREFIX = 'custom-';
 
@@ -254,4 +254,53 @@ export function safeImagePath(path: string): string | null {
 /** Fonti con un indirizzo web vero (http o https), come nel PoC */
 export function safeSources(details: CatalogExercise): { title: string; url: string }[] {
   return details.sources.filter((s) => /^https?:\/\//i.test(s.url) && s.title.trim());
+}
+
+/** muscle-volume, D17: prima libera tra «<nome> (personalizzato)», «<nome> (personalizzato 2)», … (nome e alias) */
+export function proposeVariantName(archive: Pick<Archive, 'catalog'>, baseId: string): string {
+  const name = exerciseName(archive, baseId);
+  for (let n = 1; ; n++) {
+    const candidate = `${name} (personalizzato${n === 1 ? '' : ` ${n}`})`;
+    if (!findByName(archive, candidate)) return candidate;
+  }
+}
+
+/** Quante schede attive (archived: false) usano baseId come esercizio o alternativa */
+export function variantImpact(archive: Pick<Archive, 'routines'>, baseId: string): number {
+  return archive.routines.filter((r) => !r.archived && r.exercises.some((e) => e.exerciseId === baseId || e.alternatives.includes(baseId))).length;
+}
+
+/**
+ * muscle-volume, D7 e D17 (ADR-013): crea un personalizzato con i muscoli di un esercizio di catalogo e
+ * `variantOf` = baseId, e lo mette al posto dell'originale nelle schede attive (esercizio e alternative).
+ * Sessioni (anche quella in corso), schede archiviate e catalogo di base non cambiano, così «Annulla» è
+ * `mergeExercise(archivio, id, baseId)`.
+ */
+export function createVariant(archive: Archive, baseId: string, name: string): { archive: Archive; id: string; routines: number } {
+  const base = BASE_CATALOG[baseId];
+  if (!base) throw new ArchiveError('Si personalizza solo un esercizio del catalogo: questo è già tuo.');
+  if (findByName(archive, name)) throw new ArchiveError('C’è già un esercizio con questo nome: scegline un altro.');
+  // ensureExercise ripulisce il nome, controlla validità e limite e sceglie l'id
+  const { archive: next, exercise } = ensureExercise(archive, name);
+  const id = exercise.id;
+  const muscles = { primary: [...base.muscles.primary], secondary: [...base.muscles.secondary] };
+  const map = { [baseId]: id };
+  return {
+    archive: {
+      ...next,
+      catalog: { ...next.catalog, [id]: { ...next.catalog[id], muscles, variantOf: baseId } },
+      routines: next.routines.map((r) => (r.archived ? r : rewriteRoutines([r], map)[0])),
+    },
+    id,
+    routines: variantImpact(archive, baseId),
+  };
+}
+
+/** Muscoli di un personalizzato (D6); un esercizio di catalogo non cambia mai (D7) */
+export function setCustomMuscles(archive: Archive, id: string, muscles: Muscles): Archive {
+  if (id in BASE_CATALOG) throw new ArchiveError('I muscoli di un esercizio del catalogo non si cambiano: personalizzalo.');
+  const exercise = archive.catalog[id];
+  if (!exercise) throw new ArchiveError('Questo esercizio personalizzato non esiste più.');
+  if (muscles.primary.some((m) => muscles.secondary.includes(m))) throw new ArchiveError('Un muscolo è principale o secondario, non tutti e due.');
+  return { ...archive, catalog: { ...archive.catalog, [id]: { ...exercise, muscles: { primary: [...muscles.primary], secondary: [...muscles.secondary] } } } };
 }

@@ -152,6 +152,15 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Cambia solo quell'allenamento: non gli altri, non le schede, non il catalogo. Una variante dell'esercizio scelto smette di esserlo.
 - Nessuna conferma: l'avviso dice cosa è stato spostato e ha «Annulla».
 
+**US-43 (S, INC-024).** Come utente, voglio vedere i muscoli di un esercizio e scegliere quelli di un esercizio personalizzato, perché le sue serie contino per i muscoli giusti.
+- Nella pagina dell'esercizio, sezione «Muscoli» anche senza storico: per il catalogo «Principali» e «Secondari» in sola lettura.
+- Per un personalizzato un pulsante per gruppo; il tocco gira nessuno → principale → secondario → nessuno, lo stato si legge come testo e nel nome accessibile, ogni tocco si salva.
+
+**US-44 (S, INC-024).** Come utente, voglio personalizzare i muscoli di un esercizio di catalogo creando una variante, che lo sostituisce nelle schede attive, senza cambiare il catalogo né lo storico.
+- «Personalizza i muscoli» apre un foglio con il nome proposto («… (personalizzato)») e le conseguenze; «Crea» è la conferma.
+- La variante sostituisce l'originale nelle schede attive (esercizio e alternative); schede archiviate e allenamenti restano sull'originale. Nella variante il link «Basata su <originale>».
+- L'avviso nella pagina della variante ha «Annulla», che riporta all'originale con le schede com'erano.
+
 **US-41 (S, INC-014).** Come utente, voglio che l'app mi dica quando ho lasciato aperto un allenamento, per chiuderlo all'ora giusta invece di ritrovarmi «14 h 06 min» nello storico.
 - Un allenamento in corso è dimenticato se l'ultima serie spuntata, o l'inizio se nessuna, è di più di 3 ore fa.
 - Aprendo l'allenamento o Oggi compare il foglio «Allenamento ancora aperto» con l'ora dell'ultima serie (o dell'inizio): con serie fatte «Termina alle 17:42», che lo conclude a quell'ora e mostra il riepilogo, e «Continua»; senza, «Annulla allenamento» (con «Annulla» nell'avviso) e «Continua».

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { BASE_CATALOG } from '../../data/catalog';
 import {
   availableExercises,
+  createVariant,
   ensureExercise,
   exerciseName,
   findByName,
@@ -10,10 +11,13 @@ import {
   mergeExercise,
   mergeImpact,
   nameKey,
+  proposeVariantName,
+  setCustomMuscles,
   suggestExercises,
+  variantImpact,
 } from './catalog';
 import { validateArchive } from './validation';
-import { ArchiveError, emptyArchive, type Archive } from './types';
+import { ArchiveError, emptyArchive, LIMITS, type Archive, type Session } from './types';
 
 describe('US-14 nome scritto a mano', () => {
   it('il confronto ignora maiuscole, spazi, punteggiatura e accenti', () => {
@@ -192,5 +196,87 @@ describe('US-35 unione di esercizi duplicati', () => {
     expect(() => mergeExercise(archive, 'squat-bilanciere', 'leg-press')).toThrow('predefinito');
     expect(() => mergeExercise(archive, 'custom-nessuno', 'leg-press')).toThrow('non esiste più');
     expect(() => mergeExercise(archive, 'custom-deadlift', 'esercizio-futuro')).toThrow('non esiste più');
+  });
+});
+
+describe('US-44 variante di un esercizio di catalogo', () => {
+  const entry = { sets: 3, reps: '8', loadMin: null, loadMax: null, loadNote: '', unit: '', rest: 90, warmupRest: 60, group: null };
+  const session = (id: string, end: number | null): Session => ({
+    id, date: '2026-11-02', routineId: 'r1', name: 'A', start: 1, end,
+    exercises: [{ id: `${id}-e`, exerciseId: 'squat-bilanciere', alternativeOf: null, group: null, rest: 90, warmupRest: 60, notes: '', sets: [] }],
+  });
+  const archive = (): Archive => ({
+    ...emptyArchive(),
+    routines: [
+      { id: 'r1', name: 'A', notes: '', archived: false, exercises: [{ ...entry, id: 'e1', exerciseId: 'squat-bilanciere', alternatives: ['leg-press'] }] },
+      { id: 'r2', name: 'B', notes: '', archived: false, exercises: [{ ...entry, id: 'e2', exerciseId: 'leg-press', alternatives: ['squat-bilanciere', 'hack-squat'] }] },
+      { id: 'r3', name: 'C', notes: '', archived: true, exercises: [{ ...entry, id: 'e3', exerciseId: 'squat-bilanciere', alternatives: [] }] },
+      { id: 'r4', name: 'D', notes: '', archived: false, exercises: [{ ...entry, id: 'e4', exerciseId: 'hack-squat', alternatives: [] }] },
+    ],
+    sessions: [session('s1', 2), session('s2', null)],
+  });
+
+  it('copia i muscoli, imposta variantOf e sostituisce l’originale solo nelle schede attive', () => {
+    const before = archive();
+    const snapshot = structuredClone(before);
+    const result = createVariant(before, 'squat-bilanciere', 'Squat bilanciere (personalizzato)');
+    expect(result.id).toBe('custom-squat-bilanciere-personalizzato');
+    expect(result.archive.catalog[result.id]).toEqual({
+      id: result.id,
+      name: 'Squat bilanciere (personalizzato)',
+      muscles: BASE_CATALOG['squat-bilanciere'].muscles,
+      variantOf: 'squat-bilanciere',
+    });
+    expect(result.archive.catalog[result.id].muscles.primary).not.toBe(BASE_CATALOG['squat-bilanciere'].muscles.primary);
+    const [r1, r2, r3, r4] = result.archive.routines;
+    expect(r1.exercises[0]).toMatchObject({ exerciseId: result.id, alternatives: ['leg-press'] });
+    expect(r2.exercises[0].alternatives).toEqual([result.id, 'hack-squat']);
+    expect(r3).toBe(before.routines[2]);
+    expect(r4).toBe(before.routines[3]);
+    // sessioni, anche quella in corso, invariate
+    expect(result.archive.sessions).toBe(before.sessions);
+    expect(result.routines).toBe(2);
+    expect(result.routines).toBe(variantImpact(before, 'squat-bilanciere'));
+    expect(before).toEqual(snapshot);
+  });
+
+  it('«Annulla» è mergeExercise della variante nell’originale', () => {
+    const before = archive();
+    const { archive: after, id } = createVariant(before, 'squat-bilanciere', 'Squat mio');
+    expect(mergeExercise(after, id, 'squat-bilanciere')).toEqual(before);
+  });
+
+  it('rifiuta un personalizzato, un nome già usato o non valido e il limite dei personalizzati', () => {
+    const custom = ensureExercise(archive(), 'Squat mio');
+    expect(() => createVariant(custom.archive, custom.exercise.id, 'Altro')).toThrow(ArchiveError);
+    expect(() => createVariant(custom.archive, 'squat-bilanciere', 'squat MIO')).toThrow('già');
+    expect(() => createVariant(custom.archive, 'squat-bilanciere', 'Pressa')).toThrow('già');
+    expect(() => createVariant(custom.archive, 'squat-bilanciere', '  ')).toThrow(ArchiveError);
+    const full = archive();
+    for (let i = 0; i < LIMITS.customExercises; i++) full.catalog[`custom-x${i}`] = { id: `custom-x${i}`, name: `X ${i}`, muscles: { primary: [], secondary: [] }, variantOf: null };
+    expect(() => createVariant(full, 'squat-bilanciere', 'Squat mio')).toThrow('limite');
+  });
+
+  it('propone «<nome> (personalizzato)», poi «(personalizzato 2)» se il primo esiste', () => {
+    const a = archive();
+    expect(proposeVariantName(a, 'squat-bilanciere')).toBe('Squat bilanciere (personalizzato)');
+    const b = createVariant(a, 'squat-bilanciere', proposeVariantName(a, 'squat-bilanciere')).archive;
+    expect(proposeVariantName(b, 'squat-bilanciere')).toBe('Squat bilanciere (personalizzato 2)');
+  });
+});
+
+describe('US-43 muscoli di un personalizzato', () => {
+  it('salva le due liste senza mutare l’archivio', () => {
+    const { archive, exercise } = ensureExercise(emptyArchive(), 'Crunch ai cavi');
+    const after = setCustomMuscles(archive, exercise.id, { primary: ['abs'], secondary: ['lower-back'] });
+    expect(after.catalog[exercise.id].muscles).toEqual({ primary: ['abs'], secondary: ['lower-back'] });
+    expect(archive.catalog[exercise.id].muscles).toEqual({ primary: [], secondary: [] });
+  });
+
+  it('rifiuta un esercizio di catalogo, uno sconosciuto e un muscolo in entrambe le liste', () => {
+    const { archive, exercise } = ensureExercise(emptyArchive(), 'Crunch ai cavi');
+    expect(() => setCustomMuscles(archive, 'squat-bilanciere', { primary: ['quads'], secondary: [] })).toThrow('catalogo');
+    expect(() => setCustomMuscles(archive, 'custom-nessuno', { primary: [], secondary: [] })).toThrow('non esiste più');
+    expect(() => setCustomMuscles(archive, exercise.id, { primary: ['abs'], secondary: ['abs'] })).toThrow(ArchiveError);
   });
 });

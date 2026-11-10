@@ -3,6 +3,31 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-024
+
+Date: 2026-11-10
+
+Summary:
+**Muscoli nella pagina dell'esercizio e varianti (muscle-volume, incremento 4 di 6; US-43, US-44).** In fondo alla
+pagina dell'esercizio, anche senza storico, la sezione «Muscoli»: per il catalogo principali e secondari in sola
+lettura e «Personalizza i muscoli», che crea una variante con i muscoli copiati e la mette al posto dell'originale
+nelle schede attive, con «Annulla»; per i personalizzati l'editor, un pulsante per gruppo che gira nessuno →
+principale → secondario.
+
+Deliverables:
+- `src/lib/archive/catalog.ts`: `proposeVariantName`, `variantImpact`, `createVariant`, `setCustomMuscles`;
+  test dei criteri 1-4 in `src/lib/archive/catalog.test.ts` («Annulla» = `mergeExercise`, inverso esatto).
+- `src/components/history/MuscleEditor.svelte` (nuovo, anche in `/kit` in `KitControls`); sezione «Muscoli», foglio
+  della variante e avviso con `&created=1` in `src/components/history/ExerciseProgress.svelte`.
+- `tests/e2e/us-43-us-44-muscles.spec.ts`; US-43 e US-44 in `docs/archive/restyling/USER-STORIES.md`.
+- `docs/ARCHITECTURE.md`, brief `.impeccable/surfaces/route-history.md`, handoff della feature.
+
+Pagine guardate a 390×844 e 320×568, chiaro e scuro (pagina del catalogo, foglio, pagina della variante). Domande
+di SPEC §10.2 senza risposta: valgono i predefiniti (C1: il foglio è la conferma). Esito Delavier: non ancora
+arrivato.
+
+ADR: ADR-013. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-023
 
 Date: 2026-11-10

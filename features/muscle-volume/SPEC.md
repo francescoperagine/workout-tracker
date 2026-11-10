@@ -1,6 +1,6 @@
 # SPEC: muscle-volume
 
-**Livello:** Feature · **Stato:** in esecuzione, incrementi 1 e 2 fatti (INC-021, ADR-009; INC-022, ADR-010, ADR-011), prossimo il 3 (§9) · **Base:** `main` a `c220ee3` (ultimo
+**Livello:** Feature · **Stato:** in esecuzione, incrementi 1-4 fatti (INC-021, ADR-009; INC-022, ADR-010, ADR-011; INC-023, ADR-012; INC-024, ADR-013), prossimo il 5 (§9) · **Base:** `main` a `c220ee3` (ultimo
 incremento INC-020) · **Piano:** 10 novembre 2026 · **Origine:** voce «vista per gruppo muscolare» di `docs/todo.md`
 e ricerca del 10 novembre con Francesco (fonti in §4, §5 e in `features/muscle-volume/research/`)
 
