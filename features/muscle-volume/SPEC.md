@@ -103,8 +103,35 @@ sessione di piano li ricerca e li cita.
   o in un file di dati separato, è **da decidere**.
 - `CustomExercise` (oggi solo `id` e `name`): muscoli opzionali, più il riferimento all'esercizio da cui è
   derivato (D7). Senza muscoli l'esercizio conta come «non classificato».
-- Va verificato come `src/lib/archive/validation.ts` e `src/lib/archive/backup.ts` trattano i campi nuovi: backup
-  vecchi senza muscoli devono restare validi. Serve una nuova versione dell'archivio? **Da verificare.**
+- **Verifica nel codice (10 novembre 2026, a `0f18ef6`):**
+  - **La validazione ricostruisce ogni oggetto campo per campo**, quindi un campo che non conosce si perde:
+    `catalog()` in `src/lib/archive/validation.ts:166-178` tiene solo `id` e `name`, `sessionExercise()` in
+    `validation.ts:133-146` solo i campi elencati. La stessa funzione serve al caricamento
+    (`src/lib/archive/repository.ts:139`) e all'importazione di un backup (`src/lib/archive/backup.ts:46-48`).
+  - **Backup vecchi:** restano validi se il campo nuovo è facoltativo e la validazione gli dà un valore predefinito
+    (nessun muscolo).
+  - **Versione:** oggi `version: 2` (`src/lib/archive/types.ts:120`). La validazione rifiuta ogni altro numero
+    (`validation.ts:219`), il backup sceglie il formato da `version === 2` (`backup.ts:46`).
+    - **Restare a 2:** una scheda del browser rimasta aperta con il codice vecchio dopo un deploy (il service worker
+      usa `skipWaiting` e `clientsClaim`, `src/integrations/service-worker.ts:32-33`, ma il codice già caricato resta
+      quello vecchio) rilegge l'archivio con «Ricarica» dopo un conflitto (`repository.ts:156`), toglie i muscoli in
+      silenzio e al salvataggio successivo li cancella.
+    - **Passare a 3:** il codice vecchio vede «Formato non riconosciuto»; l'archivio diventa illeggibile
+      (`repository.ts:139-147`) e le scritture sono bloccate (`repository.ts:150-153`). Nessuna perdita, solo un
+      messaggio fino al ricaricamento della pagina. Il codice nuovo legge 2 e 3 e scrive 3.
+    - **Proposta:** versione 3. È una scelta tra alternative: va in ADR.
+  - **Dove tenere la mappa:**
+    - un campo obbligatorio in `CatalogExercise`, compilato in `src/data/catalog.ts`: il compilatore impone la mappa a
+      tutti i 43 esercizi, e un esercizio nuovo non può nascere senza;
+    - un file di dati separato in `src/data/` costringerebbe invece a un test per la copertura.
+    - **Proposta:** il campo, con il motivo della scelta in un commento accanto a ogni voce (studio o azione
+      articolare). Il motivo completo resta in `research/mappa-43.md`, che si archivia con la SPEC.
+  - **Derivati (D7):** l'ID di un personalizzato nasce dal nome (`customExerciseId`, `src/lib/archive/catalog.ts:96-99`),
+    quindi il derivato deve avere un nome diverso dall'originale. `mergeExercise` rifiuta di assorbire un esercizio
+    di base (`catalog.ts:139`).
+  - **Conteggio:** `countsForProgress()` (`src/lib/archive/progress.ts:34-36`, spuntata e non di riscaldamento) e il
+    filtro sulle sessioni concluse (`progress.ts:87`) esistono già; `weekStart()` (`src/lib/archive/calendar.ts:16`)
+    dà il lunedì. Ogni drop è una riga a sé di tipo `drop` (`types.ts:10`).
 - **Terminologia nel codice:** `SessionExercise.variantOf` e circa 100 occorrenze in `src/` (per esempio
   `src/components/workout/VariantSheet.svelte`, «Cambia variante» in `src/components/kit/KitOverlays.svelte`,
   «Le varianti hanno ciascuna i loro progressi» in `src/components/history/ProgressPage.svelte`) chiamano
@@ -131,6 +158,12 @@ sessione di piano li ricerca e li cita.
 - Prima di toccare l'interfaccia: `PRODUCT.md`, `DESIGN.md`, il brief in `.impeccable/surfaces/`.
 
 ## 8. Domande aperte (da chiudere nella sessione di piano, in un solo blocco)
+
+Materiale per le risposte (10 novembre 2026):
+- bozza della mappa in `features/muscle-volume/research/mappa-43.md`;
+- opzioni con utenti, competitor, pro e contro in `features/muscle-volume/research/opzioni-domande.md`.
+
+Le domande sono state poste a Francesco; le risposte vanno scritte qui.
 
 1. Lista dei gruppi (§3), con lombari e adduttori.
 2. Mappa dei 43 esercizi: bozza da preparare (principali, secondari, azione articolare, studio se esiste),
