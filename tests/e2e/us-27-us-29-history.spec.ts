@@ -23,7 +23,7 @@ function finished(
   id: string,
   date: string,
   sets: SetSpec[],
-  { name = 'Allenamento libero', hour = 18, exerciseId = 'squat-bilanciere', variantOf = null }: { name?: string; hour?: number; exerciseId?: string; variantOf?: string | null } = {},
+  { name = 'Allenamento libero', hour = 18, exerciseId = 'squat-bilanciere', alternativeOf = null }: { name?: string; hour?: number; exerciseId?: string; alternativeOf?: string | null } = {},
 ): Session {
   const base = session(id, date);
   const start = new Date(`${date}T${String(hour).padStart(2, '0')}:00:00`).getTime();
@@ -36,7 +36,7 @@ function finished(
       {
         ...base.exercises[0],
         exerciseId,
-        variantOf,
+        alternativeOf,
         sets: sets.map((s, i) => ({ id: `${id}-s${i + 1}`, type: s.type ?? 'normal', kg: s.kg, reps: s.reps, completedAt: start + 60_000 })),
       },
     ],
@@ -331,12 +331,12 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await expect(record(page, 'Volume')).toContainText('15 settembre');
   });
 
-  test('US-28 la variante ha i suoi progressi, separati da quelli dell’esercizio previsto', async ({ page }) => {
+  test('US-28 l’alternativa ha i suoi progressi, separati da quelli dell’esercizio previsto', async ({ page }) => {
     await seedArchive(
       page,
       archiveWith({
         sessions: [
-          finished('leg', '2026-09-15', [{ kg: 100, reps: 5 }], { exerciseId: 'leg-press', variantOf: 'squat-bilanciere' }),
+          finished('leg', '2026-09-15', [{ kg: 100, reps: 5 }], { exerciseId: 'leg-press', alternativeOf: 'squat-bilanciere' }),
           finished('squat', '2026-10-01', [{ kg: 60, reps: 8 }]),
         ],
       }),

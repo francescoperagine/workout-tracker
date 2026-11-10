@@ -1,7 +1,9 @@
-// Modello dati v2 dell'archivio (step 2). Vedi docs/archive/restyling/PIANO.md, "Modello dati v2".
+// Modello dati v3 dell'archivio (v2 dallo step 2, docs/archive/restyling/PIANO.md; v3 da muscle-volume, ADR-009).
 // Regola delle unità: pesi sempre in kg e distanze in metri; la conversione avviene solo
 // in ingresso e in uscita (src/lib/units.ts).
 
+// La chiave resta «v2» anche con la versione 3 (ADR-009): con una chiave nuova una scheda con il codice
+// vecchio continuerebbe a leggere e scrivere un diario a parte. La versione è il campo `version`.
 export const ARCHIVE_KEY = 'workout-tracker.archive.v2';
 
 export const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
@@ -9,6 +11,17 @@ export type Weekday = (typeof WEEKDAYS)[number];
 
 export const SET_TYPES = ['normal', 'warmup', 'drop', 'failure'] as const;
 export type SetType = (typeof SET_TYPES)[number];
+
+/** Gruppi muscolari (muscle-volume, D1 e D10). Gli id sono dati: mai cambiati. */
+export const MUSCLE_GROUPS = ['chest', 'lats', 'traps', 'front-delts', 'side-delts', 'rear-delts', 'biceps', 'triceps',
+  'forearms', 'abs', 'lower-back', 'glutes', 'quads', 'hamstrings', 'adductors', 'calves'] as const;
+export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
+
+/** Muscoli di un esercizio; un gruppo non sta in entrambe le liste */
+export interface Muscles {
+  primary: MuscleGroup[];
+  secondary: MuscleGroup[];
+}
 
 export type WeightUnit = 'kg' | 'lb';
 export type DistanceUnit = 'm' | 'ft';
@@ -31,6 +44,10 @@ export interface CatalogExercise {
 export interface CustomExercise {
   id: string;
   name: string;
+  /** vuoti finché l'utente non li sceglie */
+  muscles: Muscles;
+  /** esercizio di catalogo da cui deriva (muscle-volume, D7); null = creato da un nome scritto a mano */
+  variantOf: string | null;
 }
 
 /** Voce di una scheda */
@@ -79,10 +96,10 @@ export interface SessionSet {
 
 export interface SessionExercise {
   id: string;
-  /** esercizio fatto davvero (la variante, se c'è) */
+  /** esercizio fatto davvero (l'alternativa, se c'è) */
   exerciseId: string;
-  /** esercizio previsto dalla scheda, quando si è passati a una variante */
-  variantOf: string | null;
+  /** esercizio previsto dalla scheda, quando si è passati a un'alternativa (in v2 si chiamava variantOf) */
+  alternativeOf: string | null;
   group: string | null;
   rest: number;
   warmupRest: number;
@@ -117,7 +134,7 @@ export interface Settings {
 export type Schedule = Partial<Record<Weekday, string | null>>;
 
 export interface Archive {
-  version: 2;
+  version: 3;
   /** incrementata a ogni salvataggio, per i conflitti tra schede del browser */
   revision: number;
   /** solo gli esercizi personalizzati; quelli di base arrivano dal codice */
@@ -166,7 +183,7 @@ export const LIMITS = {
 
 export function emptyArchive(): Archive {
   return {
-    version: 2,
+    version: 3,
     revision: 0,
     catalog: {},
     routines: [],

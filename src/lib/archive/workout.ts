@@ -3,7 +3,7 @@
 // Regole (PIANO.md, "Regole di comportamento chiave"):
 // - "precedente": la stessa serie (stessa posizione tra le serie di riscaldamento o tra quelle di
 //   lavoro) dell'ultima sessione conclusa, prima di questa, con lo stesso esercizio (cioè la stessa
-//   variante: ogni variante ha i suoi carichi);
+//   alternativa: ogni alternativa ha i suoi carichi);
 // - la spunta su una riga vuota conferma il segnaposto: il precedente o il target della scheda (1 tocco, P1);
 // - le serie di riscaldamento non hanno numero e non contano per volume e record.
 import { isValidDateKey } from './dates';
@@ -93,13 +93,13 @@ export function plannedReps(text: string): number | null {
  * Segnaposto di ogni serie (US-36, INC-013): i valori che la spunta conferma dove il campo è vuoto. La
  * serie dello stesso genere spuntata l'ultima volta (`previousSets`, kg vuoto se era a corpo libero);
  * altrimenti il target della voce della scheda (`plannedEntry`): ripetizioni da `plannedReps`, kg da
- * `loadMin`, che non vale per una variante; nessun target sul riscaldamento; altrimenti null.
+ * `loadMin`, che non vale per un’alternativa; nessun target sul riscaldamento; altrimenti null.
  */
 export function placeholderSets(archive: Pick<Archive, 'sessions' | 'routines'>, session: Session, exercise: SessionExercise): (PreviousSet | null)[] {
   const previous = previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null);
   const entry = plannedEntry(archive, session, exercise);
   const reps = entry ? plannedReps(entry.reps) : null;
-  const kg = entry && !exercise.variantOf ? entry.loadMin : null;
+  const kg = entry && !exercise.alternativeOf ? entry.loadMin : null;
   return exercise.sets.map((set, i) => previous[i] ?? (set.type === 'warmup' || (kg === null && reps === null) ? null : { kg, reps }));
 }
 
@@ -114,14 +114,14 @@ export function completedSet(set: SessionSet, previous: PreviousSet | null, now:
   return { ...set, kg, reps, completedAt: now };
 }
 
-/** Voce della scheda da cui viene l'esercizio (target, alternative), anche dopo riordini e varianti. */
+/** Voce della scheda da cui viene l'esercizio (target, alternative), anche dopo riordini e alternative. */
 export function plannedEntry(archive: Pick<Archive, 'routines'>, session: Session, exercise: SessionExercise): RoutineExercise | null {
   const routine = session.routineId ? archive.routines.find((r) => r.id === session.routineId) : undefined;
   if (!routine) return null;
-  const list = session.exercises.map((e) => e.variantOf ?? e.exerciseId);
+  const list = session.exercises.map((e) => e.alternativeOf ?? e.exerciseId);
   const planned = list[session.exercises.indexOf(exercise)];
   // la k-esima voce della sessione con quell'esercizio previsto corrisponde alla k-esima della scheda;
-  // voci consecutive con lo stesso previsto sono una voce sola (variante dopo serie fatte, switchExercise)
+  // voci consecutive con lo stesso previsto sono una voce sola (alternativa dopo serie fatte, switchExercise)
   let start = session.exercises.indexOf(exercise);
   while (start > 0 && list[start - 1] === planned) start--;
   const k = list.slice(0, start).filter((p, i) => p === planned && list[i - 1] !== planned).length;
@@ -292,7 +292,7 @@ export function addSessionExercise(archive: Archive, sessionId: string, exercise
   const exercise: SessionExercise = {
     id: newId('exercise'),
     exerciseId,
-    variantOf: null,
+    alternativeOf: null,
     group: null,
     rest: previous?.rest ?? archive.settings.defaultRest,
     warmupRest: previous?.warmupRest ?? DEFAULT_WARMUP_REST,
@@ -345,7 +345,7 @@ export function moveSessionExercise(archive: Archive, sessionId: string, exercis
 }
 
 /**
- * Passa a una variante o a un altro esercizio (US-14), solo per questa sessione. `variantOf` resta
+ * Passa a un’alternativa o a un altro esercizio (US-14), solo per questa sessione. `alternativeOf` resta
  * l'esercizio previsto (null se si torna a quello).
  * - Senza serie spuntate l'esercizio cambia sul posto: le serie restano (numero e tipo) ma si svuotano,
  *   perché i valori scritti si riferivano all'esercizio di prima; il segnaposto è quello dell'esercizio
@@ -361,19 +361,19 @@ export function switchExercise(archive: Archive, sessionId: string, exerciseId: 
   const exercise = session?.exercises.find((e) => e.id === exerciseId);
   if (!session || !exercise) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
   if (exercise.exerciseId === newExerciseId) return { archive, added: null };
-  const planned = exercise.variantOf ?? exercise.exerciseId;
-  const variantOf = newExerciseId === planned ? null : planned;
+  const planned = exercise.alternativeOf ?? exercise.exerciseId;
+  const alternativeOf = newExerciseId === planned ? null : planned;
   const empty = (s: SessionSet): SessionSet => ({ ...s, kg: null, reps: null, completedAt: null });
   const done = exercise.sets.filter((s) => s.completedAt !== null);
   if (!done.length) {
-    return { archive: withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, exerciseId: newExerciseId, variantOf, sets: e.sets.map(empty) })), added: null };
+    return { archive: withExercise(archive, sessionId, exerciseId, (e) => ({ ...e, exerciseId: newExerciseId, alternativeOf, sets: e.sets.map(empty) })), added: null };
   }
   const rest = exercise.sets.filter((s) => s.completedAt === null).map(empty);
   const added: SessionExercise = {
     ...exercise,
     id: newId('exercise'),
     exerciseId: newExerciseId,
-    variantOf,
+    alternativeOf,
     notes: '',
     sets: rest.length ? rest : [{ id: newId('set'), type: 'normal', kg: null, reps: null, completedAt: null }],
   };
@@ -398,7 +398,7 @@ export function setExerciseNotes(archive: Archive, sessionId: string, exerciseId
 
 /**
  * Recupero dell'esercizio (US-40), uno per tutte le sue serie. Se l'esercizio viene da una scheda cambia
- * anche la voce della scheda, così la volta dopo parte da lì; con una variante è la voce del posto previsto.
+ * anche la voce della scheda, così la volta dopo parte da lì; con un’alternativa è la voce del posto previsto.
  */
 export function setExerciseRest(archive: Archive, sessionId: string, exerciseId: string, rest: number): Archive {
   if (!Number.isInteger(rest) || rest < 0 || rest > LIMITS.maxRest) throw new ArchiveError('Scegli un recupero valido.');
@@ -452,7 +452,7 @@ export interface LoadRecord {
 
 /**
  * Record di carico (US-29): il carico massimo di questa sessione supera quello delle sessioni
- * precedenti con lo stesso esercizio (la stessa variante). Riscaldamento escluso; senza storico non
+ * precedenti con lo stesso esercizio (la stessa alternativa). Riscaldamento escluso; senza storico non
  * c'è record. È il record segnato nella riga serie; quelli di 1RM e volume sono in progress.ts.
  */
 export function loadRecords(archive: Pick<Archive, 'sessions'>, session: Session): LoadRecord[] {

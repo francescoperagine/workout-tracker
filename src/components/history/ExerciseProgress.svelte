@@ -2,7 +2,7 @@
   // Progressi di un esercizio (/exercise?id=…, brief route-history, US-28 e US-29): prima il grafico di
   // carico massimo, 1RM stimato (Epley) o volume per allenamento, con misura e periodo su una riga e il
   // confronto con l'allenamento precedente; sotto i record personali in una riga e la cronologia delle
-  // serie. L'esercizio è quello fatto davvero: ogni variante ha la sua pagina, il riscaldamento non
+  // serie. L'esercizio è quello fatto davvero: ogni alternativa ha la sua pagina, il riscaldamento non
   // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts. Ogni riga della
   // cronologia ha «Era un altro esercizio» (US-42): le serie di quell'allenamento passano all'esercizio
   // giusto, con «Annulla» nell'avviso.

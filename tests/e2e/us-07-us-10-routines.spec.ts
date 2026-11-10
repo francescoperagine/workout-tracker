@@ -50,7 +50,7 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
 
     await addExercise(page, 'Squat bilanciere');
     await addExercise(page, 'Panca piana bilanciere');
-    await addExercise(page, 'Rematore al cavo basso');
+    await addExercise(page, 'Rematore seduto al cavo basso');
     // la voce appena aggiunta è aperta: la si unisce a quella sopra
     await openEntry(page).getByRole('switch', { name: 'In superserie con l’esercizio sopra' }).check();
     await expect(page.getByText('Superserie · 2 esercizi')).toBeVisible();
@@ -58,9 +58,9 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
     await page.reload();
     await expect(page.getByRole('button', { name: /^1\. Squat bilanciere/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^2a\. Panca piana bilanciere/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: /^2b\. Rematore al cavo basso/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^2b\. Rematore seduto al cavo basso/ })).toBeVisible();
     const saved = await routineByName(page, 'Scheda C');
-    expect(saved?.exercises.map((e) => e.exerciseId)).toEqual(['squat-bilanciere', 'panca-piana-bilanciere', 'rematore-al-cavo-basso']);
+    expect(saved?.exercises.map((e) => e.exerciseId)).toEqual(['squat-bilanciere', 'panca-piana-bilanciere', 'rematore-seduto-al-cavo-basso']);
     const [single, a, b] = saved!.exercises;
     expect(single.group).toBeNull();
     expect(a.group).not.toBeNull();
@@ -69,7 +69,7 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
     // separare di nuovo
     await page.getByRole('button', { name: /^2b\./ }).click();
     await openEntry(page).getByRole('switch', { name: 'In superserie con l’esercizio sopra' }).uncheck();
-    await expect(page.getByRole('button', { name: /^3\. Rematore al cavo basso/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^3\. Rematore seduto al cavo basso/ })).toBeVisible();
   });
 
   test('US-07 le schede A/B del PoC si ricreano identiche nell’editor', async ({ page }) => {
@@ -158,7 +158,7 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
     await sheet(page).getByRole('button', { name: /Crea «Croci ai cavi alti»/ }).click();
     await expect(page.getByRole('button', { name: /^6\. Croci ai cavi alti/ })).toBeVisible();
     const saved = await storedArchive(page);
-    expect(saved?.catalog['custom-croci-ai-cavi-alti']).toEqual({ id: 'custom-croci-ai-cavi-alti', name: 'Croci ai cavi alti' });
+    expect(saved?.catalog['custom-croci-ai-cavi-alti']).toEqual({ id: 'custom-croci-ai-cavi-alti', name: 'Croci ai cavi alti', muscles: { primary: [], secondary: [] }, variantOf: null });
     expect(saved?.routines[0].exercises.at(-1)?.exerciseId).toBe('custom-croci-ai-cavi-alti');
 
     // la volta dopo il nome si trova nel catalogo, senza doppioni

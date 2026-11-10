@@ -105,6 +105,6 @@ test.describe('US-33 stato del salvataggio', () => {
     await sheet(page).getByRole('button', { name: 'Importa' }).click();
     await sheet(page).getByRole('button', { name: 'Fatto' }).click();
     await expect(saveBar(page)).toHaveCount(0);
-    expect((await storedArchive(page))?.version).toBe(2);
+    expect((await storedArchive(page))?.version).toBe(3);
   });
 });

@@ -8,14 +8,14 @@
   import ForgottenSheet from '../workout/ForgottenSheet.svelte';
   import { emptyArchive, mergeExercise, toDateKey, type Archive, type ForgottenSession } from '../../lib/archive';
 
-  const variants = ['Panca piana bilanciere', 'Panca piana manubri', 'Chest press'];
+  const alternatives = ['Panca piana bilanciere', 'Panca piana manubri', 'Chest press'];
   // demo: in app i suggerimenti vengono dal catalogo
   const catalog = ['Panca inclinata manubri', 'Panca declinata bilanciere', 'Croci ai cavi', 'Piegamenti sulle braccia', 'Dip alle parallele'];
   const OTHER = '__other__';
   let sheetOpen = $state(false);
   let dialogOpen = $state(false);
-  let variant = $state(variants[0]);
-  let choice = $state(variants[0]);
+  let alternative = $state(alternatives[0]);
+  let choice = $state(alternatives[0]);
   let other = $state('');
   let otherInput: HTMLInputElement | undefined = $state();
   let toast: string | null = $state(null);
@@ -23,7 +23,7 @@
   let pickerOpen = $state(false);
   let kitArchive: Archive = $state.raw({
     ...emptyArchive(),
-    catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift' } },
+    catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift', muscles: { primary: [], secondary: [] }, variantOf: null } },
   });
   let picked = $state('');
   // allenamento dimenticato (US-41): ultima serie ieri alle 17:42, o nessuna serie
@@ -50,20 +50,20 @@
   });
 
   function apply() {
-    variant = choice === OTHER ? other.trim() : choice;
+    alternative = choice === OTHER ? other.trim() : choice;
     sheetOpen = false;
   }
 </script>
 
 <div class="flex flex-wrap gap-3">
-  <button type="button" class="btn btn-secondary" onclick={() => (sheetOpen = true)}>Cambia variante</button>
+  <button type="button" class="btn btn-secondary" onclick={() => (sheetOpen = true)}>Cambia esercizio</button>
   <button type="button" class="btn btn-danger" onclick={() => (dialogOpen = true)}><Trash aria-hidden="true" />Elimina sessione</button>
   <button type="button" class="btn btn-secondary" onclick={() => (toast = 'Serie 3 rimossa')}>Rimuovi serie</button>
   <button type="button" class="btn btn-secondary" onclick={() => (pickerOpen = true)}>Aggiungi esercizio</button>
   <button type="button" class="btn btn-secondary" onclick={() => openForgotten(true)}>Allenamento dimenticato</button>
   <button type="button" class="btn btn-secondary" onclick={() => openForgotten(false)}>Dimenticato, senza serie</button>
 </div>
-<p class="hint">Variante scelta: {variant}{picked ? ` · esercizio: ${picked}` : ''}</p>
+<p class="hint">Alternativa scelta: {alternative}{picked ? ` · esercizio: ${picked}` : ''}</p>
 
 <ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={kitArchive}
   onpick={(p) => (picked = describe(p))}
@@ -74,27 +74,27 @@
 />
 
 <!-- con onback il foglio ha «Torna al menu» a sinistra del titolo: nell'app riapre il menu ⋯ dell'esercizio, qui chiude -->
-<BottomSheet bind:open={sheetOpen} title="Cambia variante" onback={() => (sheetOpen = false)}>
-  <p class="mb-3 text-text-muted">Se la macchina è occupata. «Precedente» e record seguiranno la variante scelta.</p>
+<BottomSheet bind:open={sheetOpen} title="Cambia esercizio" onback={() => (sheetOpen = false)}>
+  <p class="mb-3 text-text-muted">Se la macchina è occupata. «Precedente» e record seguiranno l’alternativa scelta.</p>
   <ul class="flex flex-col gap-2">
-    {#each variants as v (v)}
+    {#each alternatives as v (v)}
       <li>
         <label class="choice">
-          <input type="radio" name="variant" value={v} bind:group={choice} class="radio" />
+          <input type="radio" name="alternative" value={v} bind:group={choice} class="radio" />
           {v}
         </label>
       </li>
     {/each}
     <li>
       <label class="choice">
-        <input type="radio" name="variant" value={OTHER} bind:group={choice} class="radio" />
+        <input type="radio" name="alternative" value={OTHER} bind:group={choice} class="radio" />
         Altro esercizio…
       </label>
       {#if choice === OTHER}
         <div class="mt-2">
-          <label class="label" for="variant-other">Che esercizio hai fatto al posto di quello previsto?</label>
+          <label class="label" for="alternative-other">Che esercizio hai fatto al posto di quello previsto?</label>
           <input
-            id="variant-other"
+            id="alternative-other"
             class="field"
             bind:this={otherInput}
             bind:value={other}
@@ -117,7 +117,7 @@
     </li>
   </ul>
   {#snippet footer()}
-    <button type="button" class="btn btn-primary btn-block" disabled={!ready} onclick={apply}>Usa questa variante</button>
+    <button type="button" class="btn btn-primary btn-block" disabled={!ready} onclick={apply}>Usa questa alternativa</button>
   {/snippet}
 </BottomSheet>
 

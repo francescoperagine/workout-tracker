@@ -20,7 +20,7 @@ export function session(id: string, date: string, kg = 50, reps = 8): Session {
       {
         id: `${id}-e1`,
         exerciseId: 'squat-bilanciere',
-        variantOf: null,
+        alternativeOf: null,
         group: null,
         rest: 120,
         warmupRest: 60,
@@ -31,7 +31,7 @@ export function session(id: string, date: string, kg = 50, reps = 8): Session {
   };
 }
 
-/** Archivio v2 valido con le parti indicate */
+/** Archivio valido (v3) con le parti indicate */
 export function archiveWith(parts: Partial<Archive> = {}): Archive {
   return validateArchive({ ...emptyArchive(), revision: 1, ...parts });
 }

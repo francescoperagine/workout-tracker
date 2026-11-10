@@ -36,7 +36,7 @@ describe('US-14 nome scritto a mano', () => {
     const first = ensureExercise(empty, '  Crunch   ai cavi ');
     expect(first.created).toBe(true);
     expect(first.exercise).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', aliases: [], custom: true });
-    expect(first.archive.catalog['custom-crunch-ai-cavi']).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi' });
+    expect(first.archive.catalog['custom-crunch-ai-cavi']).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { primary: [], secondary: [] }, variantOf: null });
     // l'archivio di partenza non viene modificato
     expect(empty.catalog).toEqual({});
 
@@ -127,6 +127,10 @@ describe('US-35 alias del catalogo di base', () => {
     expect(suggestExercises(emptyArchive(), 'romanian').map((e) => e.id)).toEqual(['stacco-rumeno-bilanciere', 'stacco-rumeno-manubri']);
     expect(availableExercises(emptyArchive()).find((e) => e.id === 'leg-press')?.aliases).toEqual(['Pressa', 'Pressa orizzontale']);
   });
+
+  it('il vecchio nome del rematore tolto e i suoi alias trovano il rematore seduto (ADR-009)', () => {
+    for (const typed of ['Rematore al cavo basso', 'Pulley basso', 'Low cable row']) expect(findByName(emptyArchive(), typed)?.id, typed).toBe('rematore-seduto-al-cavo-basso');
+  });
 });
 
 describe('US-35 unione di esercizi duplicati', () => {
@@ -138,7 +142,7 @@ describe('US-35 unione di esercizi duplicati', () => {
     expect(JSON.stringify(before)).toBe(snapshot);
     expect(after.catalog['custom-deadlift']).toBeUndefined();
     expect(after.catalog['custom-stacco-da-terra']).toBeDefined();
-    const ids = after.sessions.flatMap((s) => s.exercises.flatMap((e) => [e.exerciseId, e.variantOf]));
+    const ids = after.sessions.flatMap((s) => s.exercises.flatMap((e) => [e.exerciseId, e.alternativeOf]));
     expect(ids).not.toContain('custom-deadlift');
     const nov4 = after.sessions.find((s) => s.date === '2026-11-04')!;
     expect(nov4.exercises.filter((e) => e.exerciseId === 'custom-stacco-da-terra').map((e) => e.sets.map((s) => [s.kg, s.reps]))).toEqual([
@@ -149,18 +153,18 @@ describe('US-35 unione di esercizi duplicati', () => {
     expect(JSON.stringify(after.sessions.find((s) => s.id === OCT_5))).toBe(JSON.stringify(before.sessions.find((s) => s.id === OCT_5)));
   });
 
-  it('schede (anche le alternative) e varianti: niente doppioni né varianti di sé stesso', () => {
+  it('schede (anche le alternative) e sessioni: niente doppioni né alternative di sé stesso', () => {
     const before = fixture();
     expect(mergeImpact(before, 'custom-estensioni-tricipiti-sopra-la-testa-al-cavo')).toEqual({ sessions: 2, routines: 1 });
     const after = mergeExercise(before, 'custom-estensioni-tricipiti-sopra-la-testa-al-cavo', 'french-press-ez');
     // a-5: l'esercizio diventa French press EZ, che esce dalle sue alternative
     expect(after.routines[0].exercises[4]).toMatchObject({ exerciseId: 'french-press-ez', alternatives: ['french-press-con-manubrio'] });
-    // 2026-10-12: French press EZ fatta al posto dell'assorbito non è più una variante
+    // 2026-10-12: French press EZ fatta al posto dell'assorbito non è più un’alternativa
     const oct12 = after.sessions.find((s) => s.date === '2026-10-12')!;
-    expect(oct12.exercises[4]).toMatchObject({ exerciseId: 'french-press-ez', variantOf: null });
-    // custom con custom: sceglie l'utente; la variante del 2026-10-12 torna l'esercizio previsto
+    expect(oct12.exercises[4]).toMatchObject({ exerciseId: 'french-press-ez', alternativeOf: null });
+    // custom con custom: sceglie l'utente; l’alternativa del 2026-10-12 torna l'esercizio previsto
     const legCurl = mergeExercise(before, 'custom-leg-curl-seduto', 'custom-leg-curl');
-    expect(legCurl.sessions.find((s) => s.date === '2026-10-12')!.exercises[3]).toMatchObject({ exerciseId: 'custom-leg-curl', variantOf: null });
+    expect(legCurl.sessions.find((s) => s.date === '2026-10-12')!.exercises[3]).toMatchObject({ exerciseId: 'custom-leg-curl', alternativeOf: null });
     expect(JSON.stringify(legCurl.sessions.find((s) => s.id === OCT_5))).toBe(JSON.stringify(before.sessions.find((s) => s.id === OCT_5)));
   });
 

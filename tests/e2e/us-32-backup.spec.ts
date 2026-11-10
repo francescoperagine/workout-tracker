@@ -16,7 +16,7 @@ test.describe('US-32 backup', () => {
     expect(file.suggestedFilename()).toMatch(/^workout-tracker-\d{4}-\d{2}-\d{2}\.json$/);
     const text = readFileSync((await file.path())!, 'utf8');
     const backup = JSON.parse(text);
-    expect(backup).toMatchObject({ version: 2 });
+    expect(backup).toMatchObject({ version: 3 });
     expect(backup.sessions.map((s: { id: string }) => s.id)).toEqual(['s1', 's2']);
     await expect(page.getByText(`Backup esportato: ${file.suggestedFilename()}`)).toBeVisible();
     await expect(page.getByTestId('archive-summary')).not.toContainText('mai');

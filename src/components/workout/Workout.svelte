@@ -1,6 +1,6 @@
 <script lang="ts">
   // Allenamento attivo (/workout, brief route-workout, step 6: US-12…US-20). La sessione in corso:
-  // esercizi con i target della scheda e le superserie, righe serie con il precedente, varianti, note,
+  // esercizi con i target della scheda e le superserie, righe serie con il precedente, alternative, note,
   // riordino; in basso la barra fissa con durata, stato del salvataggio e "Termina", che porta al
   // riepilogo (/workout?summary=<id>). Ogni modifica si salva subito (P4) e ricaricare riporta qui (P5).
   import { onMount, tick } from 'svelte';
@@ -30,7 +30,7 @@
   import ForgottenSheet from './ForgottenSheet.svelte';
   import SessionSummary from './SessionSummary.svelte';
   import RestTimerBar from './RestTimerBar.svelte';
-  import VariantSheet, { type VariantChoice } from './VariantSheet.svelte';
+  import AlternativeSheet, { type AlternativeChoice } from './AlternativeSheet.svelte';
   import WorkoutExercise from './WorkoutExercise.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { restTimer } from '../../lib/rest-timer.svelte';
@@ -126,12 +126,12 @@
   let refs: Record<string, { openNote(): Promise<void> }> = $state({});
 
   let pickerOpen = $state(false);
-  let variantFor: string | null = $state(null);
+  let alternativeFor: string | null = $state(null);
   let detailsFor: string | null = $state(null);
   let optionsFor: string | null = $state(null);
   let setFor: { exerciseId: string; setId: string } | null = $state(null);
   let setOpen = $state(false);
-  let variantOpen = $state(false);
+  let alternativeOpen = $state(false);
   let detailsOpen = $state(false);
   let optionsOpen = $state(false);
   // «Come si esegue» si apre anche da ⓘ: solo dal menu ⋯ il foglio ha «Torna al menu» (Recupero e Cambia esercizio sempre)
@@ -232,7 +232,7 @@
   }
 
   // --- esercizi ----------------------------------------------------------------------------------
-  function resolve(a: Archive, picked: PickedExercise | VariantChoice): { archive: Archive; id: string } {
+  function resolve(a: Archive, picked: PickedExercise | AlternativeChoice): { archive: Archive; id: string } {
     if (picked.kind === 'existing') return { archive: a, id: picked.id };
     const ensured = ensureExercise(a, picked.name);
     return { archive: ensured.archive, id: ensured.exercise.id };
@@ -254,16 +254,16 @@
     document.getElementById(`exercise-${added}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
 
-  function openVariant(id: string) {
-    variantFor = id;
-    variantOpen = true;
+  function openAlternative(id: string) {
+    alternativeFor = id;
+    alternativeOpen = true;
   }
 
   // Cambio di esercizio (US-14): nessuna conferma. Le serie spuntate restano all'esercizio fatto e
-  // la variante continua sotto; i valori solo scritti lasciano il posto a quelli dell'ultima volta con
+  // l’alternativa continua sotto; i valori solo scritti lasciano il posto a quelli dell'ultima volta con
   // l'esercizio nuovo (US-36), o si svuotano. Con qualcosa da perdere c'è "Annulla".
-  async function pickVariant(choice: VariantChoice) {
-    const exercise = find(variantFor);
+  async function pickAlternative(choice: AlternativeChoice) {
+    const exercise = find(alternativeFor);
     if (!session || !exercise) return;
     if (choice.kind === 'existing' && choice.id === exercise.exerciseId) return;
     const sessionId = session.id;
@@ -327,7 +327,7 @@
     edit((a) => setExerciseRest(a, sessionId, exerciseId, rest));
   }
 
-  function option(action: 'note' | 'details' | 'variant' | 'rest' | 'remove' | 'up' | 'down') {
+  function option(action: 'note' | 'details' | 'alternative' | 'rest' | 'remove' | 'up' | 'down') {
     const id = optionsFor;
     optionsOpen = false;
     if (!id) return;
@@ -339,7 +339,7 @@
       detailsFor = id;
       detailsFromMenu = true;
       detailsOpen = true;
-    } else if (action === 'variant') openVariant(id);
+    } else if (action === 'alternative') openAlternative(id);
     else if (action === 'rest') openRest(id);
     else if (action === 'up' || action === 'down') move(id, action === 'up' ? -1 : 1);
     else void removeExercise(id);
@@ -347,7 +347,7 @@
 
   // «Torna al menu»: chiude il foglio aperto dal menu ⋯ e riapre il menu dello stesso esercizio
   function backToMenu(id: string | null) {
-    variantOpen = detailsOpen = restOpen = false;
+    alternativeOpen = detailsOpen = restOpen = false;
     optionsFor = id;
     optionsOpen = id !== null;
   }
@@ -547,8 +547,8 @@
     return exercises.length ? `${started} · ${doneCount} di ${plural(exercises.length, 'esercizio fatto', 'esercizi fatti')}` : started;
   });
 
-  const variantExercise = $derived(find(variantFor));
-  const variantEntry = $derived(session && variantExercise ? plannedEntry(store.archive, session, variantExercise) : null);
+  const alternativeExercise = $derived(find(alternativeFor));
+  const alternativeEntry = $derived(session && alternativeExercise ? plannedEntry(store.archive, session, alternativeExercise) : null);
   const detailsExercise = $derived(find(detailsFor));
   const optionsExercise = $derived(find(optionsFor));
   const restExercise = $derived(find(restFor));
@@ -724,15 +724,15 @@
 
 <ExercisePicker bind:open={pickerOpen} title="Aggiungi esercizio" catalog={store.archive} onpick={addExercise} onmerge={(from, to) => edit((a) => mergeExercise(a, from, to))} />
 
-{#if variantExercise}
-  <VariantSheet
-    bind:open={variantOpen}
+{#if alternativeExercise}
+  <AlternativeSheet
+    bind:open={alternativeOpen}
     catalog={store.archive}
-    current={variantExercise.exerciseId}
-    planned={variantExercise.variantOf ?? variantExercise.exerciseId}
-    alternatives={variantEntry?.alternatives ?? []}
-    onpick={pickVariant}
-    onback={() => backToMenu(variantFor)}
+    current={alternativeExercise.exerciseId}
+    planned={alternativeExercise.alternativeOf ?? alternativeExercise.exerciseId}
+    alternatives={alternativeEntry?.alternatives ?? []}
+    onpick={pickAlternative}
+    onback={() => backToMenu(alternativeFor)}
   />
 {/if}
 
@@ -754,7 +754,7 @@
         <a class="option" href={`${appUrl('/exercise')}?id=${encodeURIComponent(optionsExercise.exerciseId)}&from=workout`}><ChartLine size={20} aria-hidden="true" />Progressi</a>
       </li>
     {/if}
-    <li><button type="button" class="option" onclick={() => option('variant')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
+    <li><button type="button" class="option" onclick={() => option('alternative')}><ArrowLeftRight size={20} aria-hidden="true" />Cambia esercizio</button></li>
     {#if optionsExercise}
       <li>
         <button type="button" class="option" onclick={() => option('rest')}><Timer size={20} aria-hidden="true" />Recupero · {restLabel(optionsExercise.rest)}</button>

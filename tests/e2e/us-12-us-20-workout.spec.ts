@@ -4,7 +4,7 @@ import { startSession, starterRoutines, type Archive, type Session } from '../..
 import { archiveWith, expectPage, seedArchive, sheet, storedArchive, finishWorkout } from './helpers';
 
 // Allenamento attivo (step 6): US-12 righe serie e precedente (P1, conteggio dei tocchi), US-13 tipi
-// di serie, US-14 varianti, US-15 serie ed esercizi in sessione, US-16 note, US-17 ripresa e mini-barra,
+// di serie, US-14 alternative, US-15 serie ed esercizi in sessione, US-16 note, US-17 ripresa e mini-barra,
 // US-18 riepilogo, US-19 approfondimento, US-20 più sessioni nello stesso giorno, più US-03 (invito
 // all'installazione) e US-27 (nome e data in corso).
 // "Oggi" è giovedì 8 ottobre 2026 alle 18:30 (il browser dei test è in Europe/Rome).
@@ -168,12 +168,12 @@ test.describe('US-13 tipi di serie', () => {
   });
 });
 
-test.describe('US-14 varianti', () => {
-  test('US-14 macchina occupata: le serie fatte restano, la variante continua sotto con il suo precedente; Annulla', async ({ page }) => {
+test.describe('US-14 alternative', () => {
+  test('US-14 macchina occupata: le serie fatte restano, l’alternativa continua sotto con il suo precedente; Annulla', async ({ page }) => {
     const alternative = SQUAT.alternatives[0];
     const past = pastSession('2026-10-06', 40, 8, (s) => {
       s.exercises[0].exerciseId = alternative;
-      s.exercises[0].variantOf = SQUAT.exerciseId;
+      s.exercises[0].alternativeOf = SQUAT.exerciseId;
       for (const set of s.exercises[0].sets) set.kg = 100;
     });
     await startFromToday(page, archiveWith({ routines: routines(), sessions: [past] }));
@@ -186,7 +186,7 @@ test.describe('US-14 varianti', () => {
     await expect(sheet(page).getByRole('radio', { name: /^Squat bilanciere/ })).toBeChecked();
     await sheet(page).getByRole('radio', { name: name(alternative) }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
-    // nessuna conferma: la serie fatta resta allo squat, la variante prende le serie da fare
+    // nessuna conferma: la serie fatta resta allo squat, l’alternativa prende le serie da fare
     await expect(page.getByRole('dialog', { name: 'Cambiare esercizio?' })).toHaveCount(0);
     await expect(page.getByText(`Le serie fatte restano a Squat bilanciere; continui con ${name(alternative)}.`)).toBeVisible();
 
@@ -194,11 +194,11 @@ test.describe('US-14 varianti', () => {
     await expect(variant).toContainText('Al posto di Squat bilanciere');
     await expect(variant.getByRole('button', { name: 'Copia il precedente: 100 × 8' })).toHaveCount(SQUAT.sets - 1);
     const [kept, stored] = (await running(page)).exercises;
-    expect(kept).toMatchObject({ exerciseId: SQUAT.exerciseId, variantOf: null });
+    expect(kept).toMatchObject({ exerciseId: SQUAT.exerciseId, alternativeOf: null });
     expect(kept.sets.map((s) => [s.kg, s.reps])).toEqual([[60, 8]]);
-    expect(stored).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
+    expect(stored).toMatchObject({ exerciseId: alternative, alternativeOf: SQUAT.exerciseId });
     expect(stored.sets).toHaveLength(SQUAT.sets - 1);
-    // le serie da fare entrano vuote, con l'ultima volta della variante nel segnaposto (US-36)
+    // le serie da fare entrano vuote, con l'ultima volta dell’alternativa nel segnaposto (US-36)
     expect(stored.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(stored.sets.map(() => [null, null, null]));
     await expect(variant.getByRole('textbox', { name: 'Peso serie 1, kg' })).toHaveAttribute('placeholder', '100');
     // la scheda non cambia
@@ -210,7 +210,7 @@ test.describe('US-14 varianti', () => {
     expect((await running(page)).exercises[0].sets).toHaveLength(SQUAT.sets);
   });
 
-  test('US-14 senza serie fatte la variante prende il posto dell’esercizio previsto, e si torna indietro', async ({ page }) => {
+  test('US-14 senza serie fatte l’alternativa prende il posto dell’esercizio previsto, e si torna indietro', async ({ page }) => {
     const alternative = SQUAT.alternatives[0];
     await startFromToday(page, archiveWith({ routines: routines() }));
     const squat = region(page, SQUAT.exerciseId);
@@ -220,14 +220,14 @@ test.describe('US-14 varianti', () => {
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
     await expect(page.getByText(`${name(alternative)} al posto di Squat bilanciere: i valori scritti si sono svuotati.`)).toBeVisible();
     const variant = region(page, alternative);
-    expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: alternative, variantOf: SQUAT.exerciseId });
+    expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: alternative, alternativeOf: SQUAT.exerciseId });
 
     // si torna all'esercizio previsto
     await changeExercise(page, variant);
     await sheet(page).getByRole('radio', { name: /^Squat bilanciere/ }).check();
     await sheet(page).getByRole('button', { name: 'Usa questo esercizio' }).click();
     await expect(region(page, SQUAT.exerciseId)).toBeVisible();
-    expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: SQUAT.exerciseId, variantOf: null });
+    expect((await running(page)).exercises[0]).toMatchObject({ exerciseId: SQUAT.exerciseId, alternativeOf: null });
   });
 
   test('US-14 "Altro esercizio…" scritto a mano diventa un esercizio personalizzato', async ({ page }) => {
@@ -240,8 +240,8 @@ test.describe('US-14 varianti', () => {
     await field.press('Enter');
     await expect(page.getByRole('region', { name: 'Squat con cintura elastica' })).toContainText('Al posto di Squat bilanciere');
     const stored = (await storedArchive(page))!;
-    expect(stored.catalog['custom-squat-con-cintura-elastica']).toEqual({ id: 'custom-squat-con-cintura-elastica', name: 'Squat con cintura elastica' });
-    expect(stored.sessions[0].exercises[0]).toMatchObject({ exerciseId: 'custom-squat-con-cintura-elastica', variantOf: SQUAT.exerciseId });
+    expect(stored.catalog['custom-squat-con-cintura-elastica']).toEqual({ id: 'custom-squat-con-cintura-elastica', name: 'Squat con cintura elastica', muscles: { primary: [], secondary: [] }, variantOf: null });
+    expect(stored.sessions[0].exercises[0]).toMatchObject({ exerciseId: 'custom-squat-con-cintura-elastica', alternativeOf: SQUAT.exerciseId });
   });
 });
 

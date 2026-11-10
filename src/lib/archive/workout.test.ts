@@ -47,7 +47,7 @@ function set(id: string, kg: number | null, reps: number | null, done = true, ty
 }
 
 function exercise(id: string, exerciseId: string, sets: SessionSet[], extra: Partial<SessionExercise> = {}): SessionExercise {
-  return { id, exerciseId, variantOf: null, group: null, rest: 90, warmupRest: 60, notes: '', sets, ...extra };
+  return { id, exerciseId, alternativeOf: null, group: null, rest: 90, warmupRest: 60, notes: '', sets, ...extra };
 }
 
 function finished(id: string, date: string, exercises: SessionExercise[], start = new Date(`${date}T18:00:00`).getTime()): Session {
@@ -121,34 +121,34 @@ describe('US-13 tipi di serie', () => {
   });
 });
 
-describe('US-14 varianti', () => {
-  it('senza serie spuntate la variante cambia sul posto: le serie si svuotano e si ricorda l’esercizio previsto', () => {
+describe('US-14 alternative', () => {
+  it('senza serie spuntate l’alternativa cambia sul posto: le serie si svuotano e si ricorda l’esercizio previsto', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const first = session.exercises[0];
     const typed = updateSet(archive, session.id, first.id, first.sets[0].id, { kg: 40, reps: 8 });
     const { archive: switchedArchive, added } = switchExercise(typed, session.id, first.id, 'leg-press');
     expect(added).toBeNull();
     const switched = running(switchedArchive).exercises[0];
-    expect(switched).toMatchObject({ id: first.id, exerciseId: 'leg-press', variantOf: first.exerciseId });
+    expect(switched).toMatchObject({ id: first.id, exerciseId: 'leg-press', alternativeOf: first.exerciseId });
     expect(switched.sets).toHaveLength(first.sets.length);
     expect(switched.sets.every((s) => s.kg === null && s.reps === null && s.completedAt === null)).toBe(true);
 
     const again = switchExercise(switchedArchive, session.id, first.id, 'goblet-squat').archive;
-    expect(running(again).exercises[0]).toMatchObject({ exerciseId: 'goblet-squat', variantOf: first.exerciseId });
+    expect(running(again).exercises[0]).toMatchObject({ exerciseId: 'goblet-squat', alternativeOf: first.exerciseId });
     const back = switchExercise(again, session.id, first.id, first.exerciseId).archive;
-    expect(running(back).exercises[0]).toMatchObject({ exerciseId: first.exerciseId, variantOf: null });
+    expect(running(back).exercises[0]).toMatchObject({ exerciseId: first.exerciseId, alternativeOf: null });
   });
 
-  it('con serie già spuntate quelle restano all’esercizio fatto e la variante continua sotto; Annulla rimette tutto', () => {
+  it('con serie già spuntate quelle restano all’esercizio fatto e l’alternativa continua sotto; Annulla rimette tutto', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const first = session.exercises[0];
     const done = updateSet(archive, session.id, first.id, first.sets[0].id, { kg: 40, reps: 8, completedAt: NOW });
     const typed = updateSet(done, session.id, first.id, first.sets[1].id, { kg: 45 });
     const { archive: split, added } = switchExercise(typed, session.id, first.id, 'leg-press');
     const [kept, variant, third] = running(split).exercises;
-    expect(kept).toMatchObject({ id: first.id, exerciseId: first.exerciseId, variantOf: null });
+    expect(kept).toMatchObject({ id: first.id, exerciseId: first.exerciseId, alternativeOf: null });
     expect(kept.sets.map((s) => [s.kg, s.reps])).toEqual([[40, 8]]);
-    expect(variant).toMatchObject({ id: added, exerciseId: 'leg-press', variantOf: first.exerciseId, notes: '' });
+    expect(variant).toMatchObject({ id: added, exerciseId: 'leg-press', alternativeOf: first.exerciseId, notes: '' });
     expect(variant.sets.map((s) => s.id)).toEqual(first.sets.slice(1).map((s) => s.id));
     expect(variant.sets.every((s) => s.kg === null && s.completedAt === null)).toBe(true);
     expect(third.id).toBe(session.exercises[1].id);
@@ -161,7 +161,7 @@ describe('US-14 varianti', () => {
     expect(undone.exercises).toEqual(running(typed).exercises);
   });
 
-  it('con tutte le serie spuntate la variante parte con una serie', () => {
+  it('con tutte le serie spuntate l’alternativa parte con una serie', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const first = session.exercises[0];
     let a = archive;
@@ -170,7 +170,7 @@ describe('US-14 varianti', () => {
     expect(running(split).exercises[1].sets).toHaveLength(1);
   });
 
-  it('i target restano quelli della voce prevista, anche dopo variante e riordino', () => {
+  it('i target restano quelli della voce prevista, anche dopo alternativa e riordino', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const [routineA] = archive.routines;
     const switched = switchExercise(archive, session.id, session.exercises[0].id, 'leg-press').archive;
@@ -335,7 +335,7 @@ describe('US-36 segnaposto: l’ultima volta, poi la scheda', () => {
     expect(placeholderSets(archive, session, session.exercises[0])).toEqual([{ kg: 60, reps: 8 }, { kg: null, reps: 12 }, { kg: 45, reps: 6 }]);
   });
 
-  it('una variante non prende il kg della scheda, solo le ripetizioni', () => {
+  it('un’alternativa non prende il kg della scheda, solo le ripetizioni', () => {
     const { archive, session } = startSession(withAB(), 'routine-a', NOW);
     const switched = switchExercise(archive, session.id, session.exercises[0].id, 'leg-press');
     const live = running(switched.archive);
@@ -376,15 +376,15 @@ describe('US-36 le serie entrano vuote, l’ultima volta è il segnaposto', () =
     expect(values(placeholderSets(archive, session, session.exercises[3]))).toEqual([[null, 10], [null, 10]]);
   });
 
-  it('fixture: il rematore al cavo basso aggiunto il 4 novembre prende dal 12 ottobre', () => {
+  it('fixture: il rematore seduto (ex al cavo basso, reindirizzato) aggiunto il 4 novembre prende dal 12 ottobre', () => {
     const archive = fixture();
     const nov4 = archive.sessions.find((s) => s.date === '2026-11-04')!;
-    const found = previousExercise(archive, nov4, 'rematore-al-cavo-basso');
+    const found = previousExercise(archive, nov4, 'rematore-seduto-al-cavo-basso');
     expect(found?.session.date).toBe('2026-10-12');
     expect(values(previousSets(normal(4), found!.exercise))).toEqual([[32, 15], [45, 10], [52, 6], [39, 6]]);
     // aggiunto a mano in una sessione nuova: numero e genere delle serie dell'ultima volta (il 4 novembre), vuote
     const free = startSession(archive, null, NOV_5);
-    const added = addSessionExercise(free.archive, free.session.id, 'rematore-al-cavo-basso');
+    const added = addSessionExercise(free.archive, free.session.id, 'rematore-seduto-al-cavo-basso');
     expect(added.exercise.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual(Array.from({ length: 5 }, () => [null, null, null]));
     expect(values(placeholderSets(added.archive, running(added.archive), added.exercise))).toEqual([[25, 12], [32, 14], [39, 10], [39, 8], [32, 10]]);
   });
@@ -406,7 +406,7 @@ describe('US-36 le serie entrano vuote, l’ultima volta è il segnaposto', () =
     const inPlace = switchExercise(written, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
     const moved = running(inPlace.archive).exercises[0];
     expect(values(moved.sets)).toEqual([[null, null], [null, null], [null, null]]);
-    // la terza serie non c'era l'ultima volta: il target della scheda, senza kg perché è una variante
+    // la terza serie non c'era l'ultima volta: il target della scheda, senza kg perché è un’alternativa
     expect(values(placeholderSets(inPlace.archive, running(inPlace.archive), moved))).toEqual([[90, 12], [100, 10], [null, 6]]);
     const logged = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 60, reps: 5, completedAt: NOW });
     const split = switchExercise(logged, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');

@@ -22,13 +22,21 @@ function local(): Archive {
   };
 }
 
-describe('US-32 esportazione v2', () => {
+describe('US-32 esportazione', () => {
   it('produce un JSON reimportabile identico, con la data di esportazione', () => {
     const a = { ...local(), settings: { ...local().settings, weightUnit: 'lb' as const } };
     const text = exportArchive(a, new Date('2026-10-10T08:00:00Z'));
     expect(JSON.parse(text).exportedAt).toBe('2026-10-10T08:00:00.000Z');
     const read = readBackup(text, emptyArchive());
-    expect(read).toEqual({ format: 'v2', archive: a, discarded: [], warnings: [] });
+    expect(read).toEqual({ format: 'app', archive: a, discarded: [], warnings: [] });
+  });
+
+  it('un archivio v3 con muscoli ed esercizio di partenza torna uguale da esportazione e lettura', () => {
+    const custom = { id: 'custom-squat-largo', name: 'Squat largo', muscles: { primary: ['quads' as const], secondary: ['adductors' as const] }, variantOf: 'squat-bilanciere' };
+    const a: Archive = { ...local(), catalog: { [custom.id]: custom } };
+    const text = exportArchive(a);
+    expect(JSON.parse(text).version).toBe(3);
+    expect(readBackup(text, emptyArchive()).archive).toEqual(a);
   });
 
   it('nome del file con la data locale', () => {
@@ -41,7 +49,7 @@ describe('US-32 lettura di un backup', () => {
     expect(readBackup(pocText, emptyArchive()).format).toBe('poc');
   });
 
-  it('il formato v2 si valida per intero: un errore rifiuta il file', () => {
+  it('il formato dell’app si valida per intero: un errore rifiuta il file', () => {
     const broken = JSON.parse(exportArchive(local()));
     broken.sessions[1].date = '2026-02-31';
     expect(() => readBackup(JSON.stringify(broken), emptyArchive())).toThrow(/^Il backup non è valido: Allenamento 2: data non valida\.$/);
@@ -49,7 +57,7 @@ describe('US-32 lettura di un backup', () => {
 
   it.each([
     ['JSON non valido', '{', 'Il file non è un backup leggibile (JSON non valido).'],
-    ['formato sconosciuto', '{"version":3}', 'Formato di backup non riconosciuto.'],
+    ['formato sconosciuto', '{"version":4}', 'Formato di backup non riconosciuto.'],
     ['vecchio formato bb-*', '[{"date":"2026-10-01","exercises":[]}]', 'Formato di backup non riconosciuto.'],
   ])('rifiuta: %s', (_, text, message) => {
     expect(() => readBackup(text, emptyArchive())).toThrow(message);

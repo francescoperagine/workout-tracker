@@ -1,6 +1,6 @@
 <script lang="ts">
   // Foglio dal basso su <dialog> nativo: focus intrappolato, Esc chiude, il focus torna a chi l'ha aperto.
-  // Per scelte e consultazioni in linea (catalogo, approfondimento, variante), non per inserire dati (P8).
+  // Per scelte e consultazioni in linea (catalogo, approfondimento, alternativa), non per inserire dati (P8).
   // All'apertura il focus va al titolo (o al campo con autofocus), non a ✕: niente anello su ✕ dopo un tocco.
   // Con onback, a sinistra del titolo c'è «Torna al menu» (fogli aperti dal menu ⋯ di un esercizio).
   import type { Snippet } from 'svelte';

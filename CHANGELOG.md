@@ -3,6 +3,44 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-021
+
+Date: 2026-11-10
+
+Summary:
+**Archivio alla versione 3, rematore doppio tolto, «alternativa» al posto di «variante» (muscle-volume, incremento
+1 di 6).** I personalizzati hanno `muscles` (vuoti) e `variantOf` (l'esercizio di catalogo da cui deriva una
+variante, oggi sempre `null`): lo schema entra tutto ora perché ogni push va in produzione. Un archivio o un backup
+v2 si legge e diventa v3; la chiave di `localStorage` resta la stessa. `rematore-al-cavo-basso` esce dal catalogo e
+si reindirizza a `rematore-seduto-al-cavo-basso` in diario, backup e import del PoC: lo storico dei due si somma.
+Nel codice e nei testi l'esercizio fatto al posto di quello della scheda si chiama «alternativa» («Cambia
+esercizio», «Usa questa alternativa» nel kit, «Ogni esercizio ha i suoi progressi, anche alternative e varianti»).
+
+Deliverables:
+- `src/lib/archive/types.ts`: `MUSCLE_GROUPS`, `MuscleGroup`, `Muscles`, `CustomExercise.muscles` e `variantOf`,
+  `SessionExercise.alternativeOf`, `version: 3`.
+- `src/lib/archive/validation.ts`: versioni 2 e 3, muscoli validati, reindirizzamenti a ogni validazione.
+- `src/lib/archive/catalog.ts`: `rewriteSessions`, `rewriteRoutines` (usati da `mergeExercise`), `applyRedirects`,
+  `redirectedId`; `ensureExercise` crea i personalizzati v3.
+- `src/data/catalog.ts`: voce tolta, alias sul rematore seduto, `EXERCISE_REDIRECTS`; `src/data/starter-routines.ts`.
+- `src/lib/archive/backup.ts` (formato `app`, v2 e v3), `src/lib/archive/poc-import.ts` (reindirizzamento prima
+  dell'id sconosciuto), `src/components/data/ImportFlow.svelte`.
+- `src/components/workout/AlternativeSheet.svelte` (era VariantSheet), `Workout.svelte`, testi di
+  `src/components/kit/KitOverlays.svelte` e `src/components/history/ProgressPage.svelte`, commenti.
+- Test: `validation.test.ts` (migrazione, versioni, muscoli, fixture del 5 novembre, doppioni, idempotenza),
+  `backup.test.ts`, `poc-import.test.ts`, `catalog.test.ts`, `src/data/seed-data.test.ts`; e2e aggiornati all'id e
+  ai nomi nuovi.
+- `AGENTS.md` (invariante degli ID), `docs/ARCHITECTURE.md`, `README.md`, `PRODUCT.md`, `DESIGN.md`,
+  `docs/PROJECT.md`, brief `route-workout` e `route-history`.
+
+Limiti noti: una scheda aperta con il codice vecchio mostra «Formato non riconosciuto» fino al ricaricamento, senza
+perdere dati; un backup nuovo non si importa in una versione vecchia. Fuori dalla lettera della SPEC: nell'import
+del PoC anche gli alias contano come nome noto, altrimenti il vecchio nome «Rematore al cavo basso» finiva nelle note
+come nome cambiato a mano. Interfaccia cambiata solo nei testi: Progressi guardata a 390×844 (scuro) e 320×568
+(chiaro) con il backup del 5 novembre, testo a capo pulito e «Rematore seduto al cavo basso» con 5 allenamenti.
+
+ADR: ADR-009. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-020
 
 Date: 2026-11-09

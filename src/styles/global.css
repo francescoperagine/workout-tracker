@@ -301,7 +301,7 @@
     margin-top: 2px;
   }
 
-  /* Scelta singola in un elenco (variante, catalogo): riga intera toccabile con radio del tema */
+  /* Scelta singola in un elenco (alternativa, catalogo): riga intera toccabile con radio del tema */
   .choice {
     display: flex;
     align-items: center;

@@ -14,7 +14,7 @@ describe('US-02 import del backup del PoC', () => {
   const { archive, discarded, warnings } = convertPocArchive(backup());
   const session = (id: string) => archive.sessions.find((s) => s.id === id)!;
 
-  it('il risultato è un archivio v2 valido', () => {
+  it('il risultato è un archivio valido', () => {
     expect(validateArchive(JSON.parse(JSON.stringify(archive)))).toEqual(archive);
   });
 
@@ -36,12 +36,12 @@ describe('US-02 import del backup del PoC', () => {
     expect(archive.routines.map((r) => r.id)).toEqual(['routine-a', 'routine-b']);
   });
 
-  it('varianti riconosciute dagli id: esercizio fatto e previsto', () => {
+  it('alternative riconosciute dagli id: esercizio fatto e previsto', () => {
     const [squat, bench] = session('poc-1').exercises;
-    expect(squat).toMatchObject({ exerciseId: 'squat-bilanciere', variantOf: null, group: null, rest: 120 });
+    expect(squat).toMatchObject({ exerciseId: 'squat-bilanciere', alternativeOf: null, group: null, rest: 120 });
     // Chest press al posto della panca piana: superserie e recupero dalla voce 2a della scheda A
-    expect(bench).toMatchObject({ exerciseId: 'chest-press', variantOf: 'panca-piana-bilanciere', group: '2', rest: 60, notes: 'macchina 2, sedile 4' });
-    expect(session('poc-5').exercises[0]).toMatchObject({ exerciseId: 'leg-press', variantOf: 'squat-bilanciere' });
+    expect(bench).toMatchObject({ exerciseId: 'chest-press', alternativeOf: 'panca-piana-bilanciere', group: '2', rest: 60, notes: 'macchina 2, sedile 4' });
+    expect(session('poc-5').exercises[0]).toMatchObject({ exerciseId: 'leg-press', alternativeOf: 'squat-bilanciere' });
   });
 
   it('pesi e ripetizioni in numeri (kg), serie vuote conservate come non completate', () => {
@@ -64,8 +64,8 @@ describe('US-02 import del backup del PoC', () => {
 
   it('US-14: i nomi liberi diventano esercizi personalizzati, riconosciuti senza maiuscole e spazi', () => {
     expect(archive.catalog).toEqual({
-      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi' },
-      'custom-palla-medica': { id: 'custom-palla-medica', name: 'Pàlla medica' },
+      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { primary: [], secondary: [] }, variantOf: null },
+      'custom-palla-medica': { id: 'custom-palla-medica', name: 'Pàlla medica', muscles: { primary: [], secondary: [] }, variantOf: null },
     });
     expect(session('poc-2').exercises[1].exerciseId).toBe('custom-crunch-ai-cavi');
     // "crunch  ai CAVI" nell'allenamento libero è lo stesso esercizio
@@ -88,8 +88,17 @@ describe('US-02 import del backup del PoC', () => {
     const data = backup();
     Object.assign(data.allenamenti[0].esercizi[0], { catalogoId: 'stacco-sumo', varianteId: 'stacco-sumo', variante: 'Stacco sumo', nome: 'Stacco sumo' });
     const conv = convertPocArchive(data);
-    expect(conv.archive.catalog['stacco-sumo']).toEqual({ id: 'stacco-sumo', name: 'Stacco sumo' });
+    expect(conv.archive.catalog['stacco-sumo']).toEqual({ id: 'stacco-sumo', name: 'Stacco sumo', muscles: { primary: [], secondary: [] }, variantOf: null });
     expect(conv.archive.sessions[0].exercises[0].exerciseId).toBe('stacco-sumo');
+  });
+
+  it('un id tolto dal catalogo si reindirizza, senza creare un personalizzato né una nota sul nome (ADR-009)', () => {
+    const data = backup();
+    const old = { catalogoId: 'rematore-al-cavo-basso', varianteId: 'rematore-al-cavo-basso', variante: 'Rematore al cavo basso', nome: 'Rematore al cavo basso' };
+    Object.assign(data.allenamenti[0].esercizi[0], old);
+    const conv = convertPocArchive(data);
+    expect(conv.archive.sessions[0].exercises[0]).toMatchObject({ exerciseId: 'rematore-seduto-al-cavo-basso', alternativeOf: null, notes: '' });
+    expect(Object.keys(conv.archive.catalog)).toEqual(Object.keys(archive.catalog));
   });
 
   it('rifiuta un file che non è un backup del PoC o supera 10.000 allenamenti', () => {

@@ -35,7 +35,7 @@ function set(id: string, done: boolean, extra: Partial<SessionSet> = {}): Sessio
 }
 
 function exercise(id: string, sets: SessionSet[], extra: Partial<SessionExercise> = {}): SessionExercise {
-  return { id, exerciseId: 'squat-bilanciere', variantOf: null, group: null, rest: 90, warmupRest: 45, notes: '', sets, ...extra };
+  return { id, exerciseId: 'squat-bilanciere', alternativeOf: null, group: null, rest: 90, warmupRest: 45, notes: '', sets, ...extra };
 }
 
 describe('conteggio dall’istante di fine (US-21, US-26)', () => {

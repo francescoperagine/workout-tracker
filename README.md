@@ -1,6 +1,6 @@
 # Workout Tracker
 
-Diario di allenamento in palestra, in italiano, pensato per il telefono tra una serie e l'altra: schede con varianti e superserie, pianificazione sulla settimana, allenamento con la colonna «precedente» e la spunta per serie, timer di recupero a tutto schermo, storico modificabile e progressi per esercizio.
+Diario di allenamento in palestra, in italiano, pensato per il telefono tra una serie e l'altra: schede con alternative e superserie, pianificazione sulla settimana, allenamento con la colonna «precedente» e la spunta per serie, timer di recupero a tutto schermo, storico modificabile e progressi per esercizio.
 
 Si installa sulla schermata Home come app (PWA) e funziona offline dopo la prima visita. **Nessun account, nessun server, nessuna statistica:** i dati restano nel browser.
 
@@ -16,7 +16,7 @@ App: <https://workout-tracker.francescoperagine.com>
 - Limiti: 100 esercizi per allenamento, 100 serie per esercizio, testi di lunghezza limitata, file di import fino a 10 MB e 10.000 allenamenti.
 - Gli avvisi di fine recupero (suono, vibrazione dove c'è, schermo acceso) funzionano solo con l'app aperta.
 
-L'import accetta anche i backup della prima versione statica dell'app (formato `bodytracker.archivio.v1`, file esportato da «Dati e privacy»): allenamenti, varianti ed esercizi liberi vengono convertiti, con un riepilogo degli elementi scartati.
+L'import accetta anche i backup della prima versione statica dell'app (formato `bodytracker.archivio.v1`, file esportato da «Dati e privacy»): allenamenti, alternative ed esercizi liberi vengono convertiti, con un riepilogo degli elementi scartati.
 
 ## Autore
 
@@ -46,7 +46,7 @@ Worker Cloudflare `workout-tracker`, solo asset statici, configurato in [wrangle
 
 ## Catalogo esercizi e approfondimenti
 
-Il catalogo di base è in [src/data/catalog.ts](src/data/catalog.ts), le schede di esempio A/B in [src/data/starter-routines.ts](src/data/starter-routines.ts). Gli **ID degli esercizi non vanno cambiati né rimossi**: lo storico e i backup li usano per riconoscere esercizi e varianti. Un esercizio nuovo si aggiunge con un ID nuovo; gli esercizi scritti a mano nell'app diventano esercizi personalizzati nel diario.
+Il catalogo di base è in [src/data/catalog.ts](src/data/catalog.ts), le schede di esempio A/B in [src/data/starter-routines.ts](src/data/starter-routines.ts). Gli **ID degli esercizi non vanno cambiati né rimossi senza un reindirizzamento** in `EXERCISE_REDIRECTS` (stesso file): lo storico e i backup li usano per riconoscere esercizi e alternative. Un esercizio nuovo si aggiunge con un ID nuovo; gli esercizi scritti a mano nell'app diventano esercizi personalizzati nel diario.
 
 Gli approfondimenti («come si esegue») sono vuoti di proposito: non contengono testi tecnici o consigli medici inventati. Per aggiungerne uno si compilano i campi dell'esercizio:
 

@@ -1,7 +1,8 @@
 // Esportazione e importazione dei backup (US-02, US-32).
-// - Export: l'archivio v2 in JSON, in kg e metri, indipendente dall'unità mostrata.
-// - Import: riconosce il formato v2 (validazione completa: un errore rifiuta il file) e quello del
-//   PoC (convertito, con gli eventuali elementi scartati). Limite di 10 MB e 10.000 allenamenti.
+// - Export: l'archivio (v3) in JSON, in kg e metri, indipendente dall'unità mostrata.
+// - Import: riconosce il formato dell'app, v2 o v3 (validazione completa: un errore rifiuta il
+//   file), e quello del PoC (convertito, con gli eventuali elementi scartati). Limite di 10 MB e
+//   10.000 allenamenti.
 // - Unione come nel PoC: gli elementi nuovi si aggiungono; per quelli con lo stesso identificativo
 //   l'utente sceglie "mantieni" (`keep`, questo dispositivo) o "sostituisci" (`replace`, il backup).
 import { toDateKey } from './dates';
@@ -9,7 +10,8 @@ import { convertPocArchive, type Discarded } from './poc-import';
 import { validateArchive } from './validation';
 import { ArchiveError, LIMITS, type Archive, type Schedule, type Session } from './types';
 
-export type BackupFormat = 'v2' | 'poc';
+/** `app` = archivio di questa app (v2 o v3), `poc` = diario del PoC */
+export type BackupFormat = 'app' | 'poc';
 export type DuplicateChoice = 'keep' | 'replace';
 
 export interface ImportData {
@@ -32,7 +34,7 @@ export function checkSize(bytes: number): void {
   if (bytes > LIMITS.importBytes) throw new ArchiveError('Il file supera il limite di 10 MB.');
 }
 
-/** Legge il testo di un backup (v2 o PoC). Lancia ArchiveError con un messaggio per l'utente. */
+/** Legge il testo di un backup (dell'app o del PoC). Lancia ArchiveError con un messaggio per l'utente. */
 export function readBackup(text: string, current: Pick<Archive, 'catalog'>): ImportData {
   checkSize(new TextEncoder().encode(text).length);
   let data: unknown;
@@ -41,11 +43,11 @@ export function readBackup(text: string, current: Pick<Archive, 'catalog'>): Imp
   } catch {
     throw new ArchiveError('Il file non è un backup leggibile (JSON non valido).');
   }
-  // v2 ha `version`, il PoC `versione`
+  // l'app ha `version`, il PoC `versione`
   const fields = data && typeof data === 'object' ? (data as { version?: unknown; versione?: unknown }) : {};
-  if (fields.version === 2) {
+  if (fields.version === 2 || fields.version === 3) {
     try {
-      return { format: 'v2', archive: validateArchive(data), discarded: [], warnings: [] };
+      return { format: 'app', archive: validateArchive(data), discarded: [], warnings: [] };
     } catch (error) {
       throw new ArchiveError(`Il backup non è valido: ${error instanceof Error ? error.message : 'struttura non riconosciuta.'}`);
     }
@@ -119,16 +121,16 @@ export interface MergeResult {
  * - Allenamenti e schede: per id, secondo la scelta. Le schede di un backup del PoC sono le schede
  *   iniziali A/B: si aggiungono solo se mancano, senza mai toccare quelle dell'utente.
  * - Esercizi personalizzati, pianificazione ed eccezioni: per chiave, secondo la scelta.
- * - Impostazioni: quelle del backup v2 solo con "sostituisci"; il PoC non ne ha.
+ * - Impostazioni: quelle di un backup dell'app solo con "sostituisci"; il PoC non ne ha.
  */
 export function mergeImport(current: Archive, data: ImportData, choice: DuplicateChoice): MergeResult {
   const replace = choice === 'replace';
-  const v2 = data.format === 'v2';
+  const app = data.format === 'app';
   const sessions = mergeById(current.sessions, data.archive.sessions, replace);
   if (sessions.length > LIMITS.sessions) {
     throw new ArchiveError('Il diario risultante supera il limite di 10.000 allenamenti. Importazione annullata.');
   }
-  const routines = mergeById(current.routines, data.archive.routines, replace && v2);
+  const routines = mergeById(current.routines, data.archive.routines, replace && app);
   if (routines.length > LIMITS.routines) throw new ArchiveError(`Il diario risultante supera il limite di ${LIMITS.routines} schede. Importazione annullata.`);
   const catalog = mergeRecord(current.catalog, data.archive.catalog, replace);
   if (Object.keys(catalog).length > LIMITS.customExercises) {
@@ -153,7 +155,7 @@ export function mergeImport(current: Archive, data: ImportData, choice: Duplicat
       schedule: mergeRecord(current.schedule, data.archive.schedule, replace) as Schedule,
       overrides: mergeRecord(current.overrides, data.archive.overrides, replace),
       sessions: normalized.sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start),
-      settings: v2 && replace ? { ...data.archive.settings } : current.settings,
+      settings: app && replace ? { ...data.archive.settings } : current.settings,
     },
     closedSessions,
   };

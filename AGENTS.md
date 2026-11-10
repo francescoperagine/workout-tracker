@@ -67,7 +67,7 @@ diario di allenamento in palestra, statico, con l'interfaccia in italiano e i da
 - **Il diario solo tramite `src/lib/archive/`:** nelle isole `archiveStore()`, modifiche con funzioni pure che non
   mutano l'argomento; le isole che lo leggono sono `client:only="svelte"`. Testo solo dal templating, niente `innerHTML`.
 - **Date `YYYY-MM-DD` in ora locale:** `toDateKey`/`fromDateKey`, mai `toISOString()` o `new Date('YYYY-MM-DD')`.
-- **ID del catalogo base** (`src/data/catalog.ts`, `POC_IDS`) **mai cambiati né rimossi:** storico e backup li usano.
+- **ID del catalogo base** (`src/data/catalog.ts`, `POC_IDS`) **mai cambiati né rimossi** senza reindirizzamento in `EXERCISE_REDIRECTS`: storico e backup li usano.
 - **UI:** solo i token di `DESIGN.md` e i componenti base (mai la palette di Tailwind, valori letterali o varianti
   `dark:`); prima di toccarla leggi `PRODUCT.md`, `DESIGN.md`, il brief in `.impeccable/surfaces/` e
   `.claude/skills/impeccable/reference/craft-floor.md`; un componente nuovo va anche in `/kit`.

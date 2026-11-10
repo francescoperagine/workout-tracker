@@ -1,6 +1,7 @@
 // Catalogo di base, convertito una volta dal catalogo del PoC (step 2; il PoC è nella cronologia git).
-// Gli ID NON vanno cambiati né rimossi: lo storico dell'utente e i backup del PoC li usano
-// (sono dati, per questo restano in italiano). I campi seguono il modello v2, in inglese.
+// Gli ID NON vanno cambiati né rimossi senza un reindirizzamento in EXERCISE_REDIRECTS: lo storico
+// dell'utente e i backup del PoC li usano (sono dati, per questo restano in italiano). I campi seguono
+// il modello dell'archivio, in inglese.
 // Gli approfondimenti sono vuoti di proposito: non vanno inventati testi tecnici o consigli medici.
 // Un approfondimento si aggiunge compilando i campi; le immagini vanno in public/exercises/ (percorsi
 // relativi, niente domini esterni né SVG incorporati).
@@ -88,17 +89,6 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'rematore-manubri-petto-su-panca-inclinata',
     name: 'Rematore manubri, petto su panca inclinata',
     aliases: ['Chest supported dumbbell row', 'Rematore manubri panca inclinata'],
-    description: '',
-    image: '',
-    imageAlt: '',
-    steps: [],
-    caution: '',
-    sources: []
-  },
-  'rematore-al-cavo-basso': {
-    id: 'rematore-al-cavo-basso',
-    name: 'Rematore al cavo basso',
-    aliases: ['Low cable row', 'Pulley basso'],
     description: '',
     image: '',
     imageAlt: '',
@@ -417,7 +407,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
   'rematore-seduto-al-cavo-basso': {
     id: 'rematore-seduto-al-cavo-basso',
     name: 'Rematore seduto al cavo basso',
-    aliases: ['Seated cable row'],
+    aliases: ['Seated cable row', 'Pulley basso', 'Low cable row', 'Rematore al cavo basso'],
     description: '',
     image: '',
     imageAlt: '',
@@ -480,4 +470,15 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     caution: '',
     sources: []
   }
+};
+
+/**
+ * ID tolti dal catalogo di base → ID che li sostituisce (ADR-009). Si applicano a ogni archivio letto,
+ * ai backup e all'import del PoC. Mai rimuovere una voce di qui: un backup vecchio può ancora usarla;
+ * la destinazione è sempre in BASE_CATALOG e non è a sua volta una chiave (niente catene).
+ * - 10 novembre 2026, muscle-volume (D12): «Rematore al cavo basso» era lo stesso esercizio del
+ *   rematore seduto al pulley basso.
+ */
+export const EXERCISE_REDIRECTS: Readonly<Record<string, string>> = {
+  'rematore-al-cavo-basso': 'rematore-seduto-al-cavo-basso',
 };

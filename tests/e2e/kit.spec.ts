@@ -16,16 +16,16 @@ test('/kit: la spunta su una riga vuota conferma il precedente e apre il recuper
   await expect(page.getByRole('button', { name: /^Recupero: .* Tocca per aprire$/ })).toBeVisible();
 });
 
-test('/kit: la variante si può scrivere a mano al posto di quella prevista', async ({ page }) => {
+test('/kit: l’alternativa si può scrivere a mano al posto di quella prevista', async ({ page }) => {
   await page.goto('kit/');
-  await (await hydrated(page.getByRole('button', { name: 'Cambia variante' }))).click();
+  await (await hydrated(page.getByRole('button', { name: 'Cambia esercizio' }))).click();
   const sheet = page.locator('dialog[open]');
-  const useButton = sheet.getByRole('button', { name: 'Usa questa variante' });
+  const useButton = sheet.getByRole('button', { name: 'Usa questa alternativa' });
   await sheet.getByRole('radio', { name: 'Altro esercizio…' }).check();
   await expect(useButton).toBeDisabled();
   const input = sheet.getByRole('textbox', { name: 'Che esercizio hai fatto al posto di quello previsto?' });
   await expect(input).toBeFocused();
   await input.fill('Panca inclinata con kettlebell');
   await useButton.click();
-  await expect(page.getByText('Variante scelta: Panca inclinata con kettlebell')).toBeVisible();
+  await expect(page.getByText('Alternativa scelta: Panca inclinata con kettlebell')).toBeVisible();
 });

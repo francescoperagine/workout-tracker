@@ -26,7 +26,7 @@
   </div>
 {:else if done.length}
   <div class="flex flex-col gap-5">
-    <p class="m-0 text-text-muted">Le varianti hanno ciascuna i loro progressi.</p>
+    <p class="m-0 text-text-muted">Ogni esercizio ha i suoi progressi, anche alternative e varianti.</p>
     <ol class="m-0 list-none p-0">
       {#each done as item (item.exerciseId)}
         <li class="border-b border-border last:border-b-0">

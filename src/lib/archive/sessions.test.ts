@@ -43,7 +43,7 @@ describe('US-11 avvio dell’allenamento', () => {
     expect(session).toMatchObject({ date: '2026-10-10', routineId: 'routine-a', name: 'Scheda A', start: NOW, end: null });
     expect(session.exercises.map((e) => e.exerciseId)).toEqual(routineA.exercises.map((e) => e.exerciseId));
     expect(session.exercises.map((e) => e.group)).toEqual(routineA.exercises.map((e) => e.group));
-    expect(session.exercises[0]).toMatchObject({ rest: routineA.exercises[0].rest, warmupRest: routineA.exercises[0].warmupRest, variantOf: null });
+    expect(session.exercises[0]).toMatchObject({ rest: routineA.exercises[0].rest, warmupRest: routineA.exercises[0].warmupRest, alternativeOf: null });
     expect(session.exercises[0].sets).toHaveLength(routineA.exercises[0].sets);
     expect(session.exercises[0].sets.every((s) => s.type === 'normal' && s.kg === null && s.reps === null && s.completedAt === null)).toBe(true);
     expect(new Set(session.exercises.flatMap((e) => [e.id, ...e.sets.map((s) => s.id)])).size).toBe(
@@ -154,10 +154,10 @@ describe('US-41 allenamento dimenticato', () => {
 
 describe('US-42 correggere l’esercizio di un allenamento concluso', () => {
   /** voce di sessione con una serie fatta */
-  const entry = (id: string, exerciseId: string, variantOf: string | null = null) => ({
+  const entry = (id: string, exerciseId: string, alternativeOf: string | null = null) => ({
     id,
     exerciseId,
-    variantOf,
+    alternativeOf,
     group: null,
     rest: 90,
     warmupRest: 60,
@@ -193,12 +193,12 @@ describe('US-42 correggere l’esercizio di un allenamento concluso', () => {
     expect(before.map((e) => e.id)).toEqual(['e1', 'e3']);
   });
 
-  it('una variante dell’esercizio scelto non è più una variante; le altre restano', () => {
+  it('un’alternativa all’esercizio scelto non è più un’alternativa; le altre restano', () => {
     const a: Archive = { ...withAB(), sessions: [done('v', [entry('e1', 'leg-press', 'squat-bilanciere'), entry('e2', 'hack-squat', 'squat-bilanciere')])] };
     const one = reassignExercise(a, 'v', 'leg-press', 'squat-bilanciere').archive.sessions[0].exercises[0];
-    expect(one).toMatchObject({ exerciseId: 'squat-bilanciere', variantOf: null });
+    expect(one).toMatchObject({ exerciseId: 'squat-bilanciere', alternativeOf: null });
     const two = reassignExercise(a, 'v', 'hack-squat', 'leg-press-piedi-a-meta-pedana').archive.sessions[0].exercises[1];
-    expect(two).toMatchObject({ exerciseId: 'leg-press-piedi-a-meta-pedana', variantOf: 'squat-bilanciere' });
+    expect(two).toMatchObject({ exerciseId: 'leg-press-piedi-a-meta-pedana', alternativeOf: 'squat-bilanciere' });
   });
 
   it('"Annulla" rimette le voci com’erano', () => {

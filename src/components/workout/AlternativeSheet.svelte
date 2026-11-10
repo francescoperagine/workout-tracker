@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  export type VariantChoice = { kind: 'existing'; id: string } | { kind: 'new'; name: string };
+  export type AlternativeChoice = { kind: 'existing'; id: string } | { kind: 'new'; name: string };
 </script>
 
 <script lang="ts">
@@ -18,7 +18,7 @@
     /** esercizio previsto dalla scheda (o quello iniziale) */
     planned: string;
     alternatives: readonly string[];
-    onpick: (choice: VariantChoice) => void;
+    onpick: (choice: AlternativeChoice) => void;
     /** aperto dal menu ⋯: «Torna al menu» */
     onback?: () => void;
   }
@@ -70,7 +70,7 @@
       {#each options as id (id)}
         <li>
           <label class="choice">
-            <input type="radio" class="radio" name={`variant-${uid}`} value={id} bind:group={choice} />
+            <input type="radio" class="radio" name={`alternative-${uid}`} value={id} bind:group={choice} />
             <span class="option-text">
               <span>{exerciseName(catalog, id)}</span>
               {#if id === planned}<span class="tag">previsto</span>{/if}
@@ -80,14 +80,14 @@
       {/each}
       <li>
         <label class="choice">
-          <input type="radio" class="radio" name={`variant-${uid}`} value={OTHER} bind:group={choice} onchange={chooseOther} />
+          <input type="radio" class="radio" name={`alternative-${uid}`} value={OTHER} bind:group={choice} onchange={chooseOther} />
           Altro esercizio…
         </label>
         {#if choice === OTHER}
           <div class="other">
-            <label class="label" for={`variant-other-${uid}`}>Che esercizio fai al posto di quello previsto?</label>
+            <label class="label" for={`alternative-other-${uid}`}>Che esercizio fai al posto di quello previsto?</label>
             <input
-              id={`variant-other-${uid}`}
+              id={`alternative-other-${uid}`}
               class="field"
               bind:this={otherInput}
               bind:value={other}

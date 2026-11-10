@@ -54,7 +54,7 @@ test.describe('US-35 catalogo senza doppioni', () => {
     const saved = (await storedArchive(page))!;
     expect(saved.catalog['custom-romanian-deadlift']).toBeUndefined();
     const nov4 = saved.sessions.find((s) => s.date === '2026-11-04')!;
-    expect(nov4.exercises[0]).toMatchObject({ exerciseId: 'stacco-rumeno-bilanciere', variantOf: 'squat-bilanciere' });
+    expect(nov4.exercises[0]).toMatchObject({ exerciseId: 'stacco-rumeno-bilanciere', alternativeOf: 'squat-bilanciere' });
 
     // custom con custom: sceglie la destinazione chi unisce; Annulla nella conferma non unisce nulla
     await sheet(page).getByRole('button', { name: 'Unisci Leg curl seduto in un altro esercizio' }).click();
@@ -74,10 +74,10 @@ test.describe('US-36 l’ultima volta e la scheda come segnaposto', () => {
     await page.goto('workout/');
     await openPicker(page);
     await sheet(page).getByLabel('Cerca o scrivi il nome').fill('rematore al cavo basso');
-    await sheet(page).getByRole('button', { name: 'Rematore al cavo basso', exact: true }).click();
+    await sheet(page).getByRole('button', { name: 'Rematore seduto al cavo basso', exact: true }).click();
 
-    // il 4 novembre: 25 × 12, 32 × 14, 39 × 10, 39 × 8, 32 × 10, nei segnaposto e non nei campi
-    const row = page.getByRole('region', { name: 'Rematore al cavo basso', exact: true });
+    // il 4 novembre (con l’id tolto, reindirizzato): 25 × 12, 32 × 14, 39 × 10, 39 × 8, 32 × 10, nei segnaposto e non nei campi
+    const row = page.getByRole('region', { name: 'Rematore seduto al cavo basso', exact: true });
     const expected = [
       ['25', '12'],
       ['32', '14'],

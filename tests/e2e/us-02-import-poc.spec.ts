@@ -31,8 +31,8 @@ test.describe('US-02 import del diario del PoC', () => {
 
     const archive = await storedArchive(page);
     expect(archive?.sessions.map((s) => s.id)).toEqual(['poc-1', 'poc-2', 'poc-3', 'poc-5']);
-    // varianti ed esercizi riconosciuti dagli ID
-    expect(archive?.sessions[0].exercises[1]).toMatchObject({ exerciseId: 'chest-press', variantOf: 'panca-piana-bilanciere' });
+    // alternative ed esercizi riconosciuti dagli ID
+    expect(archive?.sessions[0].exercises[1]).toMatchObject({ exerciseId: 'chest-press', alternativeOf: 'panca-piana-bilanciere' });
     await expect(page.getByTestId('archive-summary')).toContainText('4 allenamenti, 2 schede');
   });
 

@@ -112,7 +112,7 @@ export function restAfterCheck(session: Pick<Session, 'exercises'>, exerciseId: 
 
 /**
  * true se il timer non vale più: sessione conclusa o tolta, serie tolta o con la spunta tolta
- * (US-22, anche da un'altra scheda del browser), variante cambiata (le spunte si svuotano).
+ * (US-22, anche da un'altra scheda del browser), alternativa scelta (le spunte si svuotano).
  */
 export function restIsStale(state: RestTimerState, archive: Pick<Archive, 'sessions'>): boolean {
   const session = archive.sessions.find((s) => s.id === state.sessionId);
@@ -134,7 +134,7 @@ export function crossedThreshold(before: number, after: number): (typeof ANNOUNC
 /**
  * La prossima serie attesa, per il timer (US-21): "Panca piana bilanciere · serie 2 · 40 kg × 6–8".
  * Peso e ripetizioni: quelli già scritti nella riga, altrimenti la fonte del segnaposto (`placeholderSets`):
- * la serie spuntata l'ultima volta, poi i target della scheda (niente kg su una variante, niente target sul
+ * la serie spuntata l'ultima volta, poi i target della scheda (niente kg su un’alternativa, niente target sul
  * riscaldamento). Unica differenza voluta: qui le ripetizioni della scheda restano il testo intero («6–8»),
  * nel campo il limite basso.
  */
@@ -149,7 +149,7 @@ export function nextSetText(
   const number = setNumbers(exercise.sets)[index];
   const previous = previousSets(exercise, previousExercise(archive, session, exercise.exerciseId)?.exercise ?? null)[index];
   const entry = plannedEntry(archive, session, exercise);
-  const target = entry && set.type !== 'warmup' ? { kg: exercise.variantOf ? null : entry.loadMin, reps: entry.reps || null } : null;
+  const target = entry && set.type !== 'warmup' ? { kg: exercise.alternativeOf ? null : entry.loadMin, reps: entry.reps || null } : null;
   const hint = previous ?? target;
   const kg = set.kg ?? hint?.kg ?? null;
   const reps = set.reps ?? hint?.reps ?? null;

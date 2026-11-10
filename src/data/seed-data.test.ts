@@ -1,17 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { BASE_CATALOG } from './catalog';
+import { BASE_CATALOG, EXERCISE_REDIRECTS } from './catalog';
 import { STARTER_ROUTINES } from './starter-routines';
 
 // Elenco permanente degli ID del catalogo del PoC: lo storico dell'utente li usa.
-// Se questo test fallisce, un ID è stato cambiato o rimosso: non va fatto.
+// Se questo test fallisce, un ID è stato cambiato o rimosso senza reindirizzamento: non va fatto.
+// Un ID si toglie solo con una voce in EXERCISE_REDIRECTS, e resta in questo elenco.
 const POC_IDS = ['squat-bilanciere', 'leg-press', 'squat-al-smith', 'goblet-squat', 'panca-piana-bilanciere', 'chest-press', 'panca-piana-manubri', 'rematore-manubri-petto-su-panca-inclinata', 'rematore-al-cavo-basso', 'row-machine-con-appoggio', 'hip-thrust-bilanciere', 'hip-thrust-machine', 'glute-bridge-con-manubrio', 'pull-through-al-cavo', 'distensioni-manubri-seduto-schienale-alto', 'shoulder-press-machine', 'curl-manubri-su-panca-inclinata', 'curl-al-cavo-basso', 'curl-ez', 'alzate-laterali', 'alzate-al-cavo', 'macchina-laterali', 'standing-calf', 'calf-alla-leg-press', 'calf-monopodalico-con-manubrio', 'stacco-rumeno-bilanciere', 'stacco-rumeno-manubri', 'hyperextension-45-con-disco', 'distensioni-manubri-panca-inclinata', 'incline-chest-press', 'panca-inclinata-al-smith', 'lat-machine-presa-prona', 'trazioni-assistite-o-negative', 'lat-monobraccio-al-cavo', 'leg-press-piedi-a-meta-pedana', 'hack-squat', 'leg-extension', 'rematore-seduto-al-cavo-basso', 'rematore-manubrio-monobraccio-con-appoggio', 'row-machine', 'french-press-ez', 'pushdown-ai-cavi', 'french-press-con-manubrio'];
 
 describe('catalogo di base', () => {
-  it('contiene tutti gli ID del PoC, invariati', () => {
-    expect(Object.keys(BASE_CATALOG)).toEqual(POC_IDS);
-    for (const id of POC_IDS) {
-      expect(BASE_CATALOG[id], id).toBeDefined();
-      expect(BASE_CATALOG[id].id).toBe(id);
+  it('contiene tutti gli ID del PoC, invariati, tranne quelli reindirizzati', () => {
+    const redirected = Object.keys(EXERCISE_REDIRECTS);
+    expect(Object.keys(BASE_CATALOG)).toEqual(POC_IDS.filter((id) => !redirected.includes(id)));
+    for (const id of POC_IDS) expect(Object.hasOwn(BASE_CATALOG, id) || Object.hasOwn(EXERCISE_REDIRECTS, id), id).toBe(true);
+  });
+
+  it('reindirizzamenti: verso un esercizio del catalogo, mai da uno che c’è ancora, senza catene', () => {
+    for (const [from, to] of Object.entries(EXERCISE_REDIRECTS)) {
+      expect(Object.hasOwn(BASE_CATALOG, from), from).toBe(false);
+      expect(Object.hasOwn(BASE_CATALOG, to), to).toBe(true);
+      expect(Object.hasOwn(EXERCISE_REDIRECTS, to), to).toBe(false);
     }
   });
 

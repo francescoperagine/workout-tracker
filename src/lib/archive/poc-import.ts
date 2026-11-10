@@ -7,7 +7,7 @@
 // di rifiutare l'intero file, così il riepilogo finale può elencarli (US-02).
 import { BASE_CATALOG } from '../../data/catalog';
 import { STARTER_ROUTINES } from '../../data/starter-routines';
-import { ensureExercise, nameKey } from './catalog';
+import { ensureExercise, nameKey, redirectedId } from './catalog';
 import { fromDateKey, isValidDateKey } from './dates';
 import {
   ArchiveError,
@@ -102,8 +102,12 @@ export function convertPocArchive(data: unknown, current: Pick<Archive, 'catalog
       }
       exerciseIds.add(e.id);
 
-      // Esercizio fatto: la variante. Senza id (nome libero) si cerca o si crea per nome, come US-14.
-      let exerciseId = e.varianteId || e.catalogoId;
+      // ID tolti dal catalogo (ADR-009): si reindirizzano subito, prima del ramo dell'id sconosciuto,
+      // che altrimenti li farebbe rinascere come personalizzati
+      const doneId = redirectedId(e.varianteId);
+      const catalogId = redirectedId(e.catalogoId);
+      // Esercizio fatto: l’alternativa, se c’è. Senza id (nome libero) si cerca o si crea per nome, come US-14.
+      let exerciseId = doneId || catalogId;
       const doneName = (e.variante || e.nome).trim();
       if (!exerciseId) {
         try {
@@ -115,15 +119,17 @@ export function convertPocArchive(data: unknown, current: Pick<Archive, 'catalog
         }
       } else if (!(exerciseId in BASE_CATALOG) && !(exerciseId in work.catalog)) {
         // Id sconosciuto (catalogo del PoC modificato a mano): si conserva l'id come esercizio personalizzato
-        work = { ...work, catalog: { ...work.catalog, [exerciseId]: { id: exerciseId, name: doneName } } };
+        work = { ...work, catalog: { ...work.catalog, [exerciseId]: { id: exerciseId, name: doneName, muscles: { primary: [], secondary: [] }, variantOf: null } } };
         warnings.push(`"${doneName}" non è nel catalogo: aggiunto agli esercizi personalizzati.`);
       }
-      const planned = e.catalogoId && e.catalogoId !== exerciseId ? e.catalogoId : null;
+      const planned = catalogId && catalogId !== exerciseId ? catalogId : null;
       const routineExercise = pocRoutine?.exercises.find((x) => x.exerciseId === (planned ?? exerciseId));
 
       // Un nome cambiato a mano nel PoC non ha un campo nel modello v2: resta nelle note
       let notes = e.note;
-      const knownNames = [e.variante, BASE_CATALOG[e.catalogoId]?.name, BASE_CATALOG[exerciseId]?.name].filter(Boolean).map((n) => nameKey(n!));
+      // anche gli alias: il vecchio nome di un id reindirizzato è un alias del nuovo
+      const base = [catalogId, exerciseId].flatMap((id) => (Object.hasOwn(BASE_CATALOG, id) ? [BASE_CATALOG[id].name, ...BASE_CATALOG[id].aliases] : []));
+      const knownNames = [e.variante, ...base].filter(Boolean).map((n) => nameKey(n));
       if (!knownNames.includes(nameKey(e.nome))) {
         notes = [notes, `Nome registrato: ${e.nome.trim()}`].filter(Boolean).join(' · ').slice(0, LIMITS.notesLength);
         warnings.push(`${where}: il nome "${e.nome.trim()}" è stato conservato nelle note.`);
@@ -138,7 +144,7 @@ export function convertPocArchive(data: unknown, current: Pick<Archive, 'catalog
       exercises.push({
         id: e.id,
         exerciseId,
-        variantOf: planned,
+        alternativeOf: planned,
         group: routineExercise?.group ?? null,
         rest: routineExercise?.rest ?? DEFAULT_SETTINGS.defaultRest,
         warmupRest: routineExercise?.warmupRest ?? DEFAULT_SETTINGS.defaultRest,

@@ -1,6 +1,6 @@
 <script lang="ts">
   // Importazione di un backup (US-02, US-32), dalle Impostazioni e dal primo avvio:
-  // file (v2 o del PoC) → anteprima con numero di allenamenti e periodo →
+  // file (dell’app o del PoC) → anteprima con numero di allenamenti e periodo →
   // scelta "mantieni" o "sostituisci" se ci sono elementi già presenti → riepilogo con gli scartati.
   // Fino alla conferma nulla viene modificato; un file non valido lascia il diario com'è.
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
@@ -63,7 +63,7 @@
   // Le schede di un backup del PoC (A/B iniziali) si aggiungono solo se mancano: per il PoC la scelta
   // riguarda soltanto gli allenamenti
   const hasDuplicates = $derived(
-    !!preview && preview.existingSessions + (preview.format === 'v2' ? preview.existingRoutines : 0) > 0,
+    !!preview && preview.existingSessions + (preview.format === 'app' ? preview.existingRoutines : 0) > 0,
   );
   const title = $derived(
     phase === 'done' ? 'Backup importato' : phase === 'error' ? 'Backup non importato' : data?.format === 'poc' ? 'Diario della versione precedente' : 'Importa backup',
@@ -212,7 +212,7 @@
             <span>
               <span class="block font-semibold">Sostituisci con quelli del backup</span>
               <span class="block text-sm text-text-muted">
-                {data?.format === 'v2'
+                {data?.format === 'app'
                   ? 'Gli elementi in comune prendono la versione del backup, insieme alle impostazioni.'
                   : 'Gli allenamenti in comune prendono la versione del backup.'}
               </span>

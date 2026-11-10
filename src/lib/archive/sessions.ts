@@ -39,7 +39,7 @@ export function startSession(archive: Archive, routineId: string | null, now: nu
     exercises = routine.exercises.slice(0, LIMITS.exercisesPerSession).map((entry) => ({
       id: newId('exercise'),
       exerciseId: entry.exerciseId,
-      variantOf: null,
+      alternativeOf: null,
       group: entry.group,
       rest: entry.rest,
       warmupRest: entry.warmupRest,
@@ -125,7 +125,7 @@ export function restoreSession(archive: Archive, removed: RemovedSession): Archi
 /**
  * US-42: corregge un allenamento concluso in cui si è scelto l'esercizio sbagliato. Tutte le voci di
  * `fromId` della sessione passano a `toId` con le loro serie così come sono; dove la voce era una
- * variante di `toId` non lo è più. Altri allenamenti, schede e catalogo non cambiano. `before` sono le
+ * alternativa a `toId` non lo è più. Altri allenamenti, schede e catalogo non cambiano. `before` sono le
  * voci com'erano, per `undoReassign` ("Annulla").
  */
 export function reassignExercise(archive: Archive, sessionId: string, fromId: string, toId: string): { archive: Archive; before: SessionExercise[] } {
@@ -135,7 +135,7 @@ export function reassignExercise(archive: Archive, sessionId: string, fromId: st
   if (fromId === toId) throw new ArchiveError('Scegli un esercizio diverso.');
   const before = session.exercises.filter((e) => e.exerciseId === fromId);
   if (!before.length) throw new ArchiveError('Questo esercizio non è più nell’allenamento.');
-  const exercises = session.exercises.map((e) => (e.exerciseId === fromId ? { ...e, exerciseId: toId, variantOf: e.variantOf === toId ? null : e.variantOf } : e));
+  const exercises = session.exercises.map((e) => (e.exerciseId === fromId ? { ...e, exerciseId: toId, alternativeOf: e.alternativeOf === toId ? null : e.alternativeOf } : e));
   return { archive: { ...archive, sessions: archive.sessions.map((s) => (s.id === sessionId ? { ...s, exercises } : s)) }, before };
 }
 

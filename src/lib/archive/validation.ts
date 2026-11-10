@@ -1,17 +1,22 @@
-// Validazione dell'archivio v2. Come nel PoC, l'oggetto viene ricostruito campo per campo:
-// le proprietà estranee non entrano nell'archivio, e un errore rende l'intero contenuto non valido.
+// Validazione dell'archivio (v2 e v3, ADR-009; il risultato è sempre v3). Come nel PoC, l'oggetto
+// viene ricostruito campo per campo: le proprietà estranee non entrano nell'archivio, e un errore
+// rende l'intero contenuto non valido.
 // I riferimenti (id di scheda o di esercizio) non sono vincolanti: un id sconosciuto non rende
 // illeggibile il diario, l'interfaccia lo mostra comunque.
 // I messaggi sono per l'utente, quindi in italiano.
+import { applyRedirects } from './catalog';
 import { isValidDateKey } from './dates';
 import {
   ArchiveError,
   DEFAULT_SETTINGS,
   LIMITS,
+  MUSCLE_GROUPS,
   SET_TYPES,
   WEEKDAYS,
   type Archive,
   type CustomExercise,
+  type MuscleGroup,
+  type Muscles,
   type Routine,
   type RoutineExercise,
   type Schedule,
@@ -130,13 +135,14 @@ function sessionSet(value: unknown, seen: Set<string>, where: string): SessionSe
   };
 }
 
-function sessionExercise(value: unknown, seen: Set<string>, where: string): SessionExercise {
+function sessionExercise(value: unknown, seen: Set<string>, where: string, version: 2 | 3): SessionExercise {
   const e = object(value, where);
   const setIds = new Set<string>();
   return {
     id: uniqueId(e.id, seen, where),
     exerciseId: id(e.exerciseId, `${where}, esercizio`),
-    variantOf: idOrNull(e.variantOf, `${where}, esercizio previsto`),
+    // in v2 il campo si chiamava variantOf
+    alternativeOf: idOrNull(version === 2 ? e.variantOf : e.alternativeOf, `${where}, esercizio previsto`),
     group: e.group === null ? null : text(e.group, LIMITS.shortTextLength, `${where}, superserie`, true),
     rest: rest(e.rest, `${where}, recupero`),
     warmupRest: rest(e.warmupRest, `${where}, recupero di riscaldamento`),
@@ -145,7 +151,7 @@ function sessionExercise(value: unknown, seen: Set<string>, where: string): Sess
   };
 }
 
-function session(value: unknown, seen: Set<string>, where: string): Session {
+function session(value: unknown, seen: Set<string>, where: string, version: 2 | 3): Session {
   const s = object(value, where);
   if (!isValidDateKey(s.date)) throw new ArchiveError(`${where}: data non valida.`);
   const start = timestamp(s.start, `${where}, inizio`);
@@ -159,8 +165,25 @@ function session(value: unknown, seen: Set<string>, where: string): Session {
     name: text(s.name, LIMITS.sessionNameLength, `${where}, nome`),
     start,
     end,
-    exercises: list(s.exercises, LIMITS.exercisesPerSession, `${where}, esercizi`).map((e, i) => sessionExercise(e, exerciseIds, `${where}, esercizio ${i + 1}`)),
+    exercises: list(s.exercises, LIMITS.exercisesPerSession, `${where}, esercizi`).map((e, i) => sessionExercise(e, exerciseIds, `${where}, esercizio ${i + 1}`, version)),
   };
+}
+
+function muscleList(value: unknown, where: string): MuscleGroup[] {
+  const groups = list(value, MUSCLE_GROUPS.length, where);
+  for (const g of groups) if (!MUSCLE_GROUPS.includes(g as never)) throw new ArchiveError(`${where}: gruppo muscolare non valido.`);
+  if (new Set(groups).size !== groups.length) throw new ArchiveError(`${where}: gruppo muscolare ripetuto.`);
+  return groups as MuscleGroup[];
+}
+
+/** Muscoli di un personalizzato; assenti (archivi v2) = nessuno */
+function muscles(value: unknown, where: string): Muscles {
+  if (value === undefined) return { primary: [], secondary: [] };
+  const m = object(value, where);
+  const primary = muscleList(m.primary, `${where}, principali`);
+  const secondary = muscleList(m.secondary, `${where}, secondari`);
+  if (secondary.some((g) => primary.includes(g))) throw new ArchiveError(`${where}: un gruppo è sia principale sia secondario.`);
+  return { primary, secondary };
 }
 
 function catalog(value: unknown): Record<string, CustomExercise> {
@@ -172,7 +195,13 @@ function catalog(value: unknown): Record<string, CustomExercise> {
     const o = object(e, 'Catalogo, esercizio');
     const exerciseId = id(o.id, 'Catalogo, esercizio');
     if (exerciseId !== key) throw new ArchiveError('Catalogo: identificativo incoerente.');
-    result[exerciseId] = { id: exerciseId, name: text(o.name, LIMITS.exerciseNameLength, 'Catalogo, nome', true) };
+    result[exerciseId] = {
+      id: exerciseId,
+      name: text(o.name, LIMITS.exerciseNameLength, 'Catalogo, nome', true),
+      muscles: muscles(o.muscles, 'Catalogo, muscoli'),
+      // assente negli archivi v2: nessun esercizio di partenza
+      variantOf: o.variantOf === undefined ? null : idOrNull(o.variantOf, 'Catalogo, esercizio di partenza'),
+    };
   }
   return { ...result };
 }
@@ -213,20 +242,24 @@ function settings(value: unknown): Settings {
   };
 }
 
-/** Valida e ricostruisce un archivio v2. Lancia ArchiveError con un messaggio in italiano. */
+/**
+ * Valida e ricostruisce un archivio v2 o v3; restituisce sempre un v3, con gli ID tolti dal catalogo
+ * già reindirizzati (idempotente). Lancia ArchiveError con un messaggio in italiano.
+ */
 export function validateArchive(data: unknown): Archive {
   const a = object(data, 'Archivio');
-  if (a.version !== 2) throw new ArchiveError('Formato dell’archivio non riconosciuto.');
+  if (a.version !== 2 && a.version !== 3) throw new ArchiveError('Formato dell’archivio non riconosciuto.');
+  const version = a.version;
   const routineIds = new Set<string>();
   const sessionIds = new Set<string>();
-  return {
-    version: 2,
+  return applyRedirects({
+    version: 3,
     revision: number(a.revision, 'Revisione', { max: Number.MAX_SAFE_INTEGER, integer: true }),
     catalog: catalog(a.catalog),
     routines: list(a.routines, LIMITS.routines, 'Schede').map((r, i) => routine(r, routineIds, `Scheda ${i + 1}`)),
     schedule: schedule(a.schedule),
     overrides: overrides(a.overrides),
-    sessions: list(a.sessions, LIMITS.sessions, 'Allenamenti').map((s, i) => session(s, sessionIds, `Allenamento ${i + 1}`)),
+    sessions: list(a.sessions, LIMITS.sessions, 'Allenamenti').map((s, i) => session(s, sessionIds, `Allenamento ${i + 1}`, version)),
     settings: settings(a.settings),
-  };
+  });
 }

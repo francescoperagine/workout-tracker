@@ -20,7 +20,7 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 
 - Elenco per data (più recente in alto), raggruppato per mese: data, scheda, durata, serie, volume, record.
 - Dettaglio: registro di sola lettura, solo gli esercizi con serie fatte e le serie fatte in una riga; icona dei progressi (pagina dell'esercizio), senza ⓘ; per correggere le serie "Riapri"; eliminazione con conferma (o annulla).
-- Pagina esercizio: grafici di **carico massimo**, **1RM stimato** (Epley, solo serie normali con ripetizioni ≤ 12) e **volume per sessione**, con selettore di periodo; record personali; cronologia delle serie. Varianti separate, riscaldamento escluso, unità scelta.
+- Pagina esercizio: grafici di **carico massimo**, **1RM stimato** (Epley, solo serie normali con ripetizioni ≤ 12) e **volume per sessione**, con selettore di periodo; record personali; cronologia delle serie. Alternative e varianti separate, riscaldamento escluso, unità scelta.
 - Record: indicati nella riga serie al momento della spunta e nel riepilogo (US-29).
 
 ## Selected direction
@@ -31,7 +31,7 @@ Storie: US-27, US-28, US-29, US-18 (riapertura di una sessione conclusa), US-20 
 ## Scope and boundaries
 
 - Dentro: elenco, dettaglio, pagina esercizio, ingresso dalla riga di un esercizio (nome) e dal calendario.
-- **Anti-obiettivi:** cruscotto con molti grafici; librerie di grafici esterne; grafici senza valori leggibili; varianti mescolate nello stesso andamento.
+- **Anti-obiettivi:** cruscotto con molti grafici; librerie di grafici esterne; grafici senza valori leggibili; esercizi diversi (alternative, varianti) mescolati nello stesso andamento.
 
 ## States and ranges
 

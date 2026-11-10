@@ -93,7 +93,7 @@ test.describe('US-37 completa esercizio', () => {
   });
 
   test('US-37 le serie senza ripetizioni restano da fare e si vedono', async ({ page }) => {
-    const { archive, session, exercise, name } = freeExercise('rematore-al-cavo-basso');
+    const { archive, session, exercise, name } = freeExercise('rematore-seduto-al-cavo-basso');
     await openWorkout(page, archive);
     const region = card(page, name);
     // una serie in più dell'ultima volta: nessun segnaposto di ripetizioni

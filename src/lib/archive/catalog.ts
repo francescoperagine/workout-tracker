@@ -1,8 +1,8 @@
 // Catalogo: esercizi di base (dal codice) più quelli personalizzati dell'utente (nell'archivio).
 // US-14: un nome scritto a mano si confronta senza maiuscole, spazi, punteggiatura e accenti;
 // se non corrisponde a nessun esercizio diventa un esercizio personalizzato, riusato le volte dopo.
-import { BASE_CATALOG } from '../../data/catalog';
-import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise } from './types';
+import { BASE_CATALOG, EXERCISE_REDIRECTS } from '../../data/catalog';
+import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise, type Routine, type RoutineExercise, type Session, type SessionExercise } from './types';
 
 export const CUSTOM_PREFIX = 'custom-';
 
@@ -126,7 +126,7 @@ export function ensureExercise(archive: Archive, typedName: string): EnsureResul
   let id = customExerciseId(name).slice(0, LIMITS.idLength);
   // Solo per sicurezza: con la stessa chiave l'id coinciderebbe, quindi qui un id occupato è un caso limite
   for (let n = 2; id in archive.catalog || id in BASE_CATALOG; n++) id = `${customExerciseId(name).slice(0, LIMITS.idLength - 6)}-${n}`;
-  const created: CustomExercise = { id, name };
+  const created: CustomExercise = { id, name, muscles: { primary: [], secondary: [] }, variantOf: null };
   return {
     archive: { ...archive, catalog: { ...archive.catalog, [id]: created } },
     exercise: { id, name, aliases: [], custom: true },
@@ -151,42 +151,81 @@ function checkMerge(archive: Pick<Archive, 'catalog'>, absorbedId: string, intoI
  */
 export function mergeExercise(archive: Archive, absorbedId: string, intoId: string): Archive {
   checkMerge(archive, absorbedId, intoId);
-  const to = (id: string) => (id === absorbedId ? intoId : id);
-  const sessions = archive.sessions.map((session) => {
-    if (!session.exercises.some((e) => e.exerciseId === absorbedId || e.variantOf === absorbedId)) return session;
+  const catalog = { ...archive.catalog };
+  delete catalog[absorbedId];
+  const map = { [absorbedId]: intoId };
+  return { ...archive, catalog, sessions: rewriteSessions(archive.sessions, map), routines: rewriteRoutines(archive.routines, map) };
+}
+
+/** Id dopo la mappa `vecchio → nuovo`; `Object.hasOwn` perché un id come "constructor" non è nella mappa */
+function mapped(map: Readonly<Record<string, string>>, id: string): string {
+  return Object.hasOwn(map, id) ? map[id] : id;
+}
+
+/** Id dopo i reindirizzamenti del catalogo di base (EXERCISE_REDIRECTS, ADR-009) */
+export function redirectedId(id: string): string {
+  return mapped(EXERCISE_REDIRECTS, id);
+}
+
+/**
+ * Sostituisce gli id della mappa negli esercizi delle sessioni (fatto e previsto). Un'alternativa
+ * diventata uguale all'esercizio fatto non è più un'alternativa. Le sessioni non toccate restano le stesse.
+ */
+export function rewriteSessions(sessions: Session[], map: Readonly<Record<string, string>>): Session[] {
+  const hit = (e: SessionExercise) => Object.hasOwn(map, e.exerciseId) || (e.alternativeOf !== null && Object.hasOwn(map, e.alternativeOf));
+  return sessions.map((session) => {
+    if (!session.exercises.some(hit)) return session;
     return {
       ...session,
       exercises: session.exercises.map((e) => {
-        if (e.exerciseId !== absorbedId && e.variantOf !== absorbedId) return e;
-        const exerciseId = to(e.exerciseId);
-        const variantOf = e.variantOf === null ? null : to(e.variantOf);
-        // una variante di sé stesso non è più una variante
-        return { ...e, exerciseId, variantOf: variantOf === exerciseId ? null : variantOf };
+        if (!hit(e)) return e;
+        const exerciseId = mapped(map, e.exerciseId);
+        const alternativeOf = e.alternativeOf === null ? null : mapped(map, e.alternativeOf);
+        return { ...e, exerciseId, alternativeOf: alternativeOf === exerciseId ? null : alternativeOf };
       }),
     };
   });
-  const routines = archive.routines.map((routine) => {
-    if (!routine.exercises.some((e) => e.exerciseId === absorbedId || e.alternatives.includes(absorbedId))) return routine;
+}
+
+/** Sostituisce gli id della mappa nelle voci delle schede (esercizio e alternative), senza doppioni. */
+export function rewriteRoutines(routines: Routine[], map: Readonly<Record<string, string>>): Routine[] {
+  const hit = (e: RoutineExercise) => Object.hasOwn(map, e.exerciseId) || e.alternatives.some((id) => Object.hasOwn(map, id));
+  return routines.map((routine) => {
+    if (!routine.exercises.some(hit)) return routine;
     return {
       ...routine,
       exercises: routine.exercises.map((e) => {
-        if (e.exerciseId !== absorbedId && !e.alternatives.includes(absorbedId)) return e;
-        const exerciseId = to(e.exerciseId);
+        if (!hit(e)) return e;
+        const exerciseId = mapped(map, e.exerciseId);
         // niente doppioni e niente alternativa uguale all'esercizio della voce
-        const alternatives = [...new Set(e.alternatives.map(to))].filter((id) => id !== exerciseId);
+        const alternatives = [...new Set(e.alternatives.map((id) => mapped(map, id)))].filter((id) => id !== exerciseId);
         return { ...e, exerciseId, alternatives };
       }),
     };
   });
-  const catalog = { ...archive.catalog };
-  delete catalog[absorbedId];
-  return { ...archive, catalog, sessions, routines };
+}
+
+/**
+ * ID tolti dal catalogo di base (EXERCISE_REDIRECTS, ADR-009) sostituiti con quelli che restano, in
+ * schede, sessioni e personalizzati. Idempotente: si applica a ogni archivio letto, anche a un v2
+ * riscritto da una scheda con il codice vecchio.
+ */
+export function applyRedirects(archive: Archive): Archive {
+  const catalog = Object.fromEntries(
+    Object.entries(archive.catalog).map(([id, e]) => [id, e.variantOf === null ? e : { ...e, variantOf: redirectedId(e.variantOf) }]),
+  );
+  return {
+    ...archive,
+    catalog,
+    routines: rewriteRoutines(archive.routines, EXERCISE_REDIRECTS),
+    sessions: rewriteSessions(archive.sessions, EXERCISE_REDIRECTS),
+  };
 }
 
 /** Quante sessioni e schede cambierebbe `mergeExercise`, per il testo della conferma. */
 export function mergeImpact(archive: Pick<Archive, 'sessions' | 'routines'>, absorbedId: string): { sessions: number; routines: number } {
   return {
-    sessions: archive.sessions.filter((s) => s.exercises.some((e) => e.exerciseId === absorbedId || e.variantOf === absorbedId)).length,
+    sessions: archive.sessions.filter((s) => s.exercises.some((e) => e.exerciseId === absorbedId || e.alternativeOf === absorbedId)).length,
     routines: archive.routines.filter((r) => r.exercises.some((e) => e.exerciseId === absorbedId || e.alternatives.includes(absorbedId))).length,
   };
 }

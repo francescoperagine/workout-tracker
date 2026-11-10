@@ -22,10 +22,10 @@ Qui c'è solo dove siamo e dove si va.
 
 Correzioni dopo le prove sull'app installata. Da provare in palestra: il suono a tre campane (INC-014: la
 sinusoide pura il 12 ottobre si sentiva poco), il segnaposto al posto dei valori dell'ultima volta (INC-013), la
-tab Progressi, e le correzioni dello step 9 (variante a metà esercizio che tiene le serie fatte, «Termina» con
+tab Progressi, e le correzioni dello step 9 (alternativa a metà esercizio che tiene le serie fatte, «Termina» con
 conferma, allenamento senza tab bar, livello del timer, «Ogni martedì» nel foglio del giorno).
 
-Le decisioni aperte dello step 9 sono chiuse come raccomandato (INC-002): la variante a metà esercizio resta
+Le decisioni aperte dello step 9 sono chiuse come raccomandato (INC-002): l’alternativa a metà esercizio resta
 una voce nuova con il suo numero, il nome accessibile dei giorni del calendario resta più lungo del testo
 visibile, nessun intervento sul deploy con l'app aperta (vedi limiti), le proposte della critique aspettano le
 prove in palestra (vedi direzione).

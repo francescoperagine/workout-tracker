@@ -11,7 +11,7 @@ function set(id: string, kg: number | null, reps: number | null, done = true, ty
 }
 
 function exercise(id: string, exerciseId: string, sets: SessionSet[], extra: Partial<SessionExercise> = {}): SessionExercise {
-  return { id, exerciseId, variantOf: null, group: null, rest: 90, warmupRest: 60, notes: '', sets, ...extra };
+  return { id, exerciseId, alternativeOf: null, group: null, rest: 90, warmupRest: 60, notes: '', sets, ...extra };
 }
 
 function finished(id: string, date: string, exercises: SessionExercise[], start = new Date(`${date}T18:00:00`).getTime()): Session {
@@ -68,8 +68,8 @@ describe('US-28 storico per esercizio', () => {
     expect(point.sets.map((p) => p.id)).toEqual(['2']);
   });
 
-  it('US-28 la variante fatta è un esercizio a sé: compare solo sotto il suo id', () => {
-    const s = finished('s1', '2026-10-08', [exercise('e1', 'a', [set('1', 60, 5)], { variantOf: 'b' })]);
+  it('US-28 l’alternativa fatta è un esercizio a sé: compare solo sotto il suo id', () => {
+    const s = finished('s1', '2026-10-08', [exercise('e1', 'a', [set('1', 60, 5)], { alternativeOf: 'b' })]);
     expect(exerciseHistory(archive(s), 'a')).toHaveLength(1);
     expect(exerciseHistory(archive(s), 'b')).toEqual([]);
   });
@@ -160,12 +160,12 @@ describe('US-28 esercizi fatti', () => {
 });
 
 describe('US-29 record di una sessione', () => {
-  it('US-29 carico, 1RM e volume oltre il meglio delle sessioni precedenti, stessa variante', () => {
+  it('US-29 carico, 1RM e volume oltre il meglio delle sessioni precedenti, stesso esercizio', () => {
     const a = finished('a', '2026-10-01', [exercise('a1', 'panca', [set('a1', 60, 8), set('a2', 60, 8)])]);
-    // stesso carico, più ripetizioni: 1RM e volume sì, carico no; la variante ha il suo storico
+    // stesso carico, più ripetizioni: 1RM e volume sì, carico no; l’alternativa ha il suo storico
     const b = finished('b', '2026-10-05', [
       exercise('b1', 'panca', [set('b1', 20, 10, true, 'warmup'), set('b2', 60, 10), set('b3', 60, 8)]),
-      exercise('b2', 'panca-manubri', [set('b4', 30, 10)], { variantOf: 'panca' }),
+      exercise('b2', 'panca-manubri', [set('b4', 30, 10)], { alternativeOf: 'panca' }),
     ]);
     const records = sessionRecords(archive(a, b), b);
     expect(records.map((r) => r.kind)).toEqual(['e1rm', 'volume']);

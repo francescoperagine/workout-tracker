@@ -1,5 +1,5 @@
 // Progressi per esercizio (step 8: US-28, US-29). Funzioni pure sullo storico: ogni esercizio fatto è
-// una serie a sé (le varianti hanno i loro carichi), le serie di riscaldamento non contano e valgono
+// una serie a sé (le alternative hanno i loro carichi), le serie di riscaldamento non contano e valgono
 // solo le serie spuntate delle sessioni concluse. Pesi in kg: la conversione è solo in visualizzazione.
 import { fromDateKey, toDateKey } from './dates';
 import type { Archive, Session, SessionSet } from './types';
@@ -77,7 +77,7 @@ function point(session: Session, sets: SessionSet[]): ExercisePoint {
 
 /**
  * Storico di un esercizio: un punto per sessione conclusa (end !== null) in cui quell'esercizio
- * (stesso exerciseId: la variante fatta, non variantOf) ha almeno una serie spuntata (di qualsiasi
+ * (stesso exerciseId: l’alternativa fatta, non alternativeOf) ha almeno una serie spuntata (di qualsiasi
  * tipo). Se lo stesso exerciseId compare in più voci della stessa sessione, le serie si uniscono
  * nell'ordine di session.exercises. Ordinato dalla sessione più vecchia: prima la data, poi l'inizio.
  */
@@ -178,7 +178,7 @@ export interface SessionRecord {
 
 /**
  * Record battuti in una sessione conclusa (US-29): per ogni esercizio, carico massimo, 1RM stimato e
- * volume oltre il meglio delle sessioni concluse prima (stessa variante). Senza storico non c'è record,
+ * volume oltre il meglio delle sessioni concluse prima (stesso esercizio). Senza storico non c'è record,
  * come per il carico nella riga serie (`loadRecords`).
  */
 export function sessionRecords(archive: Pick<Archive, 'sessions'>, session: Session): SessionRecord[] {

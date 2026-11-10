@@ -51,7 +51,7 @@ export const STARTER_ROUTINES: readonly Routine[] = [
         id: 'a-2b',
         exerciseId: 'rematore-manubri-petto-su-panca-inclinata',
         alternatives: [
-          'rematore-al-cavo-basso',
+          'rematore-seduto-al-cavo-basso',
           'row-machine-con-appoggio'
         ],
         group: '2',

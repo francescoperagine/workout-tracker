@@ -1,6 +1,6 @@
 <script lang="ts">
   // Un esercizio dell'allenamento attivo (brief route-workout): maniglia, nome (tocco = apre e chiude), ⓘ
-  // (approfondimento) e menu ⋯ in testa, variante, righe serie con "Completa" nell'intestazione, "Aggiungi
+  // (approfondimento) e menu ⋯ in testa, alternativa, righe serie con "Completa" nell'intestazione, "Aggiungi
   // serie" e la nota sul carico; recupero e cambio esercizio stanno nel menu (US-40). Ogni gesto salva subito
   // (P4). Chiuso mostra il riassunto di oggi in una riga, ma resta modificabile.
   import { tick } from 'svelte';
@@ -229,8 +229,8 @@
           </span>
         </p>
       {:else}
-        {#if exercise.variantOf}
-          <p class="meta">Al posto di {exerciseName(archive, exercise.variantOf)}</p>
+        {#if exercise.alternativeOf}
+          <p class="meta">Al posto di {exerciseName(archive, exercise.alternativeOf)}</p>
         {/if}
         {#if previousNote && previousNote !== exercise.notes.trim()}
           <p class="meta">Nota {previousWhen}: «{previousNote}»</p>
@@ -329,7 +329,7 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: start;
   }
-  /* le righe sotto il nome (variante, nota, serie fatte) partono allineate al nome e passano sotto ⋯ */
+  /* le righe sotto il nome (alternativa, nota, serie fatte) partono allineate al nome e passano sotto ⋯ */
   .title {
     display: contents;
   }

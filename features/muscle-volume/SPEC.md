@@ -1,6 +1,6 @@
 # SPEC: muscle-volume
 
-**Livello:** Feature · **Stato:** pronta per l'esecuzione (6 incrementi, §9) · **Base:** `main` a `c220ee3` (ultimo
+**Livello:** Feature · **Stato:** in esecuzione, incremento 1 fatto (INC-021, ADR-009), prossimo il 2 (§9) · **Base:** `main` a `c220ee3` (ultimo
 incremento INC-020) · **Piano:** 10 novembre 2026 · **Origine:** voce «vista per gruppo muscolare» di `docs/todo.md`
 e ricerca del 10 novembre con Francesco (fonti in §4, §5 e in `features/muscle-volume/research/`)
 
@@ -420,6 +420,9 @@ come US-42.
 portano a una pagina dove i muscoli si sistemano.
 
 ### Incremento 1: archivio v3, rematore e terminologia (D11 per la versione, D12, D13, D20)
+
+**Fatto in INC-021 (ADR-009).** Una aggiunta: nell'import del PoC anche gli alias contano come nome noto, altrimenti il
+vecchio nome «Rematore al cavo basso» finiva nelle note come nome cambiato a mano.
 
 **Ambito:** §6.1 tranne `CatalogExercise.muscles`, §6.2, §6.3 parte «Rematore» e «Test degli ID», §6.6.
 `MUSCLE_GROUPS`, `MuscleGroup` e `Muscles` entrano qui perché lo schema v3 dei personalizzati deve essere completo
