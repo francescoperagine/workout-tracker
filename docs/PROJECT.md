@@ -16,7 +16,7 @@ Qui c'è solo dove siamo e dove si va.
 - **Card esercizio sfoltita** (`exercise-card-layout`, chiusa con INC-009): in testa solo maniglia, nome e ⋯, niente numero né obiettivo della scheda, «Completa» nell'intestazione delle righe, bordo accento sull'esercizio corrente, recupero dal menu ⋯ (US-40); SPEC in `docs/archive/features/INC-009_exercise-card-layout.md`.
 - **Palette a ruoli** (`palette`, chiusa con INC-010, ADR-005): inchiostro e carta in chiaro e scuro, un solo accento vermiglio, rosso solo per errori e distruttive (pulsante pieno con icona), indaco per i record, nessun verde; il guscio segue il tema su `surface`; `src/styles/contrast.test.ts` controlla le coppie. SPEC in `docs/archive/features/INC-010_palette.md`.
 - **Allenamento in palestra** (`workout-gym-ux`, chiusa con INC-015): correzioni e rosso di riempimento (INC-011, ADR-006), card a fisarmonica e riordino solo trascinando (INC-012, ADR-007), segnaposto dall'ultima volta o dalla scheda al posto dei valori veri (INC-013, ADR-008), suono a tre campane e foglio per l'allenamento dimenticato (INC-014, US-41), tab «Progressi» (INC-015); SPEC in `docs/archive/features/INC-015_workout-gym-ux.md`.
-- **Feature attive:** `muscle-volume` (piano in corso): muscoli principali e secondari per esercizio e serie per gruppo muscolare in Progressi; SPEC in `features/muscle-volume/SPEC.md`, prossimo passo in `features/muscle-volume/HANDOFF.md`.
+- **Feature attive:** `muscle-volume` (piano chiuso il 10 novembre 2026, esecuzione in 6 incrementi): muscoli principali e secondari per esercizio e serie per gruppo muscolare in Progressi, con archivio alla versione 3; SPEC in `features/muscle-volume/SPEC.md`, prossimo incremento in `features/muscle-volume/HANDOFF.md`.
 
 ## Focus attuale
 

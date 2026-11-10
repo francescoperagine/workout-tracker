@@ -1,6 +1,8 @@
 # Mappa dei 43 esercizi del catalogo (bozza, 10 novembre 2026)
 
-**Stato:** bozza da confrontare con Delavier, *Guide des mouvements de musculation*, 6ª ed. (verifica di Francesco).
+**Stato:** decisa con Francesco il 10 novembre 2026 (SPEC §8), salvo i 7 punti «Da controllare sul libro», **in attesa**
+dell'esito di Francesco su Delavier, *Guide des mouvements de musculation*, 6ª ed.: finché non arriva vale la riga
+della tabella.
 Gruppi di SPEC §3. Regola di SPEC D4. Conteggio di SPEC D2 (principale 1, secondario 0,5).
 
 ## Conclusione
@@ -26,7 +28,8 @@ Gruppi di SPEC §3. Regola di SPEC D4. Conteggio di SPEC D2 (principale 1, secon
 2. **Non c'è:** è principale il muscolo che compie l'azione articolare principale. È secondario il muscolo che compie
    un'altra azione dello stesso movimento sotto carico (per esempio il gomito che si estende nella panca).
 3. **Stabilizzatori isometrici non contati** (addominali e lombari nello squat e nello stacco rumeno, trapezio
-   superiore nelle spinte sopra la testa). È una scelta nostra, non una regola presa da Pelland 2026: va confermata.
+   superiore nelle spinte sopra la testa). È una scelta nostra, non una regola presa da Pelland 2026: confermata da
+   Francesco il 10 novembre 2026.
 4. **EMG mai usata** (Vigotsky et al. 2022, SPEC §4).
 
 ## Studi usati (verificati su Europe PMC il 10 novembre 2026)
@@ -63,15 +66,15 @@ wger ha un solo «Shoulders»: dove compare, l'abbinamento ai tre deltoidi non �
 
 | # | id | Principali | Secondari | Azione articolare | Studio | wger |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | squat-bilanciere | quadricipiti, glutei | adduttori | Estensione di ginocchio e anca | Kubo 2019 (diretto); Plotkin 2023 | discorda: P femorali e glutei, niente quadricipiti |
-| 2 | leg-press | quadricipiti, glutei | adduttori | Estensione di ginocchio e anca, schiena appoggiata | Kinoshita 2026 (diretto) | discorda: polpacci tra i principali, ripetizioni |
-| 3 | squat-al-smith | quadricipiti, glutei | adduttori | Come lo squat | analogia con Kubo 2019 | concorda; adduttori assenti |
-| 4 | goblet-squat | quadricipiti, glutei | adduttori | Come lo squat, carico davanti | analogia con Kubo 2019 | n.a. |
+| 1 | squat-bilanciere | quadricipiti, glutei, adduttori | nessuno | Estensione di ginocchio e anca | Kubo 2019 (diretto); Plotkin 2023 | discorda: P femorali e glutei, niente quadricipiti |
+| 2 | leg-press | quadricipiti, glutei, adduttori | nessuno | Estensione di ginocchio e anca, schiena appoggiata | Kinoshita 2026 (diretto) | discorda: polpacci tra i principali, ripetizioni |
+| 3 | squat-al-smith | quadricipiti, glutei, adduttori | nessuno | Come lo squat | analogia con Kubo 2019 (adduttori per analogia) | concorda; adduttori assenti |
+| 4 | goblet-squat | quadricipiti, glutei, adduttori | nessuno | Come lo squat, carico davanti | analogia con Kubo 2019 (adduttori per analogia) | n.a. |
 | 5 | panca-piana-bilanciere | petto | tricipiti, deltoidi anteriori | Adduzione orizzontale della spalla, estensione del gomito | Ogasawara 2013 (diretto) | concorda |
 | 6 | chest-press | petto | tricipiti, deltoidi anteriori | Come la panca piana | analogia con Ogasawara 2013 | parziale: nessun secondario |
 | 7 | panca-piana-manubri | petto | tricipiti, deltoidi anteriori | Come la panca piana | analogia con Ogasawara 2013 | concorda |
 | 8 | rematore-manubri-petto-su-panca-inclinata | dorsali, trapezio | deltoidi posteriori, bicipiti | Estensione della spalla, retrazione della scapola, flessione del gomito | bicipiti: analogia con Mannarino 2021 | n.a. |
-| 9 | rematore-al-cavo-basso | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | parziale: P dorsali; S bicipiti e brachiale; niente trapezio né deltoidi |
+| 9 | rematore-al-cavo-basso | **tolto dal catalogo**, reindirizzato al n. 38 (SPEC D12) | | | | parziale: P dorsali; S bicipiti e brachiale; niente trapezio né deltoidi |
 | 10 | row-machine-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | n.a. |
 | 11 | hip-thrust-bilanciere | glutei | nessuno | Estensione dell'anca a ginocchio flesso | Plotkin 2023 (diretto) | concorda |
 | 12 | hip-thrust-machine | glutei | nessuno | Come il n. 11 | analogia con Plotkin 2023 | n.a. |
@@ -97,8 +100,8 @@ wger ha un solo «Shoulders»: dove compare, l'abbinamento ai tre deltoidi non �
 | 32 | lat-machine-presa-prona | dorsali | bicipiti, trapezio | Adduzione ed estensione della spalla, depressione della scapola, flessione del gomito | bicipiti: Gentil 2015 (diretto) | n.a. |
 | 33 | trazioni-assistite-o-negative | dorsali | bicipiti, trapezio | Come il n. 32 | bicipiti: analogia con Gentil 2015 | parziale: trapezio principale; S addominali e dentato |
 | 34 | lat-monobraccio-al-cavo | dorsali | bicipiti, trapezio | Come il n. 32 | bicipiti: analogia con Gentil 2015 | n.a. |
-| 35 | leg-press-piedi-a-meta-pedana | quadricipiti, glutei | adduttori | Come la leg press | Kinoshita 2026 (diretto; l'abstract non dice la posizione dei piedi) | n.a. |
-| 36 | hack-squat | quadricipiti, glutei | adduttori | Come lo squat, schiena appoggiata | analogia con Kubo 2019 e Kinoshita 2026 | n.a. |
+| 35 | leg-press-piedi-a-meta-pedana | quadricipiti, glutei, adduttori | nessuno | Come la leg press | Kinoshita 2026 (diretto; l'abstract non dice la posizione dei piedi) | n.a. |
+| 36 | hack-squat | quadricipiti, glutei, adduttori | nessuno | Come lo squat, schiena appoggiata | analogia con Kubo 2019 e Kinoshita 2026 (adduttori per analogia) | n.a. |
 | 37 | leg-extension | quadricipiti | nessuno | Estensione del ginocchio | Kinoshita 2026 (diretto) | concorda |
 | 38 | rematore-seduto-al-cavo-basso | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | vuoto |
 | 39 | rematore-manubrio-monobraccio-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: Mannarino 2021 (diretto, stesso esercizio) | n.a. |
@@ -107,7 +110,10 @@ wger ha un solo «Shoulders»: dove compare, l'abbinamento ai tre deltoidi non �
 | 42 | pushdown-ai-cavi | tricipiti | nessuno | Estensione del gomito, braccio lungo il corpo | Maeo 2023 (diretto, braccio lungo il corpo) | concorda |
 | 43 | french-press-con-manubrio | tricipiti | nessuno | Estensione del gomito | analogia con Maeo 2023 | n.a. |
 
-## Da controllare sul libro (pagina per esercizio)
+## Da controllare sul libro (pagina per esercizio): in attesa
+
+Francesco verifica e manda l'esito con la pagina. Non blocca la SPEC: una correzione è una modifica a `src/data/catalog.ts`
+e a questa tabella.
 
 Il libro serve per l'anatomia funzionale (SPEC §4): quali muscoli muovono le articolazioni dell'esercizio. Non serve per
 l'enfasi o l'isolamento. Per ogni riga basta segnare: d'accordo, oppure il muscolo in più o in meno.
@@ -120,13 +126,13 @@ l'enfasi o l'isolamento. Per ogni riga basta segnare: d'accordo, oppure il musco
 6. **Hyperextension (n. 28):** lombari dipendono dall'esecuzione (colonna ferma o in movimento).
 7. **Alzate laterali (n. 20, 21, 22):** nessun secondario (trapezio superiore escluso).
 
-## Dubbi della mappa (vanno nel messaggio a Francesco)
+## Dubbi della mappa: chiusi il 10 novembre 2026 (SPEC §8)
 
-- **Adduttori nello squat:** Kubo 2019 li vede crescere quasi quanto i glutei (+6,2% contro +6,7%). Con la regola 1
-  sarebbero principali; SPEC §4 li mette secondari. La bozza segue SPEC §4.
-- **Glutei nella leg press:** Kinoshita 2026 è un solo studio, su non allenati, e l'abstract non dice la posizione dei
-  piedi. Basta per la regola D4, ma va saputo.
-- **Un esercizio forse doppio nel catalogo:** n. 9 `rematore-al-cavo-basso` (alias «Low cable row», «Pulley basso») e
-  n. 38 `rematore-seduto-al-cavo-basso` («Seated cable row»). Gli ID non si toccano; la mappa è identica.
-- **Alias ambiguo:** n. 43 `french-press-con-manubrio` ha come alias sia «Dumbbell skull crusher» (sdraiato) sia
-  «Overhead dumbbell triceps extension» (sopra la testa). Per la mappa non cambia nulla.
+- **Adduttori nello squat e nella leg press: principali.** Comanda lo studio (regola 1): Kubo 2019, adduttori +6,2%
+  contro glutei +6,7%; Kinoshita 2026, grande adduttore +6,2% contro vasti +4,4-6,2%. Per analogia, segnata come tale,
+  anche su Smith, goblet e hack squat (n. 3, 4, 36).
+- **Glutei nella leg press:** restano principali; il limite (un solo studio, non allenati, piedi non dichiarati)
+  resta scritto qui.
+- **Rematori doppi (n. 9 e 38):** sono lo stesso esercizio. Il n. 9 esce dal catalogo con un reindirizzamento al n. 38
+  (SPEC D12), che prende gli alias «Pulley basso», «Low cable row» e il vecchio nome «Rematore al cavo basso».
+- **Alias ambiguo del n. 43:** per la mappa non cambia nulla; resta com'è.
