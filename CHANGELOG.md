@@ -3,6 +3,29 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-028
+
+Date: 2026-11-10
+
+Summary:
+**Mappa dei muscoli: trapezio secondario nei rematori; attrezzo di Bourne 2017 verificato (dopo muscle-volume).** Nei
+5 rematori del catalogo il trapezio passa da principale a secondario: l'azione principale è l'estensione della spalla
+(dorsali), la retrazione della scapola è un'altra azione sotto carico (regola 2 della mappa), come l'abbassamento
+della scapola nella lat machine. Il motivo precedente («metà dell'escursione») non aveva fonte. Bourne 2017 usa la
+panca a 45° (manoscritto accettato ad accesso libero nell'archivio ACU): tolta la nota «da verificare».
+
+Effetto sul conteggio: ogni serie di rematore dà al trapezio 0,5 invece di 1 (dorsali 1, deltoidi posteriori e
+bicipiti 0,5 invariati). Vale anche per le settimane passate, perché il volume si ricalcola dal catalogo: voluto. Le
+varianti già create da un rematore tengono i muscoli copiati (ADR-013).
+
+Deliverables:
+- `src/data/catalog.ts`: `rematore-manubri-petto-su-panca-inclinata`, `row-machine-con-appoggio`,
+  `rematore-seduto-al-cavo-basso`, `rematore-manubrio-monobraccio-con-appoggio`, `row-machine`.
+- `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md` (righe 8, 10, 38, 39, 40, punto 1, Bourne 2017
+  nella tabella degli studi e nella riga 28), ADR-011 (punto 4).
+
+ADR: ADR-011 aggiornata (punto 4). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-027
 
 Date: 2026-11-10

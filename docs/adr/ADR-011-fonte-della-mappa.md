@@ -1,7 +1,7 @@
 # ADR-011 — Fonte della mappa: studi di crescita, poi azione articolare
 
 Status: Accepted
-Increment: INC-022, INC-026
+Increment: INC-022, INC-026, INC-028
 
 ## Context
 
@@ -28,7 +28,8 @@ in `docs/archive/features/` alla chiusura).
    scelta nostra, confermata da Francesco il 10 novembre 2026, non presa da Pelland 2026.
 4. **EMG mai usata**; wger solo come controllo. I 7 punti senza studio non si verificano sul Delavier: li chiude la
    regola stessa, con il motivo nella riga della mappa (INC-026). Cambia solo il pull-through, femorali principali per
-   analogia con Morin 2025 e Bourne 2017.
+   analogia con Morin 2025 e Bourne 2017. Con INC-028 i rematori passano a trapezio secondario: l'azione principale è
+   l'estensione della spalla (dorsali), la retrazione della scapola un'altra azione sotto carico, come nella lat machine.
 - Alternative scartate: wger o la mappa delle app (errori sopra); un solo principale per esercizio (lo squat fa
   crescere tre gruppi, Kubo 2019); EMG (non predice la crescita).
 

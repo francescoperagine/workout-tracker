@@ -98,7 +98,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'rematore-manubri-petto-su-panca-inclinata',
     name: 'Rematore manubri, petto su panca inclinata',
     aliases: ['Chest supported dumbbell row', 'Rematore manubri panca inclinata'],
-    muscles: { primary: ['lats', 'traps'], secondary: ['rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
+    muscles: { primary: ['lats'], secondary: ['traps', 'rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
     description: '',
     image: '',
     imageAlt: '',
@@ -110,7 +110,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'row-machine-con-appoggio',
     name: 'Row machine con appoggio',
     aliases: ['Chest supported row machine'],
-    muscles: { primary: ['lats', 'traps'], secondary: ['rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
+    muscles: { primary: ['lats'], secondary: ['traps', 'rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
     description: '',
     image: '',
     imageAlt: '',
@@ -446,7 +446,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'rematore-seduto-al-cavo-basso',
     name: 'Rematore seduto al cavo basso',
     aliases: ['Seated cable row', 'Pulley basso', 'Low cable row', 'Rematore al cavo basso'],
-    muscles: { primary: ['lats', 'traps'], secondary: ['rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
+    muscles: { primary: ['lats'], secondary: ['traps', 'rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
     description: '',
     image: '',
     imageAlt: '',
@@ -458,7 +458,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'rematore-manubrio-monobraccio-con-appoggio',
     name: 'Rematore manubrio monobraccio con appoggio',
     aliases: ['One arm dumbbell row', 'Single arm dumbbell row'],
-    muscles: { primary: ['lats', 'traps'], secondary: ['rear-delts', 'biceps'] }, // azione articolare; bicipiti: Mannarino 2021
+    muscles: { primary: ['lats'], secondary: ['traps', 'rear-delts', 'biceps'] }, // azione articolare; bicipiti: Mannarino 2021
     description: '',
     image: '',
     imageAlt: '',
@@ -470,7 +470,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'row-machine',
     name: 'Row machine',
     aliases: ['Macchina rematore', 'Machine row'],
-    muscles: { primary: ['lats', 'traps'], secondary: ['rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
+    muscles: { primary: ['lats'], secondary: ['traps', 'rear-delts', 'biceps'] }, // azione articolare; bicipiti: analogia con Mannarino 2021
     description: '',
     image: '',
     imageAlt: '',
