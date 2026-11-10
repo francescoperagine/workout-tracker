@@ -1,7 +1,9 @@
 <script lang="ts">
   // Interruttori e valore a passi, come nelle Impostazioni; campo che salva a ogni battuta, come nelle schede;
-  // editor dei muscoli, come nella pagina di un esercizio personalizzato (US-43).
+  // editor dei muscoli, come nella pagina di un esercizio personalizzato (US-43); barre delle serie per muscolo,
+  // come in Progressi (US-45).
   import LiveField from '../ui/LiveField.svelte';
+  import MuscleBars from '../history/MuscleBars.svelte';
   import MuscleEditor from '../history/MuscleEditor.svelte';
   import type { Muscles } from '../../lib/archive';
   import Stepper from '../ui/Stepper.svelte';
@@ -41,5 +43,9 @@
   <div class="flex flex-col gap-2 border-t border-border pt-3">
     <p class="label m-0">Muscoli di un esercizio personalizzato</p>
     <MuscleEditor {muscles} onchange={(m) => (muscles = m)} />
+  </div>
+  <div class="flex flex-col gap-2 border-t border-border pt-3">
+    <p class="label m-0">Serie per muscolo</p>
+    <MuscleBars rows={[{ label: 'Quadricipiti', value: 12 }, { label: 'Deltoidi posteriori', value: 7.5 }, { label: 'Polpacci', value: 0.5 }]} />
   </div>
 </div>

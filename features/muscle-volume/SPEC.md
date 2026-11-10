@@ -50,7 +50,7 @@ bacheche pubbliche citate lì; dove non c'è una richiesta con fonte, è scritto
 | D16 | Ogni serie spuntata non di riscaldamento conta 1, drop e cedimento compresi (`countsForProgress`); il limite delle drop su più righe sta in un commento del modulo | Risposta 6; Havers et al. 2026 non dà un peso diverso per le drop |
 | D17 | Editor nella pagina dell'esercizio. Da un esercizio di catalogo «Personalizza i muscoli» crea la variante, nome proposto «<nome> (personalizzato)»; la variante sostituisce l'originale nelle schede attive, con conferma e «Annulla»; lo storico resta com'è. Nella pagina della variante, il link «Basata su <originale>» | Risposta 7 |
 | D18 | Esercizi senza muscoli: riga «Senza muscoli: N serie» sotto il grafico, con i link alle loro pagine | Risposta 8 |
-| D19 | Il grafico mostra solo i gruppi con almeno una serie nel periodo | Risposta 1. Attacco e alternativa in §10.2, domanda A |
+| D19 | Il grafico mostra solo i gruppi con almeno una serie nel periodo; sotto, la riga «Nessuna serie: …» con i gruppi a zero, esclusi addominali e avambracci | Risposta 1; riga dei gruppi a zero: risposta A2 di §10.2 (INC-025) |
 | D20 | La chiave di `localStorage` resta `workout-tracker.archive.v2` anche con la versione 3 | Decisione del piano, §6.2: cambiarla farebbe leggere e scrivere a una scheda vecchia un diario a parte |
 | D21 | Periodi: «Settimana» (in corso, totale), «4 settimane» e «12 settimane» (media per settimana delle settimane concluse); predefinito «4 settimane» | Decisione del piano, §7.1; confermare in §10.2, domanda B |
 
@@ -339,6 +339,8 @@ icone Lucide. Componenti nuovi anche in `/kit`.
   settimana conclusa: intanto guarda la settimana in corso».
 - **Senza muscoli (D18):** se `unclassified` non è vuoto, la riga «Senza muscoli: N serie» e sotto i nomi degli
   esercizi, ciascuno un link alla sua pagina (`/exercise?id=`, con `appUrl()`).
+- **Gruppi a zero (D19, A2):** quando ci sono barre, «Nessuna serie: …» con i gruppi senza serie nel periodo, nell'ordine
+  di `MUSCLE_GROUPS`, esclusi addominali e avambracci.
 - **Nessuna serie nel periodo:** «Nessuna serie in questo periodo».
 - **Periodi (D21):**
 
@@ -586,10 +588,10 @@ aggiornamento di `docs/PROJECT.md`.
   - A1, come hai deciso: solo i gruppi con serie. Pro: grafico corto. Contro: lo zero non si vede;
   - A2: in più una riga «Nessuna serie: …» con i gruppi a zero, esclusi addominali e avambracci, che il catalogo non
     usa. Pro: lo zero si vede in una riga. Contro: una riga in più, e i due gruppi esclusi hanno una regola a parte.
-- **Predefinito: A1.** Tocca l'incremento 5.
+- **Predefinito: A1.** Tocca l'incremento 5. **Risposta di Francesco: A2** (applicata in INC-025).
 
 **B. Periodi (D21):** «Settimana», «4 settimane» (predefinito), «12 settimane», con medie sulle settimane concluse
-(confronto in §7.1). Tocca gli incrementi 3 e 5.
+(confronto in §7.1). Tocca gli incrementi 3 e 5. **Risposta di Francesco: il predefinito.**
 
 **C. Conferma della variante (D17).** Il foglio di «Personalizza i muscoli» dice le conseguenze (schede che cambiano,
 storico che resta, record da zero) e il suo pulsante «Crea» è la conferma, senza un `ConfirmDialog` in più.
@@ -599,11 +601,11 @@ storico che resta, record da zero) e il suo pulsante «Crea» è la conferma, se
 - Opzioni:
   - C1: il foglio come conferma. Pro: un passo in meno. Contro: nessuno, se il testo dice le conseguenze;
   - C2: foglio più `ConfirmDialog`. Pro: due passi espliciti. Contro: due conferme per un'azione che si annulla.
-- **Predefinito: C1.** Tocca l'incremento 4.
+- **Predefinito: C1.** Tocca l'incremento 4. **Risposta di Francesco: il predefinito.**
 
 **D. Alias.** Oltre a «Pulley basso» e «Low cable row», `rematore-seduto-al-cavo-basso` prende anche il vecchio nome
 «Rematore al cavo basso», così chi lo scrive a mano trova l'esercizio invece di crearne uno personalizzato.
-**Predefinito: sì.** Tocca l'incremento 1.
+**Predefinito: sì.** Tocca l'incremento 1. **Risposta di Francesco: il predefinito.**
 
 ## 11. Fuori ambito
 

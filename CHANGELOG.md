@@ -3,6 +3,29 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-025
+
+Date: 2026-11-10
+
+Summary:
+**Serie per muscolo in Progressi (muscle-volume, incremento 5 di 6; US-45).** In cima a Progressi la sezione «Serie
+per muscolo»: periodo «Settimana», «4 settimane» (predefinito) o «12 settimane»; barre orizzontali dei gruppi con
+serie, in ordine decrescente e con il valore scritto; la riga di lettura; «Nessuna serie: …» con i gruppi a zero
+(esclusi addominali e avambracci, risposta A2 di Francesco); «Senza muscoli: N serie» con i link alle pagine degli
+esercizi senza muscoli.
+
+Deliverables:
+- `src/components/history/MuscleBars.svelte` (nuovo, anche in `/kit` in `KitControls`); sezione in
+  `src/components/history/ProgressPage.svelte`; `formatSets` in `src/lib/format.ts` (al più un decimale).
+- `tests/e2e/us-45-muscle-volume.spec.ts` (criteri 1-3); US-45 in `docs/archive/restyling/USER-STORIES.md`.
+- `docs/ARCHITECTURE.md`, brief `.impeccable/surfaces/route-history.md`, SPEC (D19, §7.1, risposte di §10.2),
+  handoff della feature.
+
+Pagine guardate a 390×844 e 320×568, chiaro e scuro. Risposte di SPEC §10.2: A2; B, C, D il predefinito. Esito
+Delavier: non ancora arrivato.
+
+ADR: nessuna (A2 è la risposta di Francesco a una domanda già istruita in SPEC §10.2, registrata lì e in D19). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-024
 
 Date: 2026-11-10

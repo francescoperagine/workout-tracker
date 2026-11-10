@@ -123,3 +123,10 @@ export function formatOnDay(key: string, today: string): string {
   const text = formatDayMonth(key, today);
   return /^(8|11)(\D|$)/.test(text) ? `l’${text}` : `il ${text}`;
 }
+
+const setsFormat = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 1, useGrouping: false });
+
+/** Serie per muscolo, con al più un decimale: 7.5 → '7,5', 12 → '12', 3.125 → '3,1' */
+export function formatSets(value: number): string {
+  return setsFormat.format(value);
+}

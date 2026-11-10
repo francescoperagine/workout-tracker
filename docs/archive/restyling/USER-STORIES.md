@@ -161,6 +161,11 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - La variante sostituisce l'originale nelle schede attive (esercizio e alternative); schede archiviate e allenamenti restano sull'originale. Nella variante il link «Basata su <originale>».
 - L'avviso nella pagina della variante ha «Annulla», che riporta all'originale con le schede com'erano.
 
+**US-45 (S, INC-025).** Come utente, voglio vedere quante serie ha ricevuto ogni gruppo muscolare nella settimana o, in media, nelle ultime 4 o 12 settimane, per capire cosa alleno e cosa trascuro.
+- In cima a Progressi, «Serie per muscolo» con il periodo «Settimana», «4 settimane» (predefinito), «12 settimane»: barre orizzontali dei soli gruppi con serie, in ordine decrescente, con il valore scritto (principale 1, secondario 0,5).
+- Sotto le barre la riga di lettura («Settimana in corso, fino a oggi» o «Media per settimana, ultime N settimane concluse») e «Nessuna serie: …» con i gruppi a zero, esclusi addominali e avambracci.
+- Gli esercizi senza muscoli in «Senza muscoli: N serie», ciascuno con il link alla sua pagina; senza una settimana conclusa le medie dicono di guardare la settimana in corso.
+
 **US-41 (S, INC-014).** Come utente, voglio che l'app mi dica quando ho lasciato aperto un allenamento, per chiuderlo all'ora giusta invece di ritrovarmi «14 h 06 min» nello storico.
 - Un allenamento in corso è dimenticato se l'ultima serie spuntata, o l'inizio se nessuna, è di più di 3 ore fa.
 - Aprendo l'allenamento o Oggi compare il foglio «Allenamento ancora aperto» con l'ora dell'ultima serie (o dell'inizio): con serie fatte «Termina alle 17:42», che lo conclude a quell'ora e mostra il riepilogo, e «Continua»; senza, «Annulla allenamento» (con «Annulla» nell'avviso) e «Continua».

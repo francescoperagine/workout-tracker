@@ -1,13 +1,27 @@
 <script lang="ts">
   // Progressi (/progress, quinta tab, INC-015): gli esercizi fatti, ciascuno verso i suoi progressi
   // (/exercise?id=…). Prima era la vista Esercizi dello Storico. In futuro qui anche le misure del corpo.
+  // In cima le serie per muscolo (US-45, INC-025): barre per gruppo nel periodo scelto, i gruppi a zero in una
+  // riga, gli esercizi senza muscoli con i link alle loro pagine.
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
+  import MuscleBars from './MuscleBars.svelte';
+  import SegmentedControl from '../ui/SegmentedControl.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { appUrl } from '../../lib/paths';
-  import { exerciseName, exercisesDone, toDateKey } from '../../lib/archive';
-  import { formatRelativeDay, plural } from '../../lib/format';
+  import {
+    exerciseName,
+    exercisesDone,
+    MUSCLE_GROUPS,
+    MUSCLE_LABELS,
+    periodVolume,
+    toDateKey,
+    weeklyVolume,
+    type MuscleGroup,
+    type VolumePeriod,
+  } from '../../lib/archive';
+  import { formatRelativeDay, formatSets, plural } from '../../lib/format';
 
   const store = archiveStore();
   const today = toDateKey(new Date());
@@ -15,6 +29,25 @@
   const unreadable = $derived(store.state === 'unreadable');
   const done = $derived(exercisesDone(store.archive));
   const exerciseHref = (id: string) => `${appUrl('/exercise')}?id=${encodeURIComponent(id)}`;
+
+  const PERIODS: { value: VolumePeriod; label: string; short?: string }[] = [
+    { value: 'week', label: 'Settimana' },
+    { value: '4w', label: '4 settimane', short: '4S' },
+    { value: '12w', label: '12 settimane', short: '12S' },
+  ];
+  // nella riga «Nessuna serie» non entrano addominali e avambracci, che il catalogo non usa (SPEC §10.2, A2)
+  const NOT_IN_CATALOG: readonly MuscleGroup[] = ['abs', 'forearms'];
+  let period: VolumePeriod = $state('4w');
+  const weeks = $derived(weeklyVolume(store.archive));
+  const volume = $derived(periodVolume(weeks, period, today));
+  const bars = $derived(volume.groups.map((g) => ({ label: MUSCLE_LABELS[g.group], value: g.sets })));
+  const zero = $derived(MUSCLE_GROUPS.filter((g) => !NOT_IN_CATALOG.includes(g) && !volume.groups.some((v) => v.group === g)));
+  const unclassifiedSets = $derived(volume.unclassified.reduce((sum, u) => sum + u.sets, 0));
+  const reading = $derived(
+    volume.partial
+      ? 'Settimana in corso, fino a oggi.'
+      : `Media per settimana, ${volume.weeks === 1 ? 'ultima settimana conclusa' : `ultime ${volume.weeks} settimane concluse`}.`,
+  );
 </script>
 
 {#if unreadable}
@@ -26,6 +59,35 @@
   </div>
 {:else if done.length}
   <div class="flex flex-col gap-5">
+    <section aria-labelledby="volume-title" class="flex flex-col gap-3">
+      <div class="volume-head">
+        <h2 id="volume-title" class="m-0 text-lg font-bold">Serie per muscolo</h2>
+        <SegmentedControl name="volume-period" label="Periodo" options={PERIODS} bind:value={period} compact />
+      </div>
+      {#if volume.weeks === 0}
+        <p class="m-0 max-w-[60ch] text-text-muted">Serve almeno una settimana conclusa: intanto guarda la settimana in corso.</p>
+      {:else if !bars.length && !volume.unclassified.length}
+        <p class="m-0 max-w-[60ch] text-text-muted">Nessuna serie in questo periodo.</p>
+      {:else}
+        {#if bars.length}
+          <MuscleBars rows={bars} />
+        {/if}
+        <p class="m-0 text-sm text-text-muted">{reading}</p>
+        {#if bars.length && zero.length}
+          <p class="m-0 max-w-[60ch]"><span class="text-text-muted">Nessuna serie:</span> {zero.map((g) => MUSCLE_LABELS[g]).join(', ')}</p>
+        {/if}
+        {#if volume.unclassified.length}
+          <div>
+            <p class="m-0"><span class="text-text-muted">Senza muscoli:</span> {formatSets(unclassifiedSets)} serie</p>
+            <ul class="m-0 list-none p-0">
+              {#each volume.unclassified as item (item.exerciseId)}
+                <li><a href={exerciseHref(item.exerciseId)} class="unclassified [overflow-wrap:anywhere]">{exerciseName(store.archive, item.exerciseId)}</a></li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+      {/if}
+    </section>
     <p class="m-0 text-text-muted">Ogni esercizio ha i suoi progressi, anche alternative e varianti.</p>
     <ol class="m-0 list-none p-0">
       {#each done as item (item.exerciseId)}
@@ -53,6 +115,24 @@
 {/if}
 
 <style>
+  /* titolo a sinistra, periodo a destra; dove non c'è posto il periodo va a capo */
+  .volume-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 0.5rem;
+    margin-bottom: -0.25rem;
+  }
+  .volume-head > :global(:last-child) {
+    margin-left: auto;
+  }
+  /* bersaglio da 48px per ogni link */
+  .unclassified {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+  }
   .row {
     display: flex;
     align-items: center;
