@@ -166,6 +166,10 @@ Priorità: **M** = indispensabile per la v1, **S** = importante, **C** = se c'è
 - Sotto le barre la riga di lettura («Settimana in corso, fino a oggi» o «Media per settimana, ultime N settimane concluse») e «Nessuna serie: …» con i gruppi a zero, esclusi addominali e avambracci.
 - Gli esercizi senza muscoli in «Senza muscoli: N serie», ciascuno con il link alla sua pagina; senza una settimana conclusa le medie dicono di guardare la settimana in corso.
 
+**US-46 (S, INC-027).** Come utente, voglio toccare un gruppo nel grafico delle serie per muscolo e vederne le serie settimana per settimana, per capire se il volume sale, scende o ha dei buchi.
+- Ogni barra è un pulsante («Petto: 7,5 serie, apri l'andamento») che apre il foglio «<Gruppo>: serie per settimana».
+- Un punto per settimana da lunedì: le ultime 12 concluse più quella in corso, segnata «Settimana in corso, parziale»; zero nelle settimane senza serie, nessun punto prima della prima settimana con allenamenti.
+
 **US-41 (S, INC-014).** Come utente, voglio che l'app mi dica quando ho lasciato aperto un allenamento, per chiuderlo all'ora giusta invece di ritrovarmi «14 h 06 min» nello storico.
 - Un allenamento in corso è dimenticato se l'ultima serie spuntata, o l'inizio se nessuna, è di più di 3 ore fa.
 - Aprendo l'allenamento o Oggi compare il foglio «Allenamento ancora aperto» con l'ora dell'ultima serie (o dell'inizio): con serie fatte «Termina alle 17:42», che lo conclude a quell'ora e mostra il riepilogo, e «Continua»; senza, «Annulla allenamento» (con «Annulla» nell'avviso) e «Continua».

@@ -3,6 +3,31 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-027
+
+Date: 2026-11-10
+
+Summary:
+**Linea settimanale di un gruppo muscolare (muscle-volume, incremento 6 di 6; US-46). Chiude la feature.** In
+Progressi ogni barra di «Serie per muscolo» è un pulsante («Petto: 7,5 serie, apri l'andamento») che apre il foglio
+«<Gruppo>: serie per settimana»: un punto per settimana, le ultime 12 concluse più quella in corso, segnata
+«Settimana in corso, parziale»; zero nelle settimane vuote, nessun punto prima della prima settimana con allenamenti.
+
+Deliverables:
+- `groupWeeks` e `TREND_WEEKS` in `src/lib/archive/muscles.ts`, con i test in `src/lib/archive/muscles.test.ts`.
+- `src/components/history/MuscleBars.svelte`: con `onselect` ogni riga è un pulsante da almeno 48px con la freccia;
+  foglio con `ProgressChart` in `src/components/history/ProgressPage.svelte`.
+- `tests/e2e/us-46-muscle-trend.spec.ts`; US-46 in `docs/archive/restyling/USER-STORIES.md`.
+- `docs/ARCHITECTURE.md`, brief `.impeccable/surfaces/route-history.md`.
+- Chiusura: SPEC in `docs/archive/features/INC-027_muscle-volume.md`, mappa e ricerche in
+  `docs/archive/features/INC-027_muscle-volume-research/`, `features/muscle-volume/` cancellata, `docs/PROJECT.md`
+  aggiornato (stato, feature attive, limiti noti); percorsi della ricerca aggiornati in ADR-011 e ADR-013.
+
+Pagine guardate a 390×844 e 320×568, chiaro e scuro (barre con la freccia nella riga, focus visibile, foglio con il
+titolo su due righe a 320).
+
+ADR: nessuna (meccanico: si segue SPEC §7.3). Gate, anche per INC-026: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-026
 
 Date: 2026-11-10

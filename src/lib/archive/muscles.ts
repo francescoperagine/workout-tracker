@@ -120,3 +120,30 @@ export function periodVolume(weeks: readonly WeekVolume[], period: VolumePeriod,
     partial: period === 'week',
   };
 }
+
+/** Settimane della linea di un gruppo (US-46): le concluse prima di quella in corso */
+export const TREND_WEEKS = 12;
+
+export interface GroupWeek {
+  /** lunedì della settimana, YYYY-MM-DD */
+  week: string;
+  sets: number;
+  /** true solo per la settimana in corso */
+  partial: boolean;
+}
+
+/**
+ * Serie di un gruppo settimana per settimana: le TREND_WEEKS concluse più quella in corso, zero dove il gruppo non
+ * ha serie, nessuna settimana prima della prima di `weeks` (stesso inizio delle medie di periodVolume).
+ */
+export function groupWeeks(weeks: readonly WeekVolume[], group: MuscleGroup, today: string): GroupWeek[] {
+  if (weeks.length === 0) return [];
+  const current = weekStart(today);
+  const points: GroupWeek[] = [];
+  for (let i = TREND_WEEKS; i >= 0; i--) {
+    const week = addDays(current, -7 * i);
+    if (week < weeks[0].week) continue;
+    points.push({ week, sets: weeks.find((w) => w.week === week)?.groups[group] ?? 0, partial: i === 0 });
+  }
+  return points;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { exerciseMuscles, MUSCLE_LABELS, periodVolume, PRIMARY_SETS, SECONDARY_SETS, weeklyVolume, type WeekVolume } from './muscles';
+import { exerciseMuscles, groupWeeks, MUSCLE_LABELS, periodVolume, PRIMARY_SETS, SECONDARY_SETS, weeklyVolume, type WeekVolume } from './muscles';
 import { emptyArchive, MUSCLE_GROUPS, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 const PANCA = 'panca-piana-bilanciere'; // principale petto; secondari tricipiti e deltoidi anteriori
@@ -114,5 +114,27 @@ describe('volume per muscolo: periodi', () => {
   it('gruppi a zero assenti; ordine decrescente, a pari valore quello di MUSCLE_GROUPS', () => {
     const p = periodVolume([week('2026-11-09', { calves: 2, quads: 3, chest: 2, biceps: 0 })], 'week', TODAY);
     expect(p.groups).toEqual([{ group: 'quads', sets: 3 }, { group: 'chest', sets: 2 }, { group: 'calves', sets: 2 }]);
+  });
+});
+
+describe('volume per muscolo: linea settimanale di un gruppo (US-46)', () => {
+  const TODAY = '2026-11-10'; // martedì; settimana in corso dal 9
+  const week = (w: string, groups: WeekVolume['groups']): WeekVolume => ({ week: w, groups, unclassified: {} });
+
+  it('13 punti: 12 settimane concluse più quella in corso, parziale; zeri nelle settimane vuote', () => {
+    const weeks = [week('2026-06-01', { chest: 9 }), week('2026-09-07', { chest: 3 }), week('2026-10-26', { quads: 5 }), week('2026-11-09', { chest: 2 })];
+    const points = groupWeeks(weeks, 'chest', TODAY);
+    expect(points).toHaveLength(13);
+    expect(points[0]).toEqual({ week: '2026-08-17', sets: 0, partial: false });
+    expect(points.find((p) => p.week === '2026-09-07')?.sets).toBe(3);
+    expect(points.find((p) => p.week === '2026-10-26')?.sets).toBe(0);
+    expect(points.at(-1)).toEqual({ week: '2026-11-09', sets: 2, partial: true });
+    expect(points.filter((p) => p.partial)).toHaveLength(1);
+  });
+
+  it('nessun punto prima della prima settimana con dati; archivio vuoto, nessun punto', () => {
+    const points = groupWeeks([week('2026-10-26', { quads: 5 })], 'chest', TODAY);
+    expect(points.map((p) => [p.week, p.sets])).toEqual([['2026-10-26', 0], ['2026-11-02', 0], ['2026-11-09', 0]]);
+    expect(groupWeeks([], 'chest', TODAY)).toEqual([]);
   });
 });

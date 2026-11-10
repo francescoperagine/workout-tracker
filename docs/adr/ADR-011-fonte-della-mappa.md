@@ -14,7 +14,7 @@ Pelland et al. 2026 (principale 1 serie, secondario 0,5). Le fonti possibili non
 - per 12 esercizi su 42 c'è uno studio di crescita con risonanza o ecografia, e tre lo contraddicono: leg press
   (glutei e adduttori crescono, Kinoshita 2026), squat (femorali no, Kubo 2019), hip thrust (solo glutei, Plotkin 2023).
 
-Dettaglio, sigle e DOI nella mappa della feature (features/muscle-volume/research/mappa-43.md, archiviata con la SPEC
+Dettaglio, sigle e DOI nella mappa della feature (docs/archive/features/INC-027_muscle-volume-research/mappa-43.md, archiviata con la SPEC
 in `docs/archive/features/` alla chiusura).
 
 ## Decision

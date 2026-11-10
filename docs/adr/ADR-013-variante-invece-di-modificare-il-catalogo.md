@@ -8,7 +8,7 @@ Increment: INC-024
 Ogni esercizio di catalogo ha muscoli fissati in `src/data/catalog.ts` (ADR-010, ADR-011). Un utente può non essere
 d'accordo con la mappa, o fare l'esercizio in un modo che sposta il lavoro. Serve un modo di cambiare i muscoli senza
 rompere la mappa comune né lo storico. Fonti: SPEC di muscle-volume, D6, D7, D17 e risposte 7 e C di Francesco;
-`features/muscle-volume/research/opzioni-domande.md`, domanda 6 (Hevy non documenta la modifica degli esercizi di
+`docs/archive/features/INC-027_muscle-volume-research/opzioni-domande.md`, domanda 6 (Hevy non documenta la modifica degli esercizi di
 libreria; MacroFactor gira nessuno → principale → secondario al tocco).
 
 ## Decision

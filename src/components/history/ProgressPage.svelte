@@ -2,17 +2,22 @@
   // Progressi (/progress, quinta tab, INC-015): gli esercizi fatti, ciascuno verso i suoi progressi
   // (/exercise?id=…). Prima era la vista Esercizi dello Storico. In futuro qui anche le misure del corpo.
   // In cima le serie per muscolo (US-45, INC-025): barre per gruppo nel periodo scelto, i gruppi a zero in una
-  // riga, gli esercizi senza muscoli con i link alle loro pagine.
+  // riga, gli esercizi senza muscoli con i link alle loro pagine. Il tocco su una barra apre in un foglio la linea
+  // settimanale del gruppo (US-46): le ultime 12 settimane concluse più quella in corso, segnata come parziale.
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import MuscleBars from './MuscleBars.svelte';
+  import ProgressChart, { type ChartPoint } from './ProgressChart.svelte';
+  import BottomSheet from '../ui/BottomSheet.svelte';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { appUrl } from '../../lib/paths';
   import {
+    addDays,
     exerciseName,
     exercisesDone,
+    groupWeeks,
     MUSCLE_GROUPS,
     MUSCLE_LABELS,
     periodVolume,
@@ -21,7 +26,7 @@
     type MuscleGroup,
     type VolumePeriod,
   } from '../../lib/archive';
-  import { formatRelativeDay, formatSets, plural } from '../../lib/format';
+  import { formatDayMonth, formatRelativeDay, formatWeekRange, formatSets, plural } from '../../lib/format';
 
   const store = archiveStore();
   const today = toDateKey(new Date());
@@ -43,6 +48,24 @@
   const bars = $derived(volume.groups.map((g) => ({ label: MUSCLE_LABELS[g.group], value: g.sets })));
   const zero = $derived(MUSCLE_GROUPS.filter((g) => !NOT_IN_CATALOG.includes(g) && !volume.groups.some((v) => v.group === g)));
   const unclassifiedSets = $derived(volume.unclassified.reduce((sum, u) => sum + u.sets, 0));
+  let trendGroup: MuscleGroup | null = $state(null);
+  let trendOpen = $state(false);
+  const trend = $derived<ChartPoint[]>(
+    trendGroup
+      ? groupWeeks(weeks, trendGroup, today).map((w) => ({
+          date: w.week,
+          value: w.sets,
+          note: w.partial ? 'Settimana in corso, parziale' : `Settimana ${formatWeekRange(w.week, addDays(w.week, 6), today)}`,
+        }))
+      : [],
+  );
+  const trendTitle = $derived(`${trendGroup ? MUSCLE_LABELS[trendGroup] : ''}: serie per settimana`);
+  const setsText = (value: number) => `${formatSets(value)} serie`;
+  const dayText = (date: string) => formatDayMonth(date, today);
+  function openTrend(index: number) {
+    trendGroup = volume.groups[index].group;
+    trendOpen = true;
+  }
   const reading = $derived(
     volume.partial
       ? 'Settimana in corso, fino a oggi.'
@@ -70,7 +93,7 @@
         <p class="m-0 max-w-[60ch] text-text-muted">Nessuna serie in questo periodo.</p>
       {:else}
         {#if bars.length}
-          <MuscleBars rows={bars} />
+          <MuscleBars rows={bars} onselect={openTrend} />
         {/if}
         <p class="m-0 text-sm text-text-muted">{reading}</p>
         {#if bars.length && zero.length}
@@ -88,6 +111,9 @@
         {/if}
       {/if}
     </section>
+    <BottomSheet bind:open={trendOpen} title={trendTitle}>
+      <ProgressChart points={trend} format={setsText} formatDate={dayText} label={trendTitle} />
+    </BottomSheet>
     <p class="m-0 text-text-muted">Ogni esercizio ha i suoi progressi, anche alternative e varianti.</p>
     <ol class="m-0 list-none p-0">
       {#each done as item (item.exerciseId)}

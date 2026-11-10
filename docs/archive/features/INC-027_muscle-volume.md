@@ -1,8 +1,8 @@
 # SPEC: muscle-volume
 
-**Livello:** Feature · **Stato:** in esecuzione, incrementi 1-4 fatti (INC-021, ADR-009; INC-022, ADR-010, ADR-011; INC-023, ADR-012; INC-024, ADR-013), prossimo il 5 (§9) · **Base:** `main` a `c220ee3` (ultimo
+**Livello:** Feature · **Stato:** chiusa con INC-027 il 10 novembre 2026: incrementi 1-6 fatti (INC-021, ADR-009; INC-022, ADR-010, ADR-011; INC-023, ADR-012; INC-024, ADR-013; INC-025; INC-027), punti della mappa senza studio chiusi con INC-026 · **Base:** `main` a `c220ee3` (ultimo
 incremento INC-020) · **Piano:** 10 novembre 2026 · **Origine:** voce «vista per gruppo muscolare» di `docs/todo.md`
-e ricerca del 10 novembre con Francesco (fonti in §4, §5 e in `features/muscle-volume/research/`)
+e ricerca del 10 novembre con Francesco (fonti in §4, §5 e in `docs/archive/features/INC-027_muscle-volume-research/`)
 
 **Conclusione:** ogni esercizio ha muscoli principali e secondari; la tab Progressi mostra le serie per gruppo
 muscolare per settimana, a barre. Si arriva in 6 incrementi: archivio alla versione 3 (con `alternativeOf` e il
@@ -17,7 +17,7 @@ l'alternativa: l'incremento 1 lo corregge (D13).
 
 **Regola per ogni decisione (data da Francesco, non va ripetuta):** cosa chiedono gli utenti, cosa fanno i
 competitor, pro e contro di ciascuna opzione. Per le domande 3-8 sono in
-`features/muscle-volume/research/opzioni-domande.md`; per le decisioni nuove di questa SPEC sono accanto alla
+`docs/archive/features/INC-027_muscle-volume-research/opzioni-domande.md`; per le decisioni nuove di questa SPEC sono accanto alla
 decisione. **Limite comune:** Reddit è bloccato dagli strumenti web, quindi le richieste degli utenti si fermano alle
 bacheche pubbliche citate lì; dove non c'è una richiesta con fonte, è scritto.
 
@@ -35,7 +35,7 @@ bacheche pubbliche citate lì; dove non c'è una richiesta con fonte, è scritto
 | D1 | Deltoidi separati: anteriori, laterali, posteriori | Scelta di Francesco; le spinte lavorano gli anteriori, le alzate i laterali, le tirate i posteriori: con un solo «spalle» il conteggio non dice nulla |
 | D2 | Conteggio frazionario: principale = 1 serie, secondario = 0,5 | Pelland et al. 2026: il metodo frazionario con 0,5 per il lavoro indiretto è quello che si adatta meglio ai dati. Pesi fissi, nessuna percentuale libera |
 | D3 | Più muscoli principali ammessi per esercizio | Lo squat profondo fa crescere quadricipiti, glutei e adduttori (Kubo 2019, §4); Hevy ne ammette uno solo |
-| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`features/muscle-volume/research/wger-crosscheck.md`). Dove c'è uno studio di crescita comanda lo studio; altrimenti l'azione articolare principale. Dove manca lo studio decide la regola, con il motivo scritto nella riga; nessuna verifica sul Delavier (Francesco, 10 novembre 2026). wger solo come controllo. Mappa e regola in `features/muscle-volume/research/mappa-43.md` |
+| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`docs/archive/features/INC-027_muscle-volume-research/wger-crosscheck.md`). Dove c'è uno studio di crescita comanda lo studio; altrimenti l'azione articolare principale. Dove manca lo studio decide la regola, con il motivo scritto nella riga; nessuna verifica sul Delavier (Francesco, 10 novembre 2026). wger solo come controllo. Mappa e regola in `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md` |
 | D5 | Si parte dalle cose base | Conteggio descrittivo (come Hevy). Niente zone colorate né soglie (§4: MEV/MRV senza base sperimentale) |
 | D6 | Esercizi personalizzati: liste libere di principali e secondari; un muscolo non sta in entrambe | Nessuno chiede un limite; MacroFactor fa così (tocco = principale, secondo tocco = secondario) |
 | D7 | Cambiare i muscoli di un esercizio di catalogo **crea una variante** (esercizio personalizzato basato su quello); il catalogo non cambia mai | Scelta di Francesco. Niente conflitti tra aggiornamenti e modifiche; niente «Ripristina predefinito». Limiti accettati: la variante non riceve le correzioni successive della mappa, e record e grafico della variante partono da zero |
@@ -76,7 +76,7 @@ Nessun raggruppamento superiore (spalle, braccia, gambe): con le barre le righe 
 
 ### 3.2 Mappa dei 42 esercizi
 
-La mappa è `features/muscle-volume/research/mappa-43.md`, aggiornata con le risposte del 10 novembre:
+La mappa è `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md`, aggiornata con le risposte del 10 novembre:
 - adduttori **principali** in squat, leg press e leg press a metà pedana (studi: Kubo 2019, Kinoshita 2026) e, per
   analogia segnata come tale, in Smith, goblet e hack squat;
 - stabilizzatori isometrici non contati (confermato);
@@ -100,7 +100,7 @@ restano come erano.
   squat profondo, grande gluteo +6,7%, adduttori +6,2%, femorali e retto femorale senza variazioni. Quindi:
   quadricipiti, glutei e adduttori principali, femorali non contati (§8, risposta 2). Leg press: Kinoshita et al. 2026,
   *Med Sci Sports Exerc* 58(7):1566-1580, DOI 10.1249/mss.0000000000003957 (grande gluteo +15,4%, grande adduttore
-  +6,2%, vasti +4,4-6,2%). Gli altri studi della mappa sono in `features/muscle-volume/research/mappa-43.md`.
+  +6,2%, vasti +4,4-6,2%). Gli altri studi della mappa sono in `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md`.
 - **EMG:** non è un predittore validato della crescita (Vigotsky et al. 2022, *Sports Med*). Non usarla per
   decidere principali e secondari.
 - **MEV/MAV/MRV di Renaissance Periodization:** stime da coach, non misure. Minor, Helms, Schepis 2020, *Strength
@@ -138,7 +138,7 @@ restano come erano.
   errori.
 
 URL delle pagine prodotto e delle bacheche (sigle [H1], [H2], [H3], [B1], [S1], [M1], [U1], [U2]): in testa a
-`features/muscle-volume/research/opzioni-domande.md`. Il thread di Hevy con 14 voti e la pagina di MacroFactor sul
+`docs/archive/features/INC-027_muscle-volume-research/opzioni-domande.md`. Il thread di Hevy con 14 voti e la pagina di MacroFactor sul
 tocco principale e secondario non hanno un URL ritrovato. Nessuna decisione dipende solo da loro: D6 si regge
 anche senza MacroFactor (nessuno chiede un limite, [U1] e [U2] chiedono più gruppi per esercizio).
 
@@ -382,6 +382,9 @@ icone Lucide. Componenti nuovi anche in `/kit`.
   punti `{ date, value }`, `ProgressChart.svelte:12-33`): un punto per settimana, le ultime 12 più quella in corso, le
   settimane senza serie a zero dalla prima settimana con dati in poi; la settimana in corso ha la nota «parziale».
 - Logica: una funzione pura in src/lib/archive/muscles.ts sopra `weeklyVolume`, con test.
+- **Fatto (INC-027):** `groupWeeks` in `src/lib/archive/muscles.ts`, che parte dalla prima settimana di `weeks` come le
+  medie di `periodVolume`; `MuscleBars` con `onselect`; la nota di ogni punto dice la settimana («Settimana 3–9
+  novembre»), quella in corso «Settimana in corso, parziale».
 
 ## 8. Risposte di Francesco (10 novembre 2026)
 
