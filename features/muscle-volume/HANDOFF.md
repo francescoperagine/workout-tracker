@@ -1,10 +1,10 @@
 ---
 mode: implement
 feature: muscle-volume
-inc_base: c220ee3   # HEAD di main al 10 novembre 2026; i commit del piano dopo questo toccano solo features/ e docs/PROJECT.md
-last_inc: INC-020   # ultimo incremento in CHANGELOG al momento del piano
+inc_base: 2ecdf0f   # commit di INC-021 (incremento 1); il commit dopo tocca solo questo file
+last_inc: INC-021   # ultimo incremento in CHANGELOG
 spec: features/muscle-volume/SPEC.md
-resume_from: SPEC §9, incremento 1
+resume_from: SPEC §9, incremento 2
 ---
 
 > **MODE: implement**: si esegue l'ambito dell'incremento indicato in `resume_from`, senza riprogettare né allargare.
@@ -48,6 +48,13 @@ Esegui l'incremento di `resume_from`: ambito, criteri e documenti sono in SPEC �
   numero libero in `docs/adr/`, che citano l'incremento e ne sono citati;
 - in questo file: `inc_base` = il tuo commit, `last_inc` = il tuo INC, `resume_from` = l'incremento successivo;
 - resoconto breve e il prompt per la sessione successiva (qui sotto, con l'incremento aggiornato).
+
+## Stato
+
+- **Incremento 1 fatto** (INC-021, ADR-009, 10 novembre 2026): archivio v3, `EXERCISE_REDIRECTS`, `alternativeOf`,
+  `AlternativeSheet`. `CustomExercise` ha già `muscles` e `variantOf`; `rewriteSessions`/`rewriteRoutines` in
+  `src/lib/archive/catalog.ts` sono il riscrittore da riusare per la variante (incremento 4).
+- Domande di SPEC §10.2 senza risposta al 10 novembre: valgono i predefiniti. Esito Delavier: non ancora arrivato.
 
 ## Insidie già note (dettagli in SPEC §10.1)
 
