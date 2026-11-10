@@ -3,6 +3,27 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-023
+
+Date: 2026-11-10
+
+Summary:
+**Logica del volume per muscolo (muscle-volume, incremento 3 di 6).** Modulo nuovo `src/lib/archive/muscles.ts`:
+serie settimanali per gruppo muscolare con il conteggio frazionario (principale 1, secondario 0,5, Pelland 2026),
+settimane da lunedì e periodi «settimana», «4 settimane», «12 settimane». Nessun cambiamento visibile: il grafico
+arriva con l'incremento 5.
+
+Deliverables:
+- `src/lib/archive/muscles.ts`: `MUSCLE_LABELS`, `PRIMARY_SETS`, `SECONDARY_SETS`, `exerciseMuscles`,
+  `weeklyVolume`, `periodVolume`; esportato da `src/lib/archive/index.ts`.
+- `src/lib/archive/muscles.test.ts`: i criteri 1-8 di SPEC §9, incremento 3.
+- `docs/ARCHITECTURE.md`, handoff della feature.
+
+Limiti noti: una drop set con più scalate conta una serie per riga (commento nel modulo). Domande di SPEC §10.2
+senza risposta: valgono i predefiniti (B: periodi come da D21). Esito Delavier: non ancora arrivato.
+
+ADR: ADR-012. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-022
 
 Date: 2026-11-10
