@@ -1,8 +1,7 @@
 # Mappa dei 43 esercizi del catalogo (bozza, 10 novembre 2026)
 
-**Stato:** decisa con Francesco il 10 novembre 2026 (SPEC §8), salvo i 7 punti «Da controllare sul libro», **in attesa**
-dell'esito di Francesco su Delavier, *Guide des mouvements de musculation*, 6ª ed.: finché non arriva vale la riga
-della tabella.
+**Stato:** decisa con Francesco il 10 novembre 2026 (SPEC §8); i 7 punti senza studio chiusi con la regola lo stesso
+giorno (sezione «Punti senza studio»).
 Gruppi di SPEC §3. Regola di SPEC D4. Conteggio di SPEC D2 (principale 1, secondario 0,5).
 
 ## Conclusione
@@ -73,58 +72,60 @@ wger ha un solo «Shoulders»: dove compare, l'abbinamento ai tre deltoidi non �
 | 5 | panca-piana-bilanciere | petto | tricipiti, deltoidi anteriori | Adduzione orizzontale della spalla, estensione del gomito | Ogasawara 2013 (diretto) | concorda |
 | 6 | chest-press | petto | tricipiti, deltoidi anteriori | Come la panca piana | analogia con Ogasawara 2013 | parziale: nessun secondario |
 | 7 | panca-piana-manubri | petto | tricipiti, deltoidi anteriori | Come la panca piana | analogia con Ogasawara 2013 | concorda |
-| 8 | rematore-manubri-petto-su-panca-inclinata | dorsali, trapezio | deltoidi posteriori, bicipiti | Estensione della spalla, retrazione della scapola, flessione del gomito | bicipiti: analogia con Mannarino 2021 | n.a. |
+| 8 | rematore-manubri-petto-su-panca-inclinata | dorsali, trapezio | deltoidi posteriori, bicipiti | Estensione della spalla, retrazione della scapola, flessione del gomito. Trapezio principale: la retrazione della scapola è metà dell'escursione, non una tenuta. Deltoidi posteriori secondari: con i gomiti vicini al corpo l'estensore principale della spalla è il dorsale; diventerebbero principali solo con i gomiti a 90° (rematore per i deltoidi posteriori, non in catalogo) | bicipiti: analogia con Mannarino 2021 | n.a. |
 | 9 | rematore-al-cavo-basso | **tolto dal catalogo**, reindirizzato al n. 38 (SPEC D12) | | | | parziale: P dorsali; S bicipiti e brachiale; niente trapezio né deltoidi |
-| 10 | row-machine-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | n.a. |
+| 10 | row-machine-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8, anche per trapezio e deltoidi posteriori | bicipiti: analogia con Mannarino 2021 | n.a. |
 | 11 | hip-thrust-bilanciere | glutei | nessuno | Estensione dell'anca a ginocchio flesso | Plotkin 2023 (diretto) | concorda |
 | 12 | hip-thrust-machine | glutei | nessuno | Come il n. 11 | analogia con Plotkin 2023 | n.a. |
 | 13 | glute-bridge-con-manubrio | glutei | nessuno | Come il n. 11, escursione minore | analogia con Plotkin 2023 | n.a. |
-| 14 | pull-through-al-cavo | glutei | femorali | Estensione dell'anca a ginocchia quasi tese | nessuno | parziale: S polpacci, quadricipiti e soleo sbagliati |
-| 15 | distensioni-manubri-seduto-schienale-alto | deltoidi anteriori | deltoidi laterali, tricipiti | Flessione e abduzione della spalla, estensione del gomito | nessuno | n.a. |
-| 16 | shoulder-press-machine | deltoidi anteriori | deltoidi laterali, tricipiti | Come il n. 15 | nessuno | n.a. |
+| 14 | pull-through-al-cavo | glutei, femorali | nessuno | Estensione dell'anca a ginocchia quasi tese, la stessa azione dei n. 26 e 28. Femorali principali (prima secondari): sono estensori dell'anca e crescono con lo stacco a gambe tese (Morin 2025) e con l'estensione dell'anca (Bourne 2017) | femorali: analogia con Morin 2025 e Bourne 2017 | parziale: S polpacci, quadricipiti e soleo sbagliati |
+| 15 | distensioni-manubri-seduto-schienale-alto | deltoidi anteriori | deltoidi laterali, tricipiti | Flessione e abduzione della spalla, estensione del gomito. Deltoidi laterali secondari: con lo schienale alto i gomiti salgono davanti al corpo (piano della scapola), dove la flessione, dei deltoidi anteriori, è l'azione principale e l'abduzione la seconda | nessuno (cercato, 10 novembre: solo EMG) | n.a. |
+| 16 | shoulder-press-machine | deltoidi anteriori | deltoidi laterali, tricipiti | Come il n. 15, anche per i deltoidi laterali | nessuno | n.a. |
 | 17 | curl-manubri-su-panca-inclinata | bicipiti | nessuno | Flessione del gomito | nessuno (la sola flessione non lascia dubbi) | n.a. |
 | 18 | curl-al-cavo-basso | bicipiti | nessuno | Flessione del gomito | nessuno | n.a. |
 | 19 | curl-ez | bicipiti | nessuno | Flessione del gomito | nessuno | n.a. |
-| 20 | alzate-laterali | deltoidi laterali | nessuno | Abduzione della spalla | Larsen 2025 (diretto) | parziale: solo «Shoulders» |
-| 21 | alzate-al-cavo | deltoidi laterali | nessuno | Abduzione della spalla | Larsen 2025 (diretto) | n.a. |
-| 22 | macchina-laterali | deltoidi laterali | nessuno | Abduzione della spalla | analogia con Larsen 2025 | n.a. |
+| 20 | alzate-laterali | deltoidi laterali | nessuno | Abduzione della spalla. Nessun secondario: il trapezio superiore ruota la scapola ma resta escluso come nelle spinte sopra la testa (regola 3), per non contarlo in un esercizio e non nell'altro | Larsen 2025 (diretto) | parziale: solo «Shoulders» |
+| 21 | alzate-al-cavo | deltoidi laterali | nessuno | Abduzione della spalla; come il n. 20 per il trapezio | Larsen 2025 (diretto) | n.a. |
+| 22 | macchina-laterali | deltoidi laterali | nessuno | Abduzione della spalla; come il n. 20 per il trapezio | analogia con Larsen 2025 | n.a. |
 | 23 | standing-calf | polpacci | nessuno | Flessione plantare a ginocchio teso | nessuno | n.a. |
 | 24 | calf-alla-leg-press | polpacci | nessuno | Flessione plantare a ginocchio teso | nessuno | n.a. |
 | 25 | calf-monopodalico-con-manubrio | polpacci | nessuno | Flessione plantare a ginocchio teso | nessuno | n.a. |
 | 26 | stacco-rumeno-bilanciere | femorali, glutei | adduttori | Estensione dell'anca a ginocchia semitese | femorali: Morin 2025 (stacco a gambe tese, analogia stretta) | vuoto |
 | 27 | stacco-rumeno-manubri | femorali, glutei | adduttori | Come il n. 26 | come il n. 26 | concorda; adduttori assenti |
-| 28 | hyperextension-45-con-disco | glutei, femorali | lombari | Estensione dell'anca; estensione della colonna se la schiena si flette e si estende | femorali: Bourne 2017 (attrezzo da verificare) | discorda: P dorsali e dentato anteriore |
-| 29 | distensioni-manubri-panca-inclinata | petto | deltoidi anteriori, tricipiti | Flessione e adduzione orizzontale della spalla, estensione del gomito | Chaves 2020 (diretto, fascio alto del pettorale) | concorda |
-| 30 | incline-chest-press | petto | deltoidi anteriori, tricipiti | Come il n. 29 | analogia con Chaves 2020 | n.a. |
-| 31 | panca-inclinata-al-smith | petto | deltoidi anteriori, tricipiti | Come il n. 29 | analogia con Chaves 2020 | n.a. |
-| 32 | lat-machine-presa-prona | dorsali | bicipiti, trapezio | Adduzione ed estensione della spalla, depressione della scapola, flessione del gomito | bicipiti: Gentil 2015 (diretto) | n.a. |
-| 33 | trazioni-assistite-o-negative | dorsali | bicipiti, trapezio | Come il n. 32 | bicipiti: analogia con Gentil 2015 | parziale: trapezio principale; S addominali e dentato |
-| 34 | lat-monobraccio-al-cavo | dorsali | bicipiti, trapezio | Come il n. 32 | bicipiti: analogia con Gentil 2015 | n.a. |
+| 28 | hyperextension-45-con-disco | glutei, femorali | lombari | Estensione dell'anca; estensione della colonna se la schiena si flette e si estende. Lombari secondari: l'esercizio si chiama iperestensione e di solito la colonna si muove sotto carico; chi la tiene ferma (lombari isometrici, regola 3) crea una variante (SPEC D7) | femorali: Bourne 2017 (estensione dell'anca; l'abstract non dice l'attrezzo e il testo completo non è ad accesso libero) | discorda: P dorsali e dentato anteriore |
+| 29 | distensioni-manubri-panca-inclinata | petto | deltoidi anteriori, tricipiti | Flessione e adduzione orizzontale della spalla, estensione del gomito. Deltoidi anteriori secondari: la flessione in più la compie anche il fascio alto del pettorale, che è quello che cresce di più (Chaves 2020); nessuno studio mostra i deltoidi anteriori crescere quanto il petto | Chaves 2020 (diretto, fascio alto del pettorale) | concorda |
+| 30 | incline-chest-press | petto | deltoidi anteriori, tricipiti | Come il n. 29, anche per i deltoidi anteriori | analogia con Chaves 2020 | n.a. |
+| 31 | panca-inclinata-al-smith | petto | deltoidi anteriori, tricipiti | Come il n. 29, anche per i deltoidi anteriori | analogia con Chaves 2020 | n.a. |
+| 32 | lat-machine-presa-prona | dorsali | bicipiti, trapezio | Adduzione ed estensione della spalla, depressione della scapola, flessione del gomito. Trapezio secondario: la parte inferiore abbassa la scapola, un'altra azione sotto carico. Deltoidi posteriori esclusi: nell'adduzione da sopra la testa non compiono nessuna delle azioni del movimento | bicipiti: Gentil 2015 (diretto) | n.a. |
+| 33 | trazioni-assistite-o-negative | dorsali | bicipiti, trapezio | Come il n. 32, anche per trapezio e deltoidi posteriori | bicipiti: analogia con Gentil 2015 | parziale: trapezio principale; S addominali e dentato |
+| 34 | lat-monobraccio-al-cavo | dorsali | bicipiti, trapezio | Come il n. 32, anche per trapezio e deltoidi posteriori | bicipiti: analogia con Gentil 2015 | n.a. |
 | 35 | leg-press-piedi-a-meta-pedana | quadricipiti, glutei, adduttori | nessuno | Come la leg press | Kinoshita 2026 (diretto; l'abstract non dice la posizione dei piedi) | n.a. |
 | 36 | hack-squat | quadricipiti, glutei, adduttori | nessuno | Come lo squat, schiena appoggiata | analogia con Kubo 2019 e Kinoshita 2026 (adduttori per analogia) | n.a. |
 | 37 | leg-extension | quadricipiti | nessuno | Estensione del ginocchio | Kinoshita 2026 (diretto) | concorda |
-| 38 | rematore-seduto-al-cavo-basso | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | vuoto |
-| 39 | rematore-manubrio-monobraccio-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: Mannarino 2021 (diretto, stesso esercizio) | n.a. |
-| 40 | row-machine | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8 | bicipiti: analogia con Mannarino 2021 | n.a. |
+| 38 | rematore-seduto-al-cavo-basso | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8, anche per trapezio e deltoidi posteriori | bicipiti: analogia con Mannarino 2021 | vuoto |
+| 39 | rematore-manubrio-monobraccio-con-appoggio | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8, anche per trapezio e deltoidi posteriori | bicipiti: Mannarino 2021 (diretto, stesso esercizio) | n.a. |
+| 40 | row-machine | dorsali, trapezio | deltoidi posteriori, bicipiti | Come il n. 8, anche per trapezio e deltoidi posteriori | bicipiti: analogia con Mannarino 2021 | n.a. |
 | 41 | french-press-ez | tricipiti | nessuno | Estensione del gomito, spalla flessa | analogia con Maeo 2023 | n.a. |
 | 42 | pushdown-ai-cavi | tricipiti | nessuno | Estensione del gomito, braccio lungo il corpo | Maeo 2023 (diretto, braccio lungo il corpo) | concorda |
 | 43 | french-press-con-manubrio | tricipiti | nessuno | Estensione del gomito | analogia con Maeo 2023 | n.a. |
 
-## Da controllare sul libro (pagina per esercizio): in attesa
+## Punti senza studio: chiusi il 10 novembre 2026
 
-Francesco verifica e manda l'esito con la pagina. Non blocca la SPEC: una correzione è una modifica a `src/data/catalog.ts`
-e a questa tabella.
+Non ci sarà una verifica esercizio per esercizio sul Delavier (Francesco, 10 novembre 2026). I 7 punti li chiude la
+regola di questa mappa (studio di crescita, poi azione articolare, stabilizzatori non contati); il motivo è nella riga.
 
-Il libro serve per l'anatomia funzionale (SPEC §4): quali muscoli muovono le articolazioni dell'esercizio. Non serve per
-l'enfasi o l'isolamento. Per ogni riga basta segnare: d'accordo, oppure il muscolo in più o in meno.
+1. **Rematori (n. 8, 10, 38, 39, 40):** d'accordo, trapezio principale e deltoidi posteriori secondari.
+2. **Lat machine e trazioni (n. 32, 33, 34):** d'accordo, trapezio secondario e deltoidi posteriori esclusi.
+3. **Spinte sopra la testa (n. 15, 16):** d'accordo, deltoidi laterali secondari.
+4. **Panca inclinata (n. 29, 30, 31):** d'accordo, deltoidi anteriori secondari.
+5. **Pull-through (n. 14):** **cambiato**, femorali da secondari a principali.
+6. **Hyperextension (n. 28):** d'accordo, lombari secondari.
+7. **Alzate laterali (n. 20, 21, 22):** d'accordo, nessun secondario.
 
-1. **Rematori (n. 8, 9, 10, 38, 39, 40):** trapezio principale o secondario; deltoidi posteriori secondari.
-2. **Lat machine e trazioni (n. 32, 33, 34):** trapezio secondario, deltoidi posteriori esclusi.
-3. **Spinte sopra la testa (n. 15, 16):** deltoidi laterali secondari.
-4. **Panca inclinata (n. 29, 30, 31):** deltoidi anteriori secondari o principali.
-5. **Pull-through (n. 14):** femorali secondari o principali.
-6. **Hyperextension (n. 28):** lombari dipendono dall'esecuzione (colonna ferma o in movimento).
-7. **Alzate laterali (n. 20, 21, 22):** nessun secondario (trapezio superiore escluso).
+Studi cercati di nuovo il 10 novembre per rematori, lat machine e spinte sopra la testa: nessuno studio di crescita
+pubblicato, solo EMG e uno studio registrato con risonanza su lat machine contro rematore, senza risultati
+(Università della British Columbia, «Determining the effect of shoulder flexion angle on latissimus dorsi and forearm
+flexor hypertrophy»). Quando escono i risultati, la regola 1 si applica a quelle righe.
 
 ## Dubbi della mappa: chiusi il 10 novembre 2026 (SPEC §8)
 

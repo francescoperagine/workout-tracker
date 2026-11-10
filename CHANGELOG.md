@@ -3,6 +3,24 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-026
+
+Date: 2026-11-10
+
+Summary:
+**Mappa dei muscoli: chiusi i 7 punti senza studio (muscle-volume).** Non ci sarà una verifica sul Delavier: i punti li
+chiude la regola della mappa (studio di crescita, poi azione articolare, stabilizzatori non contati), con il motivo
+scritto nella riga di `features/muscle-volume/research/mappa-43.md`. Cambia solo il pull-through al cavo: femorali da
+secondari a principali, per analogia con Morin 2025 e Bourne 2017. Rematori, lat machine e trazioni, spinte sopra la
+testa, panca inclinata, hyperextension e alzate laterali restano come erano.
+
+Deliverables:
+- `src/data/catalog.ts`: `pull-through-al-cavo` con principali glutei e femorali; commento dell'hyperextension senza
+  «attrezzo da verificare» (l'abstract di Bourne 2017 non lo dice, il testo completo non è ad accesso libero).
+- `mappa-43.md` (motivi nelle righe, sezione «Punti senza studio»), SPEC (D4, §3.2, §4), ADR-011.
+
+ADR: ADR-011 aggiornata (punto 4 e conseguenze). Gate: (`npx vitest run src/data` — exit 0; gate completo con INC-027).
+
 ## INC-025
 
 Date: 2026-11-10

@@ -158,7 +158,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'pull-through-al-cavo',
     name: 'Pull-through al cavo',
     aliases: ['Cable pull through'],
-    muscles: { primary: ['glutes'], secondary: ['hamstrings'] }, // azione articolare
+    muscles: { primary: ['glutes', 'hamstrings'], secondary: [] }, // femorali: analogia con Morin 2025 e Bourne 2017; resto: azione articolare
     description: '',
     image: '',
     imageAlt: '',
@@ -326,7 +326,7 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = {
     id: 'hyperextension-45-con-disco',
     name: 'Hyperextension 45° con disco',
     aliases: ['Back extension', 'Iperestensioni'],
-    muscles: { primary: ['glutes', 'hamstrings'], secondary: ['lower-back'] }, // femorali: Bourne 2017 (attrezzo da verificare); resto: azione articolare
+    muscles: { primary: ['glutes', 'hamstrings'], secondary: ['lower-back'] }, // femorali: Bourne 2017; resto: azione articolare
     description: '',
     image: '',
     imageAlt: '',

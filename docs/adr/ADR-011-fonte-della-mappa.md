@@ -1,7 +1,7 @@
 # ADR-011 — Fonte della mappa: studi di crescita, poi azione articolare
 
 Status: Accepted
-Increment: INC-022
+Increment: INC-022, INC-026
 
 ## Context
 
@@ -26,8 +26,9 @@ in `docs/archive/features/` alla chiusura).
    carico (il gomito nella panca). Dove lo studio è su un esercizio vicino il commento dice «analogia».
 3. **Stabilizzatori isometrici non contati** (addominali e lombari nello squat, trapezio superiore nelle spinte):
    scelta nostra, confermata da Francesco il 10 novembre 2026, non presa da Pelland 2026.
-4. **EMG mai usata**; wger solo come controllo; Delavier come verifica dei 7 punti senza studio (esito atteso da
-   Francesco, si applica come modifica Small).
+4. **EMG mai usata**; wger solo come controllo. I 7 punti senza studio non si verificano sul Delavier: li chiude la
+   regola stessa, con il motivo nella riga della mappa (INC-026). Cambia solo il pull-through, femorali principali per
+   analogia con Morin 2025 e Bourne 2017.
 - Alternative scartate: wger o la mappa delle app (errori sopra); un solo principale per esercizio (lo squat fa
   crescere tre gruppi, Kubo 2019); EMG (non predice la crescita).
 
@@ -35,5 +36,6 @@ in `docs/archive/features/` alla chiusura).
 
 - `src/data/seed-data.test.ts` blocca le righe decise dagli studi: si cambiano solo con uno studio nuovo.
 - Il conteggio per gruppo differisce da wger su squat e leg press (adduttori e glutei principali, femorali no).
-- I limiti restano scritti nella mappa: leg press con un solo studio su non allenati; per rematori, spinte sopra la
-  testa e pull-through vale l'azione articolare finché non arriva l'esito del Delavier.
+- I limiti restano scritti nella mappa: leg press con un solo studio su non allenati; per rematori, lat machine e spinte
+  sopra la testa vale l'azione articolare finché non esce uno studio di crescita (uno con risonanza su lat machine
+  contro rematore è registrato, senza risultati); allora la regola 1 si applica a quelle righe.

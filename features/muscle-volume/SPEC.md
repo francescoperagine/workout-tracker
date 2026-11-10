@@ -8,8 +8,8 @@ e ricerca del 10 novembre con Francesco (fonti in §4, §5 e in `features/muscle
 muscolare per settimana, a barre. Si arriva in 6 incrementi: archivio alla versione 3 (con `alternativeOf` e il
 rematore doppio tolto), mappa del catalogo, logica del volume, editor dei muscoli con le varianti, grafico, linea
 settimanale di un gruppo. Le risposte di Francesco sono in §8, l'attacco al piano in §10. Restano 4 domande con un
-valore predefinito (§10.2): nessuna blocca l'incremento 1. I 7 punti della mappa da controllare sul Delavier sono in
-attesa e non bloccano (§3.2).
+valore predefinito (§10.2): nessuna blocca l'incremento 1. I 7 punti della mappa senza studio sono chiusi con la regola
+della mappa (§3.2).
 
 **Terminologia (di Francesco, vincolante):** **variante** = esercizio personalizzato derivato da un altro (D7);
 **alternativa** = esercizio scelto al posto di quello previsto dalla scheda. Il codice di oggi usa «variante» per
@@ -35,7 +35,7 @@ bacheche pubbliche citate lì; dove non c'è una richiesta con fonte, è scritto
 | D1 | Deltoidi separati: anteriori, laterali, posteriori | Scelta di Francesco; le spinte lavorano gli anteriori, le alzate i laterali, le tirate i posteriori: con un solo «spalle» il conteggio non dice nulla |
 | D2 | Conteggio frazionario: principale = 1 serie, secondario = 0,5 | Pelland et al. 2026: il metodo frazionario con 0,5 per il lavoro indiretto è quello che si adatta meglio ai dati. Pesi fissi, nessuna percentuale libera |
 | D3 | Più muscoli principali ammessi per esercizio | Lo squat profondo fa crescere quadricipiti, glutei e adduttori (Kubo 2019, §4); Hevy ne ammette uno solo |
-| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`features/muscle-volume/research/wger-crosscheck.md`). Dove c'è uno studio di crescita comanda lo studio; altrimenti l'azione articolare principale. Delavier come verifica (Francesco), wger solo come controllo. Mappa e regola in `features/muscle-volume/research/mappa-43.md` |
+| D4 | La mappa del catalogo è nostra, non importata | wger ha errori gravi e un solo muscolo per le spalle (`features/muscle-volume/research/wger-crosscheck.md`). Dove c'è uno studio di crescita comanda lo studio; altrimenti l'azione articolare principale. Dove manca lo studio decide la regola, con il motivo scritto nella riga; nessuna verifica sul Delavier (Francesco, 10 novembre 2026). wger solo come controllo. Mappa e regola in `features/muscle-volume/research/mappa-43.md` |
 | D5 | Si parte dalle cose base | Conteggio descrittivo (come Hevy). Niente zone colorate né soglie (§4: MEV/MRV senza base sperimentale) |
 | D6 | Esercizi personalizzati: liste libere di principali e secondari; un muscolo non sta in entrambe | Nessuno chiede un limite; MacroFactor fa così (tocco = principale, secondo tocco = secondario) |
 | D7 | Cambiare i muscoli di un esercizio di catalogo **crea una variante** (esercizio personalizzato basato su quello); il catalogo non cambia mai | Scelta di Francesco. Niente conflitti tra aggiornamenti e modifiche; niente «Ripristina predefinito». Limiti accettati: la variante non riceve le correzioni successive della mappa, e record e grafico della variante partono da zero |
@@ -82,10 +82,11 @@ La mappa è `features/muscle-volume/research/mappa-43.md`, aggiornata con le ris
 - stabilizzatori isometrici non contati (confermato);
 - riga 9 tolta (D12): gli esercizi del catalogo diventano 42.
 
-**In attesa:** i 7 punti «Da controllare sul libro» di `mappa-43.md` (rematori, lat machine, spinte sopra la testa,
-panca inclinata, pull-through, hyperextension, alzate). Francesco li verifica sul Delavier e manda l'esito con la
-pagina. Finché non arriva vale la riga della tabella. L'esito è una modifica a `src/data/catalog.ts` e a
-`mappa-43.md` (livello Small o Trivial), in qualsiasi momento dopo l'incremento 2.
+**Punti senza studio, chiusi il 10 novembre 2026:** i 7 punti (rematori, lat machine, spinte sopra la testa, panca
+inclinata, pull-through, hyperextension, alzate) non si verificano sul Delavier: li chiude la regola della mappa (studio
+di crescita, poi azione articolare, stabilizzatori non contati), con il motivo nella riga di `mappa-43.md`. Cambia solo
+il pull-through (n. 14): femorali da secondari a principali, per analogia con Morin 2025 e Bourne 2017. Gli altri sei
+restano come erano.
 
 ## 4. Evidenze (cosa è scienza e cosa è opinione)
 
@@ -106,9 +107,8 @@ pagina. Finché non arriva vale la riga della tabella. L'esito è una modifica a
   & Conditioning Journal* 42(5):121-124, DOI 10.1519/SSC.0000000000000581: nessuna evidenza che l'MRV sia legato al
   volume ottimale; Israetel ha concesso il punto. Sono uno standard di fatto nelle app, non scientifico.
 - **Libri:**
-  - Delavier, *Guide des mouvements de musculation*, 6ª ed., Vigot 2021, ISBN 9782711424108: valido per
-    l'anatomia funzionale (quali muscoli muovono quali articolazioni); le affermazioni su enfasi e isolamento non
-    si usano.
+  - Delavier, *Guide des mouvements de musculation*: previsto come verifica dei 7 punti senza studio, poi non usato
+    (§3.2).
   - Neumann, *Kinesiology of the Musculoskeletal System*, 4ª ed., Elsevier 2024, ISBN 9780323718592: il
     riferimento accademico, solo se serve una citazione per ogni azione articolare.
   - Schoenfeld, *Science and Development of Muscle Hypertrophy*, 3ª ed., Human Kinetics, ottobre 2026: per il
@@ -387,7 +387,7 @@ icone Lucide. Componenti nuovi anche in `/kit`.
 
 1. **Gruppi:** lombari e adduttori sì; anche addominali e avambracci, per i personalizzati (crunch, plank, curl per i
    polsi; Hevy e MacroFactor li hanno). Il grafico mostra solo i gruppi con almeno una serie nel periodo. → D10, D19.
-2. **Mappa:** i 7 punti da controllare li verifica lui sul Delavier, con la pagina: intanto in attesa, non bloccano.
+2. **Mappa:** i 7 punti da controllare li verifica lui sul Delavier, con la pagina: intanto in attesa, non bloccano (superato il 10 novembre: §3.2).
    Adduttori principali nello squat profondo e nella leg press, perché comanda lo studio (Kubo 2019: adduttori +6,2%
    contro glutei +6,7%; Kinoshita 2026: grande adduttore +6,2% contro vasti +4,4-6,2%): un muscolo che cresce quanto i
    principali non è secondario. Stessa scelta per analogia su Smith, goblet e hack squat, segnata come analogia.
