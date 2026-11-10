@@ -1,10 +1,10 @@
 ---
 mode: implement
 feature: muscle-volume
-inc_base: 1254f2d   # commit di INC-023 (incremento 3); il commit dopo tocca solo questo file
-last_inc: INC-023   # ultimo incremento in CHANGELOG
+inc_base: ce2635c   # commit di INC-024 (incremento 4); il commit dopo tocca solo questo file
+last_inc: INC-024   # ultimo incremento in CHANGELOG
 spec: features/muscle-volume/SPEC.md
-resume_from: SPEC §9, incremento 4
+resume_from: SPEC §9, incremento 5
 ---
 
 > **MODE: implement**: si esegue l'ambito dell'incremento indicato in `resume_from`, senza riprogettare né allargare.
@@ -58,8 +58,11 @@ Esegui l'incremento di `resume_from`: ambito, criteri e documenti sono in SPEC �
   voci di `src/data/catalog.ts` uguali alla tabella di `mappa-43.md`, righe degli studi bloccate in
   `src/data/seed-data.test.ts`.
 - **Incremento 3 fatto** (INC-023, ADR-012, 10 novembre 2026): `src/lib/archive/muscles.ts` con `exerciseMuscles`
-  (null = senza muscoli), `weeklyVolume`, `periodVolume`, `MUSCLE_LABELS`; test dei criteri 1-8. Il prossimo ADR
-  libero è ADR-013.
+  (null = senza muscoli), `weeklyVolume`, `periodVolume`, `MUSCLE_LABELS`; test dei criteri 1-8.
+- **Incremento 4 fatto** (INC-024, ADR-013, 10 novembre 2026): sezione «Muscoli» in `ExerciseProgress.svelte`,
+  `MuscleEditor.svelte` (anche in `/kit`), `createVariant`/`setCustomMuscles` in `src/lib/archive/catalog.ts`; e2e in
+  `tests/e2e/us-43-us-44-muscles.spec.ts`. I link di «Senza muscoli» (incremento 5) vanno a `/exercise?id=`, dove ora
+  l'editor c'è. Il prossimo ADR libero è ADR-014 (l'incremento 5 non ne elenca).
 - Domande di SPEC §10.2 senza risposta al 10 novembre: valgono i predefiniti. Esito Delavier: non ancora arrivato.
 
 ## Insidie già note (dettagli in SPEC §10.1)
