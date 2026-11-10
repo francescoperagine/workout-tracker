@@ -3,6 +3,29 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-022
+
+Date: 2026-11-10
+
+Summary:
+**Muscoli su ogni esercizio del catalogo (muscle-volume, incremento 2 di 6).** `CatalogExercise.muscles` è
+obbligatorio e le 42 voci di `BASE_CATALOG` hanno principali e secondari dalla mappa della feature, con la fonte in un
+commento sulla stessa riga (studio di crescita, «analogia» o «azione articolare»). Nessun cambiamento visibile: i
+muscoli si vedono dall'incremento 4.
+
+Deliverables:
+- `src/lib/archive/types.ts`: `CatalogExercise.muscles: Muscles`.
+- `src/data/catalog.ts`: `muscles` sulle 42 voci, commento della regola in testa.
+- `src/data/seed-data.test.ts`: almeno un principale e nessun gruppo in entrambe le liste; righe bloccate dagli
+  studi (squat, leg press, leg press a metà pedana, hip thrust, leg extension).
+- `docs/ARCHITECTURE.md`, SPEC e handoff della feature.
+
+Limiti noti: i 7 punti «Da controllare sul libro» valgono come da tabella finché non arriva l'esito del Delavier.
+Domande di SPEC §10.2 senza risposta: valgono i predefiniti (nessuna tocca questo incremento). Criterio 1 provato
+togliendo `muscles` da una voce: `npm run check` dà `ts(2741)`.
+
+ADR: ADR-010, ADR-011. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-021
 
 Date: 2026-11-10

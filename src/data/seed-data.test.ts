@@ -32,6 +32,24 @@ describe('catalogo di base', () => {
     }
   });
 
+  it('muscoli: ogni voce ha almeno un principale e nessun gruppo in entrambe le liste', () => {
+    for (const e of Object.values(BASE_CATALOG)) {
+      expect(e.muscles.primary.length, e.id).toBeGreaterThan(0);
+      for (const m of e.muscles.primary) expect(e.muscles.secondary, e.id).not.toContain(m);
+    }
+  });
+
+  // righe decise dagli studi di crescita (ADR-011): non si cambiano senza uno studio nuovo
+  it('muscoli: le righe decise dagli studi restano come dicono gli studi', () => {
+    for (const id of ['squat-bilanciere', 'leg-press', 'leg-press-piedi-a-meta-pedana']) {
+      // Kubo 2019, Kinoshita 2026: crescono quadricipiti, glutei e adduttori, non i femorali
+      expect([...BASE_CATALOG[id].muscles.primary].sort(), id).toEqual(['adductors', 'glutes', 'quads']);
+      expect(BASE_CATALOG[id].muscles.secondary, id).not.toContain('hamstrings');
+    }
+    expect(BASE_CATALOG['hip-thrust-bilanciere'].muscles).toEqual({ primary: ['glutes'], secondary: [] }); // Plotkin 2023
+    expect(BASE_CATALOG['leg-extension'].muscles).toEqual({ primary: ['quads'], secondary: [] }); // Kinoshita 2026
+  });
+
   it('le schede iniziali usano solo esercizi del catalogo', () => {
     for (const routine of STARTER_ROUTINES) {
       for (const item of routine.exercises) {

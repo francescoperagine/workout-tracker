@@ -32,6 +32,8 @@ export interface CatalogExercise {
   name: string;
   /** altri nomi con cui si cerca o si scrive l'esercizio (inglese, varianti italiane); mai uguali al nome */
   aliases: string[];
+  /** muscoli allenati (principali e secondari); obbligatorio perché ogni voce del catalogo ne abbia (ADR-010) */
+  muscles: Muscles;
   description: string;
   image: string;
   imageAlt: string;
