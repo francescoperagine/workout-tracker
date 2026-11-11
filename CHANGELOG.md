@@ -3,6 +3,31 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-034
+
+Date: 2026-11-11
+
+Summary:
+**Sagoma del corpo e scala dei muscoli (delavier-catalog, incremento 6 di 6; US-51). Chiude la feature.** Una sagoma
+davanti e dietro con le zone dei muscoli di MuscleMap (licenza MIT, attribuzione nella pagina Info) e un contorno che
+imita l'inchiostro; brachiale e flessori dell'anca tracciati a mano, il popliteo non si disegna. Nella tab Info la
+sagoma colora la quota di una serie sulla scala giallo → arancione → rosso mattone, con la legenda scritta; in
+Progressi, sopra le barre, un colore solo con l'intensità relativa al massimo del periodo, e ogni gruppo è un
+pulsante che apre il suo foglio. Info ha una sezione «Fonti» (Delavier, Pelland 2026, MuscleMap).
+
+Deliverables:
+- `src/data/body-map.ts` (58 zone di MuscleMap con le coordinate arrotondate più 4 tracciate a mano; generato da
+  Hermes su specifica, controllato zona per zona contro l'originale), `src/components/history/BodyMap.svelte`, usato
+  in `ProgressPage` ed `ExerciseProgress`, in /kit.
+- Token `heat-low`, `heat-mid`, `heat-high` in `global.css` e `DESIGN.md`, coppie in `src/styles/contrast.test.ts`;
+  ADR-005 aggiornato.
+- `src/pages/info.astro` (Fonti); e2e `tests/e2e/us-51-body-map.spec.ts`.
+- Chiusura: SPEC in `docs/archive/features/INC-034_delavier-catalog.md`, `features/delavier-catalog/` tolta;
+  `docs/PROJECT.md`, `docs/ARCHITECTURE.md`, `DESIGN.md`, `.impeccable/surfaces/route-history.md`. In
+  `docs/todo.md` la voce della sagoma a pennello (non committata: il file ha altre modifiche di Francesco).
+
+ADR: ADR-005 aggiornato. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0; dopo un ritocco di spazi in `info.astro`: `npm run check`, e2e US-34 con e senza `WT_BASE` e `docs:check` — exit 0). Sagoma guardata a 390×844 e 320×568, chiaro e scuro.
+
 ## INC-033
 
 Date: 2026-11-11

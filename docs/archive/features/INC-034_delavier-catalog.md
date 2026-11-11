@@ -1,7 +1,7 @@
 # SPEC — delavier-catalog
 
-Stato: **decisioni chiuse** (risposte di Francesco dell'11/11/2026, §2). Livello: Feature, 6 incrementi nell'ordine
-di §3, uno alla volta.
+Stato: **chiusa con INC-034** (11/11/2026): incrementi 1–6 fatti (INC-029 … INC-034). Restano a Francesco le proposte di
+§5. Livello: Feature, 6 incrementi.
 
 Obiettivo: catalogo preso dal Delavier (*Strength Training Anatomy*, 3ª ed.), muscoli con il valore di una serie al
 posto di principali/secondari, Progressi che diventa il catalogo, grafici con l'elenco sotto, sagoma del corpo,

@@ -20,6 +20,9 @@ colors:
   danger-fill: "light-dark(#C81E1E, #DF3124)"
   on-danger: "light-dark(#FFFFFF, #FFFFFF)"
   highlight: "light-dark(#165E83, #8AB4E8)"
+  heat-low: "light-dark(#F2C94C, #F5D76E)"
+  heat-mid: "light-dark(#C96A12, #F59E3B)"
+  heat-high: "light-dark(#A3241B, #E04A3A)"
   backdrop: "rgb(0 0 0 / 0.6)"
   shadow: "rgb(0 0 0 / 0.28)"
 typography:
@@ -327,6 +330,7 @@ I temi sono un registro, non un elenco cablato: `THEME_REGISTRY` in `src/lib/the
 
 ### Tertiary
 - **Rosso lampone** (`danger`): solo errori e azioni distruttive, sempre con icona e testo, così si distingue dall'accento anche per chi confonde arancione e rosso. Il pulsante distruttivo è pieno su un rosso a sé, `danger-fill` (#C81E1E in chiaro, #DF3124 in scuro), con testo `on-danger` bianco nei due temi, e al passaggio si scurisce: `danger` in scuro è chiaro, pensato per il testo, e come fondo diventava rosa (INC-011, ADR-006). Le distruttive passano dalla conferma. Campi non validi, errori di campo e barra di salvataggio in errore usano `danger` come testo e bordo.
+- **Scala dei muscoli** (`heat-low`, `heat-mid`, `heat-high`): solo nella sagoma della tab Info e nella sua legenda, dice quanto conta una serie per un gruppo: rosso mattone (una serie intera), arancione (0,5), verso il giallo sotto. Il mattone è più scuro e più bruno del lampone degli errori; il giallo non arriva a 3:1 e sta sempre dentro il contorno a inchiostro (ADR-005, INC-034). In Progressi la sagoma non usa la scala: un solo colore, l'indicatore, più pieno quanto più il gruppo si avvicina al massimo del periodo.
 - **Avvisi informativi** (ex ambra): `text-muted` con l'icona `info` in un riquadro `border`. Non c'è un colore di avviso.
 
 ### Neutral
@@ -342,7 +346,7 @@ I temi sono un registro, non un elenco cablato: `THEME_REGISTRY` in `src/lib/the
 ### Named Rules
 **La regola dell'accento unico.** L'accento è solo per ciò che chiede azione o è in corso, mai decorazione né stati conclusi. Un solo `btn-primary` visibile per schermata; le azioni secondarie sono neutre (`border-control` e `text`).
 
-**La regola del rosso.** `danger` vale solo per errori e azioni distruttive, sempre con icona e testo. Nessun verde, nemmeno per i successi.
+**La regola del rosso.** `danger` vale solo per errori e azioni distruttive, sempre con icona e testo. Nessun verde, nemmeno per i successi. Il rosso della scala dei muscoli (`heat-high`) è un accento dei dati, solo nella sagoma, sempre con la legenda scritta.
 
 **La regola della coppia.** Ogni colore è scritto come `light-dark(chiaro, scuro)` in `@theme`. Un colore con un solo valore è un errore: rompe uno dei due temi (fanno eccezione `backdrop` e `shadow`, uguali per scelta).
 
@@ -478,6 +482,7 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 ### Navigation
 - **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `border`; titolo compatto troncato su una riga, riga di stato in `text-muted` a 14px, a destra azioni facoltative, l'icona Informazioni (`circle-question-mark`, verso `/info`) e quella delle Impostazioni (`settings`, l'ingranaggio), da 48px.
 - **Mini-barra dell'allenamento:** sulle altre pagine (non sull'allenamento; su Oggi solo con un recupero in corso), sopra la tab bar: guscio alto 56px con filo `border`, icona `circle-play` in `accent-text`, nome della sessione (650) e "da 25 min · esercizio" in `text-muted`, "Riprendi" in `accent-text` con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`). Con un recupero in corso diventa il timer ridotto, con a destra una freccia da 56px (separata da un filo `border`) che torna all'allenamento.
+- **Sagoma del corpo** (`BodyMap`, Progressi e tab Info): davanti e dietro affiancati (al più 22rem), zone dei muscoli di MuscleMap riempite di `bg` o del colore del valore, contorno `text` di 4 unità mosso da un filtro di rumore che imita l'inchiostro; sotto le viste «Davanti» e «Dietro» in `text-muted`. In Progressi ogni gruppo è un pulsante (bordo `accent-indicator` più spesso a fuoco) che apre il foglio del gruppo; in Info la legenda scritta, un campione con il contorno a inchiostro per ogni valore presente. Una sagoma disegnata davvero a pennello è in `docs/todo.md`.
 - **Tab della pagina** (pagina dell'esercizio: Progressi, Info): due schede uguali a tutta larghezza alte 48px sopra un filo `border`; a riposo `text-muted` peso 600, la scelta in `text` e grassetto con un filo di 2px in `text` sotto, come la voce attiva della tab bar. Sono `role="tab"` con le frecce sinistra e destra; la scelta sta nell'URL (`&tab=info`).
 - **Tab bar:** guscio in basso con filo superiore `border`, cinque voci uguali (Oggi, Calendario, Schede, Storico, Progressi) alte 56px, etichette intere anche a 320px, icona da 22px sopra l'etichetta a 12px. A riposo `text-muted`, al passaggio `text`; la voce attiva è in `text` e in grassetto, con l'icona piena (Progressi, una linea senza sagoma: tratto più spesso) e un indicatore di 2px in `text` sul bordo superiore, e `aria-current="page"`.
 

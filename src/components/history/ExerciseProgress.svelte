@@ -17,6 +17,7 @@
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import { navigate } from 'astro:transitions/client';
   import BottomSheet from '../ui/BottomSheet.svelte';
+  import BodyMap from './BodyMap.svelte';
   import MuscleEditor from './MuscleEditor.svelte';
   import SegmentedControl from '../ui/SegmentedControl.svelte';
   import Toast from '../ui/Toast.svelte';
@@ -430,7 +431,8 @@
             <a class="based-on" href={`${exerciseHref(custom.variantOf)}&tab=info`}>Basata su {exerciseName(store.archive, custom.variantOf)}</a>
           {/if}
           {#if baseMuscles}
-            <p class="hint m-0">Quanto conta una serie per ogni gruppo:</p>
+            <BodyMap values={baseMuscles} mode="share" label={`Sagoma: i muscoli di ${name}`} />
+          <p class="hint m-0">Quanto conta una serie per ogni gruppo:</p>
             <dl class="muscle-list">
               {#each sortedMuscles(baseMuscles) as { group, value } (group)}
                 <div><dt>{MUSCLE_LABELS[group]}:</dt> <dd>{formatShare(value)}</dd></div>
@@ -441,7 +443,10 @@
             {#if Object.keys(custom.muscles).length === 0}
               <p class="m-0 max-w-[60ch] text-text-muted">Scegli i muscoli: finché sono vuoti, le serie finiscono in «Senza muscoli» in Progressi.</p>
             {/if}
-            <p class="hint m-0">Un tocco: conta {formatShare(MOST_RECRUITED)}. Due: {formatShare(RECRUITED)}. Tre: nessuna.</p>
+            {#if Object.keys(custom.muscles).length}
+            <BodyMap values={custom.muscles} mode="share" label={`Sagoma: i muscoli di ${name}`} />
+          {/if}
+          <p class="hint m-0">Un tocco: conta {formatShare(MOST_RECRUITED)}. Due: {formatShare(RECRUITED)}. Tre: nessuna.</p>
             <MuscleEditor muscles={custom.muscles} onchange={(m) => edit((a) => setCustomMuscles(a, exerciseId, m))} />
           {/if}
         </section>

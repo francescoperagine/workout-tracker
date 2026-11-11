@@ -4,7 +4,7 @@
 // Ogni voce: nome italiano d'uso comune, alias (sempre il nome inglese del libro), muscoli come gruppo → quota di una
 // serie (MOST_RECRUITED, RECRUITED), fonte nel commento: «Delavier p. N» (pagina del libro, PDF = N + 2), «variante»
 // quando la voce è una Variation del libro con un altro attrezzo, «fuori dal libro» con la fonte, «proposta §5 (Pn)»
-// quando le regole di lettura non decidono e vale una proposta da far confermare (features/delavier-catalog/SPEC.md §5).
+// quando le regole di lettura non decidono e vale una proposta da far confermare (docs/archive/features/INC-034_delavier-catalog.md, §5).
 // Gli approfondimenti restano vuoti di proposito: niente testi tecnici o consigli medici inventati; le illustrazioni
 // del libro non si usano.
 import { MOST_RECRUITED, RECRUITED, type CatalogExercise, type Muscles } from '../lib/archive/types';

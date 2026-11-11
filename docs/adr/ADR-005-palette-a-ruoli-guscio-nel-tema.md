@@ -1,7 +1,7 @@
 # ADR-005 — Palette a ruoli: il guscio segue il tema, vermiglio, rosso per gli errori, indaco per i record
 
 Status: Accepted
-Increment: INC-010
+Increment: INC-010, INC-034
 
 ## Context
 
@@ -30,6 +30,13 @@ non dava margine in entrambi i temi.
   che confronta due esercizi; mai pulsanti, link o stati.
 - **`src/styles/contrast.test.ts` è l'arbitro** delle coppie (testo ≥ 4,5:1, bordi e indicatori ≥ 3:1) e
   controlla che nessun colore stia fuori dai token.
+
+- **Aggiornamento INC-034 (delavier-catalog): scala dei muscoli.** La palette di base resta monocromatica e il rosso
+  un accento: nella sola sagoma della tab Info la quota di una serie va su una scala `heat-low` (giallo) →
+  `heat-mid` (arancione) → `heat-high` (rosso mattone, `#A3241B` / `#E04A3A`), distinto dal lampone di `danger` e
+  sempre con la legenda scritta; il giallo non arriva a 3:1 e sta dentro il contorno a inchiostro. Scartati: l'accento
+  vermiglio per la scala (si confonderebbe con ciò che chiede azione), l'indaco (riservato ai record). In Progressi
+  la sagoma usa un solo colore, `accent-indicator`, con l'intensità relativa al massimo del periodo.
 
 ## Consequences
 

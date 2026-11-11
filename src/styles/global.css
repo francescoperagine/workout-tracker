@@ -52,6 +52,12 @@
   --color-on-danger: light-dark(#FFFFFF, #FFFFFF);
   /* indaco: solo trofei e record, e la seconda serie quando un grafico confronta due esercizi; mai pulsanti, link o stati */
   --color-highlight: light-dark(#165E83, #8AB4E8);
+  /* scala dei muscoli (ADR-005, delavier-catalog): quanto conta una serie per un gruppo, solo nella sagoma e nella
+     sua legenda della tab Info. Giallo (poco), arancione, rosso (una serie intera); il rosso è un mattone, distinto
+     dal lampone degli errori; il giallo non arriva a 3:1 e ha sempre il contorno a inchiostro della sagoma */
+  --color-heat-low: light-dark(#F2C94C, #F5D76E);
+  --color-heat-mid: light-dark(#C96A12, #F59E3B);
+  --color-heat-high: light-dark(#A3241B, #E04A3A);
   /* velo delle modali e ombra degli elementi sospesi: nero neutro, uguale nei due temi */
   --color-backdrop: rgb(0 0 0 / 0.6);
   --color-shadow: rgb(0 0 0 / 0.28);

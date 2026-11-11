@@ -62,7 +62,7 @@ const PAIRS: [string[], string[], number][] = [
   [['on-accent'], ['accent', 'accent-pressed'], 4.5],
   [['on-danger'], ['danger-fill'], 4.5],
   [['on-done'], ['done'], 4.5],
-  [['border-control', 'accent-indicator', 'accent', 'danger-fill'], ['bg', 'surface'], 3],
+  [['border-control', 'accent-indicator', 'accent', 'danger-fill', 'heat-mid', 'heat-high'], ['bg', 'surface'], 3],
 ];
 
 describe('contrasto WCAG dei ruoli di colore', () => {

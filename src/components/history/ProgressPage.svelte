@@ -9,6 +9,7 @@
   // sotto il grafico gli esercizi che hanno dato serie al gruppo (US-49), filtrati sulla settimana toccata.
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
+  import BodyMap from './BodyMap.svelte';
   import ExerciseRow from './ExerciseRow.svelte';
   import MuscleBars from './MuscleBars.svelte';
   import ProgressChart, { type ChartPoint } from './ProgressChart.svelte';
@@ -88,10 +89,16 @@
   const setsText = (value: number) => `${formatSets(value)} serie`;
   const dayText = (date: string) => formatDayMonth(date, today);
   function openTrend(index: number) {
-    trendGroup = volume.groups[index].group;
+    openGroup(volume.groups[index].group);
+  }
+  function openGroup(group: MuscleGroup) {
+    trendGroup = group;
     weekFilter = null;
     trendOpen = true;
   }
+  // US-51: la sagoma colora i gruppi del periodo, più pieni quanto più vicini al massimo
+  const mapValues = $derived(Object.fromEntries(volume.groups.map((g) => [g.group, g.sets])) as Partial<Record<MuscleGroup, number>>);
+  const describeGroup = (group: MuscleGroup) => `Sagoma, ${MUSCLE_LABELS[group]}: ${setsText(mapValues[group] ?? 0)}`;
 
   // US-49: gli esercizi del gruppo nelle settimane del grafico, o in quella toccata (un secondo tocco la toglie)
   let weekFilter: string | null = $state(null);
@@ -137,6 +144,7 @@
           <p class="m-0 max-w-[60ch] text-text-muted">Nessuna serie in questo periodo.</p>
         {:else}
           {#if bars.length}
+            <BodyMap values={mapValues} mode="intensity" label="Sagoma: serie per muscolo nel periodo" onselect={openGroup} describe={describeGroup} />
             <MuscleBars rows={bars} onselect={openTrend} />
           {/if}
           <p class="m-0 text-sm text-text-muted">{reading}</p>
