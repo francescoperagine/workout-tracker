@@ -3,6 +3,27 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-033
+
+Date: 2026-11-11
+
+Summary:
+**Grafici con l'elenco sotto (delavier-catalog, incremento 5 di 6; US-49, US-50).** Nel foglio «<Gruppo>: serie per
+settimana» di Progressi, sotto il grafico, gli esercizi che hanno dato serie al gruppo nelle settimane del grafico, con
+la riga dell'elenco di Progressi più le serie contate (già pesate) e quanto conta una serie. Il tocco su un punto filtra
+sulla settimana; un secondo tocco sullo stesso punto o «Tutte le settimane» toglie il filtro (le frecce sulla trama
+filtrano anche loro). Nella pagina dell'esercizio il tocco su un punto evidenzia la riga di quell'allenamento nella
+cronologia, senza spostare il focus e senza scorrere.
+
+Deliverables:
+- `groupExercises` in `src/lib/archive/muscles.ts` (stesse regole di `weeklyVolume`, ora con un generatore comune), con
+  i test.
+- `ExerciseRow.svelte` (riga di Progressi e del foglio, in /kit); `ProgressChart` (`onpick`); `ProgressPage`,
+  `ExerciseProgress`.
+- e2e `tests/e2e/us-49-us-50-chart-lists.spec.ts`; `docs/ARCHITECTURE.md`, `.impeccable/surfaces/route-history.md`.
+
+ADR: nessuna (meccanico). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0). Foglio del gruppo e cronologia guardati a 390×844 e 320×568.
+
 ## INC-032
 
 Date: 2026-11-11

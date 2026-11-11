@@ -175,6 +175,8 @@
   );
 
   const recent = $derived([...inPeriod].reverse());
+  // US-50: il punto toccato nel grafico evidenzia la sua riga nella cronologia, senza focus né scorrimento
+  let highlighted: string | null = $state(null);
 
   // US-42: l'allenamento della riga scelta, da passare a un altro esercizio
   let reassigning: ExercisePoint | null = $state(null);
@@ -360,7 +362,7 @@
               <SegmentedControl name="period" label="Periodo" options={PERIODS} bind:value={period} compact />
             </div>
             {#if chartPoints.length}
-              <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} details={sessionDetails} />
+              <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} details={sessionDetails} onpick={(i) => (highlighted = shown[i]?.point.sessionId ?? null)} />
               {#if chartPoints.length === 1}
                 <p class="hint m-0">Un solo allenamento in questo periodo: l’andamento compare dal secondo.</p>
               {/if}
@@ -399,7 +401,7 @@
               <h3 id="sets-title" class="subtitle">Cronologia delle serie</h3>
               <ol class="list">
                 {#each recent as point (point.sessionId)}
-                  <li>
+                  <li class:highlighted={point.sessionId === highlighted} aria-current={point.sessionId === highlighted ? 'true' : undefined}>
                     <a class="row" href={sessionHref(point.sessionId)}>
                       <span class="day">{dateText(point.date)}</span>
                       <span class="sets">{setsLine(point)}</span>
@@ -717,6 +719,13 @@
   }
   .list li:last-child {
     border-bottom: 0;
+  }
+  /* la riga del punto scelto nel grafico: il bordo dell'indicatore, come l'esercizio corrente */
+  .list li.highlighted {
+    margin-inline: -0.5rem;
+    padding-left: 0.5rem;
+    border-radius: var(--radius-field);
+    box-shadow: inset 0 0 0 2px var(--color-accent-indicator);
   }
   .day {
     color: var(--color-text);

@@ -2,9 +2,9 @@
 mode: implement
 feature: delavier-catalog
 inc_base: 06e9910   # commit di INC-028; la SPEC e questo file non sono ancora committati
-last_inc: INC-032   # ultimo incremento in CHANGELOG
+last_inc: INC-033   # ultimo incremento in CHANGELOG
 spec: features/delavier-catalog/SPEC.md
-resume_from: SPEC §3, incremento 5
+resume_from: SPEC §3, incremento 6
 ---
 
 > **MODE: implement**: si esegue l'ambito dell'incremento indicato in `resume_from`, senza riprogettare né allargare.
@@ -48,6 +48,8 @@ e prompt per la sessione successiva.
   …`) scrive il diario corretto accanto all'export, con «-corretto» nel nome; Francesco lo reimporta con «Sostituisci».
 - **Incremento 4 fatto** (INC-032, 11 novembre 2026): catalogo in Progressi (US-47), tab Progressi/Info (US-48),
   regola del filo in DESIGN.md. Le tab sono nel componente, non un componente base (nessuna voce in /kit).
+- **Incremento 5 fatto** (INC-033, 11 novembre 2026): `groupExercises`, elenco sotto il grafico del gruppo con il
+  filtro per settimana (US-49), riga evidenziata nella cronologia (US-50), `ExerciseRow` in /kit.
 
 ## Prompt per la sessione successiva
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { exerciseMuscles, formatShare, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
+import { exerciseMuscles, formatShare, groupExercises, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
 import { emptyArchive, MOST_RECRUITED, MUSCLE_GROUPS, RECRUITED, type Muscles, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 const PANCA = 'panca-piana-manubri'; // petto 1; tricipiti e deltoidi anteriori 0,5 (Delavier p. 77)
@@ -153,5 +153,35 @@ describe('volume per muscolo: linea settimanale di un gruppo (US-46)', () => {
     const points = groupWeeks([week('2026-10-26', { quads: 5 })], 'chest', TODAY);
     expect(points.map((p) => [p.week, p.sets])).toEqual([['2026-10-26', 0], ['2026-11-02', 0], ['2026-11-09', 0]]);
     expect(groupWeeks([], 'chest', TODAY)).toEqual([]);
+  });
+});
+
+describe('US-49 esercizi che hanno dato serie a un gruppo', () => {
+  const a = archive(
+    [
+      session('2026-10-27', [exercise(PANCA, sets(2)), exercise('mio', sets(4))]),
+      session('2026-11-03', [exercise(PANCA, sets(3)), exercise(SQUAT, sets(5)), exercise(PANCA, [set('warmup')])]),
+      session('2026-11-10', [exercise(PANCA, sets(9))], false),
+    ],
+    custom('mio', { triceps: 1, chest: 0.5 }),
+  );
+
+  it('serie pesate per esercizio nelle settimane indicate, decrescenti; la somma è il valore del gruppo', () => {
+    expect(groupExercises(a, 'triceps', ['2026-10-26', '2026-11-02'])).toEqual([
+      { exerciseId: 'mio', sets: 4, value: 1 },
+      { exerciseId: PANCA, sets: 2.5, value: 0.5 },
+    ]);
+    const weeks = weeklyVolume(a);
+    expect(groupExercises(a, 'chest', ['2026-11-02']).reduce((sum, e) => sum + e.sets, 0)).toBe(weeks.find((w) => w.week === '2026-11-02')!.groups.chest);
+  });
+
+  it('una settimana sola, un gruppo senza esercizi, la sessione in corso e il riscaldamento non contano', () => {
+    // a pari serie, in ordine di id
+    expect(groupExercises(a, 'chest', ['2026-10-26'])).toEqual([
+      { exerciseId: 'mio', sets: 2, value: 0.5 },
+      { exerciseId: PANCA, sets: 2, value: 1 },
+    ]);
+    expect(groupExercises(a, 'calves', ['2026-10-26', '2026-11-02'])).toEqual([]);
+    expect(groupExercises(a, 'chest', ['2026-11-09'])).toEqual([]);
   });
 });

@@ -5,7 +5,8 @@
   // e frecce scelgono il punto più vicino; il valore si legge sopra il grafico, con la nota del punto
   // (il confronto con il precedente), e sotto la trama `details` mostra cosa c'è dietro il punto scelto.
   // Gli stessi valori sono nella cronologia (il grafico non è l'unico modo di leggerli). Con un punto
-  // solo niente trama: resta il valore (brief route-history).
+  // solo niente trama: resta il valore (brief route-history). `onpick` dice il punto scelto: a ogni tocco
+  // (anche sullo stesso punto, per togliere un filtro, US-49) e quando trascinamento o frecce lo cambiano.
   import type { Snippet } from 'svelte';
   import { fromDateKey } from '../../lib/archive';
 
@@ -28,9 +29,11 @@
     label: string;
     /** sotto la trama: il dettaglio del punto scelto (indice in `points`) */
     details?: Snippet<[number]>;
+    /** punto scelto dall'utente (indice in `points`) */
+    onpick?: (index: number) => void;
   }
 
-  let { points, format, formatDate, label, details }: Props = $props();
+  let { points, format, formatDate, label, details, onpick }: Props = $props();
 
   const HEIGHT = 200;
   const PAD = { top: 12, right: 12, bottom: 28, left: 48 };
@@ -91,7 +94,10 @@
   }
 
   function onpointer(event: PointerEvent) {
-    picked = nearest(event.clientX, event.currentTarget as SVGSVGElement);
+    const index = nearest(event.clientX, event.currentTarget as SVGSVGElement);
+    const changed = index !== selected;
+    picked = index;
+    if (event.type === 'pointerdown' || changed) onpick?.(index);
   }
 
   function onkeydown(event: KeyboardEvent) {
@@ -99,7 +105,10 @@
     const moves: Record<string, number> = { ArrowLeft: selected - 1, ArrowRight: selected + 1, Home: 0, End: last };
     if (!(event.key in moves)) return;
     event.preventDefault();
-    picked = Math.max(0, Math.min(last, moves[event.key]));
+    const index = Math.max(0, Math.min(last, moves[event.key]));
+    if (index === selected) return;
+    picked = index;
+    onpick?.(index);
   }
 
   /** la riga della nota c'è per tutti i punti o per nessuno: scorrendo, il grafico non salta */

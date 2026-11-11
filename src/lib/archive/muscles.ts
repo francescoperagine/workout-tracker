@@ -58,27 +58,58 @@ export interface WeekVolume {
   unclassified: Record<string, number>;
 }
 
-/** Una voce per settimana (lunedì, ora locale) con almeno una serie contata, in ordine di data */
-export function weeklyVolume(archive: Pick<Archive, 'sessions' | 'catalog'>): WeekVolume[] {
-  const byWeek = new Map<string, WeekVolume>();
+/** Le voci che contano, una per esercizio fatto in una sessione conclusa: settimana (lunedì), esercizio, serie contate */
+function* countedEntries(archive: Pick<Archive, 'sessions'>): Generator<{ week: string; exerciseId: string; n: number }> {
   for (const session of archive.sessions) {
     if (session.end === null) continue;
     for (const entry of session.exercises) {
       // conta l'esercizio fatto davvero, non alternativeOf
       const n = entry.sets.filter(countsForProgress).length;
-      if (n === 0) continue;
-      const week = weekStart(session.date);
-      let volume = byWeek.get(week);
-      if (!volume) byWeek.set(week, (volume = { week, groups: {}, unclassified: {} }));
-      const muscles = exerciseMuscles(archive, entry.exerciseId);
-      if (!muscles) {
-        volume.unclassified[entry.exerciseId] = (volume.unclassified[entry.exerciseId] ?? 0) + n;
-        continue;
-      }
-      for (const [g, value] of Object.entries(muscles) as [MuscleGroup, number][]) volume.groups[g] = (volume.groups[g] ?? 0) + n * value;
+      if (n > 0) yield { week: weekStart(session.date), exerciseId: entry.exerciseId, n };
     }
   }
+}
+
+/** Una voce per settimana (lunedì, ora locale) con almeno una serie contata, in ordine di data */
+export function weeklyVolume(archive: Pick<Archive, 'sessions' | 'catalog'>): WeekVolume[] {
+  const byWeek = new Map<string, WeekVolume>();
+  for (const { week, exerciseId, n } of countedEntries(archive)) {
+    let volume = byWeek.get(week);
+    if (!volume) byWeek.set(week, (volume = { week, groups: {}, unclassified: {} }));
+    const muscles = exerciseMuscles(archive, exerciseId);
+    if (!muscles) {
+      volume.unclassified[exerciseId] = (volume.unclassified[exerciseId] ?? 0) + n;
+      continue;
+    }
+    for (const [g, value] of Object.entries(muscles) as [MuscleGroup, number][]) volume.groups[g] = (volume.groups[g] ?? 0) + n * value;
+  }
   return [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week));
+}
+
+export interface GroupExercise {
+  exerciseId: string;
+  /** serie già pesate: serie contate × value */
+  sets: number;
+  /** quota di una serie per il gruppo */
+  value: number;
+}
+
+/**
+ * Esercizi che hanno dato serie a un gruppo nelle settimane indicate (lunedì), con le stesse regole di weeklyVolume
+ * (US-49): serie decrescenti, a pari serie per nome dell'id. La somma delle serie è il valore del gruppo in quelle
+ * settimane.
+ */
+export function groupExercises(archive: Pick<Archive, 'sessions' | 'catalog'>, group: MuscleGroup, weeks: readonly string[]): GroupExercise[] {
+  const wanted = new Set(weeks);
+  const byExercise = new Map<string, GroupExercise>();
+  for (const { week, exerciseId, n } of countedEntries(archive)) {
+    if (!wanted.has(week)) continue;
+    const value = exerciseMuscles(archive, exerciseId)?.[group];
+    if (value === undefined) continue;
+    const current = byExercise.get(exerciseId) ?? { exerciseId, sets: 0, value };
+    byExercise.set(exerciseId, { ...current, sets: current.sets + n * value });
+  }
+  return [...byExercise.values()].sort((a, b) => b.sets - a.sets || a.exerciseId.localeCompare(b.exerciseId));
 }
 
 export type VolumePeriod = 'week' | '4w' | '12w';

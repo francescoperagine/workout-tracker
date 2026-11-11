@@ -5,10 +5,11 @@
   // In futuro qui anche le misure del corpo.
   // In cima le serie per muscolo (US-45, INC-025): barre per gruppo nel periodo scelto, i gruppi a zero in una
   // riga, gli esercizi senza muscoli con i link alle loro pagine. Il tocco su una barra apre in un foglio la linea
-  // settimanale del gruppo (US-46): le ultime 12 settimane concluse più quella in corso, segnata come parziale.
+  // settimanale del gruppo (US-46): le ultime 12 settimane concluse più quella in corso, segnata come parziale;
+  // sotto il grafico gli esercizi che hanno dato serie al gruppo (US-49), filtrati sulla settimana toccata.
   import ChartLine from '@lucide/svelte/icons/chart-line';
-  import ChevronRight from '@lucide/svelte/icons/chevron-right';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
+  import ExerciseRow from './ExerciseRow.svelte';
   import MuscleBars from './MuscleBars.svelte';
   import ProgressChart, { type ChartPoint } from './ProgressChart.svelte';
   import BottomSheet from '../ui/BottomSheet.svelte';
@@ -21,6 +22,7 @@
     availableExercises,
     exerciseName,
     exercisesDone,
+    groupExercises,
     groupWeeks,
     MUSCLE_GROUPS,
     MUSCLE_LABELS,
@@ -31,7 +33,7 @@
     type MuscleGroup,
     type VolumePeriod,
   } from '../../lib/archive';
-  import { formatDayMonth, formatRelativeDay, formatWeekRange, formatSets, plural } from '../../lib/format';
+  import { formatDayMonth, formatWeekRange, formatSets, plural } from '../../lib/format';
 
   const store = archiveStore();
   const today = toDateKey(new Date());
@@ -87,8 +89,26 @@
   const dayText = (date: string) => formatDayMonth(date, today);
   function openTrend(index: number) {
     trendGroup = volume.groups[index].group;
+    weekFilter = null;
     trendOpen = true;
   }
+
+  // US-49: gli esercizi del gruppo nelle settimane del grafico, o in quella toccata (un secondo tocco la toglie)
+  let weekFilter: string | null = $state(null);
+  // con il filtro l'elenco si accorcia e il foglio, ancorato in basso, sposterebbe il grafico sotto il dito:
+  // l'elenco tiene l'altezza che ha senza filtro
+  let listHeight = $state(0);
+  let fullHeight = $state(0);
+  $effect(() => {
+    if (!weekFilter) fullHeight = listHeight;
+  });
+  const contributions = $derived(trendGroup ? groupExercises(store.archive, trendGroup, weekFilter ? [weekFilter] : trend.map((p) => p.date)) : []);
+  function pickWeek(index: number) {
+    const week = trend[index].date;
+    weekFilter = weekFilter === week ? null : week;
+  }
+  const weekText = (week: string) => formatWeekRange(week, addDays(week, 6), today);
+  const shareText = (value: number) => `ogni serie conta ${value.toLocaleString('it-IT')}`;
   const reading = $derived(
     volume.partial
       ? 'Settimana in corso, fino a oggi.'
@@ -136,7 +156,34 @@
         {/if}
       </section>
       <BottomSheet bind:open={trendOpen} title={trendTitle}>
-        <ProgressChart points={trend} format={setsText} formatDate={dayText} label={trendTitle} />
+        <ProgressChart points={trend} format={setsText} formatDate={dayText} label={trendTitle} onpick={pickWeek} />
+        <section aria-labelledby="group-exercises-title" class="group-exercises" bind:clientHeight={listHeight} style:min-height={weekFilter ? `${fullHeight}px` : null}>
+          <div class="group-head">
+            <h3 id="group-exercises-title" class="m-0 text-base font-bold">
+              {weekFilter ? `Esercizi, ${weekText(weekFilter)}` : 'Esercizi, tutte le settimane'}
+            </h3>
+            {#if weekFilter}
+              <button type="button" class="btn btn-text" onclick={() => (weekFilter = null)}>Tutte le settimane</button>
+            {/if}
+          </div>
+          {#if contributions.length}
+            <ol class="m-0 list-none p-0">
+              {#each contributions as item (item.exerciseId)}
+                <li class="border-b border-border last:border-b-0">
+                  <ExerciseRow
+                    href={exerciseHref(item.exerciseId)}
+                    name={exerciseName(store.archive, item.exerciseId)}
+                    done={doneById.get(item.exerciseId)}
+                    {today}
+                    extra={`${setsText(item.sets)} · ${shareText(item.value)}`}
+                  />
+                </li>
+              {/each}
+            </ol>
+          {:else}
+            <p class="m-0 text-text-muted">Nessun esercizio in questa settimana.</p>
+          {/if}
+        </section>
       </BottomSheet>
     {:else}
       <div class="flex flex-col items-start gap-3 pb-6">
@@ -160,21 +207,8 @@
       {#if rows.length}
         <ol id="exercise-list" class="m-0 list-none p-0">
           {#each rows as row (row.id)}
-            {@const item = doneById.get(row.id)}
             <li class="border-b border-border last:border-b-0">
-              <a href={exerciseHref(row.id)} class="row">
-                <span class="min-w-0 flex-1">
-                  <span class="block text-lg font-bold [overflow-wrap:anywhere]">{row.name}</span>
-                  {#if item}
-                    <span class="block text-sm text-text-muted">
-                      Ultima volta: {formatRelativeDay(item.lastDate, today)} · {plural(item.sessions, 'allenamento', 'allenamenti')}
-                    </span>
-                  {:else}
-                    <span class="block text-sm text-text-muted"><span aria-hidden="true">–</span><span class="sr-only">mai fatto</span></span>
-                  {/if}
-                </span>
-                <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
-              </a>
+              <ExerciseRow href={exerciseHref(row.id)} name={row.name} done={doneById.get(row.id)} {today} />
             </li>
           {/each}
         </ol>
@@ -204,13 +238,24 @@
     align-items: center;
     min-height: 48px;
   }
-  .row {
+  /* sotto il grafico del foglio, separato da un filo (regola del filo) */
+  .group-exercises {
     display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .group-head {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
-    min-height: 56px;
-    padding: 0.5rem 0;
-    color: inherit;
-    text-decoration: none;
+    justify-content: space-between;
+    gap: 0 0.5rem;
+    min-height: 48px;
+  }
+  .group-head :global(.btn-text) {
+    margin-right: -0.75rem;
   }
 </style>
