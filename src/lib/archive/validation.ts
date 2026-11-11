@@ -10,7 +10,10 @@ import {
   ArchiveError,
   DEFAULT_SETTINGS,
   LIMITS,
+  MOST_RECRUITED,
   MUSCLE_GROUPS,
+  MUSCLE_VALUES,
+  RECRUITED,
   SET_TYPES,
   WEEKDAYS,
   type Archive,
@@ -169,6 +172,23 @@ function session(value: unknown, seen: Set<string>, where: string, version: 2 | 
   };
 }
 
+/**
+ * Muscoli di un personalizzato: gruppo → valore di MUSCLE_VALUES. Assenti (archivi v2) = nessuno; la forma vecchia
+ * `{primary, secondary}` (prima di delavier-catalog, D3) si converte: principali → MOST_RECRUITED, secondari → RECRUITED.
+ */
+function muscles(value: unknown, where: string): Muscles {
+  if (value === undefined) return {};
+  const m = object(value, where);
+  if ('primary' in m || 'secondary' in m) return legacyMuscles(m, where);
+  const result: Muscles = {};
+  for (const [g, v] of Object.entries(m)) {
+    if (!MUSCLE_GROUPS.includes(g as never)) throw new ArchiveError(`${where}: gruppo muscolare non valido.`);
+    if (typeof v !== 'number' || !MUSCLE_VALUES.includes(v)) throw new ArchiveError(`${where}: valore non valido per un gruppo.`);
+    result[g as MuscleGroup] = v;
+  }
+  return result;
+}
+
 function muscleList(value: unknown, where: string): MuscleGroup[] {
   const groups = list(value, MUSCLE_GROUPS.length, where);
   for (const g of groups) if (!MUSCLE_GROUPS.includes(g as never)) throw new ArchiveError(`${where}: gruppo muscolare non valido.`);
@@ -176,14 +196,14 @@ function muscleList(value: unknown, where: string): MuscleGroup[] {
   return groups as MuscleGroup[];
 }
 
-/** Muscoli di un personalizzato; assenti (archivi v2) = nessuno */
-function muscles(value: unknown, where: string): Muscles {
-  if (value === undefined) return { primary: [], secondary: [] };
-  const m = object(value, where);
+function legacyMuscles(m: Record<string, unknown>, where: string): Muscles {
   const primary = muscleList(m.primary, `${where}, principali`);
   const secondary = muscleList(m.secondary, `${where}, secondari`);
   if (secondary.some((g) => primary.includes(g))) throw new ArchiveError(`${where}: un gruppo è sia principale sia secondario.`);
-  return { primary, secondary };
+  const result: Muscles = {};
+  for (const g of primary) result[g] = MOST_RECRUITED;
+  for (const g of secondary) result[g] = RECRUITED;
+  return result;
 }
 
 function catalog(value: unknown): Record<string, CustomExercise> {

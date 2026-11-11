@@ -34,7 +34,7 @@ function workout(id: string, date: string, entries: [string, number][]): Session
   };
 }
 
-const crunch = { 'custom-crunch': { id: 'custom-crunch', name: 'Crunch', muscles: { primary: [], secondary: [] }, variantOf: null } };
+const crunch = { 'custom-crunch': { id: 'custom-crunch', name: 'Crunch', muscles: {}, variantOf: null } };
 const section = (page: Page) => page.getByRole('region', { name: 'Serie per muscolo' });
 const bars = (page: Page) => section(page).locator('ol > li');
 
@@ -65,7 +65,7 @@ test.describe('US-45 serie per muscolo', () => {
     ]);
     await expect(section(page)).toContainText('Media per settimana, ultime 2 settimane concluse.');
     await expect(section(page)).toContainText(
-      'Nessuna serie: Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Lombari, Femorali, Polpacci',
+      "Nessuna serie: Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Brachiale, Lombari, Flessori dell'anca, Femorali, Popliteo, Polpacci",
     );
     await expect(section(page)).not.toContainText('Addominali');
     await expect(section(page)).not.toContainText('Senza muscoli');

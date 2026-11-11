@@ -15,35 +15,35 @@ const routine = (id: string, archived: boolean): Routine => ({
 });
 
 test.describe('US-43 muscoli di un esercizio', () => {
-  test('US-43 in un personalizzato i tocchi girano nessuno, principale, secondario e lo stato resta dopo un ricaricamento', async ({ page }) => {
-    await seedArchive(page, archiveWith({ catalog: { 'custom-crunch': { id: 'custom-crunch', name: 'Crunch', muscles: { primary: [], secondary: [] }, variantOf: null } } }));
+  test('US-43 in un personalizzato i tocchi girano nessuna serie, 1 serie, 0,5 serie e lo stato resta dopo un ricaricamento', async ({ page }) => {
+    await seedArchive(page, archiveWith({ catalog: { 'custom-crunch': { id: 'custom-crunch', name: 'Crunch', muscles: {}, variantOf: null } } }));
     await page.goto('exercise/?id=custom-crunch');
     await expect(page.getByText('Scegli i muscoli: finché sono vuoti')).toBeVisible();
 
-    await page.getByRole('button', { name: 'Addominali, nessuno' }).click();
-    await expect(page.getByRole('button', { name: 'Addominali, principale' })).toBeVisible();
-    await page.getByRole('button', { name: 'Lombari, nessuno' }).click();
-    await page.getByRole('button', { name: 'Lombari, principale' }).click();
-    await expect(page.getByRole('button', { name: 'Lombari, secondario' })).toBeVisible();
+    await page.getByRole('button', { name: 'Addominali, nessuna serie' }).click();
+    await expect(page.getByRole('button', { name: 'Addominali, 1 serie' })).toBeVisible();
+    await page.getByRole('button', { name: 'Lombari, nessuna serie' }).click();
+    await page.getByRole('button', { name: 'Lombari, 1 serie' }).click();
+    await expect(page.getByRole('button', { name: 'Lombari, 0,5 serie' })).toBeVisible();
     await expect(page.getByText('Scegli i muscoli: finché sono vuoti')).toHaveCount(0);
-    expect((await storedArchive(page))!.catalog['custom-crunch'].muscles).toEqual({ primary: ['abs'], secondary: ['lower-back'] });
+    expect((await storedArchive(page))!.catalog['custom-crunch'].muscles).toEqual({ abs: 1, 'lower-back': 0.5 });
 
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Addominali, principale' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Lombari, secondario' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Addominali, 1 serie' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lombari, 0,5 serie' })).toBeVisible();
     // il terzo tocco torna a nessuno
-    await page.getByRole('button', { name: 'Lombari, secondario' }).click();
-    await expect(page.getByRole('button', { name: 'Lombari, nessuno' })).toBeVisible();
-    expect((await storedArchive(page))!.catalog['custom-crunch'].muscles).toEqual({ primary: ['abs'], secondary: [] });
+    await page.getByRole('button', { name: 'Lombari, 0,5 serie' }).click();
+    await expect(page.getByRole('button', { name: 'Lombari, nessuna serie' })).toBeVisible();
+    expect((await storedArchive(page))!.catalog['custom-crunch'].muscles).toEqual({ abs: 1 });
   });
 
   test('US-43 un esercizio di catalogo mostra i muscoli in sola lettura, anche senza storico', async ({ page }) => {
     await seedArchive(page, archiveWith());
     await page.goto('exercise/?id=squat-bilanciere');
     const section = page.getByRole('region', { name: 'Muscoli' });
-    await expect(section).toContainText('Principali: Quadricipiti, Glutei, Adduttori');
-    await expect(section).toContainText('Secondari: nessuno');
-    await expect(section.getByRole('button', { name: /principale|secondario|nessuno/ })).toHaveCount(0);
+    await expect(section).toContainText('Quadricipiti: 1 serie');
+    await expect(section).toContainText('Adduttori: 1 serie');
+    await expect(section.getByRole('button', { name: /serie/ })).toHaveCount(0);
     await expect(section.getByRole('button', { name: 'Personalizza i muscoli' })).toBeVisible();
   });
 });
@@ -65,7 +65,7 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
     await expect(page.getByRole('heading', { name: 'Squat bilanciere (personalizzato)' })).toBeVisible();
     const toast = page.getByRole('status').filter({ hasText: 'Creato «Squat bilanciere (personalizzato)», sostituito in 1 scheda.' });
     await expect(toast).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Quadricipiti, principale' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Quadricipiti, 1 serie' })).toBeVisible();
     const saved = (await storedArchive(page))!;
     expect(saved.routines.find((r) => r.id === 'attiva')!.exercises[0].exerciseId).toBe('custom-squat-bilanciere-personalizzato');
     expect(saved.routines.find((r) => r.id === 'archiviata')!.exercises[0].exerciseId).toBe('squat-bilanciere');

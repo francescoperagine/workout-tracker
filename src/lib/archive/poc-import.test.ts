@@ -64,8 +64,8 @@ describe('US-02 import del backup del PoC', () => {
 
   it('US-14: i nomi liberi diventano esercizi personalizzati, riconosciuti senza maiuscole e spazi', () => {
     expect(archive.catalog).toEqual({
-      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { primary: [], secondary: [] }, variantOf: null },
-      'custom-palla-medica': { id: 'custom-palla-medica', name: 'Pàlla medica', muscles: { primary: [], secondary: [] }, variantOf: null },
+      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: {}, variantOf: null },
+      'custom-palla-medica': { id: 'custom-palla-medica', name: 'Pàlla medica', muscles: {}, variantOf: null },
     });
     expect(session('poc-2').exercises[1].exerciseId).toBe('custom-crunch-ai-cavi');
     // "crunch  ai CAVI" nell'allenamento libero è lo stesso esercizio
@@ -88,7 +88,7 @@ describe('US-02 import del backup del PoC', () => {
     const data = backup();
     Object.assign(data.allenamenti[0].esercizi[0], { catalogoId: 'stacco-sumo', varianteId: 'stacco-sumo', variante: 'Stacco sumo', nome: 'Stacco sumo' });
     const conv = convertPocArchive(data);
-    expect(conv.archive.catalog['stacco-sumo']).toEqual({ id: 'stacco-sumo', name: 'Stacco sumo', muscles: { primary: [], secondary: [] }, variantOf: null });
+    expect(conv.archive.catalog['stacco-sumo']).toEqual({ id: 'stacco-sumo', name: 'Stacco sumo', muscles: {}, variantOf: null });
     expect(conv.archive.sessions[0].exercises[0].exerciseId).toBe('stacco-sumo');
   });
 

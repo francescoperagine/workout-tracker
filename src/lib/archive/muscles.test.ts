@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { exerciseMuscles, groupWeeks, MUSCLE_LABELS, periodVolume, PRIMARY_SETS, SECONDARY_SETS, weeklyVolume, type WeekVolume } from './muscles';
-import { emptyArchive, MUSCLE_GROUPS, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
+import { exerciseMuscles, formatShare, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
+import { emptyArchive, MOST_RECRUITED, MUSCLE_GROUPS, RECRUITED, type Muscles, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 const PANCA = 'panca-piana-bilanciere'; // principale petto; secondari tricipiti e deltoidi anteriori
 const SQUAT = 'squat-bilanciere'; // principali quadricipiti, glutei, adduttori
@@ -19,8 +19,8 @@ function session(date: string, exercises: SessionExercise[], ended = true): Sess
   return { id: `x${n++}`, date, routineId: null, name: 'Allenamento libero', start, end: ended ? start + 3_600_000 : null, exercises };
 }
 
-function custom(id: string, primary: CustomExercise['muscles']['primary'], secondary: CustomExercise['muscles']['secondary'] = []): CustomExercise {
-  return { id, name: id, muscles: { primary, secondary }, variantOf: null };
+function custom(id: string, muscles: Muscles): CustomExercise {
+  return { id, name: id, muscles, variantOf: null };
 }
 
 function archive(sessions: Session[], ...customs: CustomExercise[]): Pick<Archive, 'sessions' | 'catalog'> {
@@ -29,13 +29,30 @@ function archive(sessions: Session[], ...customs: CustomExercise[]): Pick<Archiv
 
 const sets = (k: number, type: SetType = 'normal') => Array.from({ length: k }, () => set(type));
 
-describe('volume per muscolo: conteggio', () => {
-  it('etichette e pesi: un gruppo per ogni MUSCLE_GROUPS, principale 1 e secondario 0,5', () => {
-    expect(Object.keys(MUSCLE_LABELS).sort()).toEqual([...MUSCLE_GROUPS].sort());
-    expect([PRIMARY_SETS, SECONDARY_SETS]).toEqual([1, 0.5]);
+describe('quote nei testi', () => {
+  it('sortedMuscles: valore decrescente, a pari valore nell’ordine di MUSCLE_GROUPS', () => {
+    expect(sortedMuscles({ triceps: 0.5, chest: 1, 'front-delts': 0.5, quads: 1 })).toEqual([
+      { group: 'chest', value: 1 }, { group: 'quads', value: 1 }, { group: 'front-delts', value: 0.5 }, { group: 'triceps', value: 0.5 },
+    ]);
   });
 
-  it('un principale riceve 1 per serie, un secondario 0,5; con più principali ciascuno riceve 1', () => {
+  it('formatShare: «1 serie», «0,5 serie»', () => {
+    expect([formatShare(1), formatShare(0.5)]).toEqual(['1 serie', '0,5 serie']);
+  });
+});
+
+describe('volume per muscolo: conteggio', () => {
+  it('etichette e quote: un gruppo per ogni MUSCLE_GROUPS, «most recruited» 1 e «recruited» 0,5', () => {
+    expect(Object.keys(MUSCLE_LABELS).sort()).toEqual([...MUSCLE_GROUPS].sort());
+    expect([MOST_RECRUITED, RECRUITED]).toEqual([1, 0.5]);
+  });
+
+  it('ogni gruppo riceve serie × valore: {chest: 1, triceps: 0,5} con 3 serie dà petto 3 e tricipiti 1,5', () => {
+    const a = archive([session('2026-11-03', [exercise('mio', sets(3))])], custom('mio', { chest: 1, triceps: 0.5 }));
+    expect(weeklyVolume(a)[0].groups).toEqual({ chest: 3, triceps: 1.5 });
+  });
+
+  it('con più gruppi a 1 ciascuno riceve una serie intera', () => {
     const [week] = weeklyVolume(archive([session('2026-11-03', [exercise(PANCA, sets(3)), exercise(SQUAT, sets(2))])]));
     expect(week.groups).toEqual({ chest: 3, triceps: 1.5, 'front-delts': 1.5, quads: 2, glutes: 2, adductors: 2 });
   });
@@ -49,14 +66,14 @@ describe('volume per muscolo: conteggio', () => {
     expect(weeklyVolume(archive([session('2026-11-10', [exercise(PANCA, sets(3))], false)]))).toEqual([]);
   });
 
-  it('personalizzati: con muscoli contati con i loro, senza muscoli o sconosciuti in unclassified, con soli secondari contati', () => {
+  it('personalizzati: con muscoli contati con i loro, senza muscoli o sconosciuti in unclassified, con soli 0,5 contati', () => {
     const a = archive(
       [session('2026-11-03', [exercise('crunch', sets(2)), exercise('vuoto', sets(3)), exercise('ignoto', sets(1)), exercise('solo-sec', sets(2))])],
-      custom('crunch', ['abs']), custom('vuoto', []), custom('solo-sec', [], ['forearms']),
+      custom('crunch', { abs: 1 }), custom('vuoto', {}), custom('solo-sec', { forearms: 0.5 }),
     );
     expect(exerciseMuscles(a, 'vuoto')).toBeNull();
     expect(exerciseMuscles(a, 'ignoto')).toBeNull();
-    expect(exerciseMuscles(a, PANCA)?.primary).toEqual(['chest']);
+    expect(exerciseMuscles(a, PANCA)?.chest).toBe(1);
     const [week] = weeklyVolume(a);
     expect(week.groups).toEqual({ abs: 2, forearms: 1 });
     expect(week.unclassified).toEqual({ vuoto: 3, ignoto: 1 });

@@ -1,9 +1,9 @@
 <script lang="ts">
-  // Muscoli di un esercizio personalizzato (US-43, muscle-volume D6): un pulsante per gruppo, nell'ordine
-  // fisso di MUSCLE_GROUPS; il tocco gira nessuno → principale → secondario → nessuno, come MacroFactor.
-  // Lo stato si legge come testo sotto il nome e nel nome accessibile («Petto, principale»), non solo dal
-  // colore. Ogni tocco chiama onchange con le due liste nuove, già nell'ordine fisso.
-  import { MUSCLE_GROUPS, MUSCLE_LABELS, type MuscleGroup, type Muscles } from '../../lib/archive';
+  // Muscoli di un esercizio personalizzato (US-43, delavier-catalog D11): un pulsante per gruppo, nell'ordine
+  // fisso di MUSCLE_GROUPS; il tocco gira nessuno → MOST_RECRUITED → RECRUITED → nessuno, come MacroFactor.
+  // Lo stato si legge come testo sotto il nome e nel nome accessibile («Petto, 1 serie»), non solo dal
+  // colore. Ogni tocco chiama onchange con una mappa nuova.
+  import { formatShare, MOST_RECRUITED, MUSCLE_GROUPS, MUSCLE_LABELS, RECRUITED, type MuscleGroup, type Muscles } from '../../lib/archive';
 
   interface Props {
     muscles: Muscles;
@@ -12,29 +12,29 @@
 
   let { muscles, onchange }: Props = $props();
 
-  type Role = 'none' | 'primary' | 'secondary';
-  const NEXT: Record<Role, Role> = { none: 'primary', primary: 'secondary', secondary: 'none' };
-  const ROLE_TEXT: Record<Role, string> = { none: 'nessuno', primary: 'principale', secondary: 'secondario' };
-
-  const role = (m: MuscleGroup): Role => (muscles.primary.includes(m) ? 'primary' : muscles.secondary.includes(m) ? 'secondary' : 'none');
-
   function cycle(m: MuscleGroup) {
-    const roles = new Map(MUSCLE_GROUPS.map((g) => [g, role(g)]));
-    roles.set(m, NEXT[role(m)]);
-    onchange({
-      primary: MUSCLE_GROUPS.filter((g) => roles.get(g) === 'primary'),
-      secondary: MUSCLE_GROUPS.filter((g) => roles.get(g) === 'secondary'),
-    });
+    const next = { ...muscles };
+    if (muscles[m] === undefined) next[m] = MOST_RECRUITED;
+    else if (muscles[m] === MOST_RECRUITED) next[m] = RECRUITED;
+    else delete next[m];
+    onchange(next);
   }
 </script>
 
 <ul class="muscles">
   {#each MUSCLE_GROUPS as m (m)}
-    {@const r = role(m)}
+    {@const value = muscles[m]}
     <li>
-      <button type="button" class="muscle {r}" aria-label={`${MUSCLE_LABELS[m]}, ${ROLE_TEXT[r]}`} onclick={() => cycle(m)}>
+      <button
+        type="button"
+        class="muscle"
+        class:full={value === MOST_RECRUITED}
+        class:part={value !== undefined && value !== MOST_RECRUITED}
+        aria-label={`${MUSCLE_LABELS[m]}, ${value === undefined ? 'nessuna serie' : formatShare(value)}`}
+        onclick={() => cycle(m)}
+      >
         <span class="name">{MUSCLE_LABELS[m]}</span>
-        {#if r !== 'none'}<span class="role">{ROLE_TEXT[r]}</span>{/if}
+        {#if value !== undefined}<span class="role">{formatShare(value)}</span>{/if}
       </button>
     </li>
   {/each}
@@ -81,15 +81,15 @@
     font-size: var(--text-sm);
     line-height: 1.25;
   }
-  /* principale: pieno d'accento, come il segmento scelto */
-  .primary,
-  .primary:hover {
+  /* una serie intera: pieno d'accento, come il segmento scelto */
+  .full,
+  .full:hover {
     background: var(--color-accent);
     border-color: var(--color-accent);
     color: var(--color-on-accent);
   }
-  /* secondario: bordo in inchiostro raddoppiato, come la riga di scelta selezionata */
-  .secondary {
+  /* una parte di serie: bordo in inchiostro raddoppiato, come la riga di scelta selezionata */
+  .part {
     border-color: var(--color-text);
     box-shadow: inset 0 0 0 1px var(--color-text);
   }

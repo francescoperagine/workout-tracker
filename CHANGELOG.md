@@ -3,6 +3,28 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-029
+
+Date: 2026-11-11
+
+Summary:
+**Muscoli con il valore di una serie (delavier-catalog, incremento 1 di 6).** I muscoli di un esercizio non sono più
+due liste, principali e secondari, ma una mappa gruppo → quota di una serie: `MOST_RECRUITED = 1` e `RECRUITED = 0.5`
+(ADR-014). Testi ricavati dal valore: la pagina dell'esercizio dice «Quadricipiti: 1 serie», l'editor dei
+personalizzati gira nessuna → 1 serie → 0,5 serie. Gruppi nuovi: Brachiale, Flessori dell'anca, Popliteo. Archivi e
+backup con la forma vecchia si leggono convertiti (principali 1, secondari 0,5). Il catalogo tiene i valori di
+ADR-011 convertiti finché l'incremento 2 non lo rilegge sul Delavier: il conteggio delle settimane non cambia.
+
+Deliverables:
+- `src/lib/archive/types.ts` (`Muscles`, costanti, gruppi), `validation.ts` (mappa e conversione), `muscles.ts`
+  (`sortedMuscles`, `formatShare`, conteggio per quota), `catalog.ts` (`createVariant`, `setCustomMuscles`),
+  `poc-import.ts`; `src/data/catalog.ts` convertito.
+- `MuscleEditor`, `ExerciseProgress` (sezione Muscoli), `/kit`; test unitari ed e2e (US-43, US-45) alla forma nuova.
+- ADR-014; ADR-011 «Superseded by ADR-014»; ADR-012 (punto 1); `docs/ARCHITECTURE.md`;
+  `features/delavier-catalog/SPEC.md` e `HANDOFF.md`.
+
+ADR: ADR-014. Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0). Pagina dell'esercizio guardata a 390×844 e 320×568 con il diario vero.
+
 ## INC-028
 
 Date: 2026-11-10

@@ -14,7 +14,7 @@
   let sound = $state(true);
   let vibration = $state(false);
   let load = $state('40');
-  let muscles: Muscles = $state({ primary: ['abs'], secondary: ['lower-back'] });
+  let muscles: Muscles = $state({ abs: 1, 'lower-back': 0.5 });
 
   function onLoadInput(text: string): string | void {
     if (text.trim() && !/^\d+([.,]\d+)?$/.test(text.trim())) return 'Scrivi un numero, per esempio 42,5.';

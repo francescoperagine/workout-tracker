@@ -32,7 +32,7 @@ describe('US-32 esportazione', () => {
   });
 
   it('un archivio v3 con muscoli ed esercizio di partenza torna uguale da esportazione e lettura', () => {
-    const custom = { id: 'custom-squat-largo', name: 'Squat largo', muscles: { primary: ['quads' as const], secondary: ['adductors' as const] }, variantOf: 'squat-bilanciere' };
+    const custom = { id: 'custom-squat-largo', name: 'Squat largo', muscles: { quads: 1, adductors: 0.5 }, variantOf: 'squat-bilanciere' };
     const a: Archive = { ...local(), catalog: { [custom.id]: custom } };
     const text = exportArchive(a);
     expect(JSON.parse(text).version).toBe(3);

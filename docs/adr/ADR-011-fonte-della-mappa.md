@@ -1,7 +1,7 @@
 # ADR-011 — Fonte della mappa: studi di crescita, poi azione articolare
 
-Status: Accepted
-Increment: INC-022, INC-026, INC-028
+Status: Superseded by ADR-014
+Increment: INC-022, INC-026, INC-028, INC-029
 
 ## Context
 

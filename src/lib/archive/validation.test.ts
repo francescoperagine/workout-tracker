@@ -11,8 +11,8 @@ function sample(): Archive {
     ...a,
     revision: 7,
     catalog: {
-      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { primary: ['abs'], secondary: [] }, variantOf: null },
-      'custom-squat-largo': { id: 'custom-squat-largo', name: 'Squat largo', muscles: { primary: ['quads', 'glutes'], secondary: ['adductors'] }, variantOf: 'squat-bilanciere' },
+      'custom-crunch-ai-cavi': { id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { abs: 1 }, variantOf: null },
+      'custom-squat-largo': { id: 'custom-squat-largo', name: 'Squat largo', muscles: { quads: 1, glutes: 1, adductors: 0.5 }, variantOf: 'squat-bilanciere' },
     },
     schedule: { mon: 'routine-a', thu: 'routine-b', sun: null },
     overrides: { '2026-10-08': null },
@@ -94,10 +94,14 @@ describe('US-33 validazione dell’archivio v3', () => {
     ['eccezione con data non valida', (a: any) => (a.overrides['2026-13-01'] = null)],
     ['unità di peso sconosciuta', (a: any) => (a.settings.weightUnit = 'stone')],
     ['catalogo con chiave incoerente', (a: any) => (a.catalog['altro-id'] = { id: 'custom-x', name: 'X' })],
-    ['muscolo sconosciuto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.primary = ['core'])],
-    ['muscolo ripetuto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.secondary = ['chest', 'chest'])],
-    ['muscolo sia principale sia secondario', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.secondary = ['abs'])],
-    ['muscoli non in un elenco', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.primary = 'abs')],
+    ['muscolo sconosciuto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.core = 1)],
+    ['valore 0,7', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.abs = 0.7)],
+    ['valore non numerico', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles.abs = '1')],
+    ['muscoli non in un oggetto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles = ['abs'])],
+    ['forma vecchia: muscolo sconosciuto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles = { primary: ['core'], secondary: [] })],
+    ['forma vecchia: muscolo ripetuto', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles = { primary: [], secondary: ['chest', 'chest'] })],
+    ['forma vecchia: sia principale sia secondario', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles = { primary: ['abs'], secondary: ['abs'] })],
+    ['forma vecchia: non in un elenco', (a: any) => (a.catalog['custom-crunch-ai-cavi'].muscles = { primary: 'abs', secondary: [] })],
     ['esercizio di sessione v3 senza alternativeOf', (a: any) => delete a.sessions[0].exercises[0].alternativeOf],
     ['sessioni non in un elenco', (a: any) => (a.sessions = {})],
   ])('rifiuta: %s', (_, change) => {
@@ -142,9 +146,16 @@ describe('muscle-volume, archivio v3 (ADR-009)', () => {
     expect(v.sessions[0].exercises[0].alternativeOf).toBe('squat-bilanciere');
     expect(v.sessions[0].exercises[0]).not.toHaveProperty('variantOf');
     expect(Object.values(v.catalog).map((e) => [e.muscles, e.variantOf])).toEqual([
-      [{ primary: [], secondary: [] }, null],
-      [{ primary: [], secondary: [] }, null],
+      [{}, null],
+      [{}, null],
     ]);
+  });
+
+  it('delavier-catalog, D3: la forma vecchia {primary, secondary} si legge come mappa, principali 1 e secondari 0,5', () => {
+    const v = validateArchive(withChange((a) => (a.catalog['custom-squat-largo'].muscles = { primary: ['quads', 'glutes'], secondary: ['adductors'] })));
+    expect(v.catalog['custom-squat-largo'].muscles).toEqual({ quads: 1, glutes: 1, adductors: 0.5 });
+    const crunch = validateArchive(withChange((a) => (a.catalog['custom-crunch-ai-cavi'].muscles = { primary: ['chest'], secondary: ['triceps'] })));
+    expect(crunch.catalog['custom-crunch-ai-cavi'].muscles).toEqual({ chest: 1, triceps: 0.5 });
   });
 
   it.each([1, 4, undefined])('versione %s: formato non riconosciuto', (version) => {

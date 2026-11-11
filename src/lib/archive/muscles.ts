@@ -1,4 +1,4 @@
-// Volume per gruppo muscolare (muscle-volume, ADR-012): pesi e regole di conteggio stanno solo qui (D9).
+// Volume per gruppo muscolare (muscle-volume, ADR-012): regole di conteggio qui, quote di una serie in types.ts (ADR-014).
 // Funzioni pure: `today` è un parametro, nessuna lettura dell'orologio.
 //
 // Cosa conta: le serie di sessioni concluse con countsForProgress() (spuntate, non di riscaldamento);
@@ -17,26 +17,37 @@ export const MUSCLE_LABELS: Record<MuscleGroup, string> = {
   'side-delts': 'Deltoidi laterali',
   'rear-delts': 'Deltoidi posteriori',
   biceps: 'Bicipiti',
+  brachialis: 'Brachiale',
   triceps: 'Tricipiti',
   forearms: 'Avambracci',
   abs: 'Addominali',
   'lower-back': 'Lombari',
   glutes: 'Glutei',
+  'hip-flexors': "Flessori dell'anca",
   quads: 'Quadricipiti',
   hamstrings: 'Femorali',
+  popliteus: 'Popliteo',
   adductors: 'Adduttori',
   calves: 'Polpacci',
 };
 
-// Conteggio frazionario: Pelland et al. 2026, Sports Medicine, DOI 10.1007/s40279-025-02344-w (D2).
-export const PRIMARY_SETS = 1;
-export const SECONDARY_SETS = 0.5;
-
-/** null = senza muscoli: esercizio sconosciuto, o personalizzato con entrambe le liste vuote */
+/** null = senza muscoli: esercizio sconosciuto, o personalizzato con la mappa vuota */
 export function exerciseMuscles(archive: Pick<Archive, 'catalog'>, exerciseId: string): Muscles | null {
   const muscles = BASE_CATALOG[exerciseId]?.muscles ?? archive.catalog[exerciseId]?.muscles;
-  if (!muscles || (muscles.primary.length === 0 && muscles.secondary.length === 0)) return null;
+  if (!muscles || Object.keys(muscles).length === 0) return null;
   return muscles;
+}
+
+/** Gruppi di una mappa con la quota: valore decrescente, a pari valore nell'ordine di MUSCLE_GROUPS */
+export function sortedMuscles(muscles: Muscles): { group: MuscleGroup; value: number }[] {
+  return MUSCLE_GROUPS.filter((g) => muscles[g] !== undefined)
+    .map((group) => ({ group, value: muscles[group]! }))
+    .sort((a, b) => b.value - a.value);
+}
+
+/** «1 serie», «0,5 serie»: quanto conta una serie per un gruppo */
+export function formatShare(value: number): string {
+  return `${value.toLocaleString('it-IT')} serie`;
 }
 
 export interface WeekVolume {
@@ -64,8 +75,7 @@ export function weeklyVolume(archive: Pick<Archive, 'sessions' | 'catalog'>): We
         volume.unclassified[entry.exerciseId] = (volume.unclassified[entry.exerciseId] ?? 0) + n;
         continue;
       }
-      for (const g of muscles.primary) volume.groups[g] = (volume.groups[g] ?? 0) + n * PRIMARY_SETS;
-      for (const g of muscles.secondary) volume.groups[g] = (volume.groups[g] ?? 0) + n * SECONDARY_SETS;
+      for (const [g, value] of Object.entries(muscles) as [MuscleGroup, number][]) volume.groups[g] = (volume.groups[g] ?? 0) + n * value;
     }
   }
   return [...byWeek.values()].sort((a, b) => a.week.localeCompare(b.week));

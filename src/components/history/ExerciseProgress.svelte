@@ -37,13 +37,16 @@
     proposeVariantName,
     reassignExercise,
     setCustomMuscles,
+    sortedMuscles,
+    MOST_RECRUITED,
+    RECRUITED,
+    formatShare,
     setNumbers,
     toDateKey,
     undoReassign,
     variantImpact,
     type Archive,
     type ExercisePoint,
-    type MuscleGroup,
     type Period,
   } from '../../lib/archive';
   import { formatDayMonth, plural, withPreposition } from '../../lib/format';
@@ -207,7 +210,6 @@
   const exerciseHref = (id: string) => `${appUrl('/exercise')}?id=${encodeURIComponent(id)}`;
   const baseMuscles = exerciseDetails(exerciseId)?.muscles ?? null;
   const custom = $derived(store.archive.catalog[exerciseId] ?? null);
-  const musclesText = (list: MuscleGroup[]) => (list.length ? list.map((m) => MUSCLE_LABELS[m]).join(', ') : 'nessuno');
 
   let variantOpen = $state(false);
   let variantName = $state('');
@@ -369,16 +371,18 @@
           <a class="based-on" href={exerciseHref(custom.variantOf)}>Basata su {exerciseName(store.archive, custom.variantOf)}</a>
         {/if}
         {#if baseMuscles}
+          <p class="hint m-0">Quanto conta una serie per ogni gruppo:</p>
           <dl class="muscle-list">
-            <div><dt>Principali:</dt> <dd>{musclesText(baseMuscles.primary)}</dd></div>
-            <div><dt>Secondari:</dt> <dd>{musclesText(baseMuscles.secondary)}</dd></div>
+            {#each sortedMuscles(baseMuscles) as { group, value } (group)}
+              <div><dt>{MUSCLE_LABELS[group]}:</dt> <dd>{formatShare(value)}</dd></div>
+            {/each}
           </dl>
           <button type="button" class="btn btn-secondary personalize" aria-haspopup="dialog" onclick={openVariant}>Personalizza i muscoli</button>
         {:else if custom}
-          {#if !custom.muscles.primary.length && !custom.muscles.secondary.length}
+          {#if Object.keys(custom.muscles).length === 0}
             <p class="m-0 max-w-[60ch] text-text-muted">Scegli i muscoli: finché sono vuoti, le serie finiscono in «Senza muscoli» in Progressi.</p>
           {/if}
-          <p class="hint m-0">Un tocco: principale. Due: secondario. Tre: nessuno.</p>
+          <p class="hint m-0">Un tocco: conta {formatShare(MOST_RECRUITED)}. Due: {formatShare(RECRUITED)}. Tre: nessuna.</p>
           <MuscleEditor muscles={custom.muscles} onchange={(m) => edit((a) => setCustomMuscles(a, exerciseId, m))} />
         {/if}
       </section>

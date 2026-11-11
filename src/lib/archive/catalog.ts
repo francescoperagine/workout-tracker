@@ -2,7 +2,7 @@
 // US-14: un nome scritto a mano si confronta senza maiuscole, spazi, punteggiatura e accenti;
 // se non corrisponde a nessun esercizio diventa un esercizio personalizzato, riusato le volte dopo.
 import { BASE_CATALOG, EXERCISE_REDIRECTS } from '../../data/catalog';
-import { ArchiveError, LIMITS, type Archive, type CatalogExercise, type CustomExercise, type Muscles, type Routine, type RoutineExercise, type Session, type SessionExercise } from './types';
+import { ArchiveError, LIMITS, MUSCLE_GROUPS, MUSCLE_VALUES, type Archive, type CatalogExercise, type CustomExercise, type Muscles, type Routine, type RoutineExercise, type Session, type SessionExercise } from './types';
 
 export const CUSTOM_PREFIX = 'custom-';
 
@@ -126,7 +126,7 @@ export function ensureExercise(archive: Archive, typedName: string): EnsureResul
   let id = customExerciseId(name).slice(0, LIMITS.idLength);
   // Solo per sicurezza: con la stessa chiave l'id coinciderebbe, quindi qui un id occupato è un caso limite
   for (let n = 2; id in archive.catalog || id in BASE_CATALOG; n++) id = `${customExerciseId(name).slice(0, LIMITS.idLength - 6)}-${n}`;
-  const created: CustomExercise = { id, name, muscles: { primary: [], secondary: [] }, variantOf: null };
+  const created: CustomExercise = { id, name, muscles: {}, variantOf: null };
   return {
     archive: { ...archive, catalog: { ...archive.catalog, [id]: created } },
     exercise: { id, name, aliases: [], custom: true },
@@ -283,7 +283,7 @@ export function createVariant(archive: Archive, baseId: string, name: string): {
   // ensureExercise ripulisce il nome, controlla validità e limite e sceglie l'id
   const { archive: next, exercise } = ensureExercise(archive, name);
   const id = exercise.id;
-  const muscles = { primary: [...base.muscles.primary], secondary: [...base.muscles.secondary] };
+  const muscles = { ...base.muscles };
   const map = { [baseId]: id };
   return {
     archive: {
@@ -301,6 +301,8 @@ export function setCustomMuscles(archive: Archive, id: string, muscles: Muscles)
   if (id in BASE_CATALOG) throw new ArchiveError('I muscoli di un esercizio del catalogo non si cambiano: personalizzalo.');
   const exercise = archive.catalog[id];
   if (!exercise) throw new ArchiveError('Questo esercizio personalizzato non esiste più.');
-  if (muscles.primary.some((m) => muscles.secondary.includes(m))) throw new ArchiveError('Un muscolo è principale o secondario, non tutti e due.');
-  return { ...archive, catalog: { ...archive.catalog, [id]: { ...exercise, muscles: { primary: [...muscles.primary], secondary: [...muscles.secondary] } } } };
+  for (const [g, v] of Object.entries(muscles)) {
+    if (!MUSCLE_GROUPS.includes(g as never) || !MUSCLE_VALUES.includes(v)) throw new ArchiveError('Gruppo muscolare o valore non valido.');
+  }
+  return { ...archive, catalog: { ...archive.catalog, [id]: { ...exercise, muscles: { ...muscles } } } };
 }

@@ -40,7 +40,7 @@ describe('US-14 nome scritto a mano', () => {
     const first = ensureExercise(empty, '  Crunch   ai cavi ');
     expect(first.created).toBe(true);
     expect(first.exercise).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', aliases: [], custom: true });
-    expect(first.archive.catalog['custom-crunch-ai-cavi']).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: { primary: [], secondary: [] }, variantOf: null });
+    expect(first.archive.catalog['custom-crunch-ai-cavi']).toEqual({ id: 'custom-crunch-ai-cavi', name: 'Crunch ai cavi', muscles: {}, variantOf: null });
     // l'archivio di partenza non viene modificato
     expect(empty.catalog).toEqual({});
 
@@ -227,7 +227,7 @@ describe('US-44 variante di un esercizio di catalogo', () => {
       muscles: BASE_CATALOG['squat-bilanciere'].muscles,
       variantOf: 'squat-bilanciere',
     });
-    expect(result.archive.catalog[result.id].muscles.primary).not.toBe(BASE_CATALOG['squat-bilanciere'].muscles.primary);
+    expect(result.archive.catalog[result.id].muscles).not.toBe(BASE_CATALOG['squat-bilanciere'].muscles);
     const [r1, r2, r3, r4] = result.archive.routines;
     expect(r1.exercises[0]).toMatchObject({ exerciseId: result.id, alternatives: ['leg-press'] });
     expect(r2.exercises[0].alternatives).toEqual([result.id, 'hack-squat']);
@@ -253,7 +253,7 @@ describe('US-44 variante di un esercizio di catalogo', () => {
     expect(() => createVariant(custom.archive, 'squat-bilanciere', 'Pressa')).toThrow('già');
     expect(() => createVariant(custom.archive, 'squat-bilanciere', '  ')).toThrow(ArchiveError);
     const full = archive();
-    for (let i = 0; i < LIMITS.customExercises; i++) full.catalog[`custom-x${i}`] = { id: `custom-x${i}`, name: `X ${i}`, muscles: { primary: [], secondary: [] }, variantOf: null };
+    for (let i = 0; i < LIMITS.customExercises; i++) full.catalog[`custom-x${i}`] = { id: `custom-x${i}`, name: `X ${i}`, muscles: {}, variantOf: null };
     expect(() => createVariant(full, 'squat-bilanciere', 'Squat mio')).toThrow('limite');
   });
 
@@ -266,17 +266,20 @@ describe('US-44 variante di un esercizio di catalogo', () => {
 });
 
 describe('US-43 muscoli di un personalizzato', () => {
-  it('salva le due liste senza mutare l’archivio', () => {
+  it('salva una copia della mappa senza mutare l’archivio', () => {
     const { archive, exercise } = ensureExercise(emptyArchive(), 'Crunch ai cavi');
-    const after = setCustomMuscles(archive, exercise.id, { primary: ['abs'], secondary: ['lower-back'] });
-    expect(after.catalog[exercise.id].muscles).toEqual({ primary: ['abs'], secondary: ['lower-back'] });
-    expect(archive.catalog[exercise.id].muscles).toEqual({ primary: [], secondary: [] });
+    const muscles = { abs: 1, 'lower-back': 0.5 };
+    const after = setCustomMuscles(archive, exercise.id, muscles);
+    expect(after.catalog[exercise.id].muscles).toEqual({ abs: 1, 'lower-back': 0.5 });
+    expect(after.catalog[exercise.id].muscles).not.toBe(muscles);
+    expect(archive.catalog[exercise.id].muscles).toEqual({});
   });
 
-  it('rifiuta un esercizio di catalogo, uno sconosciuto e un muscolo in entrambe le liste', () => {
+  it('rifiuta un esercizio di catalogo, uno sconosciuto, un gruppo ignoto e un valore non ammesso', () => {
     const { archive, exercise } = ensureExercise(emptyArchive(), 'Crunch ai cavi');
-    expect(() => setCustomMuscles(archive, 'squat-bilanciere', { primary: ['quads'], secondary: [] })).toThrow('catalogo');
-    expect(() => setCustomMuscles(archive, 'custom-nessuno', { primary: [], secondary: [] })).toThrow('non esiste più');
-    expect(() => setCustomMuscles(archive, exercise.id, { primary: ['abs'], secondary: ['abs'] })).toThrow(ArchiveError);
+    expect(() => setCustomMuscles(archive, 'squat-bilanciere', { quads: 1 })).toThrow('catalogo');
+    expect(() => setCustomMuscles(archive, 'custom-nessuno', {})).toThrow('non esiste più');
+    expect(() => setCustomMuscles(archive, exercise.id, { core: 1 } as never)).toThrow(ArchiveError);
+    expect(() => setCustomMuscles(archive, exercise.id, { abs: 0.7 })).toThrow(ArchiveError);
   });
 });

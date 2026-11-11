@@ -158,7 +158,7 @@ test.describe('US-07 US-08 US-09 editor della scheda', () => {
     await sheet(page).getByRole('button', { name: /Crea «Croci ai cavi alti»/ }).click();
     await expect(page.getByRole('button', { name: /^6\. Croci ai cavi alti/ })).toBeVisible();
     const saved = await storedArchive(page);
-    expect(saved?.catalog['custom-croci-ai-cavi-alti']).toEqual({ id: 'custom-croci-ai-cavi-alti', name: 'Croci ai cavi alti', muscles: { primary: [], secondary: [] }, variantOf: null });
+    expect(saved?.catalog['custom-croci-ai-cavi-alti']).toEqual({ id: 'custom-croci-ai-cavi-alti', name: 'Croci ai cavi alti', muscles: {}, variantOf: null });
     expect(saved?.routines[0].exercises.at(-1)?.exerciseId).toBe('custom-croci-ai-cavi-alti');
 
     // la volta dopo il nome si trova nel catalogo, senza doppioni

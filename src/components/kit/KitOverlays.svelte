@@ -23,7 +23,7 @@
   let pickerOpen = $state(false);
   let kitArchive: Archive = $state.raw({
     ...emptyArchive(),
-    catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift', muscles: { primary: [], secondary: [] }, variantOf: null } },
+    catalog: { 'custom-romanian-deadlift': { id: 'custom-romanian-deadlift', name: 'Romanian deadlift', muscles: {}, variantOf: null } },
   });
   let picked = $state('');
   // allenamento dimenticato (US-41): ultima serie ieri alle 17:42, o nessuna serie

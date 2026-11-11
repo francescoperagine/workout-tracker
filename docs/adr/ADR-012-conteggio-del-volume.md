@@ -1,7 +1,7 @@
 # ADR-012 — Conteggio del volume per muscolo
 
 Status: Accepted
-Increment: INC-023
+Increment: INC-023, INC-029
 
 ## Context
 
@@ -17,7 +17,8 @@ definizione di settimana e di media. Fonti:
 
 ## Decision
 
-1. **Pesi fissi:** principale `PRIMARY_SETS = 1`, secondario `SECONDARY_SETS = 0.5` (Pelland 2026). Più principali
+1. **Pesi fissi:** principale `PRIMARY_SETS = 1`, secondario `SECONDARY_SETS = 0.5` (Pelland 2026). Da INC-029
+   (ADR-014) il peso è la quota del gruppo nella mappa dell'esercizio, `MOST_RECRUITED = 1` o `RECRUITED = 0.5`. Più principali
    ricevono 1 ciascuno. Nessuna percentuale libera.
 2. **Cosa conta:** le serie di sessioni concluse con `countsForProgress()` (spuntate, non di riscaldamento); normali,
    drop e cedimento valgono 1. L'esercizio è quello fatto (`exerciseId`), non `alternativeOf`. Un esercizio senza

@@ -53,3 +53,5 @@ playwright-report/
 
 # Claude Code: impostazioni locali (l'hook del detector di Impeccable è in .claude/settings.json, condiviso)
 .claude/settings.local.json
+
+docs/sources

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BASE_CATALOG, EXERCISE_REDIRECTS } from './catalog';
 import { STARTER_ROUTINES } from './starter-routines';
+import { MUSCLE_GROUPS, MUSCLE_VALUES } from '../lib/archive/types';
 
 // Elenco permanente degli ID del catalogo del PoC: lo storico dell'utente li usa.
 // Se questo test fallisce, un ID è stato cambiato o rimosso senza reindirizzamento: non va fatto.
@@ -32,10 +33,13 @@ describe('catalogo di base', () => {
     }
   });
 
-  it('muscoli: ogni voce ha almeno un principale e nessun gruppo in entrambe le liste', () => {
+  it('muscoli: ogni voce ha almeno un gruppo, con gruppi e valori ammessi', () => {
     for (const e of Object.values(BASE_CATALOG)) {
-      expect(e.muscles.primary.length, e.id).toBeGreaterThan(0);
-      for (const m of e.muscles.primary) expect(e.muscles.secondary, e.id).not.toContain(m);
+      expect(Object.keys(e.muscles).length, e.id).toBeGreaterThan(0);
+      for (const [g, v] of Object.entries(e.muscles)) {
+        expect(MUSCLE_GROUPS, e.id).toContain(g);
+        expect(MUSCLE_VALUES, e.id).toContain(v);
+      }
     }
   });
 
@@ -43,11 +47,10 @@ describe('catalogo di base', () => {
   it('muscoli: le righe decise dagli studi restano come dicono gli studi', () => {
     for (const id of ['squat-bilanciere', 'leg-press', 'leg-press-piedi-a-meta-pedana']) {
       // Kubo 2019, Kinoshita 2026: crescono quadricipiti, glutei e adduttori, non i femorali
-      expect([...BASE_CATALOG[id].muscles.primary].sort(), id).toEqual(['adductors', 'glutes', 'quads']);
-      expect(BASE_CATALOG[id].muscles.secondary, id).not.toContain('hamstrings');
+      expect(BASE_CATALOG[id].muscles, id).toEqual({ quads: 1, glutes: 1, adductors: 1 });
     }
-    expect(BASE_CATALOG['hip-thrust-bilanciere'].muscles).toEqual({ primary: ['glutes'], secondary: [] }); // Plotkin 2023
-    expect(BASE_CATALOG['leg-extension'].muscles).toEqual({ primary: ['quads'], secondary: [] }); // Kinoshita 2026
+    expect(BASE_CATALOG['hip-thrust-bilanciere'].muscles).toEqual({ glutes: 1 }); // Plotkin 2023
+    expect(BASE_CATALOG['leg-extension'].muscles).toEqual({ quads: 1 }); // Kinoshita 2026
   });
 
   it('le schede iniziali usano solo esercizi del catalogo', () => {

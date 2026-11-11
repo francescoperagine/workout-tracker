@@ -119,7 +119,7 @@ export function convertPocArchive(data: unknown, current: Pick<Archive, 'catalog
         }
       } else if (!(exerciseId in BASE_CATALOG) && !(exerciseId in work.catalog)) {
         // Id sconosciuto (catalogo del PoC modificato a mano): si conserva l'id come esercizio personalizzato
-        work = { ...work, catalog: { ...work.catalog, [exerciseId]: { id: exerciseId, name: doneName, muscles: { primary: [], secondary: [] }, variantOf: null } } };
+        work = { ...work, catalog: { ...work.catalog, [exerciseId]: { id: exerciseId, name: doneName, muscles: {}, variantOf: null } } };
         warnings.push(`"${doneName}" non è nel catalogo: aggiunto agli esercizi personalizzati.`);
       }
       const planned = catalogId && catalogId !== exerciseId ? catalogId : null;

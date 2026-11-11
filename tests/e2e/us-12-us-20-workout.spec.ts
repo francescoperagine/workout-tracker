@@ -240,7 +240,7 @@ test.describe('US-14 alternative', () => {
     await field.press('Enter');
     await expect(page.getByRole('region', { name: 'Squat con cintura elastica' })).toContainText('Al posto di Squat bilanciere');
     const stored = (await storedArchive(page))!;
-    expect(stored.catalog['custom-squat-con-cintura-elastica']).toEqual({ id: 'custom-squat-con-cintura-elastica', name: 'Squat con cintura elastica', muscles: { primary: [], secondary: [] }, variantOf: null });
+    expect(stored.catalog['custom-squat-con-cintura-elastica']).toEqual({ id: 'custom-squat-con-cintura-elastica', name: 'Squat con cintura elastica', muscles: {}, variantOf: null });
     expect(stored.sessions[0].exercises[0]).toMatchObject({ exerciseId: 'custom-squat-con-cintura-elastica', alternativeOf: SQUAT.exerciseId });
   });
 });
