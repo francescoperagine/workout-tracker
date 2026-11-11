@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { exerciseMuscles, formatShare, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
 import { emptyArchive, MOST_RECRUITED, MUSCLE_GROUPS, RECRUITED, type Muscles, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
-const PANCA = 'panca-piana-bilanciere'; // principale petto; secondari tricipiti e deltoidi anteriori
-const SQUAT = 'squat-bilanciere'; // principali quadricipiti, glutei, adduttori
+const PANCA = 'panca-piana-manubri'; // petto 1; tricipiti e deltoidi anteriori 0,5 (Delavier p. 77)
+const SQUAT = 'squat-manubri'; // quadricipiti e glutei 1 (Delavier p. 123)
 
 let n = 0;
 function set(type: SetType = 'normal', done = true): SessionSet {
@@ -54,7 +54,7 @@ describe('volume per muscolo: conteggio', () => {
 
   it('con più gruppi a 1 ciascuno riceve una serie intera', () => {
     const [week] = weeklyVolume(archive([session('2026-11-03', [exercise(PANCA, sets(3)), exercise(SQUAT, sets(2))])]));
-    expect(week.groups).toEqual({ chest: 3, triceps: 1.5, 'front-delts': 1.5, quads: 2, glutes: 2, adductors: 2 });
+    expect(week.groups).toEqual({ chest: 3, triceps: 1.5, 'front-delts': 1.5, quads: 2, glutes: 2 });
   });
 
   it('riscaldamento e serie non spuntate non contano; drop e cedimento contano 1', () => {

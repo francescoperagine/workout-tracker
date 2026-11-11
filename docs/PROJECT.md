@@ -17,7 +17,8 @@ Qui c'è solo dove siamo e dove si va.
 - **Palette a ruoli** (`palette`, chiusa con INC-010, ADR-005): inchiostro e carta in chiaro e scuro, un solo accento vermiglio, rosso solo per errori e distruttive (pulsante pieno con icona), indaco per i record, nessun verde; il guscio segue il tema su `surface`; `src/styles/contrast.test.ts` controlla le coppie. SPEC in `docs/archive/features/INC-010_palette.md`.
 - **Allenamento in palestra** (`workout-gym-ux`, chiusa con INC-015): correzioni e rosso di riempimento (INC-011, ADR-006), card a fisarmonica e riordino solo trascinando (INC-012, ADR-007), segnaposto dall'ultima volta o dalla scheda al posto dei valori veri (INC-013, ADR-008), suono a tre campane e foglio per l'allenamento dimenticato (INC-014, US-41), tab «Progressi» (INC-015); SPEC in `docs/archive/features/INC-015_workout-gym-ux.md`.
 - **Serie per muscolo** (`muscle-volume`, chiusa con INC-027): archivio alla versione 3 con il reindirizzamento del rematore doppio (INC-021, ADR-009), mappa dei muscoli del catalogo da studi di crescita e azione articolare (INC-022, ADR-010, ADR-011; punti senza studio chiusi con INC-026), conteggio frazionario per settimana (INC-023, ADR-012), muscoli e varianti nella pagina dell'esercizio (INC-024, ADR-013), barre per gruppo in Progressi (INC-025) e linea settimanale di un gruppo (INC-027). SPEC in `docs/archive/features/INC-027_muscle-volume.md`, mappa e ricerche in `docs/archive/features/INC-027_muscle-volume-research/`.
-- **Feature attive:** nessuna.
+- **Feature attive:** `delavier-catalog` (catalogo dal Delavier, muscoli con il valore di una serie, Progressi come
+  catalogo, sagoma; SPEC e handoff in `features/delavier-catalog/`): modello (INC-029) e catalogo (INC-030) fatti.
 
 ## Focus attuale
 
@@ -39,8 +40,9 @@ prove in palestra (vedi direzione).
 - I punti iOS della checklist di `WEB-PUSH.md` (wake lock, sblocco dell'audio, vibrazione) non sono verificati:
   nessun iPhone disponibile.
 - Gli approfondimenti del catalogo sono vuoti: niente testi tecnici o consigli medici inventati.
-- Serie per muscolo: la mappa del catalogo ha uno studio di crescita solo per 12 esercizi, gli altri seguono l'azione
-  articolare (ADR-011); ogni drop su una riga sua conta una serie, probabilmente troppo (ADR-012).
+- Serie per muscolo: i muscoli del catalogo vengono dal Delavier (ADR-014), che dà solo l'ordine tra due categorie; 22
+  punti che le regole non decidono valgono come proposta finché Francesco non risponde (SPEC di delavier-catalog,
+  §5); ogni drop su una riga sua conta una serie, probabilmente troppo (ADR-012).
 - Un push mentre ci si allena con l'app aperta e offline potrebbe chiedere un chunk vecchio non più in cache
   (non riprodotto): non pushare durante un allenamento, intervenire solo se capita.
 

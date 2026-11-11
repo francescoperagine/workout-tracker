@@ -40,13 +40,11 @@
     { value: '4w', label: '4 settimane', short: '4S' },
     { value: '12w', label: '12 settimane', short: '12S' },
   ];
-  // nella riga «Nessuna serie» non entrano addominali e avambracci, che il catalogo non usa (SPEC §10.2, A2)
-  const NOT_IN_CATALOG: readonly MuscleGroup[] = ['abs', 'forearms'];
   let period: VolumePeriod = $state('4w');
   const weeks = $derived(weeklyVolume(store.archive));
   const volume = $derived(periodVolume(weeks, period, today));
   const bars = $derived(volume.groups.map((g) => ({ label: MUSCLE_LABELS[g.group], value: g.sets })));
-  const zero = $derived(MUSCLE_GROUPS.filter((g) => !NOT_IN_CATALOG.includes(g) && !volume.groups.some((v) => v.group === g)));
+  const zero = $derived(MUSCLE_GROUPS.filter((g) => !volume.groups.some((v) => v.group === g)));
   const unclassifiedSets = $derived(volume.unclassified.reduce((sum, u) => sum + u.sets, 0));
   let trendGroup: MuscleGroup | null = $state(null);
   let trendOpen = $state(false);

@@ -225,8 +225,82 @@ ogni altro; se Francesco li vuole sempre a un valore fisso (es. 0,5), è una rig
 
 ## 5. Elenco per Francesco
 
-Si compila nell'incremento 2: casi che le regole di §1 non decidono (pagina, frase, muscoli nominati) e proposte senza
-fonte (segnate «proposta»). Vuoto finché il catalogo non è scritto.
+Compilato con l'incremento 2 (11/11/2026), dalle 127 schede del libro lette sulle immagini (bozze e trascrizioni in
+`docs/sources/delavier-catalog/`). Nel catalogo vale la proposta finché non rispondi; ogni voce del catalogo che ne
+dipende ha `proposta §5 (Pn)` nel commento. Rispondi per numero («P3 sì», «P7: tricipiti 0,5»).
+
+**Schemi di frase che le regole di §1 non coprono** (valgono per più esercizi):
+- **P2 «as well as»** («uses the deltoid … as well as the trapezius, triceps»): proposta come «also» → 0,5. Lento dietro,
+  distensioni manubri seduto, Arnold press, alzate frontali al cavo, squat sumo con manubrio, sit-up su panca inclinata.
+  Alternativa: elenco senza separatori → 1.
+- **P3 «the deltoid, mainly the X»**: proposta X → 1, gli altri due capi → 0,5 (stesso gruppo «deltoide» con un
+  «mainly» dentro). Lento dietro, distensioni seduto, Arnold, alzate posteriori, alzate frontali al cavo, macchina
+  laterali.
+- **P4 muscoli che si contraggono a fine movimento** («when the shoulder blades come together, the trapezius and
+  rhomboids contract»): proposta 0,5 se è parte dell'esecuzione descritta; non contati se è una scelta («if you
+  continue raising the arm…», «above horizontal»). Rematori, alzate posteriori, pec deck inverso, aperture ai cavi.
+- **P5 «the deltoid» senza capo** (alzate laterali da sdraiato, p. 45; il commento dice «work all the deltoid
+  fibers»): proposta i tre capi a 1.
+- **P13 frase a parte con i muscoli che «also contract / come into play / are used isometrically»** (lombari nei
+  rematori a busto flesso, trapezio e deltoidi posteriori nella lat presa stretta, quadrato dei lombi nei piegamenti
+  laterali alla panca romana): proposta 0,5, come «also».
+
+**Esercizio per esercizio:**
+- **P1 Dip tra panche (p. 30):** «works the triceps and pectorals as well as the anterior deltoid» → tricipiti 1, petto
+  1, deltoidi anteriori 0,5.
+- **P6 Tirate al mento (pp. 56 e 115):** il libro la descrive due volte con frasi diverse (spalle: «mainly uses the
+  deltoid, trapezius, and biceps»; dorso: «mainly uses the superior portion of the trapezius as well as the deltoids…»).
+  Una voce sola con il valore più alto delle due: deltoidi, trapezio e bicipiti 1; brachiale, avambracci, addominali,
+  glutei, lombari 0,5.
+- **P7 Panca piana (p. 64):** il testo nomina pettorale, piccolo pettorale, deltoide anteriore, serrato, coracobrachiale;
+  **non il tricipite** (in figura è etichettato, ma i grassetti non contano). Oggi: petto 1, deltoidi anteriori 1,
+  tricipiti 0. Proposta: lasciare così (regola) oppure tricipiti 0,5 da Pelland/ADR-011.
+- **P8 Chest press (p. 73):** «the triceps and the posterior fascicles of the deltoids are also recruited»: il libro
+  dice *posteriori*, probabilmente un errore (in una spinta lavora l'anteriore). Oggi: deltoidi posteriori 0,5 come da
+  testo. Proposta: anteriori 0,5.
+- **P9 Dip alle parallele (p. 74):** nessuna frase d'elenco, solo «the more the chest is angled forward … pectorals;
+  the more vertical … triceps». Proposta petto 1, tricipiti 1 (anche per la variante alla macchina).
+- **P10 Stabilizzatori nominati:** pullover con manubrio (p. 83: «the last three muscles stabilize the scapula»,
+  romboidi tra questi) → romboidi non contati; pullover con bilanciere (p. 84, stessa lista senza la frase) → trapezio
+  1; pullover al cavo alto (p. 96: «the long head of the triceps, which stabilizes the arm–trunk hinge») → tricipiti 1.
+  Proposta: contare solo quelli senza la parola «stabilize» (oggi così).
+- **P11 Esercizi del PoC che il libro non ha** (valori proposti, nessuna fonte del Delavier):
+  goblet squat → come il front squat (p. 125, carico davanti); incline chest press → come la panca inclinata (p. 62);
+  lat monobraccio al cavo → come la lat machine (p. 90); rematore manubri petto su panca inclinata → come il T-bar con
+  appoggio (p. 101); row machine → come il rematore seduto al cavo (p. 94); calf alla leg press → polpacci 1; hip
+  thrust machine → glutei 1 (hip thrust bilanciere ha la sua fonte, Plotkin 2023); pull-through al cavo → glutei e
+  femorali 1 (come prima, analogia con Morin 2025 e Bourne 2017).
+- **P12 Trazioni presa inversa (p. 88):** «develops the latissimus dorsi and teres major and is associated with the
+  intense work of the biceps brachii and brachialis»: proposta bicipiti e brachiale 1 («intense»), trapezio e petto 0,5
+  («also contracts»).
+- **P14 Stacco rumeno = stiff-legged deadlift (p. 102)?** Il libro non ha lo stacco rumeno; proposta di usare la sua
+  scheda (lombari, glutei, femorali 1). Gli adduttori 0,5 di prima escono.
+- **P15 Stacco sumo (p. 103):** «works the quadriceps and adductor muscles intensely … it works the back less»;
+  il commento aggiunge zona lombare e glutei. Proposta quadricipiti e adduttori 1, lombari e glutei 0,5.
+- **P16 Squat sumo con manubrio (p. 124):** «works the quadriceps as well as the gluteal muscles» + commento «the
+  wide-leg position works the adductors». Proposta quadricipiti 1, glutei e adduttori 0,5.
+- **P17 Squat (p. 126):** «mainly works the quadriceps, gluteal muscles, adductor group, erector spinae, abdominal
+  muscles, and the hamstrings»: per la regola tutti 1. Contraddice Kubo 2019 (femorali non crescono) e ADR-011
+  (stabilizzatori non contati). Oggi vale il libro: lombari, addominali e femorali ricevono una serie intera per ogni
+  serie di squat (anche lo squat al Smith). Dimmi se vuoi un'eccezione.
+- **P18 Leg press (p. 135):** solo frasi sulla posizione dei piedi («low … isolates the quadriceps; higher … gluteal
+  muscles and hamstrings; wider … adductors»). Proposta per la leg press e quella a metà pedana: quadricipiti 1;
+  glutei, femorali, adduttori 0,5.
+- **P19 Box squat (p. 137):** il testo parla solo dei quadricipiti, in confronto. Proposta quadricipiti 1.
+- **P20 Affondi con bilanciere (p. 156):** glutei 1; passo corto → quadricipiti, lungo → femorali. Proposta
+  quadricipiti e femorali 0,5.
+- **P21 Sit-up alla panca romana (p. 177):** «the rectus abdominis, iliopsoas, and tensor fasciae latae contribute
+  strongly». Proposta flessori dell'anca 1.
+- **P22 Crunch alla macchina (p. 179):** nessuna frase sui muscoli. Proposta addominali 1.
+
+**Identificazioni** (esercizio del PoC → scheda del libro, senza proposta sui valori): curl EZ → barbell curls (p. 12);
+shoulder press machine → «various machines» del lento avanti (p. 34); trazioni assistite → chin-ups (p. 86); row
+machine con appoggio → variante del T-bar con appoggio (p. 101); glute bridge con manubrio → bridging (p. 162);
+hyperextension 45° → back extensions (p. 112); French press con manubrio → lying dumbbell triceps extensions (p. 25:
+l'alias «Overhead dumbbell triceps extension» è passato alla voce di p. 28).
+
+**Stabilizzatori nelle istruzioni** («keep the abdominals contracted», «isometric contraction of the gluteals») non
+sono contati in nessuna voce: non sono nella frase dei muscoli lavorati.
 
 ## 6. Domande chiuse
 

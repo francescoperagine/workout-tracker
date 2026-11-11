@@ -86,10 +86,10 @@ describe('US-02 import del backup del PoC', () => {
 
   it('un id che non è nel catalogo resta lo stesso, come esercizio personalizzato', () => {
     const data = backup();
-    Object.assign(data.allenamenti[0].esercizi[0], { catalogoId: 'stacco-sumo', varianteId: 'stacco-sumo', variante: 'Stacco sumo', nome: 'Stacco sumo' });
+    Object.assign(data.allenamenti[0].esercizi[0], { catalogoId: 'stacco-jefferson', varianteId: 'stacco-jefferson', variante: 'Stacco Jefferson', nome: 'Stacco Jefferson' });
     const conv = convertPocArchive(data);
-    expect(conv.archive.catalog['stacco-sumo']).toEqual({ id: 'stacco-sumo', name: 'Stacco sumo', muscles: {}, variantOf: null });
-    expect(conv.archive.sessions[0].exercises[0].exerciseId).toBe('stacco-sumo');
+    expect(conv.archive.catalog['stacco-jefferson']).toEqual({ id: 'stacco-jefferson', name: 'Stacco Jefferson', muscles: {}, variantOf: null });
+    expect(conv.archive.sessions[0].exercises[0].exerciseId).toBe('stacco-jefferson');
   });
 
   it('un id tolto dal catalogo si reindirizza, senza creare un personalizzato né una nota sul nome (ADR-009)', () => {

@@ -3,6 +3,34 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-030
+
+Date: 2026-11-11
+
+Summary:
+**Catalogo dal Delavier (delavier-catalog, incremento 2 di 6).** Il catalogo passa da 42 a 159 esercizi: i 127 numerati
+di *Strength Training Anatomy* (3ª ed.), le «Variation» con un altro attrezzo (Smith, macchine, cavi) e il box delle
+distensioni da sdraiato, più i 41 del PoC (ID invariati). Ogni voce ha nome italiano d'uso comune, alias con il nome
+inglese del libro, muscoli con il valore di una serie letti con le regole di ADR-014 sulle immagini delle pagine, e la
+pagina nel commento. Stacco da terra dalla figura di p. 110 (dorsali e glutei 1; trapezio, lombari, femorali,
+quadricipiti 0,5). Ciò che le regole non decidono vale come proposta: 22 punti in SPEC §5 per Francesco. Nuove le voci
+che servono alla correzione del diario: stacco da terra, leg curl seduto, curl manubri, estensioni tricipiti sopra la
+testa al cavo.
+
+Effetti: i valori cambiano anche per gli esercizi già nel diario e per le settimane passate (il volume si ricalcola dal
+catalogo). Esempi: lo squat dà 1 anche a lombari, addominali e femorali (P17); la panca piana non dà più serie ai
+tricipiti (P7). Nella riga «Nessuna serie» di Progressi tornano addominali e avambracci, che ora il catalogo usa.
+
+Deliverables:
+- `src/data/catalog.ts` riscritto, una riga per voce (D10); `src/data/seed-data.test.ts` (ID del PoC contenuti, nomi e
+  alias senza doppioni, campione di 11 righe del libro).
+- `src/components/history/ProgressPage.svelte` (riga «Nessuna serie» con tutti i gruppi); test che dipendevano dai
+  vecchi valori o nomi (`catalog.test.ts`, `muscles.test.ts`, `poc-import.test.ts`, e2e US-45).
+- SPEC §5 (elenco per Francesco); `docs/ARCHITECTURE.md`; `docs/PROJECT.md`. Trascrizioni e letture delle pagine in
+  `docs/sources/delavier-catalog/` (fuori da git).
+
+ADR: nessuna (applica ADR-014). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0).
+
 ## INC-029
 
 Date: 2026-11-11

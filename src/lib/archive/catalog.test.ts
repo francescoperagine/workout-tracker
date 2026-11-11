@@ -64,24 +64,31 @@ describe('US-14 nome scritto a mano', () => {
   });
 
   it('suggerisce i nomi simili mentre si scrive: prima chi comincia con il testo', () => {
-    const archive = ensureExercise(emptyArchive(), 'Panca declinata').archive;
+    const archive = ensureExercise(emptyArchive(), 'Panca Larsen').archive;
     const names = (text: string) => suggestExercises(archive, text).map((e) => e.name);
+    // tutti cominciano con «panca»: a pari punteggio l'ordine del catalogo, fino al limite di 8
     expect(names('panca')).toEqual([
-      'Panca piana bilanciere',
-      'Panca piana manubri',
-      // dall'alias «Panca inclinata manubri» (US-35)
-      'Distensioni manubri panca inclinata',
+      'Panca inclinata bilanciere',
       'Panca inclinata al Smith',
-      'Panca declinata',
-      'Rematore manubri, petto su panca inclinata',
-      'Curl manubri su panca inclinata',
+      'Panca piana bilanciere',
+      'Panca piana al Smith',
+      'Panca presa stretta',
+      'Panca presa stretta al Smith',
+      'Panca declinata bilanciere',
+      'Panca declinata al Smith',
     ]);
     expect(names('pan inc')).toEqual([
-      'Rematore manubri, petto su panca inclinata',
       'Curl manubri su panca inclinata',
-      'Distensioni manubri panca inclinata',
+      'Panca inclinata bilanciere',
       'Panca inclinata al Smith',
+      // dall'alias «Panca inclinata manubri» (US-35)
+      'Distensioni manubri panca inclinata',
+      'Croci su panca inclinata',
+      'Rematore manubri, petto su panca inclinata',
+      'Sit-up su panca inclinata',
+      'Leg raise su panca inclinata',
     ]);
+    expect(names('larsen')).toEqual(['Panca Larsen']);
     expect(names('HACK')).toEqual(['Hack squat']);
     expect(names('')).toEqual([]);
     expect(suggestExercises(archive, 'a', 3)).toHaveLength(3);
@@ -90,7 +97,7 @@ describe('US-14 nome scritto a mano', () => {
   it('elenco, ricerca per id e nome di un id sconosciuto', () => {
     const archive = ensureExercise(emptyArchive(), 'Zercher squat').archive;
     const all = availableExercises(archive);
-    expect(all[0].id).toBe('squat-bilanciere');
+    expect(all[0].custom).toBe(false);
     expect(all.at(-1)).toEqual({ id: 'custom-zercher-squat', name: 'Zercher squat', aliases: [], custom: true });
     expect(findExercise(archive, 'curl-ez')?.name).toBe('Curl EZ');
     expect(exerciseName(archive, 'esercizio-futuro')).toBe('esercizio-futuro');
@@ -129,7 +136,7 @@ describe('US-35 alias del catalogo di base', () => {
       }
     }
     expect(suggestExercises(emptyArchive(), 'romanian').map((e) => e.id)).toEqual(['stacco-rumeno-bilanciere', 'stacco-rumeno-manubri']);
-    expect(availableExercises(emptyArchive()).find((e) => e.id === 'leg-press')?.aliases).toEqual(['Pressa', 'Pressa orizzontale']);
+    expect(availableExercises(emptyArchive()).find((e) => e.id === 'leg-press')?.aliases).toEqual(['Pressa', 'Pressa orizzontale', 'Incline leg presses', 'Pressa inclinata']);
   });
 
   it('il vecchio nome del rematore tolto e i suoi alias trovano il rematore seduto (ADR-009)', () => {
@@ -174,20 +181,20 @@ describe('US-35 unione di esercizi duplicati', () => {
 
   it('alternativa che diventa un doppione, assorbito unico esercizio di una scheda archiviata', () => {
     let archive = emptyArchive();
-    archive = ensureExercise(archive, 'Panca declinata').archive;
-    archive = ensureExercise(archive, 'Decline bench').archive;
+    archive = ensureExercise(archive, 'Panca Larsen').archive;
+    archive = ensureExercise(archive, 'Larsen press').archive;
     const entry = { sets: 3, reps: '8', loadMin: null, loadMax: null, loadNote: '', unit: '', rest: 90, warmupRest: 60, group: null };
     archive = {
       ...archive,
       routines: [
-        { id: 'r1', name: 'A', notes: '', archived: true, exercises: [{ ...entry, id: 'e1', exerciseId: 'custom-decline-bench', alternatives: [] }] },
-        { id: 'r2', name: 'B', notes: '', archived: false, exercises: [{ ...entry, id: 'e2', exerciseId: 'leg-press', alternatives: ['custom-decline-bench', 'custom-panca-declinata'] }] },
+        { id: 'r1', name: 'A', notes: '', archived: true, exercises: [{ ...entry, id: 'e1', exerciseId: 'custom-larsen-press', alternatives: [] }] },
+        { id: 'r2', name: 'B', notes: '', archived: false, exercises: [{ ...entry, id: 'e2', exerciseId: 'leg-press', alternatives: ['custom-larsen-press', 'custom-panca-larsen'] }] },
       ],
     };
-    const after = mergeExercise(archive, 'custom-decline-bench', 'custom-panca-declinata');
-    expect(after.routines[0].exercises[0].exerciseId).toBe('custom-panca-declinata');
-    expect(after.routines[1].exercises[0].alternatives).toEqual(['custom-panca-declinata']);
-    expect(Object.keys(after.catalog)).toEqual(['custom-panca-declinata']);
+    const after = mergeExercise(archive, 'custom-larsen-press', 'custom-panca-larsen');
+    expect(after.routines[0].exercises[0].exerciseId).toBe('custom-panca-larsen');
+    expect(after.routines[1].exercises[0].alternatives).toEqual(['custom-panca-larsen']);
+    expect(Object.keys(after.catalog)).toEqual(['custom-panca-larsen']);
   });
 
   it('rifiuta stesso esercizio, assorbito di base o sconosciuto, destinazione sconosciuta', () => {

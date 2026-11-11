@@ -45,34 +45,32 @@ test.describe('US-45 serie per muscolo', () => {
       archiveWith({
         catalog: crunch,
         sessions: [
-          workout('a', '2026-09-29', [['squat-bilanciere', 3]]),
-          workout('b', '2026-10-06', [['squat-bilanciere', 3], ['panca-piana-bilanciere', 2]]),
-          workout('c', '2026-10-13', [['squat-bilanciere', 4], ['custom-crunch', 2]]),
+          workout('a', '2026-09-29', [['squat-manubri', 3]]),
+          workout('b', '2026-10-06', [['squat-manubri', 3], ['panca-piana-manubri', 2]]),
+          workout('c', '2026-10-13', [['squat-manubri', 4], ['custom-crunch', 2]]),
         ],
       }),
     );
     await page.goto('progress/');
 
-    // 4 settimane (predefinito): media sulle 2 settimane concluse dal primo allenamento; 0,5 dai secondari della panca
+    // 4 settimane (predefinito): media sulle 2 settimane concluse dal primo allenamento; 0,5 dai valori della panca
     await expect(page.getByRole('radio', { name: '4 settimane' })).toBeChecked();
     await expect(bars(page)).toHaveText([
       /Glutei\s*3 serie/,
       /Quadricipiti\s*3 serie/,
-      /Adduttori\s*3 serie/,
       /Petto\s*1 serie/,
       /Deltoidi anteriori\s*0,5 serie/,
       /Tricipiti\s*0,5 serie/,
     ]);
     await expect(section(page)).toContainText('Media per settimana, ultime 2 settimane concluse.');
     await expect(section(page)).toContainText(
-      "Nessuna serie: Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Brachiale, Lombari, Flessori dell'anca, Femorali, Popliteo, Polpacci",
+      "Nessuna serie: Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Brachiale, Avambracci, Addominali, Lombari, Flessori dell'anca, Femorali, Popliteo, Adduttori, Polpacci",
     );
-    await expect(section(page)).not.toContainText('Addominali');
     await expect(section(page)).not.toContainText('Senza muscoli');
 
     // settimana in corso: totali, fino a oggi
     await page.getByRole('radio', { name: 'Settimana', exact: true }).check();
-    await expect(bars(page)).toHaveText([/Glutei\s*4 serie/, /Quadricipiti\s*4 serie/, /Adduttori\s*4 serie/]);
+    await expect(bars(page)).toHaveText([/Glutei\s*4 serie/, /Quadricipiti\s*4 serie/]);
     await expect(section(page)).toContainText('Settimana in corso, fino a oggi.');
   });
 
@@ -81,7 +79,7 @@ test.describe('US-45 serie per muscolo', () => {
       page,
       archiveWith({
         catalog: crunch,
-        sessions: [workout('a', '2026-10-06', [['custom-crunch', 3]]), workout('b', '2026-10-07', [['squat-bilanciere', 1]])],
+        sessions: [workout('a', '2026-10-06', [['custom-crunch', 3]]), workout('b', '2026-10-07', [['squat-manubri', 1]])],
       }),
     );
     await page.goto('progress/');
@@ -94,12 +92,12 @@ test.describe('US-45 serie per muscolo', () => {
   });
 
   test('US-45 con i soli allenamenti di questa settimana, «4 settimane» chiede una settimana conclusa', async ({ page }) => {
-    await seedArchive(page, archiveWith({ sessions: [workout('a', '2026-10-13', [['squat-bilanciere', 2]])] }));
+    await seedArchive(page, archiveWith({ sessions: [workout('a', '2026-10-13', [['squat-manubri', 2]])] }));
     await page.goto('progress/');
 
     await expect(section(page)).toContainText('Serve almeno una settimana conclusa: intanto guarda la settimana in corso.');
     await expect(bars(page)).toHaveCount(0);
     await page.getByRole('radio', { name: 'Settimana', exact: true }).check();
-    await expect(bars(page)).toHaveText([/Glutei\s*2 serie/, /Quadricipiti\s*2 serie/, /Adduttori\s*2 serie/]);
+    await expect(bars(page)).toHaveText([/Glutei\s*2 serie/, /Quadricipiti\s*2 serie/]);
   });
 });
