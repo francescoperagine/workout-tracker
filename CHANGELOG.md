@@ -3,6 +3,29 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-032
+
+Date: 2026-11-11
+
+Summary:
+**Progressi diventa il catalogo; tab nella pagina dell'esercizio (delavier-catalog, incremento 4 di 6; US-47, US-48).**
+In Progressi, sotto «Serie per muscolo» e separata da un filo, la sezione «Esercizi»: campo «Cerca per nome» (nome e
+alias, con `suggestExercises` come la scelta degli esercizi), interruttore «Solo fatti» acceso a ogni apertura, elenco
+alfabetico di catalogo e personalizzati anche durante la ricerca; un esercizio mai fatto ha «–» come seconda riga, con
+«mai fatto» per lo screen reader. La pagina dell'esercizio ha due tab: «Progressi» (grafico, record, cronologia; per
+prima) e «Info» (`&tab=info`: muscoli, «Personalizza i muscoli» o l'editor, «Unisci in…» per i personalizzati,
+approfondimento con gli altri nomi). Un esercizio mai fatto ha in Progressi un messaggio e il link «Muscoli e
+informazioni»; i link di «Senza muscoli», «Basata su …», la variante appena creata e il suo «Annulla» aprono Info.
+Regola nuova in DESIGN.md: tra tipi di informazione diversi in verticale c'è un filo (regola del filo).
+
+Deliverables:
+- `src/components/history/ProgressPage.svelte`, `ExerciseProgress.svelte`; `ExercisePicker.svelte` (`mergeFrom`: il
+  foglio si apre già in «Unisci in…»).
+- e2e `tests/e2e/us-47-us-48-catalog.spec.ts`; US-43, US-44, US-45 alla tab Info.
+- `DESIGN.md` (regola del filo, tab della pagina), `.impeccable/surfaces/route-history.md`, `docs/ARCHITECTURE.md`.
+
+ADR: nessuna (meccanico: le scelte sono della SPEC). Gate: (`npm run check` — exit 0; `npm test` — exit 0; `npm run build` — exit 0; `npm run test:e2e` — exit 0; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 0; `npm run docs:check` — exit 0). Progressi e le due tab guardate a 390×844 e 320×568 con il diario corretto.
+
 ## INC-031
 
 Date: 2026-11-11

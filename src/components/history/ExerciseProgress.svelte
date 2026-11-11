@@ -5,11 +5,13 @@
   // serie. L'esercizio è quello fatto davvero: ogni alternativa ha la sua pagina, il riscaldamento non
   // conta, tutto nell'unità scelta. I calcoli sono in src/lib/archive/progress.ts. Ogni riga della
   // cronologia ha «Era un altro esercizio» (US-42): le serie di quell'allenamento passano all'esercizio
-  // giusto, con «Annulla» nell'avviso. In fondo la sezione «Muscoli» (US-43, US-44), visibile anche senza
-  // storico: in sola lettura per il catalogo, con «Personalizza i muscoli» che crea una variante; l'editor
-  // per i personalizzati. Dopo la creazione si arriva qui con &created=1: l'avviso con «Annulla» vive
-  // nella pagina della variante, perché l'isola si ricrea a ogni navigazione.
+  // giusto, con «Annulla» nell'avviso. Due tab (delavier-catalog, US-48): «Progressi» (grafico, record,
+  // cronologia; aperta per prima) e «Info» (&tab=info nell'URL): muscoli con la quota di una serie (US-43,
+  // US-44), in sola lettura per il catalogo con «Personalizza i muscoli» che crea una variante, l'editor e
+  // «Unisci in…» per i personalizzati, l'approfondimento. Dopo la creazione si arriva qui con &created=1:
+  // l'avviso con «Annulla» vive nella pagina della variante, perché l'isola si ricrea a ogni navigazione.
   import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right';
+  import Merge from '@lucide/svelte/icons/merge';
   import ChevronLeft from '@lucide/svelte/icons/chevron-left';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import ChartLine from '@lucide/svelte/icons/chart-line';
@@ -37,6 +39,8 @@
     proposeVariantName,
     reassignExercise,
     setCustomMuscles,
+    hasDetails,
+    safeSources,
     sortedMuscles,
     MOST_RECRUITED,
     RECRUITED,
@@ -60,6 +64,27 @@
   // aperta da «Progressi» nel menu ⋯ dell'allenamento: il ritorno va all'allenamento, non all'elenco
   const back = params.get('from') === 'workout' ? { href: appUrl('/workout'), label: 'Allenamento' } : { href: appUrl('/progress'), label: 'Progressi' };
   const today = toDateKey(new Date());
+
+  // US-48: tab della pagina, nell'URL per i link («Senza muscoli» apre Info) e per il ricaricamento
+  type Tab = 'progress' | 'info';
+  const TABS: { value: Tab; label: string }[] = [
+    { value: 'progress', label: 'Progressi' },
+    { value: 'info', label: 'Info' },
+  ];
+  let tab: Tab = $state(params.get('tab') === 'info' ? 'info' : 'progress');
+  function selectTab(next: Tab, focus = false) {
+    tab = next;
+    const url = new URL(location.href);
+    if (next === 'info') url.searchParams.set('tab', 'info');
+    else url.searchParams.delete('tab');
+    window.history.replaceState(window.history.state, '', url);
+    if (focus) document.getElementById(`tab-${next}`)?.focus();
+  }
+  function tabKeys(event: KeyboardEvent) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
+    event.preventDefault();
+    selectTab(event.key === 'Home' || event.key === 'ArrowLeft' ? 'progress' : 'info', true);
+  }
 
   let metric: Metric = $state('load');
   let period: Period = $state('3m');
@@ -208,13 +233,24 @@
 
   // US-43, US-44: muscoli dell'esercizio (catalogo in sola lettura, personalizzato modificabile)
   const exerciseHref = (id: string) => `${appUrl('/exercise')}?id=${encodeURIComponent(id)}`;
-  const baseMuscles = exerciseDetails(exerciseId)?.muscles ?? null;
+  const details = exerciseDetails(exerciseId);
+  const baseMuscles = details?.muscles ?? null;
+  const aliases = details?.aliases ?? [];
   const custom = $derived(store.archive.catalog[exerciseId] ?? null);
 
   let variantOpen = $state(false);
   let variantName = $state('');
   let variantError = $state('');
   const impact = $derived(variantImpact(store.archive, exerciseId));
+
+  // «Unisci in…» di un personalizzato: lo stesso foglio del catalogo, già nella scelta della destinazione
+  let mergeOpen = $state(false);
+  function mergeHere(absorbedId: string, intoId: string): boolean {
+    if (!edit((a) => mergeExercise(a, absorbedId, intoId))) return false;
+    mergeOpen = false;
+    navigate(exerciseHref(intoId));
+    return true;
+  }
 
   function openVariant() {
     variantName = proposeVariantName(store.archive, exerciseId);
@@ -242,7 +278,7 @@
       return;
     }
     variantOpen = false;
-    navigate(`${exerciseHref(id)}&created=1`);
+    navigate(`${exerciseHref(id)}&tab=info&created=1`);
   }
 
   // appena creata la variante: avviso con «Annulla», una volta sola (il parametro si toglie subito)
@@ -254,7 +290,7 @@
         message: `Creato «${name}»${routines ? `, sostituito in ${plural(routines, 'scheda', 'schede')}` : ''}.`,
         action: 'Annulla',
         onaction: () => {
-          if (edit((a) => mergeExercise(a, exerciseId, baseId))) navigate(exerciseHref(baseId));
+          if (edit((a) => mergeExercise(a, exerciseId, baseId))) navigate(`${exerciseHref(baseId)}&tab=info`);
         },
       };
     }
@@ -291,101 +327,155 @@
       {/if}
     </div>
 
-    {#if !history.length}
-      <div class="flex flex-col items-start gap-3 py-4">
-        <ChartLine size={28} class="text-text-muted" aria-hidden="true" />
-        <h3 class="m-0 text-xl leading-snug font-bold">Ancora nessuna serie</h3>
-        <p class="m-0 max-w-[60ch] text-text-muted">I progressi compaiono dopo il primo allenamento concluso con almeno una serie spuntata di questo esercizio.</p>
+    <div class="tabs" role="tablist" aria-label="Sezioni dell’esercizio">
+      {#each TABS as t (t.value)}
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${t.value}`}
+          class="tab"
+          aria-selected={tab === t.value}
+          aria-controls={tab === t.value ? `panel-${t.value}` : undefined}
+          tabindex={tab === t.value ? 0 : -1}
+          onclick={() => selectTab(t.value)}
+          onkeydown={tabKeys}>{t.label}</button
+        >
+      {/each}
+    </div>
+
+    {#if tab === 'progress'}
+      <div class="panel-tab" role="tabpanel" id="panel-progress" aria-labelledby="tab-progress">
+        {#if !history.length}
+          <div class="flex flex-col items-start gap-3 py-4">
+            <ChartLine size={28} class="text-text-muted" aria-hidden="true" />
+            <h3 class="m-0 text-xl leading-snug font-bold">Ancora nessuna serie</h3>
+            <p class="m-0 max-w-[60ch] text-text-muted">I progressi compaiono dopo il primo allenamento concluso con almeno una serie spuntata di questo esercizio.</p>
+            <a class="btn btn-text info-link" href={`${exerciseHref(exerciseId)}&tab=info`} onclick={(event) => { event.preventDefault(); selectTab('info', true); }}>Muscoli e informazioni</a>
+          </div>
+        {:else}
+          <section aria-labelledby="chart-title" class="section">
+            <h3 id="chart-title" class="visually-hidden">{current.title}</h3>
+            <div class="controls">
+              <SegmentedControl name="metric" label="Misura" options={METRICS} bind:value={metric} compact />
+              <SegmentedControl name="period" label="Periodo" options={PERIODS} bind:value={period} compact />
+            </div>
+            {#if chartPoints.length}
+              <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} details={sessionDetails} />
+              {#if chartPoints.length === 1}
+                <p class="hint m-0">Un solo allenamento in questo periodo: l’andamento compare dal secondo.</p>
+              {/if}
+              {#if metric === 'e1rm'}
+                <p class="hint m-0">Stima con la formula di Epley, dalle serie normali fino a {EPLEY_MAX_REPS} ripetizioni.</p>
+              {/if}
+            {:else if noChart}
+              <p class="m-0 max-w-[60ch] text-text-muted">{noChart}</p>
+            {/if}
+          </section>
+
+          {#if recordRows.length}
+            <section aria-labelledby="records-title" class="section">
+              <h3 id="records-title" class="subtitle">Record personali</h3>
+              <dl class="records">
+                {#each recordRows as row (row.term)}
+                  <div class="record">
+                    <dt>{row.term}</dt>
+                    <dd class="record-value">{row.value}</dd>
+                    {#if !recordsSession}
+                      <dd class="record-date"><a href={sessionHref(row.best.sessionId)}>{dateText(row.best.date)}</a></dd>
+                    {/if}
+                  </div>
+                {/each}
+              </dl>
+              {#if recordsSession}
+                <p class="record-date m-0">Fatti tutti nell’<a href={sessionHref(recordsSession.sessionId)}>allenamento {withPreposition('di', dateText(recordsSession.date))}</a></p>
+              {/if}
+            </section>
+          {:else}
+            <p class="m-0 max-w-[60ch] text-text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
+          {/if}
+
+          {#if recent.length}
+            <section aria-labelledby="sets-title" class="section">
+              <h3 id="sets-title" class="subtitle">Cronologia delle serie</h3>
+              <ol class="list">
+                {#each recent as point (point.sessionId)}
+                  <li>
+                    <a class="row" href={sessionHref(point.sessionId)}>
+                      <span class="day">{dateText(point.date)}</span>
+                      <span class="sets">{setsLine(point)}</span>
+                      <span class="detail">{[plural(workSets(point), 'serie', 'serie'), metricsLine(point)].filter(Boolean).join(' · ')}</span>
+                    </a>
+                    <button
+                      type="button"
+                      class="btn btn-icon reassign"
+                      aria-haspopup="dialog"
+                      aria-label={`Era un altro esercizio: allenamento ${withPreposition('di', dateText(point.date))}`}
+                      onclick={() => askReassign(point)}><ArrowLeftRight size={20} aria-hidden="true" /></button
+                    >
+                  </li>
+                {/each}
+              </ol>
+            </section>
+          {/if}
+        {/if}
       </div>
     {:else}
-      <section aria-labelledby="chart-title" class="section">
-        <h3 id="chart-title" class="visually-hidden">{current.title}</h3>
-        <div class="controls">
-          <SegmentedControl name="metric" label="Misura" options={METRICS} bind:value={metric} compact />
-          <SegmentedControl name="period" label="Periodo" options={PERIODS} bind:value={period} compact />
-        </div>
-        {#if chartPoints.length}
-          <ProgressChart points={chartPoints} format={valueText} formatDate={dateText} label={current.title} details={sessionDetails} />
-          {#if chartPoints.length === 1}
-            <p class="hint m-0">Un solo allenamento in questo periodo: l’andamento compare dal secondo.</p>
+      <div class="panel-tab" role="tabpanel" id="panel-info" aria-labelledby="tab-info">
+      {#if baseMuscles || custom}
+        <section aria-labelledby="muscles-title" class="section">
+          <h3 id="muscles-title" class="subtitle">Muscoli</h3>
+          {#if custom?.variantOf}
+            <a class="based-on" href={`${exerciseHref(custom.variantOf)}&tab=info`}>Basata su {exerciseName(store.archive, custom.variantOf)}</a>
           {/if}
-          {#if metric === 'e1rm'}
-            <p class="hint m-0">Stima con la formula di Epley, dalle serie normali fino a {EPLEY_MAX_REPS} ripetizioni.</p>
-          {/if}
-        {:else if noChart}
-          <p class="m-0 max-w-[60ch] text-text-muted">{noChart}</p>
-        {/if}
-      </section>
-
-      {#if recordRows.length}
-        <section aria-labelledby="records-title" class="section">
-          <h3 id="records-title" class="subtitle">Record personali</h3>
-          <dl class="records">
-            {#each recordRows as row (row.term)}
-              <div class="record">
-                <dt>{row.term}</dt>
-                <dd class="record-value">{row.value}</dd>
-                {#if !recordsSession}
-                  <dd class="record-date"><a href={sessionHref(row.best.sessionId)}>{dateText(row.best.date)}</a></dd>
-                {/if}
-              </div>
-            {/each}
-          </dl>
-          {#if recordsSession}
-            <p class="record-date m-0">Fatti tutti nell’<a href={sessionHref(recordsSession.sessionId)}>allenamento {withPreposition('di', dateText(recordsSession.date))}</a></p>
+          {#if baseMuscles}
+            <p class="hint m-0">Quanto conta una serie per ogni gruppo:</p>
+            <dl class="muscle-list">
+              {#each sortedMuscles(baseMuscles) as { group, value } (group)}
+                <div><dt>{MUSCLE_LABELS[group]}:</dt> <dd>{formatShare(value)}</dd></div>
+              {/each}
+            </dl>
+            <button type="button" class="btn btn-secondary personalize" aria-haspopup="dialog" onclick={openVariant}>Personalizza i muscoli</button>
+          {:else if custom}
+            {#if Object.keys(custom.muscles).length === 0}
+              <p class="m-0 max-w-[60ch] text-text-muted">Scegli i muscoli: finché sono vuoti, le serie finiscono in «Senza muscoli» in Progressi.</p>
+            {/if}
+            <p class="hint m-0">Un tocco: conta {formatShare(MOST_RECRUITED)}. Due: {formatShare(RECRUITED)}. Tre: nessuna.</p>
+            <MuscleEditor muscles={custom.muscles} onchange={(m) => edit((a) => setCustomMuscles(a, exerciseId, m))} />
           {/if}
         </section>
-      {:else}
-        <p class="m-0 max-w-[60ch] text-text-muted">Solo serie di riscaldamento o senza carico: non contano per record e grafici.</p>
       {/if}
-
-      {#if recent.length}
-        <section aria-labelledby="sets-title" class="section">
-          <h3 id="sets-title" class="subtitle">Cronologia delle serie</h3>
-          <ol class="list">
-            {#each recent as point (point.sessionId)}
-              <li>
-                <a class="row" href={sessionHref(point.sessionId)}>
-                  <span class="day">{dateText(point.date)}</span>
-                  <span class="sets">{setsLine(point)}</span>
-                  <span class="detail">{[plural(workSets(point), 'serie', 'serie'), metricsLine(point)].filter(Boolean).join(' · ')}</span>
-                </a>
-                <button
-                  type="button"
-                  class="btn btn-icon reassign"
-                  aria-haspopup="dialog"
-                  aria-label={`Era un altro esercizio: allenamento ${withPreposition('di', dateText(point.date))}`}
-                  onclick={() => askReassign(point)}><ArrowLeftRight size={20} aria-hidden="true" /></button
-                >
-              </li>
-            {/each}
-          </ol>
+      {#if custom}
+        <section aria-labelledby="merge-title" class="section">
+          <h3 id="merge-title" class="subtitle">È un doppione?</h3>
+          <p class="m-0 max-w-[60ch] text-text-muted">Se è lo stesso esercizio di un altro, uniscilo: allenamenti e schede passano a quello.</p>
+          <button type="button" class="btn btn-secondary personalize" aria-haspopup="dialog" onclick={() => (mergeOpen = true)}><Merge size={20} aria-hidden="true" />Unisci in…</button>
         </section>
       {/if}
-    {/if}
-
-    {#if baseMuscles || custom}
-      <section aria-labelledby="muscles-title" class="section">
-        <h3 id="muscles-title" class="subtitle">Muscoli</h3>
-        {#if custom?.variantOf}
-          <a class="based-on" href={exerciseHref(custom.variantOf)}>Basata su {exerciseName(store.archive, custom.variantOf)}</a>
+      <section aria-labelledby="details-title" class="section">
+        <h3 id="details-title" class="subtitle">Approfondimento</h3>
+        {#if details && aliases.length}
+          <p class="m-0 max-w-[60ch]"><span class="text-text-muted">Si chiama anche:</span> {aliases.join(', ')}</p>
         {/if}
-        {#if baseMuscles}
-          <p class="hint m-0">Quanto conta una serie per ogni gruppo:</p>
-          <dl class="muscle-list">
-            {#each sortedMuscles(baseMuscles) as { group, value } (group)}
-              <div><dt>{MUSCLE_LABELS[group]}:</dt> <dd>{formatShare(value)}</dd></div>
-            {/each}
-          </dl>
-          <button type="button" class="btn btn-secondary personalize" aria-haspopup="dialog" onclick={openVariant}>Personalizza i muscoli</button>
-        {:else if custom}
-          {#if Object.keys(custom.muscles).length === 0}
-            <p class="m-0 max-w-[60ch] text-text-muted">Scegli i muscoli: finché sono vuoti, le serie finiscono in «Senza muscoli» in Progressi.</p>
+        {#if details && hasDetails(details)}
+          {#if details.description}<p class="m-0 max-w-[60ch]">{details.description}</p>{/if}
+          {#if details.steps.length}
+            <ol class="m-0 max-w-[60ch] pl-5">
+              {#each details.steps as step, i (i)}<li>{step}</li>{/each}
+            </ol>
           {/if}
-          <p class="hint m-0">Un tocco: conta {formatShare(MOST_RECRUITED)}. Due: {formatShare(RECRUITED)}. Tre: nessuna.</p>
-          <MuscleEditor muscles={custom.muscles} onchange={(m) => edit((a) => setCustomMuscles(a, exerciseId, m))} />
+          {#if details.caution}<p class="m-0 max-w-[60ch]">{details.caution}</p>{/if}
+          {#if safeSources(details).length}
+            <ul class="m-0 pl-5">
+              {#each safeSources(details) as source (source.url)}
+                <li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a></li>
+              {/each}
+            </ul>
+          {/if}
+        {:else}
+          <p class="m-0 max-w-[60ch] text-text-muted">{custom ? 'È un esercizio personalizzato: non ha un approfondimento.' : 'L’approfondimento di questo esercizio non è ancora disponibile.'}</p>
         {/if}
       </section>
+      </div>
     {/if}
   </div>
 {/if}
@@ -429,6 +519,10 @@
   />
 {/if}
 
+{#if custom}
+  <ExercisePicker bind:open={mergeOpen} title="Unisci in…" catalog={store.archive} mergeFrom={{ id: exerciseId, name, aliases: [], custom: true }} onpick={() => {}} onmerge={mergeHere} />
+{/if}
+
 <Toast message={toast?.message ?? null} action={toast?.action} onaction={toast?.onaction} onclose={() => (toast = null)} />
 
 <style>
@@ -457,6 +551,50 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+  }
+  /* tipi di informazione diversi uno sotto l'altro: un filo li separa (DESIGN.md, «La regola del filo») */
+  .panel-tab {
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-tab > :global(* + *) {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+  /* tab della pagina: come la tab bar, la scelta in inchiostro e grassetto con un filo di 2px sotto */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: -0.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .tab {
+    min-height: 48px;
+    padding: 0 0.75rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tab:hover {
+    color: var(--color-text);
+  }
+  .tab[aria-selected='true'] {
+    border-bottom-color: var(--color-text);
+    color: var(--color-text);
+    font-weight: 700;
+  }
+  .tab:focus-visible {
+    outline: 2px solid var(--color-accent-indicator);
+    outline-offset: -2px;
+  }
+  .info-link {
+    margin-left: -0.75rem;
   }
   .subtitle {
     margin: 0;

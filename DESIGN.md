@@ -390,6 +390,8 @@ Il ritmo usa pochi passi: 4px dentro i controlli composti (segmentato), 8px tra 
 
 **La regola dei 48.** Ogni controllo toccabile è alto almeno 48px; righe serie e voci della tab bar 56px; lastre del timer 64px.
 
+**La regola del filo.** Quando in verticale si susseguono tipi di informazione diversi (le serie per muscolo e l'elenco degli esercizi in Progressi; grafico, record e cronologia nella pagina dell'esercizio), tra l'uno e l'altro c'è un separatore: un filo `border` di 1px con 24px sopra e sotto. Dentro lo stesso tipo di informazione (le righe di un elenco) il filo resta quello delle righe.
+
 ## Elevation & Depth
 
 Il sistema è piatto. La profondità viene dal tono: fondo e superficie sono due gradini della stessa rampa neutra, e il guscio sta su `surface` come le card, staccato dal contenuto da un filo `border`. I pannelli non hanno bordo né ombra e non si annidano mai. Fogli e conferme si staccano con il fondale nero al 60% e un bordo decorativo `border`. Il timer a tutto schermo copre la pagina con `bg`.
@@ -476,6 +478,7 @@ La schermata dove si passa più tempo: una colonna di pannelli, uno per blocco (
 ### Navigation
 - **Intestazione:** guscio appiccicato in alto, alta 64px, filo inferiore `border`; titolo compatto troncato su una riga, riga di stato in `text-muted` a 14px, a destra azioni facoltative, l'icona Informazioni (`circle-question-mark`, verso `/info`) e quella delle Impostazioni (`settings`, l'ingranaggio), da 48px.
 - **Mini-barra dell'allenamento:** sulle altre pagine (non sull'allenamento; su Oggi solo con un recupero in corso), sopra la tab bar: guscio alto 56px con filo `border`, icona `circle-play` in `accent-text`, nome della sessione (650) e "da 25 min · esercizio" in `text-muted`, "Riprendi" in `accent-text` con la freccia. Tutta la barra è un link all'allenamento; resta ferma tra le pagine (`transition:persist`). Con un recupero in corso diventa il timer ridotto, con a destra una freccia da 56px (separata da un filo `border`) che torna all'allenamento.
+- **Tab della pagina** (pagina dell'esercizio: Progressi, Info): due schede uguali a tutta larghezza alte 48px sopra un filo `border`; a riposo `text-muted` peso 600, la scelta in `text` e grassetto con un filo di 2px in `text` sotto, come la voce attiva della tab bar. Sono `role="tab"` con le frecce sinistra e destra; la scelta sta nell'URL (`&tab=info`).
 - **Tab bar:** guscio in basso con filo superiore `border`, cinque voci uguali (Oggi, Calendario, Schede, Storico, Progressi) alte 56px, etichette intere anche a 320px, icona da 22px sopra l'etichetta a 12px. A riposo `text-muted`, al passaggio `text`; la voce attiva è in `text` e in grassetto, con l'icona piena (Progressi, una linea senza sagoma: tratto più spesso) e un indicatore di 2px in `text` sul bordo superiore, e `aria-current="page"`.
 
 ### Barra di salvataggio

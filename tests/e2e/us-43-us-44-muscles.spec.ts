@@ -17,7 +17,7 @@ const routine = (id: string, archived: boolean): Routine => ({
 test.describe('US-43 muscoli di un esercizio', () => {
   test('US-43 in un personalizzato i tocchi girano nessuna serie, 1 serie, 0,5 serie e lo stato resta dopo un ricaricamento', async ({ page }) => {
     await seedArchive(page, archiveWith({ catalog: { 'custom-crunch': { id: 'custom-crunch', name: 'Crunch', muscles: {}, variantOf: null } } }));
-    await page.goto('exercise/?id=custom-crunch');
+    await page.goto('exercise/?id=custom-crunch&tab=info');
     await expect(page.getByText('Scegli i muscoli: finché sono vuoti')).toBeVisible();
 
     await page.getByRole('button', { name: 'Addominali, nessuna serie' }).click();
@@ -39,7 +39,7 @@ test.describe('US-43 muscoli di un esercizio', () => {
 
   test('US-43 un esercizio di catalogo mostra i muscoli in sola lettura, anche senza storico', async ({ page }) => {
     await seedArchive(page, archiveWith());
-    await page.goto('exercise/?id=squat-bilanciere');
+    await page.goto('exercise/?id=squat-bilanciere&tab=info');
     const section = page.getByRole('region', { name: 'Muscoli' });
     await expect(section).toContainText('Quadricipiti: 1 serie');
     await expect(section).toContainText('Adduttori: 1 serie');
@@ -52,7 +52,7 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
   test('US-44 «Personalizza i muscoli» crea la variante, che sostituisce l’originale nella scheda attiva, e si annulla', async ({ page }) => {
     const archive = archiveWith({ routines: [routine('attiva', false), routine('archiviata', true)] });
     await seedArchive(page, archive);
-    await page.goto('exercise/?id=squat-bilanciere');
+    await page.goto('exercise/?id=squat-bilanciere&tab=info');
 
     await page.getByRole('button', { name: 'Personalizza i muscoli' }).click();
     await expect(sheet(page).getByLabel('Nome del nuovo esercizio')).toHaveValue('Squat bilanciere (personalizzato)');
@@ -61,7 +61,7 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
 
     // la pagina della variante, con l'avviso e il parametro già tolto
     await expectPage(page, 'exercise/');
-    await expect(page).toHaveURL(/id=custom-squat-bilanciere-personalizzato$/);
+    await expect(page).toHaveURL(/id=custom-squat-bilanciere-personalizzato&tab=info$/);
     await expect(page.getByRole('heading', { name: 'Squat bilanciere (personalizzato)' })).toBeVisible();
     const toast = page.getByRole('status').filter({ hasText: 'Creato «Squat bilanciere (personalizzato)», sostituito in 1 scheda.' });
     await expect(toast).toBeVisible();
@@ -72,7 +72,7 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
 
     // «Annulla» torna all'originale con la scheda com'era
     await toast.getByRole('button', { name: 'Annulla' }).click();
-    await expect(page).toHaveURL(/id=squat-bilanciere$/);
+    await expect(page).toHaveURL(/id=squat-bilanciere&tab=info$/);
     await expect(page.getByRole('heading', { name: 'Squat bilanciere', exact: true })).toBeVisible();
     const undone = (await storedArchive(page))!;
     expect(undone.routines).toEqual(archive.routines);
@@ -81,7 +81,7 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
 
   test('US-44 «Basata su Squat bilanciere» porta all’originale; un nome già usato dà errore nel foglio', async ({ page }) => {
     await seedArchive(page, archiveWith({ routines: [routine('attiva', false)] }));
-    await page.goto('exercise/?id=squat-bilanciere');
+    await page.goto('exercise/?id=squat-bilanciere&tab=info');
     await page.getByRole('button', { name: 'Personalizza i muscoli' }).click();
     await sheet(page).getByLabel('Nome del nuovo esercizio').fill('Pressa');
     await sheet(page).getByRole('button', { name: 'Crea' }).click();
@@ -91,9 +91,9 @@ test.describe('US-44 variante di un esercizio di catalogo', () => {
 
     await expect(page.getByRole('heading', { name: 'Squat mio' })).toBeVisible();
     await page.getByRole('link', { name: 'Basata su Squat bilanciere' }).click();
-    await expect(page).toHaveURL(/id=squat-bilanciere$/);
+    await expect(page).toHaveURL(/id=squat-bilanciere&tab=info$/);
     // dopo un ricaricamento della variante l'avviso non torna
-    await page.goto('exercise/?id=custom-squat-mio');
+    await page.goto('exercise/?id=custom-squat-mio&tab=info');
     await expect(page.getByRole('status').filter({ hasText: 'Creato' })).toHaveCount(0);
   });
 });

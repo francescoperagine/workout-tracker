@@ -87,7 +87,8 @@ test.describe('US-45 serie per muscolo', () => {
     await expect(section(page)).toContainText('Senza muscoli: 3 serie');
     await section(page).getByRole('link', { name: 'Crunch' }).click();
     await expectPage(page, 'exercise/');
-    await expect(page).toHaveURL(/id=custom-crunch$/);
+    await expect(page).toHaveURL(/id=custom-crunch&tab=info$/);
+    await expect(page.getByRole('tab', { name: 'Info' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByRole('heading', { name: 'Crunch' })).toBeVisible();
   });
 

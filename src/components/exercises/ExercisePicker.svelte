@@ -36,9 +36,11 @@
     onpick: (picked: PickedExercise) => void;
     /** unisce un personalizzato a un altro esercizio; true se l'unione è stata salvata */
     onmerge?: (absorbedId: string, intoId: string) => boolean;
+    /** il foglio si apre già nella scelta della destinazione di questo personalizzato (pagina dell'esercizio) */
+    mergeFrom?: CatalogEntry;
   }
 
-  let { open = $bindable(false), title, catalog, exclude = [], onpick, onmerge }: Props = $props();
+  let { open = $bindable(false), title, catalog, exclude = [], onpick, onmerge, mergeFrom }: Props = $props();
 
   let query = $state('');
   const searchId = `exercise-search-${Math.random().toString(36).slice(2, 8)}`;
@@ -55,7 +57,7 @@
   $effect(() => {
     if (open) {
       query = '';
-      merging = null;
+      merging = mergeFrom ?? null;
       merged = '';
     }
   });
@@ -133,7 +135,9 @@
   {#if merging}
     <div class="merge-intro" bind:this={intro}>
       <p class="m-0">Scegli l’esercizio che resta: allenamenti e schede con «{merging.name}» passano a quello, e «{merging.name}» sparisce dal catalogo.</p>
-      <button type="button" class="btn btn-text" bind:this={backButton} onclick={stopMerge}><ArrowLeft size={20} aria-hidden="true" />Torna al catalogo</button>
+      {#if !mergeFrom}
+        <button type="button" class="btn btn-text" bind:this={backButton} onclick={stopMerge}><ArrowLeft size={20} aria-hidden="true" />Torna al catalogo</button>
+      {/if}
     </div>
   {/if}
   <div class="search">
