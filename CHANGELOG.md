@@ -3,6 +3,31 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-039
+
+Date: 2026-11-11
+
+Summary:
+**Impostazioni più compatte, reset in fondo.** Tema, peso, distanza e recupero predefinito sono righe con l'etichetta
+a sinistra e il controllo a destra (variante `inline` di `SegmentedControl` e `Stepper`), senza le spiegazioni su
+Sistema, kg/lb e m/ft. «App sul telefono» diventa «Installa sul telefono» e viene prima del reset; «Cancella tutto il
+diario» diventa «Resetta lo storico», ultima voce, con una conferma che elenca cosa si perde (storico con progressi e
+record, schede, esercizi personalizzati, pianificazione). Il comportamento del reset non cambia: le impostazioni
+restano, «Annulla» dal toast. In Storico «Record» / «Record in N esercizi» va sempre su una riga sua.
+
+Deliverables:
+- `src/components/ui/SegmentedControl.svelte`, `src/components/ui/Stepper.svelte`: prop `inline`; esempi in `/kit`
+  (`KitTheme`, `KitControls`); `DESIGN.md` descrive le due varianti.
+- `src/components/settings/ResetSection.svelte` (nuovo, logica spostata da `DataSection.svelte`), `SettingsPage.svelte`,
+  `InstallSection.svelte`; brief `.impeccable/surfaces/route-settings.md` aggiornato.
+- `src/components/history/HistoryPage.svelte`: riga dei record separata dai dati della sessione.
+- e2e: US-32 sui nuovi testi, US-31 senza la nota sulle distanze.
+- A 320px il recupero predefinito non sta su una riga: i controlli scendono sotto, allineati a destra.
+
+ADR: nessuna (meccanico, richieste di Francesco in `docs/todo.md`). Gate: `npm run check` 0, `npm test` 0,
+`npm run build` 0, `npm run docs:check` 0, `npm run test:e2e` 0 (397), `WT_BASE=/workout-tracker/ npm run test:e2e` 0
+(397; un primo giro 1 su US-51, sagoma, instabile e fuori ambito: Esc e Invio in fila sul foglio che si chiude).
+
 ## INC-038
 
 Date: 2026-11-11

@@ -18,4 +18,4 @@
   });
 </script>
 
-<SegmentedControl name="theme" label="Tema" {options} bind:value={theme} onchange={(t) => saveTheme(t)} />
+<SegmentedControl name="theme" label="Tema" inline {options} bind:value={theme} onchange={(t) => saveTheme(t)} />

@@ -22,7 +22,7 @@
 </script>
 
 <section aria-labelledby="s-app" class="flex flex-col gap-3">
-  <h2 id="s-app" class="section-title">App sul telefono</h2>
+  <h2 id="s-app" class="section-title">Installa sul telefono</h2>
   <div class="panel flex flex-col gap-3">
     {#if installed}
       <p class="m-0">Workout Tracker è installata su questo dispositivo e funziona anche senza rete.</p>

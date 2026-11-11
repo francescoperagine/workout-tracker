@@ -1,17 +1,15 @@
 <script lang="ts">
   // Dati e privacy (US-32, US-33, US-02, US-03): dove sono i dati, backup ed esportazione, importazione
-  // (v2 e PoC), recupero di un archivio illeggibile, cancellazione con conferma forte e annullamento.
+  // (v2 e PoC), recupero di un archivio illeggibile. Il reset dello storico è in ResetSection, in fondo alla pagina.
   // Testi semplici: niente "localStorage" né "origin" senza spiegazione (brief route-settings).
   import { onMount } from 'svelte';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import Download from '@lucide/svelte/icons/download';
   import Info from '@lucide/svelte/icons/info';
   import Upload from '@lucide/svelte/icons/upload';
-  import Trash from '@lucide/svelte/icons/trash';
   import ImportFlow from '../data/ImportFlow.svelte';
-  import ConfirmDialog from '../ui/ConfirmDialog.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
-  import { backupFileName, emptyArchive, exportArchive, type Archive } from '../../lib/archive';
+  import { backupFileName, exportArchive } from '../../lib/archive';
   import { downloadText, isIos, isStandalone, readLastBackup, saveLastBackup } from '../../lib/device';
   import { formatTimestamp, plural } from '../../lib/format';
 
@@ -33,7 +31,6 @@
   let lastBackup: number | null = $state(readLastBackup());
   let persisted: boolean | null = $state(null);
   let showIosWarning = $state(false);
-  let confirmClear = $state(false);
   let importFlow: ImportFlow;
 
   onMount(() => {
@@ -54,27 +51,6 @@
     if (store.repo.originalContent === null) return;
     downloadText(store.repo.originalContent, `workout-tracker-illeggibile-${backupFileName().slice('workout-tracker-'.length)}`);
   }
-
-  function clearAll() {
-    const previous: Archive = store.archive;
-    // Le impostazioni restano: si cancella il diario, non le preferenze
-    const result = store.repo.replace({ ...emptyArchive(), settings: { ...previous.settings }, revision: previous.revision });
-    if (!result.ok && result.state !== 'unsaved') {
-      notify('Cancellazione non riuscita: il diario non è disponibile.');
-      return;
-    }
-    notify('Diario cancellato da questo dispositivo.', 'Annulla', () => {
-      store.repo.replace(previous);
-    });
-  }
-
-  const clearText = $derived(
-    `Elimini da questo dispositivo ${[
-      plural(counts.sessions, 'allenamento', 'allenamenti'),
-      plural(counts.routines, 'scheda', 'schede'),
-      plural(counts.custom, 'esercizio personalizzato', 'esercizi personalizzati'),
-    ].join(', ')} e la pianificazione della settimana. Le impostazioni restano. Se non hai un backup, esportalo prima.`,
-  );
 </script>
 
 <section id="data" aria-labelledby="s-data" class="flex scroll-mt-24 flex-col gap-3">
@@ -142,19 +118,9 @@
       dalla versione precedente dell’app.
     </p>
   </div>
-
-  <div class="panel flex flex-col gap-3">
-    <h3 class="subhead">Cancella il diario</h3>
-    <p class="m-0 text-text-muted">Elimina allenamenti, schede e pianificazione da questo dispositivo. Le impostazioni restano.</p>
-    <button type="button" class="btn btn-danger self-start" disabled={isEmpty || store.state !== 'saved'} onclick={() => (confirmClear = true)}>
-      <Trash aria-hidden="true" />Cancella tutto il diario
-    </button>
-  </div>
 </section>
 
 <ImportFlow bind:this={importFlow} ondone={() => notify('Backup importato.')} />
-
-<ConfirmDialog bind:open={confirmClear} title="Cancellare tutto il diario?" text={clearText} confirmLabel="Cancella tutto" onconfirm={clearAll} />
 
 <style>
   p {

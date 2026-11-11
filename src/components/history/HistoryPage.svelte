@@ -81,13 +81,13 @@
                 <a href={sessionHref(row.session.id)} class="row">
                   <span class="min-w-0 flex-1">
                     <span class="block text-lg font-bold [overflow-wrap:anywhere]">{row.session.name}</span>
-                    <span class="block text-sm text-text-muted">
-                      {row.meta}
-                      {#if row.records}
-                        · <Trophy size={16} class="inline align-text-bottom text-text" aria-hidden="true" />
+                    <span class="block text-sm text-text-muted">{row.meta}</span>
+                    {#if row.records}
+                      <span class="block text-sm text-text-muted">
+                        <Trophy size={16} class="inline align-text-bottom text-text" aria-hidden="true" />
                         {row.records === 1 ? 'Record' : `Record in ${row.records} esercizi`}
-                      {/if}
-                    </span>
+                      </span>
+                    {/if}
                   </span>
                   <ChevronRight size={20} class="shrink-0 text-text-muted" aria-hidden="true" />
                 </a>

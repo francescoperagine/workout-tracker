@@ -25,6 +25,7 @@
 <div class="panel flex flex-col gap-4">
   <Stepper
     label="Recupero predefinito"
+    inline
     hint="Si usa per gli esercizi che nella scheda non hanno un recupero."
     bind:value={rest}
     min={15}

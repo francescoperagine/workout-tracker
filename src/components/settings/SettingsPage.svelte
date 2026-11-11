@@ -9,6 +9,7 @@
   import Toast from '../ui/Toast.svelte';
   import DataSection from './DataSection.svelte';
   import InstallSection from './InstallSection.svelte';
+  import ResetSection from './ResetSection.svelte';
   import { archiveStore } from '../../lib/archive-store.svelte';
   import { LIMITS, type DistanceUnit, type Settings, type WeightUnit } from '../../lib/archive';
   import { THEME_LABELS, THEMES, readTheme, saveTheme, type Theme } from '../../lib/theme';
@@ -69,23 +70,14 @@
 <div class="flex flex-col gap-10">
   <section aria-labelledby="s-look" class="flex flex-col gap-3">
     <h2 id="s-look" class="section-title">Aspetto</h2>
-    <div class="flex flex-col gap-2">
-      <SegmentedControl name="theme" label="Tema" options={themeOptions} bind:value={theme} onchange={(t) => saveTheme(t)} />
-      <p class="hint mt-0">Sistema segue l’impostazione chiaro/scuro del telefono. La scelta vale per questo dispositivo.</p>
-    </div>
+    <SegmentedControl name="theme" label="Tema" inline options={themeOptions} bind:value={theme} onchange={(t) => saveTheme(t)} />
   </section>
 
   <section aria-labelledby="s-units" class="flex flex-col gap-3">
     <h2 id="s-units" class="section-title">Unità di misura</h2>
-    <div class="flex flex-col gap-5">
-      <div class="flex flex-col gap-2">
-        <SegmentedControl name="weight-unit" label="Peso" options={weightOptions} bind:value={weightUnit} onchange={(u) => saveSetting('weightUnit', u)} />
-        <p class="hint mt-0">Cambiare unità non modifica i dati salvati: cambia solo come vengono mostrati.</p>
-      </div>
-      <div class="flex flex-col gap-2">
-        <SegmentedControl name="distance-unit" label="Distanza" options={distanceOptions} bind:value={distanceUnit} onchange={(u) => saveSetting('distanceUnit', u)} />
-        <p class="hint mt-0">Per ora nessuna schermata mostra distanze: servirà per gli esercizi a distanza, come la camminata con carico.</p>
-      </div>
+    <div class="flex flex-col gap-3">
+      <SegmentedControl name="weight-unit" label="Peso" inline options={weightOptions} bind:value={weightUnit} onchange={(u) => saveSetting('weightUnit', u)} />
+      <SegmentedControl name="distance-unit" label="Distanza" inline options={distanceOptions} bind:value={distanceUnit} onchange={(u) => saveSetting('distanceUnit', u)} />
     </div>
   </section>
 
@@ -94,6 +86,7 @@
     <div class="flex flex-col gap-4">
       <Stepper
         label="Recupero predefinito"
+        inline
         hint="Si usa per gli esercizi che nella scheda non hanno un recupero."
         bind:value={defaultRest}
         min={15}
@@ -148,6 +141,8 @@
   <DataSection {notify} />
 
   <InstallSection />
+
+  <ResetSection {notify} />
 </div>
 
 <Toast message={toast?.message ?? null} action={toast?.action} onaction={toast?.onaction} onclose={() => (toast = null)} />

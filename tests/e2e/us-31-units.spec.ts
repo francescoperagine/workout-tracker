@@ -19,10 +19,9 @@ test.describe('US-31 unità di misura', () => {
     expect((await storedArchive(page))?.sessions[0].exercises[0].sets[0].kg).toBe(61.25);
   });
 
-  test('US-31 la distanza si sceglie in m o ft, con la nota che oggi non si usa', async ({ page }) => {
+  test('US-31 la distanza si sceglie in m o ft', async ({ page }) => {
     await seedArchive(page, archiveWith());
     await page.goto('settings/');
-    await expect(page.getByText('Per ora nessuna schermata mostra distanze')).toBeVisible();
     await page.getByRole('radio', { name: 'ft' }).check();
     await expect.poll(async () => (await storedArchive(page))?.settings.distanceUnit).toBe('ft');
     await page.reload();

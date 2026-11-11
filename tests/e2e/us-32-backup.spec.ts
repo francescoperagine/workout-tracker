@@ -72,13 +72,13 @@ test.describe('US-32 backup', () => {
     expect((await storedArchive(page))?.sessions.map((s) => s.id)).toEqual(['s1']);
   });
 
-  test('US-32 cancellare tutto chiede una conferma precisa e si può annullare', async ({ page }) => {
+  test('US-32 resettare lo storico chiede una conferma precisa e si può annullare', async ({ page }) => {
     await seedArchive(page, archiveWith({ sessions: [session('s1', '2026-10-01'), session('s2', '2026-10-02')], settings: { weightUnit: 'lb', distanceUnit: 'm', defaultRest: 90, sound: true, vibration: true } }));
     await page.goto('settings/');
-    await page.getByRole('button', { name: 'Cancella tutto il diario' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Cancellare tutto il diario?' });
-    await expect(dialog).toContainText('2 allenamenti, 0 schede, 0 esercizi personalizzati');
-    await dialog.getByRole('button', { name: 'Cancella tutto' }).click();
+    await page.getByRole('button', { name: 'Resetta lo storico' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Resettare lo storico?' });
+    await expect(dialog).toContainText('lo storico di 2 allenamenti con i progressi e i record, 0 schede, 0 esercizi personalizzati');
+    await dialog.getByRole('button', { name: 'Resetta lo storico' }).click();
     await expect.poll(async () => (await storedArchive(page))?.sessions.length).toBe(0);
     expect((await storedArchive(page))?.settings.weightUnit).toBe('lb');
     await expect(page.getByTestId('archive-summary')).toContainText('Il diario è vuoto.');

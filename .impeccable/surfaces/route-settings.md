@@ -18,9 +18,9 @@ L'utente ci viene di rado: per cambiare tema o unità, fare un backup, importare
 ## Outcome and proof
 
 - Aspetto: tema Sistema/Chiaro/Scuro, applicato prima del primo disegno.
-- Unità: peso kg/lb, distanza m/ft (con la nota che oggi nessuna schermata usa distanze).
+- Unità: peso kg/lb, distanza m/ft. Tema e unità sono righe con l'etichetta a sinistra e il segmentato a destra, senza spiegazioni: si spiegano da sé.
 - Allenamento: recupero predefinito, suono, vibrazione (dove supportata), con la spiegazione che gli avvisi funzionano solo con l'app aperta.
-- Dati e privacy: dove sono i dati, ultimo backup, "Esporta backup", "Importa" (anteprima con numero di allenamenti e periodo, scelta "mantieni" o "sostituisci" per gli elementi già presenti, riepilogo con gli scartati e il motivo), import del PoC, cancellazione di tutto con conferma forte, avviso iOS sui 7 giorni, invito all'installazione.
+- Dati e privacy: dove sono i dati, ultimo backup, "Esporta backup", "Importa" (anteprima con numero di allenamenti e periodo, scelta "mantieni" o "sostituisci" per gli elementi già presenti, riepilogo con gli scartati e il motivo), import del PoC, avviso iOS sui 7 giorni, invito all'installazione («Installa sul telefono»); in fondo alla pagina «Resetta lo storico», con una conferma che dice cosa si perde.
 
 ## Selected direction
 

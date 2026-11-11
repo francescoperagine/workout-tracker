@@ -2,6 +2,7 @@
   // Valore numerico cambiato a passi con due pulsanti da 48px, senza tastiera (P2): il recupero
   // "1:30" non si scrive comodamente col tastierino numerico, che non ha i due punti.
   // Il valore corrente è annunciato con cortesia a ogni cambio.
+  // `inline`: etichetta a sinistra, poi valore, − e + a destra sulla stessa riga (Impostazioni).
   interface Props {
     label: string;
     hint?: string;
@@ -16,10 +17,11 @@
     /** testo dei pulsanti: "−15 s", "+15 s" */
     decrementLabel: string;
     incrementLabel: string;
+    inline?: boolean;
     onchange?: (value: number) => void;
   }
 
-  let { label, hint, value = $bindable(), min, max, step, format, speak, decrementLabel, incrementLabel, onchange }: Props = $props();
+  let { label, hint, value = $bindable(), min, max, step, format, speak, decrementLabel, incrementLabel, inline = false, onchange }: Props = $props();
   const id = `stepper-${Math.random().toString(36).slice(2, 8)}`;
 
   function change(delta: number) {
@@ -30,7 +32,7 @@
   }
 </script>
 
-<div class="stepper" role="group" aria-labelledby={id} aria-describedby={hint ? `${id}-hint` : undefined}>
+<div class="stepper" class:inline role="group" aria-labelledby={id} aria-describedby={hint ? `${id}-hint` : undefined}>
   <span class="label" {id}>{label}</span>
   <div class="controls">
     <button type="button" class="btn btn-secondary" disabled={value <= min} aria-label={`${label}: ${decrementLabel}`} onclick={() => change(-step)}>
@@ -53,5 +55,36 @@
   }
   .value {
     text-align: center;
+  }
+  /* in linea: l'etichetta va a capo prima che i controlli scendano su una riga nuova */
+  .inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  .inline .label {
+    color: var(--color-text);
+    font-size: var(--text-base);
+    flex: 1 1 0;
+    margin: 0;
+    font-weight: 600;
+  }
+  .inline .controls {
+    display: flex;
+    margin-left: auto;
+    gap: 0.75rem;
+  }
+  /* il valore prima dei pulsanti solo a vista: nel DOM resta in mezzo, l'ordine di tabulazione non cambia */
+  .inline .value {
+    order: -1;
+    min-width: 3rem;
+  }
+  .inline .btn {
+    padding: 0 0.5rem;
+  }
+  .inline .hint {
+    flex-basis: 100%;
+    margin: 0;
   }
 </style>
