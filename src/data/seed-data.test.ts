@@ -72,6 +72,16 @@ describe('catalogo di base', () => {
     for (const [id, muscles] of rows) expect(BASE_CATALOG[id].muscles, id).toEqual(muscles);
   });
 
+  // Gerarchia delle fonti (ADR-014): dove uno studio confermato misura un muscolo, vince sul libro.
+  it('muscoli: le righe in cui uno studio confermato corregge il libro', () => {
+    const rows: [string, Record<string, number>][] = [
+      ['panca-piana-bilanciere', { chest: 1, 'front-delts': 1, triceps: 0.5 }], // tricipiti: Ogasawara 2011-2013, Lanza 2024
+      ['squat-bilanciere', { quads: 1, glutes: 1, adductors: 1, 'lower-back': 1, abs: 1 }], // femorali: Kubo 2019, Plotkin 2023
+      ['squat-al-smith', { quads: 1, glutes: 1, adductors: 1, 'lower-back': 1, abs: 1 }],
+    ];
+    for (const [id, muscles] of rows) expect(BASE_CATALOG[id].muscles, id).toEqual(muscles);
+  });
+
   it('le schede iniziali usano solo esercizi del catalogo', () => {
     for (const routine of STARTER_ROUTINES) {
       for (const item of routine.exercises) {

@@ -362,9 +362,9 @@ test.describe('US-28 i progressi di un esercizio', () => {
     await seedArchive(page, { ...archive, settings: { ...archive.settings, weightUnit: 'lb' } });
     await page.goto('exercise/?id=squat-bilanciere');
 
-    await expect(record(page, 'Carico massimo')).toContainText('132,5 lb × 8');
-    await expect(readout(page)).toContainText('132,5 lb');
-    await expect(chronology(page).nth(0)).toContainText('132,5 × 8');
+    await expect(record(page, 'Carico massimo')).toContainText('132,28 lb × 8');
+    await expect(readout(page)).toContainText('132,28 lb');
+    await expect(chronology(page).nth(0)).toContainText('132,28 × 8');
   });
 
   test('US-28 con solo riscaldamento niente grafico, e la pagina lo spiega', async ({ page }) => {

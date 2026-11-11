@@ -1,7 +1,7 @@
 # ADR-014 — Muscoli con il valore di una serie, letti sul Delavier
 
 Status: Accepted
-Increment: INC-029
+Increment: INC-029, INC-035
 
 ## Context
 
@@ -32,6 +32,18 @@ il testo, il colore e la sagoma si possono ricavare direttamente dalla quota.
    alto. Nessuna mappatura per deduzione: ciò che le regole non decidono va a Francesco con una proposta.
 4. **Gruppi nuovi:** brachiale, flessori dell'anca, popliteo. Muscoli del libro → gruppi: tabella della SPEC
    (delavier-catalog, §4).
+5. **Gerarchia delle fonti** (Francesco, 11/11/2026, INC-035), per tutto il catalogo:
+   1. *studi verificati e confermati*: verificato = rivista con revisione, letto nel testo, non ritrattato, crescita
+      misurata con risonanza, TAC o ecografia dopo un allenamento; confermato = stesso risultato da almeno due gruppi
+      indipendenti, o da una revisione sistematica o meta-analisi. Per i muscoli che hanno misurato vincono sul libro;
+   2. *il libro*: quali muscoli lavorano, non quanto crescono; cede solo a uno studio confermato più recente; le
+      contraddizioni tra sue pagine si segnalano nel commento della riga;
+   3. *studi singoli, competitor, logica*: valgono solo dove il libro tace (es. hip thrust), segnati come tali.
+   Oggi due righe cambiano per uno studio confermato: tricipiti 0,5 nella panca piana (Ogasawara 2011-2013 e Lanza
+   2024) e femorali 0 nello squat (Kubo 2019 e Plotkin 2023). La classificazione di ogni studio è nella mappa
+   (`docs/archive/features/INC-027_muscle-volume-research/mappa-43.md`, «Gerarchia delle fonti»).
+- Alternative scartate per la gerarchia: il libro sempre (contraddetto sulla crescita da studi replicati); lo studio
+  sempre (uno studio singolo su pochi non allenati, come Kinoshita 2026 sulla leg press, cambierebbe il catalogo da solo).
 - Alternative scartate: due livelli con un'etichetta (un concetto in più, nessuna informazione in più); restare agli
   studi di crescita (coprono 12 esercizi, il catalogo nuovo ne ha centinaia); EMG (non predice la crescita, Vigotsky
   et al. 2022).

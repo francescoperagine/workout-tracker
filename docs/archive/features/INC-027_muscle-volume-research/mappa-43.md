@@ -47,6 +47,36 @@ Gruppi di SPEC §3. Regola di SPEC D4. Conteggio di SPEC D2 (principale 1, secon
 | Larsen 2025 | Larsen S, Wolf M, Schoenfeld BJ et al. *Front Physiol* 16:1611468. DOI 10.3389/fphys.2025.1611468 | Alzate laterali con manubrio contro cavo, 8 settimane, 24 allenati, ecografia | Deltoide laterale +3,3-4,6%, nessuna differenza tra manubrio e cavo |
 | Maeo 2023 | Maeo S et al. *Eur J Sport Sci* 23(7):1240-1250. DOI 10.1080/17461391.2022.2100279 | Estensioni del gomito al cavo, braccio sopra la testa contro braccio lungo il corpo, 12 settimane, 21 adulti, risonanza | Tricipite intero +19,9% sopra la testa, +13,9% lungo il corpo |
 
+## Gerarchia delle fonti: classificazione degli studi (11 novembre 2026, INC-035)
+
+Regola: ADR-014, punto 5 (SPEC delavier-catalog, §1). La mappa sopra è del 10 novembre e segue la regola di ADR-011,
+superata: per il catalogo valgono ora il libro e questa classificazione. Ritrattazioni controllate su Europe PMC l'11
+novembre: nessuna. «Testo»: *completo* = letto nel testo dello studio (Europe PMC, accesso libero); *abstract* = il
+testo è a pagamento, letto l'abstract su Europe PMC; per questi il requisito «letto nel testo» resta da completare.
+
+| Studio | Risultato che serve al catalogo | Classe | Motivo | Testo |
+| --- | --- | --- | --- | --- |
+| Kubo 2019 | Squat: quadricipiti (vasti), adduttori e grande gluteo crescono; femorali e retto femorale no | **confermato** | Plotkin 2023 (Auburn, gruppo indipendente) trova femorali senza crescita e quadricipiti, adduttori e glutei che crescono con lo squat, e cita Kubo | abstract; il risultato è riportato nel testo completo di Plotkin |
+| Plotkin 2023 | Squat: come Kubo 2019 | **confermato** | con Kubo 2019 (Tokyo, indipendente) | completo |
+| Plotkin 2023 | Hip thrust: glutei come lo squat, quadricipiti, adduttori e femorali poco o nulla | singolo | nessun altro studio con immagini sull'hip thrust rivisto da una rivista (Kassiano 2023 è un preprint) | completo |
+| Kinoshita 2026 | Leg press: grande gluteo +15,4%, grande adduttore, vasti; retto femorale e femorali no | singolo | unico studio con risonanza sulla leg press che misura glutei e femorali; non scavalca il libro (P18) | completo |
+| Kinoshita 2026 | Leg extension: tutto il quadricipite, niente glutei né adduttori | singolo (conferma non cercata) | il libro dice lo stesso (p. 138): nessuna riga dipende dallo studio | completo |
+| Morin 2025 | Stacco a gambe tese: femorali +7% | singolo | il libro dice lo stesso (p. 102) | abstract |
+| Bourne 2017 | Estensione dell'anca a 45°: bicipite femorale capo lungo e semitendinoso crescono | singolo | non scavalca il libro (p. 112: femorali 0,5); usato solo come analogia nel pull-through | abstract e manoscritto accettato (INC-027) |
+| Ogasawara 2011, 2012, 2013 (con Yasuda, Abe) | Panca piana: crescono grande pettorale e tricipite, il tricipite meno | **confermato** | stesso gruppo per i tre studi (2011: DOI 10.1111/j.1475-097x.2011.01031.x, risonanza; 2012: DOI 10.1556/imas.4.2012.4.7, ecografia); indipendenti: Lanza et al. 2024 (*J Bodyw Mov Ther* 40:1417-1422, DOI 10.1016/j.jbmt.2024.07.054; Belo Horizonte e Maryland, nessun autore in comune; risonanza, 10 settimane: il pettorale cresce più del tricipite) e Kikuchi e Nakazato 2017 (*J Exerc Sci Fit*, DOI 10.1016/j.jesf.2017.06.003; ecografia) | abstract (Ogasawara, Lanza); completo (Kikuchi) |
+| Lanza 2024 | Panca piana: anche il deltoide anteriore cresce | singolo | il libro dice lo stesso (p. 64, deltoide anteriore 1) | abstract |
+| Chaves 2020 | Panca inclinata: cresce di più il fascio alto del pettorale | singolo | riguarda una parte del petto, che è un gruppo solo: nessuna riga dipende dallo studio | abstract |
+| Gentil 2015 | Lat machine: flessori del gomito +6,1%, come con il curl | singolo | Mannarino 2021 (gruppo diverso) misura il rematore, un altro esercizio, con un risultato diverso (metà del curl); il libro dà già i bicipiti (p. 90) | completo |
+| Mannarino 2021 | Rematore con manubrio: flessori del gomito +5,2%, contro +11,1% del curl | singolo | come sopra; il libro dà già i bicipiti nei rematori | abstract |
+| Larsen 2025 | Alzate laterali, manubrio e cavo: deltoide laterale +3,3-4,6% | singolo | il libro dice lo stesso (pp. 42, 52) | completo |
+| Maeo 2023 | Tricipite: sopra la testa +19,9%, lungo il corpo +13,9% | singolo | il libro dà tricipiti 1 a entrambi: nessuna riga dipende dallo studio | abstract |
+
+**Effetto sul catalogo:** due studi confermati smentiscono il libro e cambiano tre voci (panca piana e panca piana al
+Smith: tricipiti 0,5; squat e squat al Smith: femorali 0). Gli studi singoli non cambiano nulla dove il libro parla;
+dove tace (hip thrust bilanciere) valgono, e le analogie (hip thrust machine, pull-through, voci di P11) sono segnate
+come tali nel commento della riga. Le righe del libro che lo squat confermato potrebbe toccare per analogia (front
+squat p. 125 e squat a bilanciere basso p. 129 con i femorali) restano al libro: un'analogia non lo scavalca.
+
 **Studi cercati e non trovati** (ricerca su Europe PMC e sul web, 10 novembre): crescita con risonanza o ecografia per
 rematori (dorsali, trapezio, deltoidi posteriori), spinte sopra la testa (deltoidi), hip thrust alla macchina, pull-through.
 Per questi vale l'azione articolare. Gli studi trovati su questi esercizi sono di EMG (per esempio la rassegna sui dorsali

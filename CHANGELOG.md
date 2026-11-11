@@ -3,6 +3,72 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-037
+
+Date: 2026-11-11
+
+Summary:
+**Diario di Francesco ricorretto sull'export aggiornato.** Lo script di INC-031 (`docs/sources/delavier-catalog/`,
+fuori da git) rigira sull'export `docs/sources/workout-tracker-2026-11-11.json` che ora contiene la sessione dell'11
+novembre, con le stesse correzioni; anche la sessione di oggi passa per la conversione dei personalizzati (curl
+manubri → `curl-manubri`; lo stacco rumeno resta alternativa, ora di `stacco-da-terra`). Curl e lat machine del 5
+ottobre e rematore dell'8 restano esercizi previsti, non alternative. Il file da reimportare con «Sostituisci» è
+`docs/sources/workout-tracker-2026-11-11-corretto.json`.
+
+Deliverables:
+- Script: nuovi controlli (stesso numero di serie prima e dopo, 172; le tre voci sopra senza `alternativeOf`; riga di
+  resoconto per la sessione di oggi). Restano: validazione, nessun esercizio in «Senza muscoli», nessun personalizzato.
+
+ADR: nessuna (meccanico). Gate: nessun codice vivo toccato; script `npx jiti docs/sources/delavier-catalog/correggi-diario.ts` — exit 0.
+
+## INC-036
+
+Date: 2026-11-11
+
+Summary:
+**Pesi mostrati come sono scritti.** Niente più arrotondamento al quarto di chilo (o al mezzo in lb) in
+visualizzazione: un peso intero si legge intero, altrimenti con al massimo 2 decimali (41,3 resta 41,3; 41,25 resta
+41,25). In lb lo stesso formato si applica al valore convertito (60 kg → 132,28 lb). Il grafico dei progressi e il
+confronto «rispetto al…» usano lo stesso passo. La stima 1RM resta al mezzo chilo (`progress.ts`): è un calcolo, non
+un peso scritto.
+
+Deliverables:
+- `src/lib/units.ts` (`formatWeight`, `WEIGHT_STEP` = 0,01), `src/components/history/ExerciseProgress.svelte`.
+- Test: `src/lib/units.test.ts`; e2e US-12/US-31 e US-28 in lb con i valori nuovi (88,18 e 132,28 lb).
+- `.impeccable/surfaces/route-workout.md`.
+
+ADR: nessuna (meccanico). Gate: vedi INC-035 (stessa esecuzione).
+
+## INC-035
+
+Date: 2026-11-11
+
+Summary:
+**Gerarchia delle fonti e risposte di Francesco alle proposte di §5 (delavier-catalog).** Per tutto il catalogo:
+studi verificati e confermati, poi il libro, poi studi singoli, analogie e logica (SPEC §1, ADR-014 punto 5). Ogni
+studio della mappa di INC-027 è classificato confermato o singolo, con il motivo. Due studi confermati smentiscono il
+libro; tutte le altre proposte di §5 confermate come erano.
+
+Righe cambiate (prima → dopo):
+- Panca piana bilanciere, panca piana al Smith: tricipiti 0 → 0,5 (P7; Ogasawara 2011-2013 e Lanza 2024, gruppi
+  indipendenti: confermato).
+- Squat bilanciere, squat al Smith: femorali 1 → 0 (P17; Kubo 2019 e Plotkin 2023, confermato); quadricipiti, glutei,
+  adduttori, lombari e addominali restano 1 dal libro.
+- Chest press: deltoidi posteriori 0,5 → deltoidi anteriori 0,5 (P8).
+- Tensore della fascia lata: da Glutei a «non contato» nella tabella di §4. Nessun valore cambia: la lettura non lo
+  aveva contato nelle voci che lo nominano (sit-up e leg raise).
+- Solo commenti: «proposta §5 (Pn)» → «§5 (Pn)»; contraddizioni del libro segnalate (tirate al mento pp. 56 e 115;
+  stacco da terra, didascalia e figura); Kinoshita 2026 segnato come studio singolo sulla leg press; hip thrust
+  bilanciere «studio singolo, il libro tace»; le voci di P11 dicono l'analogia o la logica usata.
+
+Deliverables:
+- `src/data/catalog.ts`; `src/data/seed-data.test.ts` (le righe corrette dagli studi confermati).
+- `docs/archive/features/INC-034_delavier-catalog.md` (§1 gerarchia, stato, risposte in §5, tabella di §4);
+  `docs/adr/ADR-014-muscoli-con-valore-dal-delavier.md` (punto 5);
+  `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md` (sezione «Gerarchia delle fonti»).
+
+ADR: ADR-014 aggiornato (gerarchia delle fonti). Gate: (`npm run check` — exit 0; `npm test` — exit 0, 409 test; `npm run build` — exit 0; `npm run test:e2e` — exit 0, 397; `WT_BASE=/workout-tracker/ npm run test:e2e` — exit 1 al primo giro (log perso, probabile test instabile), exit 0 al secondo, 397; `npm run docs:check` — exit 0). Pesi in lb guardati a 320×568: nella colonna «Precedente» dell'allenamento «137,79 × 12» si tronca con i puntini (il valore intero resta nel nome accessibile).
+
 ## INC-034
 
 Date: 2026-11-11

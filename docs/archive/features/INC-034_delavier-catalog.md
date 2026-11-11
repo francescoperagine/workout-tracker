@@ -1,7 +1,7 @@
 # SPEC — delavier-catalog
 
-Stato: **chiusa con INC-034** (11/11/2026): incrementi 1–6 fatti (INC-029 … INC-034). Restano a Francesco le proposte di
-§5. Livello: Feature, 6 incrementi.
+Stato: **chiusa con INC-034** (11/11/2026): incrementi 1–6 fatti (INC-029 … INC-034). Le proposte di §5 hanno la
+risposta di Francesco, applicata con INC-035 insieme alla gerarchia delle fonti di §1. Livello: Feature, 6 incrementi.
 
 Obiettivo: catalogo preso dal Delavier (*Strength Training Anatomy*, 3ª ed.), muscoli con il valore di una serie al
 posto di principali/secondari, Progressi che diventa il catalogo, grafici con l'elenco sotto, sagoma del corpo,
@@ -9,6 +9,20 @@ diario di Francesco corretto da reimportare.
 
 ## 1. Fonte e metodo
 
+- **Gerarchia delle fonti** (Francesco, 11/11/2026; ADR-014, applicata con INC-035; vale per tutto il catalogo):
+  1. **Studi verificati e confermati.** *Verificato:* pubblicato su rivista con revisione, letto nel testo dello
+     studio (non in articoli divulgativi), non ritrattato, con una misura diretta della crescita (risonanza, TAC o
+     ecografia) dopo un periodo di allenamento. *Confermato:* lo stesso risultato da almeno due gruppi di ricerca
+     indipendenti, oppure da una revisione sistematica o meta-analisi. Per i muscoli che hanno misurato, gli studi
+     confermati vincono sul libro.
+  2. **Il libro** (*Strength Training Anatomy*, 3ª ed., 2010). Dice quali muscoli lavorano, non quanto crescono. Cede
+     dove uno studio confermato, più recente, lo smentisce. Le contraddizioni tra sue pagine si segnalano nel
+     commento della riga.
+  3. **Studi singoli, competitor, logica.** Uno studio singolo non scavalca il libro: vale solo dove il libro non dice
+     nulla (es. hip thrust). Analogie e logica si segnano come tali.
+
+  Classificazione degli studi: `docs/archive/features/INC-027_muscle-volume-research/mappa-43.md`, sezione
+  «Gerarchia delle fonti». L'elettromiografia non conta in nessun livello.
 - **Libro:** `docs/sources/Strength Training Anatomy- 3rd Edition.pdf` (cartella esclusa da git, copyright). 196 pagine
   PDF; **pagina del libro = pagina PDF − 2** (p. 104 = PDF 106, p. 110 = PDF 112). Le illustrazioni non vanno nell'app.
   Francesco ha anche l'edizione italiana («Nuova guida agli esercizi di muscolazione»), non nel repo: nel catalogo
@@ -208,7 +222,7 @@ Il gruppo di un muscolo si sceglie una volta qui e vale per tutto il catalogo. �
 | Erector spinae, sacrolumbar, quadratus lumborum, «lumbar muscles» | Lombari | |
 | Gluteus maximus | Glutei | |
 | Gluteus medius, gluteus minimus | Glutei | valore predefinito, Francesco può cambiarlo |
-| Tensor fasciae latae | Glutei | |
+| Tensor fasciae latae | — | Francesco (11/11/2026): accessorio, non conta (prima Glutei) |
 | Piriformis e rotatori profondi dell'anca | Glutei | |
 | Quadriceps (rectus femoris, vasti) | Quadricipiti | |
 | Hamstrings (biceps femoris, semitendinosus, semimembranosus) | Femorali | |
@@ -226,8 +240,17 @@ ogni altro; se Francesco li vuole sempre a un valore fisso (es. 0,5), è una rig
 ## 5. Elenco per Francesco
 
 Compilato con l'incremento 2 (11/11/2026), dalle 127 schede del libro lette sulle immagini (bozze e trascrizioni in
-`docs/sources/delavier-catalog/`). Nel catalogo vale la proposta finché non rispondi; ogni voce del catalogo che ne
-dipende ha `proposta §5 (Pn)` nel commento. Rispondi per numero («P3 sì», «P7: tricipiti 0,5»).
+`docs/sources/delavier-catalog/`). Ogni voce del catalogo che ne dipende ha `§5 (Pn)` nel commento.
+
+**Risposte di Francesco (11/11/2026, applicate con INC-035):** P1–P6, P8–P16, P18–P22 sì, come proposto. **P7:**
+tricipiti 0,5 nella panca piana (e nella sua variante al Smith): il libro non li nomina, crescono meno del petto
+(gruppo di Ogasawara e Abe, risonanza, 2011-2013; Lanza et al. 2024, *J Bodyw Mov Ther* 40:1417-1422, DOI
+10.1016/j.jbmt.2024.07.054, gruppo indipendente: confermato). **P17:** squat e squat al Smith senza femorali
+(Kubo 2019 e Plotkin 2023, gruppi indipendenti, smentiscono il libro); quadricipiti, glutei, adduttori, lombari e
+addominali 1 come dice il libro (su lombari e addominali ci sono solo studi di elettromiografia, che non conta).
+**Tabella di §4:** il tensore della fascia lata non conta più (muscolo accessorio come coracobrachiale e tibiale;
+StatPearls «Tensor Fasciae Latae Muscle», Kenhub, regione glutea). Nessun valore cambia: nelle voci che lo nominano
+(sit-up pp. 174, 176, 177, leg raise pp. 180, 183) la lettura non l'aveva contato.
 
 **Schemi di frase che le regole di §1 non coprono** (valgono per più esercizi):
 - **P2 «as well as»** («uses the deltoid … as well as the trapezius, triceps»): proposta come «also» → 0,5. Lento dietro,

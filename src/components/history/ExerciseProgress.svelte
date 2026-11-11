@@ -113,7 +113,7 @@
   const series = $derived(
     history.flatMap((p) => {
       const kg = current.pick(p);
-      return kg === null ? [] : [{ point: p, value: roundToStep(fromKg(kg, unit), WEIGHT_STEP[unit]) }];
+      return kg === null ? [] : [{ point: p, value: roundToStep(fromKg(kg, unit), WEIGHT_STEP) }];
     }),
   );
   const periodIds = $derived(new Set(inPeriod.map((p) => p.sessionId)));
@@ -126,7 +126,7 @@
   /** "+2,5 kg rispetto al 3 ottobre", "Invariato rispetto all’8 settembre", "Primo valore registrato" */
   function comparison(value: number, previous: { point: ExercisePoint; value: number } | null): string {
     if (!previous) return 'Primo valore registrato';
-    const diff = roundToStep(value - previous.value, WEIGHT_STEP[unit]);
+    const diff = roundToStep(value - previous.value, WEIGHT_STEP);
     const since = `rispetto ${withPreposition('a', dateText(previous.point.date))}`;
     if (diff === 0) return `Invariato ${since}`;
     return `${diff > 0 ? '+' : '\u2212'}${formatNumber(Math.abs(diff))} ${unit} ${since}`;

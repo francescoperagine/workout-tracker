@@ -45,15 +45,18 @@ describe('US-31 unità di misura', () => {
 
   it('cambiare unità non altera il dato: si riconverte lo stesso numero', () => {
     const kg = parseWeight('62,5', 'kg')!;
-    expect(formatWeight(kg, { weightUnit: 'lb' })).toBe(`138${NBSP}lb`);
+    expect(formatWeight(kg, { weightUnit: 'lb' })).toBe(`137,79${NBSP}lb`);
     expect(formatWeight(kg, { weightUnit: 'kg' })).toBe(`62,5${NBSP}kg`);
     expect(kg).toBe(62.5);
   });
 
-  it('in visualizzazione arrotonda a 0,25 kg e 0,5 lb, con la virgola decimale', () => {
-    expect(formatWeight(61.2349, { weightUnit: 'kg' })).toBe(`61,25${NBSP}kg`);
+  it('in visualizzazione nessun passo: intero se è intero, altrimenti al massimo 2 decimali, anche in lb', () => {
+    expect(formatWeight(41.3, { weightUnit: 'kg' })).toBe(`41,3${NBSP}kg`);
+    expect(formatWeight(41.25, { weightUnit: 'kg' })).toBe(`41,25${NBSP}kg`);
+    expect(formatWeight(61.2349, { weightUnit: 'kg' })).toBe(`61,23${NBSP}kg`);
     expect(formatWeight(toKg(135, 'lb'), { weightUnit: 'lb' })).toBe(`135${NBSP}lb`);
-    expect(formatWeight(toKg(135.3, 'lb'), { weightUnit: 'lb' })).toBe(`135,5${NBSP}lb`);
+    expect(formatWeight(toKg(135.3, 'lb'), { weightUnit: 'lb' })).toBe(`135,3${NBSP}lb`);
+    expect(formatWeight(60, { weightUnit: 'lb' })).toBe(`132,28${NBSP}lb`);
     expect(formatWeight(1000, { weightUnit: 'kg' })).toBe(`1000${NBSP}kg`);
     expect(formatWeight(40, { weightUnit: 'kg' }, false)).toBe('40');
     expect(formatWeight(null, { weightUnit: 'kg' })).toBe('—');

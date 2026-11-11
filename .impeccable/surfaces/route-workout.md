@@ -42,7 +42,7 @@ L'utente in palestra, in piedi, telefono in una mano, 60–120 s tra una serie e
 
 - Esercizi per sessione: tipico 6–8, massimo 100. Serie per esercizio: tipico 2–5, massimo 100.
 - Nomi lunghi fino a ~45 caratteri ("Rematore manubri, petto su panca inclinata"): vanno a capo, mai troncati nella riga attiva.
-- Peso: 0–300 kg con decimali (0,25 kg / 0,5 lb in visualizzazione), oppure carico non numerico nella scheda ("Bilanciere + 5 kg", "da tarare"). Ripetizioni: 1–30 o intervallo target ("6–8").
+- Peso: 0–300 kg con decimali (in visualizzazione com'è scritto, al massimo 2 decimali, anche in lb), oppure carico non numerico nella scheda ("Bilanciere + 5 kg", "da tarare"). Ripetizioni: 1–30 o intervallo target ("6–8").
 - Stati: sessione da scheda (serie vuote con l'ultima volta, o senza storico il target della scheda, come segnaposto in grigio: US-36 riscritta in INC-013, ADR-008); allenamento libero (nessun esercizio: stato vuoto che insegna ad aggiungerne uno); esercizio senza storico ("precedente" vuoto, "—"); alternativa senza storico; serie spuntata; record battuto alla spunta; sessione conclusa riaperta; allenamento dimenticato aperto (oltre 3 ore dall'ultima serie: foglio «Allenamento ancora aperto» con «Termina alle …» o «Annulla allenamento» e «Continua», US-41, anche su Oggi); salvataggio riuscito / in corso / fallito (quota) / conflitto con un'altra scheda; "aggiungi almeno un esercizio prima di concludere".
 
 ## Interaction and layout

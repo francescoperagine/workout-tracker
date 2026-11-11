@@ -1,14 +1,14 @@
 // Unità di misura (US-31). I dati si salvano sempre in kg e metri: qui si converte solo in
-// ingresso e in uscita. Il valore digitato diventa kg senza arrotondare; l'arrotondamento
-// è solo in visualizzazione (0,25 kg / 0,5 lb). Cambiare unità non modifica nessun dato.
+// ingresso e in uscita. Il valore digitato diventa kg senza arrotondare; in visualizzazione un peso
+// ha al massimo 2 decimali (41,3 resta 41,3), anche convertito in lb. Cambiare unità non modifica nessun dato.
 import type { DistanceUnit, Settings, WeightUnit } from './archive/types';
 
 /** Definizioni esatte (libbra e piede internazionali, 1959) */
 export const KG_PER_LB = 0.45359237;
 export const M_PER_FT = 0.3048;
 
-/** Passo di arrotondamento in visualizzazione */
-export const WEIGHT_STEP: Record<WeightUnit, number> = { kg: 0.25, lb: 0.5 };
+/** Passo di arrotondamento in visualizzazione: i pesi al centesimo, come formatNumber */
+export const WEIGHT_STEP = 0.01;
 export const DISTANCE_STEP: Record<DistanceUnit, number> = { m: 0.1, ft: 0.5 };
 
 /** Spazio unificatore tra numero e unità, perché non vadano a capo separati */
@@ -54,7 +54,7 @@ export function formatNumber(value: number): string {
 export function formatWeight(kg: number | null, settings: Pick<Settings, 'weightUnit'>, withUnit = true): string {
   if (kg === null) return '—';
   const unit = settings.weightUnit;
-  const value = formatNumber(roundToStep(fromKg(kg, unit), WEIGHT_STEP[unit]));
+  const value = formatNumber(fromKg(kg, unit));
   return withUnit ? `${value}${NBSP}${unit}` : value;
 }
 

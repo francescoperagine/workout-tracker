@@ -131,7 +131,7 @@ test.describe('US-12 registrare le serie', () => {
     await startFromToday(page, { ...archive, settings: { ...archive.settings, weightUnit: 'lb' } });
     const squat = region(page, SQUAT.exerciseId);
     await expect(squat.getByText('lb', { exact: true })).toBeVisible();
-    await expect(squat.getByRole('button', { name: 'Copia il precedente: 88 × 8' })).toHaveCount(SQUAT.sets);
+    await expect(squat.getByRole('button', { name: 'Copia il precedente: 88,18 × 8' })).toHaveCount(SQUAT.sets);
     await squat.getByRole('textbox', { name: 'Peso serie 1, lb' }).fill('135');
     await squat.getByRole('textbox', { name: 'Ripetizioni serie 1' }).fill('5');
     await squat.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
