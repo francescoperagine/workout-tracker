@@ -125,10 +125,10 @@ test.describe('US-36 l’ultima volta e la scheda come segnaposto', () => {
     await seedArchive(page, free.archive);
     await page.goto('workout/');
     await openPicker(page);
-    // la leg press non c'è nel diario
-    await sheet(page).getByLabel('Cerca o scrivi il nome').fill('Leg press');
-    await sheet(page).getByRole('button', { name: 'Leg press', exact: true }).click();
-    const fresh = page.getByRole('region', { name: 'Leg press', exact: true });
+    // il box squat non c'è nel diario né nelle schede
+    await sheet(page).getByLabel('Cerca o scrivi il nome').fill('Box squat');
+    await sheet(page).getByRole('button', { name: 'Box squat', exact: true }).click();
+    const fresh = page.getByRole('region', { name: 'Box squat', exact: true });
     await fresh.getByRole('button', { name: 'Segna serie 1 come fatta' }).click();
     await expect(fresh.getByRole('textbox', { name: 'Ripetizioni serie 1' })).toBeFocused();
     await expect(fresh.getByRole('button', { name: 'Segna serie 1 come fatta' })).toHaveAttribute('aria-pressed', 'false');

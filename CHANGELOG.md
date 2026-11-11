@@ -3,6 +3,26 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-038
+
+Date: 2026-11-11
+
+Summary:
+**Tolta la voce «Leg press, piedi a metà pedana».** Non è nel libro: era un refuso del PoC per la leg press.
+`leg-press-piedi-a-meta-pedana` → `leg-press` in `EXERCISE_REDIRECTS` (ADR-009): schede, sessioni e backup che la
+usano passano da soli alla leg press. La voce b-3 della scheda B iniziale ora è `leg-press`.
+
+Deliverables:
+- `src/data/catalog.ts`: voce tolta, reindirizzamento con data e motivo; `src/data/starter-routines.ts` (b-3).
+- Test che la usavano come esercizio qualsiasi: `sessions.test.ts`, `workout.test.ts`, US-42 → `hack-squat` e
+  `leg-extension`; US-36 e US-37 «senza storico né scheda» → `box-squat` (la leg press ora è nella scheda B e,
+  reindirizzata, nello storico della fixture).
+- Sul telefono di Francesco: diario corretto di INC-037 importato con «Sostituisci» e tolti i 7 personalizzati
+  rimasti senza serie (fuori dal repo).
+
+ADR: nessuna (meccanico, decisione di Francesco; il meccanismo è di ADR-009). Gate: `npm run check` 0, `npm test` 0
+(409), `npm run build` 0, `npm run test:e2e` 0 (397), `WT_BASE=/workout-tracker/ npm run test:e2e` 0 (397).
+
 ## INC-037
 
 Date: 2026-11-11

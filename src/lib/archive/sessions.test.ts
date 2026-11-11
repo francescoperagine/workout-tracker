@@ -183,9 +183,9 @@ describe('US-42 correggere l’esercizio di un allenamento concluso', () => {
 
   it('sposta le voci con le serie com’erano, solo in quell’allenamento', () => {
     const a = base();
-    const { archive, before } = reassignExercise(a, 'sbagliata', 'leg-press', 'leg-press-piedi-a-meta-pedana');
+    const { archive, before } = reassignExercise(a, 'sbagliata', 'leg-press', 'hack-squat');
     const fixed = archive.sessions.find((s) => s.id === 'sbagliata')!;
-    expect(fixed.exercises.map((e) => e.exerciseId)).toEqual(['leg-press-piedi-a-meta-pedana', 'panca-piana-bilanciere', 'leg-press-piedi-a-meta-pedana']);
+    expect(fixed.exercises.map((e) => e.exerciseId)).toEqual(['hack-squat', 'panca-piana-bilanciere', 'hack-squat']);
     expect(fixed.exercises[0].sets).toEqual(a.sessions[0].exercises[0].sets);
     expect(archive.sessions.find((s) => s.id === 'altra')).toBe(a.sessions[1]);
     expect(archive.routines).toBe(a.routines);
@@ -197,8 +197,8 @@ describe('US-42 correggere l’esercizio di un allenamento concluso', () => {
     const a: Archive = { ...withAB(), sessions: [done('v', [entry('e1', 'leg-press', 'squat-bilanciere'), entry('e2', 'hack-squat', 'squat-bilanciere')])] };
     const one = reassignExercise(a, 'v', 'leg-press', 'squat-bilanciere').archive.sessions[0].exercises[0];
     expect(one).toMatchObject({ exerciseId: 'squat-bilanciere', alternativeOf: null });
-    const two = reassignExercise(a, 'v', 'hack-squat', 'leg-press-piedi-a-meta-pedana').archive.sessions[0].exercises[1];
-    expect(two).toMatchObject({ exerciseId: 'leg-press-piedi-a-meta-pedana', alternativeOf: 'squat-bilanciere' });
+    const two = reassignExercise(a, 'v', 'hack-squat', 'leg-extension').archive.sessions[0].exercises[1];
+    expect(two).toMatchObject({ exerciseId: 'leg-extension', alternativeOf: 'squat-bilanciere' });
   });
 
   it('"Annulla" rimette le voci com’erano', () => {

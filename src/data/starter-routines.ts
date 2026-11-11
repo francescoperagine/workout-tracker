@@ -210,7 +210,7 @@ export const STARTER_ROUTINES: readonly Routine[] = [
       },
       {
         id: 'b-3',
-        exerciseId: 'leg-press-piedi-a-meta-pedana',
+        exerciseId: 'leg-press',
         alternatives: [
           'hack-squat',
           'goblet-squat',

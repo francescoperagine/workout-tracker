@@ -399,17 +399,17 @@ describe('US-36 le serie entrano vuote, l’ultima volta è il segnaposto', () =
   });
 
   it('cambio di esercizio: le serie si svuotano e il segnaposto è quello dell’esercizio nuovo, anche nella voce aggiunta a metà', () => {
-    const before = finished('b', '2026-10-01', [exercise('b1', 'leg-press-piedi-a-meta-pedana', [set('1', 90, 12), set('2', 100, 10)])]);
+    const before = finished('b', '2026-10-01', [exercise('b1', 'hack-squat', [set('1', 90, 12), set('2', 100, 10)])]);
     const { archive, session } = startSession(withAB([before]), 'routine-a', NOW);
     const squat = session.exercises[0];
     const written = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 60, reps: 5 });
-    const inPlace = switchExercise(written, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
+    const inPlace = switchExercise(written, session.id, squat.id, 'hack-squat');
     const moved = running(inPlace.archive).exercises[0];
     expect(values(moved.sets)).toEqual([[null, null], [null, null], [null, null]]);
     // la terza serie non c'era l'ultima volta: il target della scheda, senza kg perché è un’alternativa
     expect(values(placeholderSets(inPlace.archive, running(inPlace.archive), moved))).toEqual([[90, 12], [100, 10], [null, 6]]);
     const logged = updateSet(archive, session.id, squat.id, squat.sets[0].id, { kg: 60, reps: 5, completedAt: NOW });
-    const split = switchExercise(logged, session.id, squat.id, 'leg-press-piedi-a-meta-pedana');
+    const split = switchExercise(logged, session.id, squat.id, 'hack-squat');
     const added = running(split.archive).exercises.find((e) => e.id === split.added)!;
     expect(added.sets.map((s) => [s.kg, s.reps, s.completedAt])).toEqual([[null, null, null], [null, null, null]]);
   });

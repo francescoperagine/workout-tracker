@@ -130,7 +130,6 @@ const ENTRIES: Record<string, ReturnType<typeof entry>> = {
   'squat-al-smith': entry('Squat al Smith', ['Smith machine squat', 'Squat Smith'], { quads: MOST_RECRUITED, glutes: MOST_RECRUITED, adductors: MOST_RECRUITED, 'lower-back': MOST_RECRUITED, abs: MOST_RECRUITED }), // Delavier p. 127, variante; femorali 0 come lo squat (§5 P17)
   'squat-bilanciere-basso': entry('Squat a bilanciere basso', ['Power squats', 'Low bar squat', 'Squat powerlifting'], { quads: MOST_RECRUITED, adductors: MOST_RECRUITED, glutes: MOST_RECRUITED, hamstrings: MOST_RECRUITED, abs: MOST_RECRUITED, 'lower-back': MOST_RECRUITED }), // Delavier p. 129
   'leg-press': entry('Leg press', ['Pressa', 'Pressa orizzontale', 'Incline leg presses', 'Pressa inclinata'], { quads: MOST_RECRUITED, glutes: RECRUITED, hamstrings: RECRUITED, adductors: RECRUITED }), // Delavier p. 135, §5 (P18); Kinoshita 2026 (glutei più dei quadricipiti, femorali no) è uno studio singolo: non scavalca il libro
-  'leg-press-piedi-a-meta-pedana': entry('Leg press, piedi a metà pedana', ['Leg press mid platform'], { quads: MOST_RECRUITED, glutes: RECRUITED, hamstrings: RECRUITED, adductors: RECRUITED }), // Delavier p. 135, §5 (P18); Kinoshita 2026 (glutei più dei quadricipiti, femorali no) è uno studio singolo: non scavalca il libro
   'hack-squat': entry('Hack squat', ['Hack squat machine', 'Hack squats'], { quads: MOST_RECRUITED }), // Delavier p. 136
   'box-squat': entry('Box squat', ['Box squats'], { quads: MOST_RECRUITED }), // Delavier p. 137, §5 (P19)
   'leg-extension': entry('Leg extension', ['Estensioni gambe', 'Leg extension machine', 'Leg extensions'], { quads: MOST_RECRUITED }), // Delavier p. 138
@@ -194,7 +193,9 @@ export const BASE_CATALOG: Readonly<Record<string, CatalogExercise>> = Object.fr
  * la destinazione è sempre in BASE_CATALOG e non è a sua volta una chiave (niente catene).
  * - 10 novembre 2026, muscle-volume (D12): «Rematore al cavo basso» era lo stesso esercizio del
  *   rematore seduto al pulley basso.
+ * - 11 novembre 2026: «Leg press, piedi a metà pedana» non è nel libro (refuso del PoC), è la leg press.
  */
 export const EXERCISE_REDIRECTS: Readonly<Record<string, string>> = {
   'rematore-al-cavo-basso': 'rematore-seduto-al-cavo-basso',
+  'leg-press-piedi-a-meta-pedana': 'leg-press',
 };

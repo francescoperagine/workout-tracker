@@ -115,7 +115,7 @@ test.describe('US-37 completa esercizio', () => {
 
   test('US-37 senza ripetizioni il tocco lo dice e non spunta nulla', async ({ page }) => {
     // senza scheda né storico nessun segnaposto
-    const { archive, session, exercise, name } = freeExercise('leg-press');
+    const { archive, session, exercise, name } = freeExercise('box-squat');
     await openWorkout(page, archive);
     const region = card(page, name);
     const count = exercise.sets.length;
