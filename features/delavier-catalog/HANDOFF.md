@@ -2,9 +2,9 @@
 mode: implement
 feature: delavier-catalog
 inc_base: 06e9910   # commit di INC-028; la SPEC e questo file non sono ancora committati
-last_inc: INC-029   # ultimo incremento in CHANGELOG
+last_inc: INC-031   # ultimo incremento in CHANGELOG
 spec: features/delavier-catalog/SPEC.md
-resume_from: SPEC §3, incremento 2
+resume_from: SPEC §3, incremento 4
 ---
 
 > **MODE: implement**: si esegue l'ambito dell'incremento indicato in `resume_from`, senza riprogettare né allargare.
@@ -41,8 +41,11 @@ e prompt per la sessione successiva.
 - **Incremento 1 fatto** (INC-029, ADR-014, 11 novembre 2026): `Muscles` mappa gruppo → quota, costanti in
   `types.ts`, conversione in lettura, gruppi nuovi, editor e sezione Muscoli con «N serie». Il catalogo ha ancora i
   valori di ADR-011 convertiti.
-- **Incremento 2 avviato:** `docs/sources/delavier-catalog/indice.md` (127 esercizi numerati, dalle pagine d'apertura
-  dei capitoli). Prossimo: bozze per capitolo.
+- **Incremento 2 fatto** (INC-030, 11 novembre 2026): 159 voci in `src/data/catalog.ts`; letture delle pagine in
+  `docs/sources/delavier-catalog/lettura.md`, trascrizioni di Hermes in `bozze/`, indice in `indice.md`. 22 punti in
+  SPEC §5 aspettano Francesco: quando risponde, si cambiano le righe con `proposta §5 (Pn)` e si toglie il rimando.
+- **Incremento 3 fatto** (INC-031, 11 novembre 2026): `docs/sources/delavier-catalog/correggi-diario.ts` (`npx jiti
+  …`) scrive il diario corretto accanto all'export, con «-corretto» nel nome; Francesco lo reimporta con «Sostituisci».
 
 ## Prompt per la sessione successiva
 

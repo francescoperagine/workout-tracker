@@ -3,6 +3,26 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-031
+
+Date: 2026-11-11
+
+Summary:
+**Correzione del diario di Francesco (delavier-catalog, incremento 3 di 6).** Dall'export dell'11 novembre uno script
+fuori da git (`docs/sources/delavier-catalog/correggi-diario.ts`, solo funzioni pure dell'archivio: `mergeExercise`,
+`validateArchive`, `weeklyVolume`) scrive un file corretto a parte, da reimportare con «Sostituisci»; l'originale non
+cambia. I 7 personalizzati passano agli esercizi nuovi del catalogo (stacco rumeno, stacco da terra, leg curl seduto,
+curl manubri, estensioni tricipiti sopra la testa al cavo) in sessioni, schede e alternative; corretti kg e ripetizioni
+invertiti, tre voci registrate sull'esercizio sbagliato (con la nota che lo diceva), una voce divisa in due alternative,
+l'inizio e la fine di una sessione rimasta aperta per giorni, un 41,25 kg scritto 41,3 come altrove. Restano la durata 0
+delle sessioni importate dal prototipo e le serie vuote non spuntate. Verifiche dello script: il file passa
+`validateArchive`, nessun esercizio in «Senza muscoli», nessun personalizzato rimasto, 150 serie prima e dopo.
+
+Deliverables:
+- Script e file corretto in `docs/sources/` (dati personali, fuori da git); `features/delavier-catalog/HANDOFF.md`.
+
+ADR: nessuna (meccanico). Gate: nessun codice vivo toccato; `npm run docs:check` — exit 0.
+
 ## INC-030
 
 Date: 2026-11-11
