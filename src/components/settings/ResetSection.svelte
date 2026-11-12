@@ -49,7 +49,7 @@
   <p class="m-0 max-w-[56ch] text-text-muted">
     Elimina da questo dispositivo allenamenti, progressi e record, schede e pianificazione. Le impostazioni restano.
   </p>
-  <button type="button" class="btn btn-danger self-start" disabled={isEmpty || store.state !== 'saved'} onclick={() => (confirmReset = true)}>
+  <button type="button" class="btn btn-danger w-full" disabled={isEmpty || store.state !== 'saved'} onclick={() => (confirmReset = true)}>
     <Trash aria-hidden="true" />Resetta lo storico
   </button>
 </section>

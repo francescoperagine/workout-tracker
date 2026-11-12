@@ -102,10 +102,16 @@
     margin: 0;
     font-weight: 600;
   }
-  /* segmenti larghi quanto il testo, così «Sistema Chiaro Scuro» sta accanto alla legenda anche a 320px */
+  /* segmenti tutti della stessa larghezza (1fr in un binario largo quanto il contenuto: vince il testo più
+     lungo), almeno quanto i pulsanti −15 s/+15 s del valore a passi in linea; imbottitura stretta così
+     «Sistema Chiaro Scuro» sta ancora accanto alla legenda a 320px */
   .inline .options {
-    grid-auto-columns: auto;
+    grid-auto-columns: 1fr;
     margin-left: auto;
+  }
+  .inline label {
+    min-width: 4rem;
+    padding: 0 0.25rem;
   }
 
   /* variante compatta: niente binario, legenda nascosta alla vista, pastiglia da 32px dentro il bersaglio da 48px */

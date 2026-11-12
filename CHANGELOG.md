@@ -3,6 +3,26 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-043
+
+Date: 2026-11-12
+
+Summary:
+**Impostazioni: segmenti di larghezza uguale e reset a tutta larghezza.** Nel controllo segmentato in linea (tema,
+peso, distanza) i segmenti hanno tutti la stessa larghezza, quella del testo più lungo e almeno 64px, come i pulsanti
+«−15 s»/«+15 s» del recupero predefinito, che prendono la stessa larghezza minima. «Resetta lo storico» occupa tutta
+la larghezza, come «Esporta backup» e «Importa backup».
+
+Deliverables:
+- `src/components/ui/SegmentedControl.svelte`: variante `inline` a colonne `1fr`, segmento minimo 4rem con
+  imbottitura stretta (per stare accanto alla legenda a 320px).
+- `src/components/ui/Stepper.svelte`: pulsanti della variante `inline` larghi almeno 4rem.
+- `src/components/settings/ResetSection.svelte`: pulsante `w-full`.
+- `DESIGN.md`: variante in linea del controllo segmentato.
+
+ADR: nessuna (meccanico). Gate non lanciato (dipendenze non installabili nell'ambiente cloud): pushato su richiesta di
+Francesco, gate e pagine a 390×844 e 320×568 da verificare.
+
 ## INC-042
 
 Date: 2026-11-12

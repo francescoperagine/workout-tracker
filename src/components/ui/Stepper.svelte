@@ -80,7 +80,9 @@
     order: -1;
     min-width: 3rem;
   }
+  /* stessa larghezza minima dei segmenti del controllo segmentato in linea: in Impostazioni si allineano */
   .inline .btn {
+    min-width: 4rem;
     padding: 0 0.5rem;
   }
   .inline .hint {
