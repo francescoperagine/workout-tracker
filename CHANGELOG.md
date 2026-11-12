@@ -3,6 +3,58 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-041
+
+Date: 2026-11-12
+
+Summary:
+**US-52 «Esercizi che lo allenano» nel foglio di un gruppo.** In Progressi ogni gruppo della riga «Nessuna serie» è un
+pulsante («Flessori dell'anca: nessuna serie, vedi gli esercizi») che apre il foglio del gruppo. Il foglio chiude con
+la sezione «Esercizi che lo allenano»: catalogo e personalizzati con quel gruppo, per quota decrescente e poi per nome,
+con la riga di Progressi e «ogni serie conta 1»; la riga porta alla pagina dell'esercizio. Nel foglio di un gruppo
+allenato la sezione viene sotto gli esercizi fatti, separata da un filo; un gruppo senza serie nelle settimane del
+grafico ha solo questa sezione, con il nome del gruppo come titolo (anche dalla sagoma).
+
+Deliverables:
+- `src/lib/archive/muscles.ts`: `groupCatalog`, con test in `muscles.test.ts`.
+- `src/components/history/ProgressPage.svelte`: riga «Nessuna serie» a pulsanti di testo da 48px, sezione nuova nel
+  foglio, grafico ed esercizi fatti solo se il gruppo ha serie; brief `.impeccable/surfaces/route-history.md`.
+- e2e: US-52 nuovo; US-45 legge i pulsanti dei gruppi a zero; US-49 distingue le due sezioni «Esercizi…»; US-51 apre
+  fogli di gruppi senza serie (femorali e petto: lo squat non dà più serie ai femorali da INC-035), ora intitolati col
+  solo nome.
+- Pagine guardate a 390×844 e 320×568 (riga «Nessuna serie» a capo, foglio senza grafico, filo tra le sezioni).
+
+ADR: nessuna (meccanico, richiesta di Francesco). Gate: vedi INC-040 (stesso giro).
+
+## INC-040
+
+Date: 2026-11-12
+
+Summary:
+**Tensore della fascia lata nei flessori dell'anca, retto femorale applicato.** Nella tabella di §4 di
+`docs/archive/features/INC-034_delavier-catalog.md` il tensore passa da «—» a Flessori dell'anca: il libro lo mette tra
+i «flexor muscles of the hip» (p. 174) e dove lo nomina come muscolo lavorato (pp. 176, 177, 180, 183) agisce da
+flessore; la decisione dell'11/11 era presa su una proposta senza questa fonte. Nessun valore cambia: in quelle frasi
+l'ileopsoas dà già ai flessori lo stesso valore. Il retto femorale, in Quadricipiti secondo §4, mancava nelle voci in
+cui il libro lo nomina: sit-up su panca inclinata quadricipiti 0,5 (p. 176, «as well as»), leg raise su panca
+inclinata e alla sbarra 1 (pp. 180, 183). Le pp. 174 e 175 restano senza: lì i flessori compaiono solo nelle varianti.
+
+Deliverables:
+- `src/data/catalog.ts`: tre voci con i quadricipiti; campione di `seed-data.test.ts` (p. 183) aggiornato.
+- `src/data/catalog-reading.test.ts` (nuovo): ogni muscolo nominato nella frase dei muscoli lavorati di `lettura.md`
+  deve finire nelle voci con quella pagina secondo §4; 15 eccezioni, ognuna con la regola che la decide (P4 scelte e
+  varianti, P8, P10 stabilizzatori, P17, appoggio che elimina il lavoro a p. 101), e un'eccezione inutile fa fallire
+  il test. Salta senza `docs/sources/` (fuori da git). Sul catalogo intero le sole discrepanze erano le tre voci sopra.
+- §5 della SPEC archiviata: P23 (affondi con bilanciere, p. 156: l'ileopsoas è «stretched», allungato, non lavorato;
+  non conta; Francesco: lasciare così). §1: il controllo; §5: la risposta sul tensore segnata come superata.
+- ADR-015, punto 3: esempio del retto femorale ripristinato (leg raise e sit-up danno serie ai quadricipiti), tensore
+  nei flessori dell'anca. `src/data/body-map.ts`: commento sulla zona ABDUCTORS di MuscleMap, che resta ai glutei.
+
+ADR: ADR-015 aggiornato (punto 3). Gate (INC-040 e INC-041 insieme): `npm run check` 0, `npm test` 0
+(411; un primo giro 1 per il campione di `seed-data.test.ts` sul leg raise alla sbarra, aggiornato), `npm run build` 0,
+`npm run docs:check` 0, `npm run test:e2e` 0 (401, 1 saltato come prima), `WT_BASE=/workout-tracker/ npm run test:e2e` 0
+(401, 1 saltato).
+
 ## INC-039
 
 Date: 2026-11-11

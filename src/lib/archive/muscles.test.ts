@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { exerciseMuscles, formatShare, groupExercises, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
+import { exerciseMuscles, formatShare, groupCatalog, groupExercises, groupWeeks, MUSCLE_LABELS, periodVolume, sortedMuscles, weeklyVolume, type WeekVolume } from './muscles';
 import { emptyArchive, MOST_RECRUITED, MUSCLE_GROUPS, RECRUITED, type Muscles, type Archive, type CustomExercise, type Session, type SessionExercise, type SessionSet, type SetType } from './types';
 
 const PANCA = 'panca-piana-manubri'; // petto 1; tricipiti e deltoidi anteriori 0,5 (Delavier p. 77)
@@ -183,5 +183,18 @@ describe('US-49 esercizi che hanno dato serie a un gruppo', () => {
     ]);
     expect(groupExercises(a, 'calves', ['2026-10-26', '2026-11-02'])).toEqual([]);
     expect(groupExercises(a, 'chest', ['2026-11-09'])).toEqual([]);
+  });
+});
+
+describe('groupCatalog', () => {
+  it('catalogo e personalizzati che allenano il gruppo, per quota e poi per nome', () => {
+    const a: Archive = { ...emptyArchive(), catalog: { 'zz-mio': custom('zz-mio', { 'hip-flexors': MOST_RECRUITED }) } };
+    const list = groupCatalog(a, 'hip-flexors');
+    expect(list.map((e) => e.exerciseId)).toEqual([
+      'leg-raise-alla-sbarra', 'leg-raise-sedia-romana', 'leg-raise-panca-inclinata', 'sit-up-panca-romana', 'zz-mio',
+      'sit-up', 'sit-up-panca-inclinata',
+    ]);
+    expect(list.at(-1)).toEqual({ exerciseId: 'sit-up-panca-inclinata', name: 'Sit-up su panca inclinata', value: RECRUITED });
+    expect(groupCatalog(a, 'popliteus').every((e) => e.value === MOST_RECRUITED)).toBe(true);
   });
 });

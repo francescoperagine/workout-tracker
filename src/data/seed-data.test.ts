@@ -67,7 +67,7 @@ describe('catalogo di base', () => {
       ['hyperextension-45-con-disco', { 'lower-back': 1, glutes: 0.5, hamstrings: 0.5 }], // p. 112
       ['leg-curl-seduto', { hamstrings: 1, popliteus: 1, calves: 0.5 }], // p. 142
       ['slanci-posteriori-al-cavo', { glutes: 1, hamstrings: 0.5 }], // p. 159
-      ['leg-raise-alla-sbarra', { 'hip-flexors': 1, abs: 1 }], // p. 183
+      ['leg-raise-alla-sbarra', { 'hip-flexors': 1, abs: 1, quads: 1 }], // p. 183, retto femorale (INC-040)
     ];
     for (const [id, muscles] of rows) expect(BASE_CATALOG[id].muscles, id).toEqual(muscles);
   });

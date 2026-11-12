@@ -63,8 +63,10 @@ test.describe('US-45 serie per muscolo', () => {
       /Tricipiti\s*0,5 serie/,
     ]);
     await expect(section(page)).toContainText('Media per settimana, ultime 2 settimane concluse.');
-    await expect(section(page)).toContainText(
-      "Nessuna serie: Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Brachiale, Avambracci, Addominali, Lombari, Flessori dell'anca, Femorali, Popliteo, Adduttori, Polpacci",
+    await expect(section(page)).toContainText('Nessuna serie:');
+    // ogni gruppo a zero è un pulsante che apre il suo foglio (US-52)
+    await expect(section(page).getByRole('button', { name: /: nessuna serie, vedi gli esercizi$/ })).toHaveText(
+      "Dorsali, Trapezio, Deltoidi laterali, Deltoidi posteriori, Bicipiti, Brachiale, Avambracci, Addominali, Lombari, Flessori dell'anca, Femorali, Popliteo, Adduttori, Polpacci".split(', '),
     );
     await expect(section(page)).not.toContainText('Senza muscoli');
 

@@ -9,7 +9,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('US-51 il tocco su una zona della sagoma apre il foglio del gruppo giusto', async ({ page }) => {
-  // squat bilanciere il 1° ottobre: quadricipiti, glutei, adduttori, lombari, addominali e femorali 1 serie
+  // squat bilanciere il 1° ottobre: quadricipiti, glutei, adduttori, lombari e addominali 1 serie; i femorali a zero
+  // (§5 P17), quindi il loro foglio ha solo il catalogo, con il nome del gruppo come titolo (US-52)
   await seedArchive(page, archiveWith({ sessions: [session('a', '2026-10-01')] }));
   await page.goto('progress/');
   const map = page.getByRole('figure', { name: 'Sagoma: serie per muscolo nel periodo' });
@@ -36,14 +37,14 @@ test('US-51 il tocco su una zona della sagoma apre il foglio del gruppo giusto',
       throw new Error('nessun punto dentro la zona');
     });
   await page.mouse.click(inside.x + 2, inside.y + 2);
-  const hamstrings = page.getByRole('dialog', { name: 'Femorali: serie per settimana' });
+  const hamstrings = page.getByRole('dialog', { name: 'Femorali', exact: true });
   await expect(hamstrings).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(hamstrings).toBeHidden();
 
-  // da tastiera: un gruppo senza serie apre comunque il suo foglio
+  // da tastiera: un gruppo senza serie apre comunque il suo foglio, senza grafico (US-52)
   await map.getByRole('button', { name: 'Sagoma, Petto: 0 serie' }).press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Petto: serie per settimana' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Petto', exact: true })).toBeVisible();
 });
 
 test('US-51 nella tab Info la sagoma ha la legenda dei valori dell’esercizio', async ({ page }) => {

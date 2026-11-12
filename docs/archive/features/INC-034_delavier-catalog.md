@@ -35,6 +35,9 @@ diario di Francesco corretto da reimportare.
   3. «works X… it also works Y»: X → 1, Y → 0,5;
   4. elenco senza nessun separatore: tutti 1;
   5. i grassetti delle tavole anatomiche e le figurine rosse in alto a sinistra non contano.
+- **Controllo ripetibile** (INC-040): `src/data/catalog-reading.test.ts`, dentro `npm test`, verifica che ogni muscolo
+  nominato nella frase dei muscoli lavorati di `lettura.md` finisca, secondo §4, nelle voci con quella pagina; le
+  eccezioni sono elencate nel test con la regola che le decide. Senza `docs/sources/` (fuori da git) il test salta.
 - **Gruppo da più muscoli:** prende il valore più alto tra i suoi muscoli (D4).
 - **Ogni voce del catalogo** ha nel commento della riga la fonte con la pagina (`// Delavier p. 104, fig. p. 110`).
 - **Divisione del lavoro:** Hermes (deepseek-flash) fa il lavoro meccanico (testo e impaginazione delle pagine); chi
@@ -222,7 +225,7 @@ Il gruppo di un muscolo si sceglie una volta qui e vale per tutto il catalogo. �
 | Erector spinae, sacrolumbar, quadratus lumborum, «lumbar muscles» | Lombari | |
 | Gluteus maximus | Glutei | |
 | Gluteus medius, gluteus minimus | Glutei | valore predefinito, Francesco può cambiarlo |
-| Tensor fasciae latae | — | Francesco (11/11/2026): accessorio, non conta (prima Glutei) |
+| Tensor fasciae latae | Flessori dell'anca | INC-040: il libro lo dà tra i «flexor muscles of the hip (iliopsoas, rectus femoris, and tensor fasciae latae)» (p. 174) e dove lo nomina come muscolo lavorato (pp. 176, 177, 180, 183) agisce da flessore; prima Glutei, poi «—» (11/11/2026, decisione presa senza questa fonte) |
 | Piriformis e rotatori profondi dell'anca | Glutei | |
 | Quadriceps (rectus femoris, vasti) | Quadricipiti | |
 | Hamstrings (biceps femoris, semitendinosus, semimembranosus) | Femorali | |
@@ -250,7 +253,9 @@ tricipiti 0,5 nella panca piana (e nella sua variante al Smith): il libro non li
 addominali 1 come dice il libro (su lombari e addominali ci sono solo studi di elettromiografia, che non conta).
 **Tabella di §4:** il tensore della fascia lata non conta più (muscolo accessorio come coracobrachiale e tibiale;
 StatPearls «Tensor Fasciae Latae Muscle», Kenhub, regione glutea). Nessun valore cambia: nelle voci che lo nominano
-(sit-up pp. 174, 176, 177, leg raise pp. 180, 183) la lettura non l'aveva contato.
+(sit-up pp. 174, 176, 177, leg raise pp. 180, 183) la lettura non l'aveva contato. *Superata da INC-040:* il tensore
+va nei Flessori dell'anca (§4); nessun valore cambia nemmeno così, perché in ognuna di quelle frasi l'ileopsoas dà già
+ai flessori lo stesso valore (p. 174: solo nella variante, non contato).
 
 **Schemi di frase che le regole di §1 non coprono** (valgono per più esercizi):
 - **P2 «as well as»** («uses the deltoid … as well as the trapezius, triceps»): proposta come «also» → 0,5. Lento dietro,
@@ -315,6 +320,10 @@ StatPearls «Tensor Fasciae Latae Muscle», Kenhub, regione glutea). Nessun valo
 - **P21 Sit-up alla panca romana (p. 177):** «the rectus abdominis, iliopsoas, and tensor fasciae latae contribute
   strongly». Proposta flessori dell'anca 1.
 - **P22 Crunch alla macchina (p. 179):** nessuna frase sui muscoli. Proposta addominali 1.
+- **P23 Affondi con bilanciere (p. 156), aggiunta con INC-040:** il passo lungo «stretches the rectus femoris and
+  iliopsoas of the back leg». Allungati, non lavorati: oggi i flessori dell'anca non contano (i quadricipiti hanno già
+  0,5 dal passo corto, P20). Proposta: lasciare così. Alternativa: flessori dell'anca 0,5 come i muscoli del passo (P20).
+  **Risposta di Francesco (12/11/2026):** lasciare così.
 
 **Identificazioni** (esercizio del PoC → scheda del libro, senza proposta sui valori): curl EZ → barbell curls (p. 12);
 shoulder press machine → «various machines» del lento avanti (p. 34); trazioni assistite → chin-ups (p. 86); row

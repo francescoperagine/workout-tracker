@@ -3,7 +3,8 @@
 // senza la silhouette; coordinate arrotondate all'intero. Il brachiale e i flessori dell'anca non ci sono in
 // MuscleMap: sono tracciati a mano (segnati sotto). Il popliteo è profondo e non si disegna.
 // Gruppi di MuscleMap → gruppi dell'app: RHOMBOIDS → traps, CORE e OBLIQUES → abs, ABDUCTORS → glutes
-// (gluteo medio e tensore della fascia lata, SPEC delavier-catalog §4), BACK_LOWER → lower-back.
+// (gluteo medio, SPEC delavier-catalog §4; il tensore della fascia lata, nella stessa zona di MuscleMap, è nei
+// flessori dell'anca da INC-040 ma la zona resta ai glutei), BACK_LOWER → lower-back.
 //
 // Licenza dei tracciati:
 // MIT License

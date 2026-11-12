@@ -30,7 +30,7 @@ test('US-49 il tocco su un punto filtra gli esercizi del gruppo sulla settimana;
   await page.goto('progress/');
   await page.getByRole('button', { name: "Quadricipiti: 1,5 serie, apri l'andamento" }).click();
   const sheet = page.getByRole('dialog', { name: 'Quadricipiti: serie per settimana' });
-  const rows = sheet.getByRole('region', { name: /^Esercizi/ }).getByRole('listitem');
+  const rows = sheet.getByRole('region', { name: /^Esercizi,/ }).getByRole('listitem');
 
   // tutte le settimane del grafico, con le serie contate e quanto conta una serie
   await expect(sheet.getByRole('heading', { name: 'Esercizi, tutte le settimane' })).toBeVisible();

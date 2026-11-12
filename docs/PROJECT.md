@@ -20,7 +20,8 @@ Qui c'è solo dove siamo e dove si va.
 - **Catalogo dal Delavier** (`delavier-catalog`, chiusa con INC-034): muscoli con il valore di una serie (INC-029,
   ADR-014), 159 esercizi dal libro (INC-030), diario di Francesco corretto (INC-031), Progressi come catalogo con le
   tab Progressi e Info (INC-032), elenchi sotto i grafici (INC-033), sagoma e scala dei muscoli (INC-034, ADR-005).
-  SPEC in `docs/archive/features/INC-034_delavier-catalog.md`; 22 proposte aspettano Francesco (§5 della SPEC).
+  SPEC in `docs/archive/features/INC-034_delavier-catalog.md`; P1–P22 di §5 risposte con INC-035, P23 con INC-040
+  (lasciare così). Controllo del catalogo contro la lettura del libro: `src/data/catalog-reading.test.ts`.
 - **Feature attive:** nessuna.
 
 ## Focus attuale

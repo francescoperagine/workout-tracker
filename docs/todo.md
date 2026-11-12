@@ -21,10 +21,11 @@
 - [ ] sezione Profilo
 - [ ] schede di esempio per chi comincia, prese da programmi per principianti documentati, con la fonte
 - [ ] sagoma del corpo disegnata davvero a pennello (oggi: zone dei muscoli di MuscleMap con un contorno che imita l'inchiostro, `src/data/body-map.ts`), unisex, con brachiale e flessori dell'anca
-- [ ] le impostazioni di aspetto e unità di misura devono essere in una linea 
+- [x] le impostazioni di aspetto e unità di misura devono essere in una linea 
 <Opzione a sx>       <toggle tutto a dx>
 , così 3 impostazioni prendono la finestra intera. non c'è bisogno di spiegare cose per kg/lb o m/ft e sistema. sono cose autoesplicative.
-Recupero predefinito <attuale> <-15s> <+15s> 
-- "Installa sul telefono" (invece di App sul telefono) va posizionato prima di Cancella tutto il diario. 
-- rinominare "cancella tutto il diario" in "resetta lo storico", con avviso in modale con conferma con avvertenza di cosa cancella (storico, progressi etc)
-- in storico "Record in <n> esercizi va sempre su newline, ora non lo fa"
+Recupero predefinito <attuale> <-15s> <+15s> (INC-039; a 320px i controlli del recupero scendono sotto l'etichetta)
+- [x] "Installa sul telefono" (invece di App sul telefono) va posizionato prima di Cancella tutto il diario (INC-039)
+- [x] rinominare "cancella tutto il diario" in "resetta lo storico", con avviso in modale con conferma con avvertenza di cosa cancella (storico, progressi etc) (INC-039; cancella ancora anche schede, esercizi personalizzati e pianificazione)
+- [x] in storico "Record in <n> esercizi va sempre su newline, ora non lo fa" (INC-039)
+- favicon web da sostituire con icona visualizzata quando si installa come app su telefono

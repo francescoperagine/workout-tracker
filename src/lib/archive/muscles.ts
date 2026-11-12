@@ -6,6 +6,7 @@
 // drop set con due scalate vale 3 serie e probabilmente sovrastima; Havers et al. 2026 non dà un peso diverso.
 import { BASE_CATALOG } from '../../data/catalog';
 import { addDays, weekStart } from './calendar';
+import { availableExercises } from './catalog';
 import { countsForProgress } from './progress';
 import { MUSCLE_GROUPS, type Archive, type MuscleGroup, type Muscles } from './types';
 
@@ -110,6 +111,19 @@ export function groupExercises(archive: Pick<Archive, 'sessions' | 'catalog'>, g
     byExercise.set(exerciseId, { ...current, sets: current.sets + n * value });
   }
   return [...byExercise.values()].sort((a, b) => b.sets - a.sets || a.exerciseId.localeCompare(b.exerciseId));
+}
+
+/**
+ * Esercizi del catalogo (base e personalizzati) che danno serie a un gruppo, fatti o no (foglio del gruppo in
+ * Progressi): quota decrescente, a pari quota per nome.
+ */
+export function groupCatalog(archive: Pick<Archive, 'catalog'>, group: MuscleGroup): { exerciseId: string; name: string; value: number }[] {
+  return availableExercises(archive)
+    .flatMap((e) => {
+      const value = exerciseMuscles(archive, e.id)?.[group];
+      return value === undefined ? [] : [{ exerciseId: e.id, name: e.name, value }];
+    })
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name, 'it'));
 }
 
 export type VolumePeriod = 'week' | '4w' | '12w';

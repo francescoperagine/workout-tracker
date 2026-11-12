@@ -6,7 +6,9 @@
   // In cima le serie per muscolo (US-45, INC-025): barre per gruppo nel periodo scelto, i gruppi a zero in una
   // riga, gli esercizi senza muscoli con i link alle loro pagine. Il tocco su una barra apre in un foglio la linea
   // settimanale del gruppo (US-46): le ultime 12 settimane concluse più quella in corso, segnata come parziale;
-  // sotto il grafico gli esercizi che hanno dato serie al gruppo (US-49), filtrati sulla settimana toccata.
+  // sotto il grafico gli esercizi che hanno dato serie al gruppo (US-49), filtrati sulla settimana toccata, e gli
+  // esercizi del catalogo che lo allenano (US-52). Anche i gruppi di «Nessuna serie» aprono il foglio: senza serie
+  // nelle settimane del grafico c'è solo il catalogo.
   import ChartLine from '@lucide/svelte/icons/chart-line';
   import CircleAlert from '@lucide/svelte/icons/circle-alert';
   import BodyMap from './BodyMap.svelte';
@@ -23,6 +25,7 @@
     availableExercises,
     exerciseName,
     exercisesDone,
+    groupCatalog,
     groupExercises,
     groupWeeks,
     MUSCLE_GROUPS,
@@ -85,7 +88,10 @@
         }))
       : [],
   );
+  const trained = $derived(trend.some((p) => p.value > 0));
   const trendTitle = $derived(`${trendGroup ? MUSCLE_LABELS[trendGroup] : ''}: serie per settimana`);
+  const sheetTitle = $derived(trained ? trendTitle : trendGroup ? MUSCLE_LABELS[trendGroup] : '');
+  const trainers = $derived(trendGroup ? groupCatalog(store.archive, trendGroup) : []);
   const setsText = (value: number) => `${formatSets(value)} serie`;
   const dayText = (date: string) => formatDayMonth(date, today);
   function openTrend(index: number) {
@@ -149,7 +155,12 @@
           {/if}
           <p class="m-0 text-sm text-text-muted">{reading}</p>
           {#if bars.length && zero.length}
-            <p class="m-0 max-w-[60ch]"><span class="text-text-muted">Nessuna serie:</span> {zero.map((g) => MUSCLE_LABELS[g]).join(', ')}</p>
+            <div class="zero">
+              <span class="text-text-muted">Nessuna serie:</span>
+              {#each zero as group, i (group)}
+                <span><button type="button" class="btn btn-text" aria-label={`${MUSCLE_LABELS[group]}: nessuna serie, vedi gli esercizi`} onclick={() => openGroup(group)}>{MUSCLE_LABELS[group]}</button>{i < zero.length - 1 ? ',' : ''}</span>
+              {/each}
+            </div>
           {/if}
           {#if volume.unclassified.length}
             <div>
@@ -163,34 +174,48 @@
           {/if}
         {/if}
       </section>
-      <BottomSheet bind:open={trendOpen} title={trendTitle}>
-        <ProgressChart points={trend} format={setsText} formatDate={dayText} label={trendTitle} onpick={pickWeek} />
-        <section aria-labelledby="group-exercises-title" class="group-exercises" bind:clientHeight={listHeight} style:min-height={weekFilter ? `${fullHeight}px` : null}>
-          <div class="group-head">
-            <h3 id="group-exercises-title" class="m-0 text-base font-bold">
-              {weekFilter ? `Esercizi, ${weekText(weekFilter)}` : 'Esercizi, tutte le settimane'}
-            </h3>
-            {#if weekFilter}
-              <button type="button" class="btn btn-text" onclick={() => (weekFilter = null)}>Tutte le settimane</button>
+      <BottomSheet bind:open={trendOpen} title={sheetTitle}>
+        {#if trained}
+          <ProgressChart points={trend} format={setsText} formatDate={dayText} label={trendTitle} onpick={pickWeek} />
+          <section aria-labelledby="group-exercises-title" class="group-section separated" bind:clientHeight={listHeight} style:min-height={weekFilter ? `${fullHeight}px` : null}>
+            <div class="group-head">
+              <h3 id="group-exercises-title" class="m-0 text-base font-bold">
+                {weekFilter ? `Esercizi, ${weekText(weekFilter)}` : 'Esercizi, tutte le settimane'}
+              </h3>
+              {#if weekFilter}
+                <button type="button" class="btn btn-text" onclick={() => (weekFilter = null)}>Tutte le settimane</button>
+              {/if}
+            </div>
+            {#if contributions.length}
+              <ol class="m-0 list-none p-0">
+                {#each contributions as item (item.exerciseId)}
+                  <li class="border-b border-border last:border-b-0">
+                    <ExerciseRow
+                      href={exerciseHref(item.exerciseId)}
+                      name={exerciseName(store.archive, item.exerciseId)}
+                      done={doneById.get(item.exerciseId)}
+                      {today}
+                      extra={`${setsText(item.sets)} · ${shareText(item.value)}`}
+                    />
+                  </li>
+                {/each}
+              </ol>
+            {:else}
+              <p class="m-0 text-text-muted">Nessun esercizio in questa settimana.</p>
             {/if}
+          </section>
+        {/if}
+        <section aria-labelledby="group-catalog-title" class="group-section" class:separated={trained}>
+          <div class="group-head">
+            <h3 id="group-catalog-title" class="m-0 text-base font-bold">Esercizi che lo allenano</h3>
           </div>
-          {#if contributions.length}
-            <ol class="m-0 list-none p-0">
-              {#each contributions as item (item.exerciseId)}
-                <li class="border-b border-border last:border-b-0">
-                  <ExerciseRow
-                    href={exerciseHref(item.exerciseId)}
-                    name={exerciseName(store.archive, item.exerciseId)}
-                    done={doneById.get(item.exerciseId)}
-                    {today}
-                    extra={`${setsText(item.sets)} · ${shareText(item.value)}`}
-                  />
-                </li>
-              {/each}
-            </ol>
-          {:else}
-            <p class="m-0 text-text-muted">Nessun esercizio in questa settimana.</p>
-          {/if}
+          <ol class="m-0 list-none p-0">
+            {#each trainers as item (item.exerciseId)}
+              <li class="border-b border-border last:border-b-0">
+                <ExerciseRow href={exerciseHref(item.exerciseId)} name={item.name} done={doneById.get(item.exerciseId)} {today} extra={shareText(item.value)} />
+              </li>
+            {/each}
+          </ol>
         </section>
       </BottomSheet>
     {:else}
@@ -246,11 +271,25 @@
     align-items: center;
     min-height: 48px;
   }
-  /* sotto il grafico del foglio, separato da un filo (regola del filo) */
-  .group-exercises {
+  /* «Nessuna serie:» e i gruppi come pulsanti di testo da 48px, a capo dove serve */
+  .zero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.5rem;
+    max-width: 60ch;
+  }
+  /* la virgola subito dopo il nome: niente imbottitura laterale, il bersaglio resta alto 48px */
+  .zero :global(.btn-text) {
+    padding: 0;
+  }
+  .group-section {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+  /* sezioni del foglio una sotto l'altra: un filo tra l'una e l'altra (regola del filo) */
+  .separated {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--color-border);

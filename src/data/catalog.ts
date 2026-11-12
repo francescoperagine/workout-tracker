@@ -167,13 +167,13 @@ const ENTRIES: Record<string, ReturnType<typeof entry>> = {
   'sit-up': entry('Sit-up', ['Sit-ups'], { abs: MOST_RECRUITED, 'hip-flexors': RECRUITED }), // Delavier p. 173
   'sit-up-alla-spalliera': entry('Sit-up alla spalliera', ['Gym ladder sit-ups'], { abs: MOST_RECRUITED }), // Delavier p. 174
   'crunch-polpacci-sulla-panca': entry('Crunch con i polpacci sulla panca', ['Calves over bench sit-ups'], { abs: MOST_RECRUITED }), // Delavier p. 175
-  'sit-up-panca-inclinata': entry('Sit-up su panca inclinata', ['Incline bench sit-ups', 'Decline sit-up'], { abs: MOST_RECRUITED, 'hip-flexors': RECRUITED }), // Delavier p. 176, §5 (P2)
+  'sit-up-panca-inclinata': entry('Sit-up su panca inclinata', ['Incline bench sit-ups', 'Decline sit-up'], { abs: MOST_RECRUITED, 'hip-flexors': RECRUITED, quads: RECRUITED }), // Delavier p. 176, §5 (P2); quadricipiti dal retto femorale (§4)
   'sit-up-panca-romana': entry('Sit-up alla panca romana', ['Suspended bench sit-ups', 'Roman chair sit-up'], { abs: MOST_RECRUITED, 'hip-flexors': MOST_RECRUITED }), // Delavier p. 177, §5 (P21)
   'crunch-al-cavo-alto': entry('Crunch al cavo alto', ['High-pulley crunches', 'Cable crunch'], { abs: MOST_RECRUITED }), // Delavier p. 178
   'crunch-alla-macchina': entry('Crunch alla macchina', ['Machine crunches', 'Ab crunch machine'], { abs: MOST_RECRUITED }), // Delavier p. 179, §5 (P22)
-  'leg-raise-panca-inclinata': entry('Leg raise su panca inclinata', ['Incline leg raises'], { 'hip-flexors': MOST_RECRUITED, abs: MOST_RECRUITED }), // Delavier p. 180
+  'leg-raise-panca-inclinata': entry('Leg raise su panca inclinata', ['Incline leg raises'], { 'hip-flexors': MOST_RECRUITED, abs: MOST_RECRUITED, quads: MOST_RECRUITED }), // Delavier p. 180; quadricipiti dal retto femorale (§4)
   'leg-raise-sedia-romana': entry('Leg raise alla sedia romana', ['Leg raises', 'Captain chair leg raise', 'Knee raise'], { 'hip-flexors': MOST_RECRUITED, abs: MOST_RECRUITED }), // Delavier p. 182
-  'leg-raise-alla-sbarra': entry('Leg raise alla sbarra', ['Hanging leg raises', 'Hanging leg raise'], { 'hip-flexors': MOST_RECRUITED, abs: MOST_RECRUITED }), // Delavier p. 183
+  'leg-raise-alla-sbarra': entry('Leg raise alla sbarra', ['Hanging leg raises', 'Hanging leg raise'], { 'hip-flexors': MOST_RECRUITED, abs: MOST_RECRUITED, quads: MOST_RECRUITED }), // Delavier p. 183; quadricipiti dal retto femorale (§4)
   'torsioni-busto-bastone': entry('Torsioni del busto con bastone', ['Trunk rotations'], { abs: MOST_RECRUITED, 'lower-back': RECRUITED }), // Delavier p. 184
   'piegamenti-laterali-manubrio': entry('Piegamenti laterali con manubrio', ['Dumbbell side bends', 'Dumbbell side bend'], { abs: MOST_RECRUITED, 'lower-back': RECRUITED }), // Delavier p. 185
   'piegamenti-laterali-cavo-basso': entry('Piegamenti laterali al cavo basso', ['Cable side bend'], { abs: MOST_RECRUITED, 'lower-back': RECRUITED }), // Delavier p. 185, variante
