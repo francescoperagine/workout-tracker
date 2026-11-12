@@ -3,6 +3,21 @@
 Incrementi, dal più recente. Prima di INC-001: il restyling, step 0–9, in `docs/archive/restyling/PIANO.md`
 e nella cronologia git.
 
+## INC-042
+
+Date: 2026-11-12
+
+Summary:
+**Il favicon è l'icona dell'app installata.** Il bilanciere bianco su fondo `#1C1C1E` del favicon usa ora lo stesso
+disegno di icone 192/512 e apple-touch, non più la variante a tratti ispessiti.
+
+Deliverables:
+- `scripts/make-icons.mjs`: il favicon da `barbell.svg`; `public/favicon.svg` rigenerato (le PNG non cambiano).
+- Cancellato `scripts/icon-source/barbell-bold.svg`; `docs/ARCHITECTURE.md` e ADR-004 (revisione) aggiornati.
+
+ADR: ADR-004, revisione (richiesta di Francesco). Gate: `npm run build` → 0, `npm run docs:check` → 0; check, Vitest
+ed e2e non lanciati (cambia solo un asset statico e lo script che lo genera).
+
 ## INC-041
 
 Date: 2026-11-12

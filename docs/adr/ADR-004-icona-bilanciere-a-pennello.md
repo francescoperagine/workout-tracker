@@ -32,3 +32,8 @@ ma il passaggio dell'app a quella palette non è in questa feature.
 - Rigenerare i master dall'illustrazione non è più possibile dal repository (lo strumento delle varianti è stato
   cancellato con la feature, resta nella cronologia git): si modificano gli SVG.
 - Con la nuova palette andranno riallineati il meta `theme-color` e, se serve, il fondo dell'icona.
+
+## Revisione (INC-042)
+
+Francesco ha chiesto che il favicon sia la stessa immagine dell'icona installata: `make-icons.mjs` lo genera ora da
+`barbell.svg`, e `barbell-bold.svg` è stato cancellato. Si rinuncia alla dimensione ottica a 16–48 px.

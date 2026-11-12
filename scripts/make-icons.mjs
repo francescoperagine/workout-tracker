@@ -1,7 +1,7 @@
 // Uso: node scripts/make-icons.mjs (sharp arriva con Astro). Rigenera public/icons/ e public/favicon.svg.
 // Sorgente: scripts/icon-source/, il bilanciere dell'illustrazione a pennello del sito vettorializzato con potrace
-// (variante A dell'INC-008). barbell.svg per 192/512, barbell-bold.svg (tratti più pieni) per il favicon, che si
-// vede a 16–48 px. Tratto carta su sfondo scuro, i neutri della palette.
+// (variante A dell'INC-008). Il favicon è la stessa immagine dell'icona installata (INC-042).
+// Tratto carta su sfondo scuro, i neutri della palette.
 import { readFileSync, writeFileSync } from 'node:fs';
 import sharp from 'sharp';
 
@@ -31,5 +31,5 @@ for (const [name, svg, size] of jobs) {
   await sharp(Buffer.from(svg)).resize(size, size).png({ compressionLevel: 9 }).toFile(`${root}public/icons/${name}`);
   console.log(name);
 }
-writeFileSync(`${root}public/favicon.svg`, icon('barbell-bold', { fit: 0.8, round: true }) + '\n');
+writeFileSync(`${root}public/favicon.svg`, icon('barbell', { fit: 0.8, round: true }) + '\n');
 console.log('favicon.svg');

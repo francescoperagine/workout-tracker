@@ -18,7 +18,7 @@ svelte.config.js        vitePreprocess (TypeScript nei componenti .svelte)
 vitest.config.ts        test unitari in src/**/*.test.ts
 playwright.config.ts    test e2e in tests/e2e/, server astro preview sulla porta 4322 (build con WT_KIT=1), baseURL con WT_BASE
 scripts/make-icons.mjs  icone della PWA (public/icons/) e public/favicon.svg dalla sorgente in scripts/icon-source/ (ADR-004)
-scripts/icon-source/    bilanciere a pennello vettoriale: barbell.svg (192/512, maskable, apple-touch), barbell-bold.svg (favicon, 16–48 px)
+scripts/icon-source/    bilanciere a pennello vettoriale: barbell.svg (favicon, 192/512, maskable, apple-touch)
 src/integrations/service-worker.ts  workbox-build in astro:build:done: precache di tutto dist/ (tranne /kit) in dist/sw.js, con importScripts di public/sw-push.js (handler push e notificationclick, predisposizione Web Push)
 src/styles/global.css   design system: @font-face, token in @theme (colori light-dark(), scala tipografica, raggi), base (superfici del browser), classi componente (.shell, .btn-*, .field, .panel, .digits)
 src/layouts/Base.astro  documento di ogni pagina: <html lang="it">, canonico, favicon, manifest, icona iOS, preload del font, script inline del tema, slot "head". Props: title, description, bodyClass, bodyStyle
